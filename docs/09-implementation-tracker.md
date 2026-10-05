@@ -23,3 +23,5 @@
 实际证据见 `07-design-verification.md`。外部条件（正式域名、端口、人工教学审校和真实 iPhone）应明确记录，继续实现不依赖它们的工程工作；不得因此把产品范围缩小到演示。
 
 作者工具进展：已有数据库无关的 check/check-release、严格审校元数据与 Rust 生成的作者 Schema（包含私有规则，保留在 docs）；仍需完整语义错误定位、staging 预览、录音与正式教学内容，不能据此判定内容发布工具全部完成。
+
+预览进展：operator 固定 revision 页面与课程范围内的私有媒体已接入，权限/降权/撤回/答案隔离通过 PostgreSQL 验证；整批 staging release 目录、题目交互判分与浏览器体验验收仍待补齐。

@@ -221,3 +221,9 @@
 - pnpm contracts 从实际 Rust 类型生成 docs/generated/author-lesson.schema.json，包含公共结构、私有规则、审校、可选非 null 素材引用；CI 增加生成文件漂移检查。Rust 测试确认必需字段、私有 Schema 与公共契约隔离。独立 Python Draft202012Validator 验证 Schema 有效、当前草稿通过、非法审校状态/未知审校字段/null 素材引用拒绝；Python 使用本机既有验证依赖，并非新增 CI 依赖。
 - 27 项契约/服务端单元测试、3 项 CLI 测试、all-targets clippy、契约导出通过。独立临时 PostgreSQL brioche_author_qa（loopback 55437）通过两项学习/release 集成测试，覆盖固定版本与事务、原子切换、回滚、撤回；临时容器已清理。身份/基础迁移专门测试本轮未单独重跑。
 - Schema 仍不取代 Rust 语义校验、实际媒体授权和人工审校；完整语义错误定位、staging 预览与录音继续待实现。
+
+## 2026-10-06：管理员固定版本预览
+
+- 新增私有 operator 课程/媒体路由及 /author-preview SSR 页面，个人页仅管理员显示入口；读取已导入固定 revision，按步骤展示正文、教学块和只读题面，不接入学习提交。返回公共 DTO，替换为课程版本范围内的私有素材 URL；没有返回 serverOnly、editorial 或答案键。
+- 独立 PostgreSQL brioche_preview_qa（loopback 55437）两项学习/release 集成测试通过，新增验证匿名 401、learner 403、operator draft 200、私有素材权限/200、未引用媒体 404、缺课程 404、无效 revision 400、降权同会话 403、撤回正文与素材 410、预览不增加学习会话。现有公开素材、切换/回滚/硬撤回校验保持通过。
+- workspace 27 项单元测试、3 项 CLI 测试、all-targets clippy、TS 7、Web/SSR build 和 5 项 Web 协议测试通过。页面真实浏览器交互、窄屏及退出后的前端残留内容仍待专门验收，未宣称 iPhone 验收完成；整批 staging 目录和题目判分预览继续待补齐。

@@ -595,15 +595,31 @@ async fn serve(
     let row=one(&state.db,"SELECT descriptor FROM media_assets m WHERE sha256=$1 AND extension=$2 AND EXISTS(SELECT 1 FROM lesson_revisions r WHERE r.published AND r.public_document->'media' @> jsonb_build_array(jsonb_build_object('assetId',m.asset_id,'revision',m.revision))) LIMIT 1",vec![sha.into(),ext.into()]).await?.ok_or(AppError::NotFound)?;
     let descriptor: MediaAsset =
         serde_json::from_value(field(&row, "descriptor")?).map_err(|_| AppError::Unavailable)?;
-    let permit = state
-        .permits
+    asset_response(state.root, descriptor, state.permits).await
+}
+
+pub(crate) async fn asset_response(
+    root: PathBuf,
+    descriptor: MediaAsset,
+    permits: std::sync::Arc<tokio::sync::Semaphore>,
+) -> Result<axum::response::Response, AppError> {
+    let ext = extension(&descriptor.mime_type)
+        .map_err(|_| AppError::Unavailable)?
+        .to_owned();
+    let sha = descriptor.sha256.clone();
+    if sha.len() != 64
+        || !sha
+            .bytes()
+            .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+    {
+        return Err(AppError::Unavailable);
+    }
+    let permit = permits
         .try_acquire_owned()
         .map_err(|_| AppError::Unavailable)?;
-    let sha = sha.to_owned();
-    let ext = ext.to_owned();
     let bytes = tokio::task::spawn_blocking(move || -> Result<Vec<u8>> {
         let _permit = permit;
-        let bytes = stored_bytes(&state.root, &sha, &ext)?;
+        let bytes = stored_bytes(&root, &sha, &ext)?;
         ensure!(digest(&bytes) == sha, "media object corrupt");
         Ok(bytes)
     })

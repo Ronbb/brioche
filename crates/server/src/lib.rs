@@ -11,6 +11,7 @@ pub mod library;
 pub mod media;
 pub mod observability;
 pub mod password;
+pub mod preview;
 pub mod reviews;
 pub mod session_store;
 use axum::{

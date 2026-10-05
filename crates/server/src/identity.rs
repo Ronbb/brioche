@@ -332,6 +332,13 @@ impl AuthnBackend for Backend {
     }
 }
 pub type AuthSession = axum_login::AuthSession<Backend>;
+pub(crate) fn require_operator(auth: &AuthSession) -> Result<(), AppError> {
+    let user = auth.user.as_ref().ok_or(AppError::Unauthorized)?;
+    if user.role != "operator" {
+        return Err(AppError::Forbidden);
+    }
+    Ok(())
+}
 async fn establish(auth: &mut AuthSession, user: User) -> Result<Json<AuthResult>, AppError> {
     if auth.user.is_some() {
         auth.session
@@ -463,6 +470,14 @@ fn profile_changes(
 }
 
 pub fn router(backend: Backend, policy: CsrfPolicy, secure: bool) -> Router {
+    router_with_media_root(backend, policy, secure, crate::media::media_root())
+}
+pub fn router_with_media_root(
+    backend: Backend,
+    policy: CsrfPolicy,
+    secure: bool,
+    root: std::path::PathBuf,
+) -> Router {
     let session_layer = SessionManagerLayer::new(PgSessionStore::new(backend.db.clone()))
         .with_name(if secure {
             "__Host-brioche.sid"
@@ -488,6 +503,7 @@ pub fn router(backend: Backend, policy: CsrfPolicy, secure: bool) -> Router {
         .merge(crate::reviews::router())
         .merge(crate::library::router())
         .merge(crate::dashboard::router())
+        .merge(crate::preview::router(root))
         .layer(axum::middleware::from_fn_with_state(
             Arc::new(policy),
             csrf::protect,

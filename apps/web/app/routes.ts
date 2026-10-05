@@ -10,6 +10,7 @@ export default [
   route("library", "routes/library.tsx"),
   route("review-history", "routes/review-history.tsx"),
   route("profile", "routes/profile.tsx"),
+  route("author-preview", "routes/author-preview.tsx"),
   route("pending-saves", "routes/pending-saves.tsx"),
   route("login", "routes/login.tsx"),
   route("invite", "routes/invite.tsx"),

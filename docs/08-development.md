@@ -66,7 +66,15 @@ cargo run -p brioche-server -- import docs/examples/a1-bakery.lesson.json
 
 `check`、`check-release`、`import`、`assets-import` 与 `release-stage` 共用严格 JSON 文件读取：实际读取最多 2 MiB + 1 字节，超过 2 MiB 拒绝；所有层级的重复字段、尾随第二个文档、无效 UTF-8 和过深嵌套均拒绝。错误链包含输入文件名及 JSON 行列；重复字段显示 JSON Pointer（例如 `/steps/0/id`），素材/发布清单类型错误显示字段路径。类型定位使用 [serde_path_to_error](https://docs.rs/serde_path_to_error/0.1.20/serde_path_to_error/)。课程的公开投影、私有判分与发布语义校验尚未统一提供原文件行列定位；导入与发布 CLI 仍需先连接数据库。
 
-### 目录 release 操作
+### 管理员固定版本预览
+
+使用 `invite <email> <private-output-file> --operator` 建立内容管理员，邀请链接仍只写私有文件。登录后个人页显示“课程预览”，进入 `/author-preview` 输入已导入的课程 ID 和 revision。页面按课程步骤展示全部正文/教学内容与只读练习题面；点词、头像和正文朗读复用现有组件，不创建学习会话或提交答案。只有管理员可访问，开发 fixture 模式没有管理员身份入口。
+
+`GET /api/v1/operator/lessons/{id}/revisions/{revision}` 返回公开 DTO，允许已导入但未发布的 draft；不返回 editorial 或私有答案。图片 URL 改为该版本下的私有 media 路径，每次读取都验证当前 operator 身份与未撤回状态，只能读取该课程引用的素材。私有与公开媒体共用限量文件读取、路径 containment、SHA-256 校验及安全响应头；预览媒体独立限并发为 2。所有预览响应 private/no-store，退出、降权和撤回均使后续请求失去权限。
+
+当前实现是固定 revision 的内容预览，尚未提供整批 staging release 目录预览、题目交互判分预览或自动审校。线上发布仍通过 release-stage/release-activate。
+
+### 目录 release 命令
 
 `docs/examples/catalog.release.json` 展示显式等级/单元名称与课程 revision 的顺序。它引用未审校示例，正常 stage 会拒绝，不能作为正式发布包。生产模式没有 active release 时目录为空；迁移不自动把历史 published 记录当作审校并启用。
 

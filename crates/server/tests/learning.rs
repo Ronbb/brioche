@@ -320,15 +320,97 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         "explicit order beats lexical IDs"
     );
     let backend = Backend::new(db.clone()).await.unwrap();
-    let app = identity::router(
+    let app = identity::router_with_media_root(
         backend.clone(),
         CsrfPolicy::new(["http://localhost:5173".into()]).unwrap(),
         false,
+        media_root.clone(),
     );
     let mut a = Browser::new(app.clone()).await;
     a.account(&backend, "release-one@example.test").await;
     let mut b = Browser::new(app.clone()).await;
     b.account(&backend, "release-two@example.test").await;
+    let preview = "/api/v1/operator/lessons/release-draft/revisions/1";
+    let mut anonymous = Browser::new(app.clone()).await;
+    assert_eq!(anonymous.send("GET", preview, None, false).await.0, 401);
+    assert_eq!(a.send("GET", preview, None, true).await.0, 403);
+    let mut operator = Browser::new(app.clone()).await;
+    let token = backend
+        .issue_token("preview-operator@example.test", false, true)
+        .await
+        .unwrap();
+    assert_eq!(operator.send("POST", "/api/v1/auth/accept-invite", Some(json!({"email":"preview-operator@example.test","token":token,"password":"isolated operator test passphrase","displayName":"Operator"})), true).await.0,200);
+    let before_preview = count(&db, "learning_sessions").await;
+    let (status, draft) = operator.send("GET", preview, None, true).await;
+    assert_eq!(status, 200);
+    assert_eq!(draft["id"], "release-draft");
+    for key in [
+        "serverOnly",
+        "editorial",
+        "accepted",
+        "correctOptionId",
+        "correctTokenIds",
+    ] {
+        assert!(!draft.to_string().contains(key));
+    }
+    let preview_media = draft["media"][0]["url"].as_str().unwrap();
+    assert!(preview_media.starts_with(preview));
+    assert_eq!(
+        anonymous.send("GET", preview_media, None, false).await.0,
+        401
+    );
+    assert_eq!(a.send("GET", preview_media, None, true).await.0, 403);
+    assert_eq!(operator.send("GET", preview_media, None, true).await.0, 200);
+    assert_eq!(
+        operator
+            .send(
+                "GET",
+                &format!("{preview}/media/{}.svg", "0".repeat(64)),
+                None,
+                true
+            )
+            .await
+            .0,
+        404
+    );
+    assert_eq!(
+        operator
+            .send(
+                "GET",
+                "/api/v1/operator/lessons/missing/revisions/1",
+                None,
+                true
+            )
+            .await
+            .0,
+        404
+    );
+    assert_eq!(
+        operator
+            .send(
+                "GET",
+                "/api/v1/operator/lessons/release-z/revisions/0",
+                None,
+                true
+            )
+            .await
+            .0,
+        400
+    );
+    assert_eq!(count(&db, "learning_sessions").await, before_preview);
+    db.execute_raw(Statement::from_string(
+        DbBackend::Postgres,
+        "UPDATE users SET role='learner' WHERE email='preview-operator@example.test'",
+    ))
+    .await
+    .unwrap();
+    assert_eq!(operator.send("GET", preview, None, true).await.0, 403);
+    db.execute_raw(Statement::from_string(
+        DbBackend::Postgres,
+        "UPDATE users SET role='operator' WHERE email='preview-operator@example.test'",
+    ))
+    .await
+    .unwrap();
     let (_, old) = a
         .send(
             "POST",
@@ -511,6 +593,26 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         5
     );
     assert_eq!(b.send("GET", &new_path, None, true).await.0, 410);
+    assert_eq!(
+        operator
+            .send(
+                "GET",
+                "/api/v1/operator/lessons/release-z/revisions/2",
+                None,
+                true
+            )
+            .await
+            .0,
+        410
+    );
+    let withdrawn_media = format!(
+        "/api/v1/operator/lessons/release-z/revisions/2/media/{}",
+        preview_media.rsplit('/').next().unwrap()
+    );
+    assert_eq!(
+        operator.send("GET", &withdrawn_media, None, true).await.0,
+        410
+    );
     let response = public_app
         .clone()
         .oneshot(

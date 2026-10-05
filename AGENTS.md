@@ -2,7 +2,7 @@
 
 ## 项目阶段与阅读顺序
 
-当前进入工程开发，已有 React Router SSR Web、Rust 课程读取/判分 API、邀请认证、跨设备个人设置、固定版本学习提交/续学与 SeaORM 迁移。先读 `docs/README.md`、`docs/08-development.md` 和 `docs/09-implementation-tracker.md`，再按任务读对应文档。已有账号复习排程、收藏、实际学习概览、目录 release 的原子切换/回滚/硬撤回及视觉素材/角色库发布校验；录音媒体与 staging 预览仍待实现，不要把计划或设计稿当成已实现功能。
+当前进入工程开发，已有 React Router SSR Web、Rust 课程读取/判分 API、邀请认证、跨设备个人设置、固定版本学习提交/续学与 SeaORM 迁移。先读 `docs/README.md`、`docs/08-development.md` 和 `docs/09-implementation-tracker.md`，再按任务读对应文档。已有账号复习排程、收藏、实际学习概览、目录 release 的原子切换/回滚/硬撤回、视觉素材/角色库发布校验与管理员固定 revision 预览；录音媒体及整批 staging 目录预览仍待实现，不要把计划或设计稿当成已实现功能。
 
 若存在 `AGENTS.local.md`，也读取它；它是本机补充资料，应被显式读取，不假定工具自动加载。用户当次指令和已确认偏好优先于这里的约定。
 
@@ -41,6 +41,7 @@
 - 改关键设计同步更新 docs 与决策记录，标明事实、建议、待验证项。
 - 课程先结构/语义校验，再预览与人工审校；结构通过不表示教学内容正确。
 - 作者文件先运行 `cargo run -p brioche-server -- check <lesson.json>` 或 `check-release <manifest.json>`，不要求数据库。它们检查结构与本地引用/判分一致性，不替代素材登记、授权、人工审校或 release-stage 的数据库发布校验。
+- `/author-preview` 仅供 operator 查看已导入固定 revision；私有媒体也必须经过当前管理员身份与撤回检查。不得把预览素材放到公开路由、返回私有答案或以预览创建真实学习进度。
 - 权限、判分、事务、幂等、版本与恢复做风险对应的验证；文档/低风险样式不添加无意义测试。
 - 实际命令：`pnpm dev:api`、`pnpm dev:web`、`pnpm contracts`、`pnpm typecheck`、`pnpm build`；Rust 使用 cargo fmt/check/clippy/test。PostgreSQL 集成测试显式设置专用 `TEST_DATABASE_URL` 后运行，禁止指向生产。TS 7 类型检查不能用 Vite build 代替。
 - 不自行修改用户 DNS/路由器或执行生产上线；按相应任务的授权范围工作。
