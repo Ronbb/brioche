@@ -85,11 +85,7 @@ fn text(value: &str) -> bool {
 }
 impl ReleaseManifest {
     pub fn deserialize_file(path: &str) -> anyhow::Result<Self> {
-        let file = std::fs::File::open(path)?;
-        if file.metadata()?.len() > 2 * 1024 * 1024 {
-            anyhow::bail!("release manifest exceeds 2 MiB");
-        }
-        Ok(serde_json::from_reader(file)?)
+        crate::author_json::load(path)
     }
     pub fn validate(&self) -> Result<(), AppError> {
         if !identifier(&self.id) || self.schema_version != "1.0" || self.levels.len() > 20 {

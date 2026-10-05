@@ -43,11 +43,7 @@ async fn main() -> Result<()> {
             if args.len() != 3 {
                 bail!("usage: assets-import <bundle.json> <source-directory> <actor>");
             }
-            let bytes = std::fs::read(&args[0])?;
-            if bytes.len() > 2 * 1024 * 1024 {
-                bail!("asset bundle exceeds 2 MiB");
-            }
-            let bundle = serde_json::from_slice(&bytes)?;
+            let bundle = brioche_server::author_json::load(&args[0])?;
             brioche_server::media::import_bundle(
                 db.as_ref().unwrap(),
                 bundle,
@@ -139,7 +135,7 @@ async fn main() -> Result<()> {
             let file = std::env::args()
                 .nth(2)
                 .context("usage: brioche-server import <lesson.json>")?;
-            let source: serde_json::Value = serde_json::from_slice(&std::fs::read(file)?)?;
+            let source: serde_json::Value = brioche_server::author_json::load(&file)?;
             let source =
                 brioche_server::media::hydrate_source(db.as_ref().unwrap(), source).await?;
             let publish = std::env::args().any(|arg| arg == "--publish");

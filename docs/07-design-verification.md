@@ -202,3 +202,9 @@
 - 请求观测统一包围合并后的 API；响应生成新的 X-Request-Id，忽略客户端 ID。单元测试检查 400/404/413、唯一 ID、route template、duration_ms，并确认路径参数/query/body/cookie/Authorization/外部 ID 不出现在捕获日志中。
 - workspace clippy 与 20 项契约/服务端单元测试通过。数据库集成测试本轮未重跑：没有修改数据库、权限或写入规则。实际 API health 返回 200 与 32 位 hex ID，客户端 ID 未沿用，开发 Web 首页 200。
 - Docker local logging 插件存在；Compose config 确认五个服务均有 10m × 3 日志限制。未实际部署或进行磁盘轮换/告警演练。
+
+## 2026-10-06：作者 JSON 文件边界与错误定位
+
+- 课程、素材与 release 文件统一限量读取；不再依赖读完整文件后检查大小或仅检查 metadata。所有嵌套对象拒绝重复成员，包括 Unicode 转义后相同的键，并报告转义后的 JSON Pointer 与原文件行列。
+- 五项新增测试覆盖数组内重复字段、Pointer 转义、Unicode 别名、独立对象同名合法、无效 UTF-8、尾随文档、递归限制、数值类型、实际超大文件、文件名、清单类型错误的字段路径/原行列和三个现有示例可读取。
+- workspace 的 25 项契约/服务端单元测试和 all-targets clippy 通过；数据库集成测试按默认规则忽略，本轮未修改事务或数据库。完整课程 Schema、语义错误的原文件定位与数据库无关的检查命令仍待补齐。

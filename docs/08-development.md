@@ -51,6 +51,8 @@ cargo run -p brioche-server -- import docs/examples/a1-bakery.lesson.json
 
 导入始终创建不可见 revision；旧的 `--publish` 参数被明确拒绝，改用目录 release 原子发布。本示例未审校，禁止为测试上线而直接改状态。相同 `(lesson_id, revision)` 重复导入失败，数据库触发器也拒绝改写或删除已有正文/私有答案；审校后重新导入需要新 revision。
 
+`import`、`assets-import` 与 `release-stage` 共用严格 JSON 文件读取：实际读取最多 2 MiB + 1 字节，超过 2 MiB 拒绝；所有层级的重复字段、尾随第二个文档、无效 UTF-8 和过深嵌套均拒绝。错误链包含输入文件名及 JSON 行列；重复字段显示 JSON Pointer（例如 `/steps/0/id`），素材/发布清单类型错误显示字段路径。类型定位使用 [serde_path_to_error](https://docs.rs/serde_path_to_error/0.1.20/serde_path_to_error/)。课程的公开投影、私有判分与发布语义校验仍在后续阶段执行，尚未统一提供原文件行列定位；CLI 当前仍需先连接数据库。
+
 ### 目录 release 操作
 
 `docs/examples/catalog.release.json` 展示显式等级/单元名称与课程 revision 的顺序。它引用未审校示例，正常 stage 会拒绝，不能作为正式发布包。生产模式没有 active release 时目录为空；迁移不自动把历史 published 记录当作审校并启用。

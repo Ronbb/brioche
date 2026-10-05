@@ -1,3 +1,4 @@
+pub mod author_json;
 pub mod content;
 pub mod csrf;
 pub mod dashboard;
