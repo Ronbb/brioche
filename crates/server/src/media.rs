@@ -497,6 +497,10 @@ pub async fn validate_lesson<C: ConnectionTrait>(
     lesson: &PublicLesson,
     root: &Path,
 ) -> Result<(), AppError> {
+    // Audio publication stays closed until registered recordings and file validation are wired.
+    if !lesson.audio.is_empty() || !lesson.audio_tracks.is_empty() {
+        return Err(AppError::InvalidInput);
+    }
     let mut ids = BTreeSet::new();
     for asset in &lesson.media {
         if !ids.insert(&asset.asset_id) || asset.revision == 0 || asset.revision > i32::MAX as u32 {

@@ -18,6 +18,129 @@
       ],
       "type": "object"
     },
+    "AudioAsset": {
+      "additionalProperties": false,
+      "properties": {
+        "assetId": {
+          "type": "string"
+        },
+        "creditZh": {
+          "type": "string"
+        },
+        "durationMs": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "mimeType": {
+          "type": "string"
+        },
+        "revision": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "assetId",
+        "revision",
+        "sha256",
+        "mimeType",
+        "durationMs",
+        "creditZh",
+        "url"
+      ],
+      "type": "object"
+    },
+    "AudioCue": {
+      "additionalProperties": false,
+      "properties": {
+        "endMs": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "entryId": {
+          "type": "string"
+        },
+        "segmentId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "startMs": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "wordRange": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AudioWordRange"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "entryId",
+        "startMs",
+        "endMs"
+      ],
+      "type": "object"
+    },
+    "AudioTrack": {
+      "additionalProperties": false,
+      "properties": {
+        "assetId": {
+          "type": "string"
+        },
+        "blockId": {
+          "type": "string"
+        },
+        "cues": {
+          "items": {
+            "$ref": "#/$defs/AudioCue"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "blockId",
+        "assetId",
+        "cues"
+      ],
+      "type": "object"
+    },
+    "AudioWordRange": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "start": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "type": "object"
+    },
     "Block": {
       "oneOf": [
         {
@@ -852,6 +975,18 @@
       "default": [],
       "items": {
         "$ref": "#/$defs/AssetRef"
+      },
+      "type": "array"
+    },
+    "audio": {
+      "items": {
+        "$ref": "#/$defs/AudioAsset"
+      },
+      "type": "array"
+    },
+    "audioTracks": {
+      "items": {
+        "$ref": "#/$defs/AudioTrack"
       },
       "type": "array"
     },

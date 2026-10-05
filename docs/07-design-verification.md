@@ -247,3 +247,9 @@
 - network route abort 的尝试未得到故障证据，移除拦截后改用页面 fetch 包装仅拒绝 grade 请求。失败后 une 保留、提交重新可用，toast 显示中文；修复此前直接显示浏览器技术错误的行为。恢复原 fetch 后原答案判分成功。标签页仅有 react-router-scroll-positions，无预览草稿；SQL 核对 learning_sessions=0、exercise_attempts=0。
 - 刷新清空答案与反馈，退出登录后直接打开预览被拒绝。320/390/768/1440 的 DOM/body 宽度等于 viewport，未发现横向越界元素；查看 390 宽度目录与题目截图（本机 .local/preview-qa），基础 Tab 焦点有 solid outline，reduced-motion 媒体模拟生效。这不是完整键盘/屏幕阅读器/iPhone 实机验收。
 - 已关闭隔离浏览器、3003/5175 测试进程及临时 PostgreSQL 容器；用户 3001/5173 开发服务保留。TS 7 与 Web/SSR 构建通过。真实私有图片、跨标签退出与迟到响应等完整浏览器流程仍需继续验收。
+
+## 2026-10-06：录音目标与时间轴契约
+
+- 新增 AudioAsset/AudioTrack/AudioCue/AudioWordRange 及可选课程字段；为空时不序列化，保持已有 public_document 与源投影一致性，不改写已发布 revision。音频 Schema/TS 与作者 Schema随契约导出生成。
+- 三项新增测试验证整句/语块/Unicode scalar 单词区间、emoji 偏移以及旧文档无音频字段。十二种负例覆盖错误时长/外部 URL/素材引用/正文引用、缺整句、时序重叠、重复目标、缺 segment、子区间越界、缺语块父区间、非正文 block 与未使用录音。
+- workspace 30 项契约/服务端单元测试、3 项 CLI 测试、all-targets clippy、契约生成与 TS 7 通过。没有运行新增 PostgreSQL 音频测试：尚无音频表或导入工具。含录音的发布暂时明确拒绝，实际文件时长/授权/媒体服务及播放器仍待实现，不宣称录音功能完成。

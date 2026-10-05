@@ -3,6 +3,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use ts_rs::TS;
+mod audio;
 mod validation;
 
 macro_rules! dto {
@@ -37,6 +38,22 @@ dto!(MediaAsset {
     credit_zh: String,
     url: String
 });
+dto!(AudioAsset {
+    asset_id: String,
+    revision: u32,
+    sha256: String,
+    mime_type: String,
+    duration_ms: u32,
+    credit_zh: String,
+    url: String
+});
+// Unicode scalar offsets within the referenced segment, never UTF-16 offsets.
+dto!(AudioWordRange {
+    start: u32,
+    end: u32
+});
+dto!(AudioCue { entry_id: String, segment_id: Option<String>, word_range: Option<AudioWordRange>, start_ms: u32, end_ms: u32 });
+dto!(AudioTrack { block_id: String, asset_id: String, cues: Vec<AudioCue> });
 dto!(Speaker {
     id: String,
     label_zh: String,
@@ -158,7 +175,9 @@ dto!(PublicLesson {
     schema_version: String, id: String, revision: u32, level_id: String, unit_id: String,
     title: Title, summary_zh: String, estimated_minutes: u32, objectives_zh: Vec<String>,
     knowledge: Knowledge, blocks: Vec<Block>, steps: Vec<Step>, completion: Completion,
-    review_item_ids: Vec<String>, cast: Vec<Character>, #[serde(default)] media: Vec<MediaAsset>
+    review_item_ids: Vec<String>, cast: Vec<Character>, #[serde(default)] media: Vec<MediaAsset>,
+    #[serde(default, skip_serializing_if="Vec::is_empty")] audio: Vec<AudioAsset>,
+    #[serde(default, skip_serializing_if="Vec::is_empty")] audio_tracks: Vec<AudioTrack>
 });
 dto!(LessonSummary {
     id: String,
@@ -514,7 +533,8 @@ impl PublicLesson {
         {
             return Err("unknown completion reference".into());
         }
-        self.validate_flow()
+        self.validate_flow()?;
+        self.validate_audio()
     }
 }
 

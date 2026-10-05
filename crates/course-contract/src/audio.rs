@@ -1,0 +1,265 @@
+use crate::{AudioCue, Block, PublicLesson, Segment};
+use std::collections::{BTreeMap, BTreeSet};
+
+impl PublicLesson {
+    pub(crate) fn validate_audio(&self) -> Result<(), String> {
+        if self.audio.len() > 500 || self.audio_tracks.len() > self.blocks.len() {
+            return Err("/audio: too many assets or tracks".into());
+        }
+        let mut assets = BTreeMap::new();
+        for (index, asset) in self.audio.iter().enumerate() {
+            let extension = match asset.mime_type.as_str() {
+                "audio/mpeg" => "mp3",
+                "audio/wav" => "wav",
+                _ => {
+                    return Err(format!(
+                        "/audio/{index}/mimeType: unsupported recording format"
+                    ));
+                }
+            };
+            if asset.asset_id.is_empty()
+                || asset.asset_id.len() > 100
+                || !asset
+                    .asset_id
+                    .bytes()
+                    .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_'))
+                || asset.revision == 0
+                || asset.revision > i32::MAX as u32
+                || asset.duration_ms == 0
+                || asset.duration_ms > 1_800_000
+                || asset.sha256.len() != 64
+                || !asset
+                    .sha256
+                    .bytes()
+                    .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+                || asset.url != format!("/api/audio/{}.{}", asset.sha256, extension)
+                || asset.credit_zh.trim().is_empty()
+                || asset.credit_zh.len() > 2000
+                || assets.insert(&asset.asset_id, asset).is_some()
+            {
+                return Err(format!(
+                    "/audio/{index}: invalid or duplicate recording descriptor"
+                ));
+            }
+        }
+        let mut blocks = BTreeSet::new();
+        let mut used_assets = BTreeSet::new();
+        for (index, track) in self.audio_tracks.iter().enumerate() {
+            let path = format!("/audioTracks/{index}");
+            if !blocks.insert(&track.block_id) || track.cues.is_empty() || track.cues.len() > 20_000
+            {
+                return Err(format!(
+                    "{path}: empty/oversized cues or duplicate block track"
+                ));
+            }
+            let asset = assets
+                .get(&track.asset_id)
+                .ok_or_else(|| format!("{path}/assetId: unknown recording"))?;
+            used_assets.insert(&track.asset_id);
+            let entries: Vec<(&String, &Vec<Segment>)> = match self
+                .blocks
+                .iter()
+                .find(|block| block.id() == track.block_id)
+            {
+                Some(Block::Dialogue { turns, .. }) => {
+                    turns.iter().map(|e| (&e.id, &e.segments)).collect()
+                }
+                Some(Block::Article { paragraphs, .. }) => {
+                    paragraphs.iter().map(|e| (&e.id, &e.segments)).collect()
+                }
+                _ => {
+                    return Err(format!(
+                        "{path}/blockId: recording requires a dialogue or article"
+                    ));
+                }
+            };
+            let mut targets = BTreeSet::new();
+            let mut whole = BTreeMap::new();
+            let mut segments = BTreeMap::new();
+            for (ci, cue) in track.cues.iter().enumerate() {
+                let cue_path = format!("{path}/cues/{ci}");
+                if cue.start_ms >= cue.end_ms || cue.end_ms > asset.duration_ms {
+                    return Err(format!("{cue_path}: interval outside recording duration"));
+                }
+                let (_, parts) = entries
+                    .iter()
+                    .find(|(id, _)| **id == cue.entry_id)
+                    .ok_or_else(|| format!("{cue_path}/entryId: unknown entry"))?;
+                let range = cue
+                    .word_range
+                    .as_ref()
+                    .map(|range| (range.start, range.end));
+                if !targets.insert((&cue.entry_id, &cue.segment_id, range)) {
+                    return Err(format!("{cue_path}: duplicate audio target"));
+                }
+                match (&cue.segment_id, &cue.word_range) {
+                    (None, None) => {
+                        whole.insert(&cue.entry_id, cue);
+                    }
+                    (Some(segment_id), word) => {
+                        let segment =
+                            parts.iter().find(|s| &s.id == segment_id).ok_or_else(|| {
+                                format!("{cue_path}/segmentId: segment does not belong to entry")
+                            })?;
+                        if let Some(word) = word {
+                            let chars: Vec<_> = segment.text.chars().collect();
+                            let (start, end) = (word.start as usize, word.end as usize);
+                            if start >= end
+                                || end > chars.len()
+                                || chars[start..end].iter().any(|c| c.is_whitespace())
+                                || !chars[start..end].iter().any(|c| c.is_alphanumeric())
+                                || (start > 0 && chars[start - 1].is_alphanumeric())
+                                || (end < chars.len() && chars[end].is_alphanumeric())
+                            {
+                                return Err(format!(
+                                    "{cue_path}/wordRange: invalid Unicode scalar word boundaries"
+                                ));
+                            }
+                        } else {
+                            segments.insert((&cue.entry_id, segment_id), cue);
+                        }
+                    }
+                    (None, Some(_)) => {
+                        return Err(format!("{cue_path}/wordRange: a word requires a segment"));
+                    }
+                }
+            }
+            let mut previous_end = 0;
+            for (id, _) in &entries {
+                let cue = whole
+                    .get(id)
+                    .ok_or_else(|| format!("{path}: missing whole-entry interval for {id}"))?;
+                if cue.start_ms < previous_end {
+                    return Err(format!(
+                        "{path}: whole-entry intervals overlap or disagree with reading order"
+                    ));
+                }
+                previous_end = cue.end_ms;
+            }
+            for cue in &track.cues {
+                let parent: &AudioCue = if cue.word_range.is_some() {
+                    segments
+                        .get(&(&cue.entry_id, cue.segment_id.as_ref().unwrap()))
+                        .copied()
+                        .ok_or_else(|| {
+                            format!("{path}: word interval requires a parent segment interval")
+                        })?
+                } else {
+                    whole.get(&cue.entry_id).copied().unwrap()
+                };
+                if cue.start_ms < parent.start_ms || cue.end_ms > parent.end_ms {
+                    return Err(format!("{path}: child interval outside parent interval"));
+                }
+            }
+        }
+        if used_assets.len() != assets.len() {
+            return Err("/audio: recording has no reading track".into());
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{AudioAsset, AudioTrack, AudioWordRange};
+    fn fixture() -> PublicLesson {
+        let mut lesson = crate::tests::fixture();
+        let Block::Dialogue { id, turns, .. } = &mut lesson.blocks[1] else {
+            panic!()
+        };
+        turns[0].segments[0].text = "🥐 Bonjour".into();
+        let mut cues: Vec<_> = turns
+            .iter()
+            .enumerate()
+            .map(|(i, e)| AudioCue {
+                entry_id: e.id.clone(),
+                segment_id: None,
+                word_range: None,
+                start_ms: i as u32 * 1000,
+                end_ms: (i as u32 + 1) * 1000,
+            })
+            .collect();
+        cues.push(AudioCue {
+            entry_id: turns[0].id.clone(),
+            segment_id: Some(turns[0].segments[0].id.clone()),
+            word_range: None,
+            start_ms: 100,
+            end_ms: 600,
+        });
+        cues.push(AudioCue {
+            entry_id: turns[0].id.clone(),
+            segment_id: Some(turns[0].segments[0].id.clone()),
+            word_range: Some(AudioWordRange { start: 2, end: 9 }),
+            start_ms: 200,
+            end_ms: 500,
+        });
+        lesson.audio_tracks = vec![AudioTrack {
+            block_id: id.clone(),
+            asset_id: "audio-bakery".into(),
+            cues,
+        }];
+        let sha = "a".repeat(64);
+        lesson.audio = vec![AudioAsset {
+            asset_id: "audio-bakery".into(),
+            revision: 1,
+            sha256: sha.clone(),
+            mime_type: "audio/mpeg".into(),
+            duration_ms: 10_000,
+            credit_zh: "Synthetic contract fixture; no recording file".into(),
+            url: format!("/api/audio/{sha}.mp3"),
+        }];
+        lesson
+    }
+    #[test]
+    fn validates_entry_segment_and_unicode_word_intervals() {
+        fixture().validate().unwrap();
+        let mut lesson = fixture();
+        lesson.audio_tracks[0]
+            .cues
+            .last_mut()
+            .unwrap()
+            .word_range
+            .as_mut()
+            .unwrap()
+            .end = 8;
+        assert!(lesson.validate().unwrap_err().contains("wordRange"));
+    }
+    #[test]
+    fn rejects_inconsistent_recordings_and_time_targets() {
+        for case in 0..12 {
+            let mut lesson = fixture();
+            match case {
+                0 => lesson.audio[0].duration_ms = 1,
+                1 => lesson.audio[0].url = "https://other.test/recording.mp3".into(),
+                2 => lesson.audio_tracks[0].asset_id = "missing".into(),
+                3 => lesson.audio_tracks[0].cues[0].entry_id = "missing".into(),
+                4 => {
+                    lesson.audio_tracks[0].cues.remove(0);
+                }
+                5 => lesson.audio_tracks[0].cues[1].start_ms = 0,
+                6 => {
+                    let cue = lesson.audio_tracks[0].cues[0].clone();
+                    lesson.audio_tracks[0].cues.push(cue);
+                }
+                7 => lesson.audio_tracks[0].cues.last_mut().unwrap().segment_id = None,
+                8 => lesson.audio_tracks[0].cues.last_mut().unwrap().end_ms = 700,
+                9 => {
+                    let i = lesson.audio_tracks[0].cues.len() - 2;
+                    lesson.audio_tracks[0].cues.remove(i);
+                }
+                10 => lesson.audio_tracks[0].block_id = lesson.blocks[0].id().into(),
+                11 => lesson.audio_tracks.clear(),
+                _ => unreachable!(),
+            }
+            assert!(lesson.validate().is_err(), "case {case}");
+        }
+    }
+    #[test]
+    fn empty_audio_preserves_existing_public_document_shape() {
+        let lesson = crate::tests::fixture();
+        let value = serde_json::to_value(lesson).unwrap();
+        assert!(value.get("audio").is_none());
+        assert!(value.get("audioTracks").is_none());
+    }
+}
