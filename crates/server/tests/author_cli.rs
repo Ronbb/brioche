@@ -141,6 +141,33 @@ fn semantic_and_projected_type_errors_point_into_original_author_source() {
         ("/completion/requiredStepIds/0".into(), "missing-step"),
         ("/revision".into(), "not-a-revision"),
         ("/editorial/status".into(), "unknown-status"),
+        ("/title/fr".into(), "\u{00a0}"),
+        ("/cast/0/speechLocale".into(), "invalid-speech-locale"),
+        ("/steps/0/kind".into(), "unsupported-flow-step"),
+        ("/steps/0/titleZh".into(), "\u{00a0}"),
+        (
+            format!("/blocks/{dialogue_index}/speakers/0/displayName"),
+            "unpinned-speaker-name",
+        ),
+        (
+            format!("/blocks/{dialogue_index}/speakers/0/avatarId"),
+            "unpinned-speaker-avatar",
+        ),
+        (
+            "/blocks/3/targets/0/blockId".into(),
+            "missing-reading-block",
+        ),
+        (
+            "/blocks/3/targets/0/entryId".into(),
+            "missing-reading-entry",
+        ),
+        (
+            "/blocks/3/targets/0/segmentId".into(),
+            "missing-reading-segment",
+        ),
+        ("/blocks/7/options/1/text".into(), "\u{00a0}"),
+        ("/blocks/8/templateFr".into(), "template-without-blank"),
+        ("/blocks/9/tokens/1/text".into(), "\u{00a0}"),
     ] {
         let mut source = original.clone();
         *source.pointer_mut(&pointer).unwrap() = serde_json::json!(marker);

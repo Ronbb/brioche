@@ -446,9 +446,13 @@ impl PublicLesson {
             .iter()
             .map(|v| v.id.as_str())
             .collect();
-        let cast: HashSet<_> = self.cast.iter().map(|v| v.character_id.as_str()).collect();
-        if cast.len() != self.cast.len() {
-            return Err("/cast: duplicate cast character".into());
+        let mut cast = HashSet::new();
+        for (index, character) in self.cast.iter().enumerate() {
+            if !cast.insert(character.character_id.as_str()) {
+                return Err(format!(
+                    "/cast/{index}/characterId: duplicate cast character"
+                ));
+            }
         }
         let check_segments = |segments: &[Segment], path: &str| -> Result<(), String> {
             for (index, s) in segments.iter().enumerate() {
@@ -471,9 +475,13 @@ impl PublicLesson {
                 Block::Dialogue {
                     speakers, turns, ..
                 } => {
-                    let speaker_ids: HashSet<_> = speakers.iter().map(|s| s.id.as_str()).collect();
-                    if speaker_ids.len() != speakers.len() {
-                        return Err(format!("/blocks/{bi}/speakers: duplicate speaker"));
+                    let mut speaker_ids = HashSet::new();
+                    for (index, speaker) in speakers.iter().enumerate() {
+                        if !speaker_ids.insert(speaker.id.as_str()) {
+                            return Err(format!(
+                                "/blocks/{bi}/speakers/{index}/id: duplicate speaker"
+                            ));
+                        }
                     }
                     for (si, s) in speakers.iter().enumerate() {
                         if !cast.contains(s.character_id.as_str()) {

@@ -313,3 +313,10 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 - 新增规则单元测试覆盖以上语义路径、~1/~0 key 转义、运行错误不暴露详细原因以及重复题目拒绝；两项目录测试覆盖无效字段、第二个重复课程/单元、限量和空目录兼容。新增 CLI 测试独立计算原文行列，核对正确选项、排序 token、Unicode 空白 accepted、release schema/课程 ID/revision 类型错误；语义私有规则诊断不回显测试答案值，仍在不可连接数据库 URL 下运行。
 - workspace 41 项单元测试、6 项 CLI 测试、fmt 与 all-targets clippy 通过。独立 PostgreSQL brioche_author_validation_qa（loopback 55439）实际运行两项 learning 集成测试，账号固定版本/所有权/幂等/完成与 release 原子切换/回滚/撤回通过；其他 PostgreSQL 测试未在本轮重跑。
 - 专用容器已删除，Windows CLI 构建后恢复 pnpm dev:api，3001 API 与 5173 Web 健康检查均为 200。部分正文流程仍只有 block 级位置，导入与发布 CLI 运行错误尚未全面映射源文件；作者工具维持部分验收。
+
+## 2026-10-06：正文流程字段定位
+
+- 正文流程语义错误从容器细化到原 JSON 字段：对话/短文的句子与语块 ID、空句子的 segments、角色固定快照的名称/头像、角色版本/语言、步骤类型/标题/块引用、题目 prompt/options/tokens/template，以及完成策略。重复角色、speaker 与其他数组引用指向第二次出现的项；不可达教学块指向其 id。练习采用实际扁平结构，路径不引入 exercise 层。
+- 解释目标按正文 block、句子、语块分别检查，以 HashSet 查找明确错误的 blockId/entryId/segmentId；保留原来的有效性要求，不执行作者代码或改动公共结构。
+- 新增表驱动测试覆盖 25 种字段/重复项错误，扩充真实 CLI 测试，独立按原 JSON 文本计算行列，覆盖角色快照、解释目标三级引用、步骤、空白文本和题目字段。命令使用不可达数据库地址，证明这些作者检查不依赖数据库。
+- Rust workspace 42 项单元测试、6 项 CLI 测试、fmt 与 all-targets clippy 通过；5 项 PostgreSQL 集成测试本轮保持 ignored，没有记为本轮数据库验收。API 构建后恢复，3001 API 与 5173 Web 健康检查均为 200。未修改 DTO/Schema、Web 或数据库结构；导入与发布 CLI 的运行错误位置映射仍未全面完成。

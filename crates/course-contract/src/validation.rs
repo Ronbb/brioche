@@ -1,35 +1,54 @@
 use crate::{Block, Exercise, PublicLesson};
 use std::collections::HashSet;
 
-fn unique<'a>(values: impl Iterator<Item = &'a str>, path: &str) -> Result<(), String> {
+fn unique<'a>(
+    values: impl Iterator<Item = &'a str>,
+    path: &str,
+    suffix: &str,
+) -> Result<(), String> {
     let mut seen = HashSet::new();
-    for value in values {
+    for (index, value) in values.enumerate() {
         if value.trim().is_empty() || !seen.insert(value) {
-            return Err(format!("{path}: empty or duplicate ID {value}"));
+            return Err(format!("{path}/{index}{suffix}: empty or duplicate ID"));
         }
+    }
+    Ok(())
+}
+fn nonempty(value: &str, path: &str) -> Result<(), String> {
+    if value.trim().is_empty() {
+        return Err(format!("{path}: expected nonempty text"));
     }
     Ok(())
 }
 impl PublicLesson {
     pub(crate) fn validate_flow(&self) -> Result<(), String> {
-        if self.id.trim().is_empty()
-            || self.level_id.trim().is_empty()
-            || self.unit_id.trim().is_empty()
-            || self.title.fr.trim().is_empty()
-            || self.title.zh.trim().is_empty()
-            || self.steps.is_empty()
-            || self.completion.strategy != "attempt-all"
-            || self.completion.required_step_ids.is_empty()
-        {
-            return Err("/: missing lesson metadata or unsupported completion policy".into());
+        for (value, path) in [
+            (self.id.as_str(), "/id"),
+            (self.level_id.as_str(), "/levelId"),
+            (self.unit_id.as_str(), "/unitId"),
+            (self.title.fr.as_str(), "/title/fr"),
+            (self.title.zh.as_str(), "/title/zh"),
+        ] {
+            nonempty(value, path)?;
+        }
+        if self.steps.is_empty() {
+            return Err("/steps: expected at least one step".into());
+        }
+        if self.completion.strategy != "attempt-all" {
+            return Err("/completion/strategy: unsupported completion policy".into());
+        }
+        if self.completion.required_step_ids.is_empty() {
+            return Err("/completion/requiredStepIds: expected at least one required step".into());
         }
         unique(
             self.review_item_ids.iter().map(String::as_str),
             "/reviewItemIds",
+            "",
         )?;
         unique(
             self.completion.required_step_ids.iter().map(String::as_str),
             "/completion/requiredStepIds",
+            "",
         )?;
         unique(
             self.completion
@@ -37,90 +56,127 @@ impl PublicLesson {
                 .iter()
                 .map(String::as_str),
             "/completion/requiredExerciseIds",
+            "",
         )?;
         let mut anchors = HashSet::new();
+        let mut reading_blocks = HashSet::new();
+        let mut reading_entries = HashSet::new();
         for (bi, block) in self.blocks.iter().enumerate() {
             let path = format!("/blocks/{bi}");
+            let mut entry_field = "";
             let entries: Vec<_> = match block {
                 Block::Dialogue {
                     turns, speakers, ..
                 } => {
-                    if turns.is_empty() || speakers.is_empty() {
-                        return Err(format!("{path}: empty dialogue"));
+                    entry_field = "turns";
+                    reading_blocks.insert(block.id());
+                    if turns.is_empty() {
+                        return Err(format!("{path}/turns: empty dialogue"));
                     }
-                    for speaker in speakers {
+                    if speakers.is_empty() {
+                        return Err(format!("{path}/speakers: empty dialogue"));
+                    }
+                    for (si, speaker) in speakers.iter().enumerate() {
                         let cast = self
                             .cast
                             .iter()
                             .find(|c| c.character_id == speaker.character_id)
-                            .ok_or_else(|| format!("{path}: unknown character"))?;
-                        if cast.display_name != speaker.display_name
-                            || cast.avatar_id != speaker.avatar_id
-                        {
-                            return Err(format!("{path}: speaker differs from pinned character"));
+                            .ok_or_else(|| {
+                                format!("{path}/speakers/{si}/characterId: unknown character")
+                            })?;
+                        if cast.display_name != speaker.display_name {
+                            return Err(format!(
+                                "{path}/speakers/{si}/displayName: speaker differs from pinned character"
+                            ));
+                        }
+                        if cast.avatar_id != speaker.avatar_id {
+                            return Err(format!(
+                                "{path}/speakers/{si}/avatarId: speaker differs from pinned character"
+                            ));
                         }
                     }
                     turns.iter().map(|e| (&e.id, &e.segments)).collect()
                 }
                 Block::Article { paragraphs, .. } => {
+                    entry_field = "paragraphs";
+                    reading_blocks.insert(block.id());
                     if paragraphs.is_empty() {
-                        return Err(format!("{path}: empty article"));
+                        return Err(format!("{path}/paragraphs: empty article"));
                     }
                     paragraphs.iter().map(|e| (&e.id, &e.segments)).collect()
                 }
                 Block::Exercise { exercise, .. } => {
                     match exercise {
                         Exercise::SingleChoice { prompt_zh, options } => {
-                            if prompt_zh.trim().is_empty()
-                                || options.len() < 2
-                                || options.iter().any(|o| o.text.trim().is_empty())
-                            {
-                                return Err(format!("{path}: invalid choice"));
+                            nonempty(prompt_zh, &format!("{path}/promptZh"))?;
+                            if options.len() < 2 {
+                                return Err(format!(
+                                    "{path}/options: choice needs at least two options"
+                                ));
                             }
-                            unique(options.iter().map(|o| o.id.as_str()), &path)?;
+                            for (i, option) in options.iter().enumerate() {
+                                nonempty(&option.text, &format!("{path}/options/{i}/text"))?;
+                            }
+                            unique(
+                                options.iter().map(|o| o.id.as_str()),
+                                &format!("{path}/options"),
+                                "/id",
+                            )?;
                         }
                         Exercise::Order { prompt_zh, tokens } => {
-                            if prompt_zh.trim().is_empty()
-                                || tokens.len() < 2
-                                || tokens.iter().any(|o| o.text.trim().is_empty())
-                            {
-                                return Err(format!("{path}: invalid order"));
+                            nonempty(prompt_zh, &format!("{path}/promptZh"))?;
+                            if tokens.len() < 2 {
+                                return Err(format!(
+                                    "{path}/tokens: order needs at least two tokens"
+                                ));
                             }
-                            unique(tokens.iter().map(|o| o.id.as_str()), &path)?;
+                            for (i, token) in tokens.iter().enumerate() {
+                                nonempty(&token.text, &format!("{path}/tokens/{i}/text"))?;
+                            }
+                            unique(
+                                tokens.iter().map(|o| o.id.as_str()),
+                                &format!("{path}/tokens"),
+                                "/id",
+                            )?;
                         }
                         Exercise::FillBlank {
                             prompt_zh,
                             template_fr,
                             ..
                         } => {
-                            if prompt_zh.trim().is_empty()
-                                || template_fr.matches("___").count() != 1
-                            {
-                                return Err(format!("{path}: fill-blank needs one blank"));
+                            nonempty(prompt_zh, &format!("{path}/promptZh"))?;
+                            if template_fr.matches("___").count() != 1 {
+                                return Err(format!(
+                                    "{path}/templateFr: fill-blank needs one blank"
+                                ));
                             }
                         }
                     }
                     vec![]
                 }
                 Block::Vocabulary { entry_ids, .. } | Block::Grammar { entry_ids, .. } => {
-                    unique(entry_ids.iter().map(String::as_str), &path)?;
+                    unique(
+                        entry_ids.iter().map(String::as_str),
+                        &format!("{path}/entryIds"),
+                        "",
+                    )?;
                     vec![]
                 }
                 _ => vec![],
             };
-            unique(entries.iter().map(|(id, _)| id.as_str()), &path)?;
-            for (id, segments) in entries {
-                if segments.is_empty()
-                    || segments
-                        .iter()
-                        .map(|s| s.text.as_str())
-                        .collect::<String>()
-                        .trim()
-                        .is_empty()
-                {
-                    return Err(format!("{path}: empty sentence"));
+            let entry_path = format!("{path}/{entry_field}");
+            unique(
+                entries.iter().map(|(id, _)| id.as_str()),
+                &entry_path,
+                "/id",
+            )?;
+            for (ei, (id, segments)) in entries.into_iter().enumerate() {
+                let segment_path = format!("{entry_path}/{ei}/segments");
+                if !segments.iter().any(|s| !s.text.trim().is_empty()) {
+                    return Err(format!("{segment_path}: empty sentence"));
                 }
-                unique(segments.iter().map(|s| s.id.as_str()), &path)?;
+                unique(segments.iter().map(|s| s.id.as_str()), &segment_path, "/id")?;
+                reading_entries.insert((block.id(), id.as_str()));
                 for segment in segments {
                     anchors.insert((block.id(), id.as_str(), segment.id.as_str()));
                 }
@@ -129,12 +185,25 @@ impl PublicLesson {
         for (bi, block) in self.blocks.iter().enumerate() {
             if let Block::Explanation { targets, .. } = block {
                 for (ti, target) in targets.iter().enumerate() {
-                    if !anchors.contains(&(
+                    let field = if !reading_blocks.contains(target.block_id.as_str()) {
+                        Some("blockId")
+                    } else if !reading_entries
+                        .contains(&(target.block_id.as_str(), target.entry_id.as_str()))
+                    {
+                        Some("entryId")
+                    } else if !anchors.contains(&(
                         target.block_id.as_str(),
                         target.entry_id.as_str(),
                         target.segment_id.as_str(),
                     )) {
-                        return Err(format!("/blocks/{bi}/targets/{ti}: unknown reading anchor"));
+                        Some("segmentId")
+                    } else {
+                        None
+                    };
+                    if let Some(field) = field {
+                        return Err(format!(
+                            "/blocks/{bi}/targets/{ti}/{field}: unknown reading anchor"
+                        ));
                     }
                 }
             }
@@ -144,32 +213,40 @@ impl PublicLesson {
             if !matches!(
                 step.kind.as_str(),
                 "discover" | "read" | "explore" | "practice" | "apply" | "recap"
-            ) || step.title_zh.trim().is_empty()
-                || step.block_ids.is_empty()
-            {
-                return Err(format!("/steps/{si}: invalid step"));
+            ) {
+                return Err(format!("/steps/{si}/kind: invalid step kind"));
+            }
+            nonempty(&step.title_zh, &format!("/steps/{si}/titleZh"))?;
+            if step.block_ids.is_empty() {
+                return Err(format!(
+                    "/steps/{si}/blockIds: step needs at least one block"
+                ));
             }
             unique(
                 step.block_ids.iter().map(String::as_str),
                 &format!("/steps/{si}/blockIds"),
+                "",
             )?;
             reachable.extend(step.block_ids.iter().map(String::as_str));
         }
-        if self.blocks.iter().any(|b| !reachable.contains(b.id())) {
-            return Err("/steps: unreachable teaching block".into());
+        if let Some(index) = self.blocks.iter().position(|b| !reachable.contains(b.id())) {
+            return Err(format!("/blocks/{index}/id: unreachable teaching block"));
         }
-        if self.cast.iter().any(|c| {
-            c.revision == 0
-                || c.display_name.trim().is_empty()
-                || c.avatar_id.trim().is_empty()
-                || !c.speech_locale.starts_with("fr")
-        }) {
-            return Err("/cast: invalid character snapshot".into());
+        for (ci, cast) in self.cast.iter().enumerate() {
+            if cast.revision == 0 {
+                return Err(format!("/cast/{ci}/revision: invalid character revision"));
+            }
+            nonempty(&cast.display_name, &format!("/cast/{ci}/displayName"))?;
+            nonempty(&cast.avatar_id, &format!("/cast/{ci}/avatarId"))?;
+            if !cast.speech_locale.starts_with("fr") {
+                return Err(format!(
+                    "/cast/{ci}/speechLocale: expected French speech locale"
+                ));
+            }
         }
         Ok(())
     }
 }
-
 #[cfg(test)]
 mod tests {
     use crate::*;
@@ -201,5 +278,125 @@ mod tests {
         let mut lesson = fixture();
         lesson.steps.retain(|s| s.kind != "explore");
         assert!(lesson.validate().unwrap_err().contains("unreachable"));
+    }
+
+    #[test]
+    fn reports_nested_flow_fields_and_duplicate_items() {
+        let original = serde_json::to_value(fixture()).unwrap();
+        let block = |kind: &str| {
+            original["blocks"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .position(|b| b["type"] == kind)
+                .unwrap()
+        };
+        let dialogue = block("dialogue");
+        let article = block("article");
+        let explanation = block("explanation");
+        let exercise = |kind: &str| {
+            original["blocks"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .position(|b| b["type"] == "exercise" && b["exerciseType"] == kind)
+                .unwrap()
+        };
+        let choice = exercise("single-choice");
+        let order = exercise("order");
+        let fill = exercise("fill-blank");
+        for (pointer, value) in [
+            ("/title/fr".into(), serde_json::json!("\u{00a0}")),
+            ("/completion/strategy".into(), serde_json::json!("unknown")),
+            (
+                "/completion/requiredStepIds/1".into(),
+                original["completion"]["requiredStepIds"][0].clone(),
+            ),
+            (
+                "/reviewItemIds/1".into(),
+                original["reviewItemIds"][0].clone(),
+            ),
+            (
+                "/cast/1/characterId".into(),
+                original["cast"][0]["characterId"].clone(),
+            ),
+            ("/cast/0/revision".into(), serde_json::json!(0)),
+            ("/cast/0/speechLocale".into(), serde_json::json!("en-US")),
+            (
+                format!("/blocks/{dialogue}/speakers/1/id"),
+                original["blocks"][dialogue]["speakers"][0]["id"].clone(),
+            ),
+            (
+                format!("/blocks/{dialogue}/speakers/0/displayName"),
+                serde_json::json!("mismatch"),
+            ),
+            (
+                format!("/blocks/{dialogue}/speakers/0/avatarId"),
+                serde_json::json!("mismatch"),
+            ),
+            (
+                format!("/blocks/{dialogue}/turns/1/id"),
+                original["blocks"][dialogue]["turns"][0]["id"].clone(),
+            ),
+            (
+                format!("/blocks/{article}/paragraphs/1/id"),
+                original["blocks"][article]["paragraphs"][0]["id"].clone(),
+            ),
+            (
+                format!("/blocks/{dialogue}/turns/0/segments/1/id"),
+                original["blocks"][dialogue]["turns"][0]["segments"][0]["id"].clone(),
+            ),
+            (
+                format!("/blocks/{article}/paragraphs/0/segments"),
+                serde_json::json!([]),
+            ),
+            (
+                format!("/blocks/{choice}/promptZh"),
+                serde_json::json!("\u{00a0}"),
+            ),
+            (
+                format!("/blocks/{choice}/options/1/id"),
+                original["blocks"][choice]["options"][0]["id"].clone(),
+            ),
+            (
+                format!("/blocks/{choice}/options/1/text"),
+                serde_json::json!("\u{00a0}"),
+            ),
+            (
+                format!("/blocks/{order}/tokens/1/id"),
+                original["blocks"][order]["tokens"][0]["id"].clone(),
+            ),
+            (
+                format!("/blocks/{order}/tokens/1/text"),
+                serde_json::json!("\u{00a0}"),
+            ),
+            (
+                format!("/blocks/{fill}/templateFr"),
+                serde_json::json!("No blank"),
+            ),
+            (
+                format!("/blocks/{explanation}/targets/0/blockId"),
+                serde_json::json!("missing"),
+            ),
+            (
+                format!("/blocks/{explanation}/targets/0/entryId"),
+                serde_json::json!("missing"),
+            ),
+            (
+                format!("/blocks/{explanation}/targets/0/segmentId"),
+                serde_json::json!("missing"),
+            ),
+            ("/steps/0/kind".into(), serde_json::json!("unknown")),
+            ("/steps/0/titleZh".into(), serde_json::json!("\u{00a0}")),
+        ] {
+            let mut source = original.clone();
+            *source.pointer_mut(&pointer).unwrap() = value;
+            let lesson: PublicLesson = serde_json::from_value(source).unwrap();
+            let error = lesson.validate().unwrap_err();
+            assert!(
+                error.starts_with(&format!("{pointer}:")),
+                "{pointer}: {error}"
+            );
+        }
     }
 }
