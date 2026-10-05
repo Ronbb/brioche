@@ -44,8 +44,13 @@ async fn main() -> Result<()> {
         }
         let path = &args[0];
         if command == "check-release" {
-            let manifest = brioche_server::content::ReleaseManifest::deserialize_file(path)?;
-            manifest.validate().map_err(|_| anyhow::anyhow!("{path}: invalid directory IDs, revisions, schema version or duplicate references"))?;
+            let document = brioche_server::author_json::Document::load(path)?;
+            let manifest: brioche_server::content::ReleaseManifest =
+                brioche_server::author_json::from_value(document.value.clone(), "")
+                    .map_err(|error| document.semantic(error))?;
+            manifest
+                .validate_author()
+                .map_err(|error| document.semantic(error))?;
         } else {
             let document = brioche_server::author_json::Document::load(path)?;
             let source = &document.value;
@@ -55,12 +60,9 @@ async fn main() -> Result<()> {
                 .map_err(|error| document.semantic(error))?;
             let lesson =
                 project_source(source.clone()).map_err(|error| document.semantic(error))?;
-            brioche_server::grading::Grader::from_source(&lesson, source).map_err(|_| {
-                document.diagnostic(
-                    "/serverOnly/grading",
-                    "serverOnly.grading: invalid or inconsistent private grading rules",
-                )
-            })?;
+            brioche_server::grading::Grader::from_author_source(&lesson, source)
+                .map_err(|error| document.semantic(error))
+                .context("serverOnly.grading: invalid or inconsistent private grading rules")?;
         }
         println!(
             "Structural checks passed. Publication still requires registered media, editorial review and release-stage validation."

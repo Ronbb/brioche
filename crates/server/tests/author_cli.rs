@@ -198,3 +198,71 @@ fn semantic_and_projected_type_errors_point_into_original_author_source() {
     assert!(error.contains("interval outside recording duration"));
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn private_rules_and_release_semantics_report_exact_source_fields() {
+    let path = std::env::temp_dir().join(format!("brioche-author-rules-{}.json", random_id()));
+    let lesson = brioche_server::development_source().unwrap();
+    let release: serde_json::Value =
+        serde_json::from_str(include_str!("../../../docs/examples/catalog.release.json")).unwrap();
+    for (command, original, pointer, marker) in [
+        (
+            "check",
+            &lesson,
+            "/serverOnly/grading/exercise-intention/correctOptionId",
+            "private-unknown-option",
+        ),
+        (
+            "check",
+            &lesson,
+            "/serverOnly/grading/exercise-order/correctTokenIds/1",
+            "private-unknown-token",
+        ),
+        (
+            "check",
+            &lesson,
+            "/serverOnly/grading/exercise-article/accepted/0",
+            "\u{00a0}",
+        ),
+        (
+            "check-release",
+            &release,
+            "/schemaVersion",
+            "unsupported-release-version",
+        ),
+        (
+            "check-release",
+            &release,
+            "/levels/0/units/0/lessons/0/lessonId",
+            "invalid lesson reference",
+        ),
+        (
+            "check-release",
+            &release,
+            "/levels/0/units/0/lessons/0/revision",
+            "invalid-release-revision",
+        ),
+    ] {
+        let mut source = original.clone();
+        *source.pointer_mut(pointer).unwrap() = serde_json::json!(marker);
+        let text = serde_json::to_string_pretty(&source).unwrap();
+        std::fs::write(&path, &text).unwrap();
+        let token = serde_json::to_string(marker).unwrap();
+        let offset = text.find(&token).unwrap();
+        let before = &text[..offset];
+        let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+        let output = run(command, &path);
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success());
+        assert!(
+            error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
+            "{error}"
+        );
+        if command == "check" {
+            assert!(!error.contains(marker));
+        }
+        assert!(!error.contains("database connection"));
+    }
+    std::fs::remove_file(path).unwrap();
+}

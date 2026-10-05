@@ -305,3 +305,11 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 - 三项新增索引测试覆盖 CRLF/Unicode 列、转义引号/括号、Unicode 转义 key 与 ~1/~0、嵌套数组、根 primitive/空容器、最近父值、实际索引值与严格 JSON 结果一致，以及 100000 上限。
 - 新增 CLI 测试用例分别修改正文锚点、步骤块、复习知识、完成步骤、revision 类型、editorial status、audioRefs revision，并独立由原文本计算行列核对 stderr；另外构造超出录音时长的 cue，确认 `/audioTracks/0/cues/0` 与原容器行列。CLI 使用不可连接的数据库 URL，验证失败发生于离线检查。
 - Rust workspace 38 项单元测试、5 项 CLI 测试、fmt 与 all-targets clippy 通过；5 项 PostgreSQL 测试保持显式 ignored，本轮未运行，不算数据库验收。未变更公共 DTO/Schema、Web 或数据库结构。Windows 编译 CLI 时暂时停止持有二进制的本机 API，完成后通过 pnpm dev:api 恢复；完整 release/私有判分规则/部分 block 内语义位置继续补齐。
+
+## 2026-10-06：私有规则与目录语义定位
+
+- Grader 新增 author-only 的详细诊断入口，实际规则校验只实现一次，原 from_source 将错误转换为不透明 GradeError::InvalidContent。定位覆盖缺失/多余规则、kind 不匹配、空反馈、无效正确选项、空 accepted/无效单项、排序数量/未知或重复 token；规则 key 使用 JSON pointer 转义，拒绝重复题目 ID。排序规则检查保持 HashSet 线性查找，不引入逐 token 扫描全表。
+- ReleaseManifest 的离线/运行校验同样共用：原 validate 保持 AppError::InvalidInput，author 路径输出 root/level/unit/lesson 的 ID、标题、版本、重复与限量位置。空 release 仍允许；最多 20 个等级、5000 个课程引用及原有标识符/文本/revision 限制保持。check-release 接入原文位置索引，未变更清单序列化、源内容哈希、数据库或公共契约。
+- 新增规则单元测试覆盖以上语义路径、~1/~0 key 转义、运行错误不暴露详细原因以及重复题目拒绝；两项目录测试覆盖无效字段、第二个重复课程/单元、限量和空目录兼容。新增 CLI 测试独立计算原文行列，核对正确选项、排序 token、Unicode 空白 accepted、release schema/课程 ID/revision 类型错误；语义私有规则诊断不回显测试答案值，仍在不可连接数据库 URL 下运行。
+- workspace 41 项单元测试、6 项 CLI 测试、fmt 与 all-targets clippy 通过。独立 PostgreSQL brioche_author_validation_qa（loopback 55439）实际运行两项 learning 集成测试，账号固定版本/所有权/幂等/完成与 release 原子切换/回滚/撤回通过；其他 PostgreSQL 测试未在本轮重跑。
+- 专用容器已删除，Windows CLI 构建后恢复 pnpm dev:api，3001 API 与 5173 Web 健康检查均为 200。部分正文流程仍只有 block 级位置，导入与发布 CLI 运行错误尚未全面映射源文件；作者工具维持部分验收。

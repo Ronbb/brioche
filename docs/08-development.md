@@ -21,7 +21,7 @@
 
 ## 本机开发
 
-作者课程 `check <lesson.json>` 现在保留原 JSON 的位置索引，类型错误与带 JSON pointer 的语义错误输出 `文件:行:列: /字段/路径: 原因`。行/列从 1 开始，列按原文件 Unicode 字符计数，CRLF、转义键与数组索引均保留；定位在投影之前建立，不使用重序列化课程的行号。没有对应字段时定位最近存在的父值，私有判分不一致目前定位 `/serverOnly/grading` 集合。严格 JSON/重复字段/2 MiB 限制保持；离线课程位置索引最多 100000 个值。部分流程校验仍指向整个 block、release 语义与逐条私有规则定位继续补齐，不表示作者工具全部完成。
+作者课程 `check <lesson.json>` 与目录 `check-release <manifest.json>` 保留原 JSON 的位置索引，类型错误与带 JSON pointer 的语义错误输出 `文件:行:列: /字段/路径: 原因`。行/列从 1 开始，列按原文件 Unicode 字符计数，CRLF、转义键与数组索引均保留；定位在投影之前建立，不使用重序列化课程的行号。没有对应字段时定位最近存在的父值；私有规则支持缺失/多余规则、kind、反馈、选项引用、accepted 项与排序 token 项的路径，release 支持各层 ID/名称/版本/重复引用与数量上限路径。严格 JSON/重复字段/2 MiB 限制保持；离线课程位置索引最多 100000 个值。部分正文流程校验仍指向整个 block，仍需进一步细化，不表示作者工具全部完成。
 
 录音文件可先运行数据库无关的检查：
 
@@ -75,7 +75,7 @@ cargo run -p brioche-server -- check docs/examples/a1-bakery.lesson.json
 cargo run -p brioche-server -- check-release docs/examples/catalog.release.json
 ```
 
-`check` 使用实际公共 DTO、课程引用/步骤校验及服务端私有判分校验，另检查素材引用 ID、revision 和重复引用；`check-release` 校验目录清单结构及 ID、revision、重复引用。两者不连接数据库、不写入内容，也不验证数据库中的素材是否存在或已授权、目录引用的课程是否存在及人工审校是否完成。成功明确提示后续仍需媒体登记、审校和 release-stage；CI 运行两份示例的检查。公共投影类型错误显示字段路径，尚不提供源文件行列；私有判分错误保持通用提示，不输出答案。
+`check` 使用实际公共 DTO、课程引用/步骤校验及服务端私有判分校验，另检查素材引用 ID、revision 和重复引用；`check-release` 校验目录清单结构及 ID、revision、重复引用。两者不连接数据库、不写入内容，也不验证数据库中的素材是否存在或已授权、目录引用的课程是否存在及人工审校是否完成。成功明确提示后续仍需媒体登记、审校和 release-stage；CI 运行两份示例的检查。公共投影类型、课程语义、私有判分与目录语义错误显示原文件行列和字段路径；私有规则的语义诊断描述原因，不回显接受答案或正确选项值。HTTP 判分/发布调用仍转换为原有通用错误，不返回作者诊断。
 
 `editorial` 是必需的严格作者信息：status 仅接受 draft/reviewed，note 必需且非空、最多 8000 UTF-8 字节，拒绝未知字段及控制字符（允许换行/制表符）。课程检查、导入、release-stage 共用该校验，发布仅接受 reviewed；该状态是作者声明，不构成人工审校真实性的自动证明。
 
@@ -90,7 +90,7 @@ cargo run -p brioche-server -- import docs/examples/a1-bakery.lesson.json
 
 导入始终创建不可见 revision；旧的 `--publish` 参数被明确拒绝，改用目录 release 原子发布。本示例未审校，禁止为测试上线而直接改状态。相同 `(lesson_id, revision)` 重复导入失败，数据库触发器也拒绝改写或删除已有正文/私有答案；审校后重新导入需要新 revision。
 
-`check`、`check-release`、`import`、`assets-import` 与 `release-stage` 共用严格 JSON 文件读取：实际读取最多 2 MiB + 1 字节，超过 2 MiB 拒绝；所有层级的重复字段、尾随第二个文档、无效 UTF-8 和过深嵌套均拒绝。错误链包含输入文件名及 JSON 行列；重复字段显示 JSON Pointer（例如 `/steps/0/id`），素材/发布清单类型错误显示字段路径。类型定位使用 [serde_path_to_error](https://docs.rs/serde_path_to_error/0.1.20/serde_path_to_error/)。课程的公开投影、私有判分与发布语义校验尚未统一提供原文件行列定位；导入与发布 CLI 仍需先连接数据库。
+`check`、`check-release`、`import`、`assets-import` 与 `release-stage` 共用严格 JSON 文件读取：实际读取最多 2 MiB + 1 字节，超过 2 MiB 拒绝；所有层级的重复字段、尾随第二个文档、无效 UTF-8 和过深嵌套均拒绝。错误链包含输入文件名及 JSON 行列；重复字段显示 JSON Pointer（例如 `/steps/0/id`），素材/发布清单类型错误显示字段路径。类型定位使用 [serde_path_to_error](https://docs.rs/serde_path_to_error/0.1.20/serde_path_to_error/)。`check`/`check-release` 的公开投影、私有判分与目录语义校验已接入原文件位置索引；导入与发布 CLI 仍需先连接数据库，其运行错误尚未全面接入位置索引。
 
 ### 管理员固定版本预览
 

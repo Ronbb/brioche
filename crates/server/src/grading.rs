@@ -62,74 +62,117 @@ impl Grader {
         lesson: &PublicLesson,
         source: &serde_json::Value,
     ) -> Result<Self, GradeError> {
-        let rules: PrivateRules = serde_json::from_value(
+        Self::from_author_source(lesson, source).map_err(|_| GradeError::InvalidContent)
+    }
+
+    /// Author-only diagnostics. HTTP handlers continue using the opaque GradeError.
+    pub fn from_author_source(
+        lesson: &PublicLesson,
+        source: &serde_json::Value,
+    ) -> anyhow::Result<Self> {
+        use anyhow::{Context, bail, ensure};
+        let rules: PrivateRules = crate::author_json::from_value(
             source
                 .get("serverOnly")
                 .cloned()
-                .ok_or(GradeError::InvalidContent)?,
-        )
-        .map_err(|_| GradeError::InvalidContent)?;
-        let exercises: Vec<_> = lesson
-            .blocks
-            .iter()
-            .filter_map(|block| match block {
-                Block::Exercise { id, exercise } => Some((id, exercise)),
-                _ => None,
-            })
-            .collect();
-        if exercises.len() != rules.grading.len() {
-            return Err(GradeError::InvalidContent);
+                .context("/serverOnly: missing private rules")?,
+            "/serverOnly",
+        )?;
+        let mut exercises = BTreeMap::new();
+        for (index, block) in lesson.blocks.iter().enumerate() {
+            if let Block::Exercise { id, exercise } = block {
+                ensure!(
+                    exercises.insert(id, exercise).is_none(),
+                    "/blocks/{index}/id: duplicate exercise ID"
+                );
+            }
+        }
+        let path = |id: &str| {
+            format!(
+                "/serverOnly/grading/{}",
+                id.replace('~', "~0").replace('/', "~1")
+            )
+        };
+        for id in rules.grading.keys() {
+            ensure!(
+                exercises.contains_key(id),
+                "{}: rule references unknown exercise",
+                path(id)
+            );
         }
         for (id, exercise) in exercises {
-            let valid = match (exercise, rules.grading.get(id)) {
+            let pointer = path(id);
+            let rule = rules
+                .grading
+                .get(id)
+                .with_context(|| format!("{pointer}: missing grading rule"))?;
+            let feedback = match rule {
+                Rule::Choice { feedback_zh, .. }
+                | Rule::Text { feedback_zh, .. }
+                | Rule::Order { feedback_zh, .. } => feedback_zh,
+            };
+            ensure!(
+                !feedback.trim().is_empty(),
+                "{pointer}/feedbackZh: expected nonempty feedback"
+            );
+            match (exercise, rule) {
                 (
                     Exercise::SingleChoice { options, .. },
-                    Some(Rule::Choice {
-                        correct_option_id,
-                        feedback_zh,
-                    }),
+                    Rule::Choice {
+                        correct_option_id, ..
+                    },
                 ) => {
-                    !feedback_zh.trim().is_empty()
-                        && options.iter().any(|o| &o.id == correct_option_id)
+                    ensure!(
+                        options.iter().any(|option| &option.id == correct_option_id),
+                        "{pointer}/correctOptionId: unknown option reference"
+                    );
                 }
                 (
                     Exercise::FillBlank { .. },
-                    Some(Rule::Text {
+                    Rule::Text {
                         accepted,
                         case_sensitive,
-                        feedback_zh,
-                    }),
+                        ..
+                    },
                 ) => {
-                    !feedback_zh.trim().is_empty()
-                        && !accepted.is_empty()
-                        && accepted.iter().all(|a| {
-                            !normalize_text(a, *case_sensitive).is_empty() && a.len() <= 4096
-                        })
+                    ensure!(
+                        !accepted.is_empty(),
+                        "{pointer}/accepted: at least one accepted answer is required"
+                    );
+                    for (index, answer) in accepted.iter().enumerate() {
+                        ensure!(
+                            !normalize_text(answer, *case_sensitive).is_empty()
+                                && answer.len() <= 4096,
+                            "{pointer}/accepted/{index}: expected nonempty normalized answer of at most 4096 bytes"
+                        );
+                    }
                 }
                 (
                     Exercise::Order { tokens, .. },
-                    Some(Rule::Order {
-                        correct_token_ids,
-                        feedback_zh,
-                    }),
+                    Rule::Order {
+                        correct_token_ids, ..
+                    },
                 ) => {
-                    let ids: HashSet<_> = correct_token_ids.iter().collect();
-                    !feedback_zh.trim().is_empty()
-                        && ids.len() == tokens.len()
-                        && ids.len() == correct_token_ids.len()
-                        && tokens.iter().all(|t| ids.contains(&t.id))
+                    ensure!(
+                        correct_token_ids.len() == tokens.len(),
+                        "{pointer}/correctTokenIds: expected every token exactly once"
+                    );
+                    let mut seen = HashSet::new();
+                    let known: HashSet<_> = tokens.iter().map(|token| &token.id).collect();
+                    for (index, token) in correct_token_ids.iter().enumerate() {
+                        ensure!(
+                            known.contains(token) && seen.insert(token),
+                            "{pointer}/correctTokenIds/{index}: unknown or duplicate token reference"
+                        );
+                    }
                 }
-                _ => false,
-            };
-            if !valid {
-                return Err(GradeError::InvalidContent);
+                _ => bail!("{pointer}/kind: grading kind does not match exercise kind"),
             }
         }
         Ok(Self {
             rules: rules.grading,
         })
     }
-
     pub fn grade(
         &self,
         lesson: &PublicLesson,
@@ -337,5 +380,106 @@ mod tests {
         invalid["serverOnly"]["grading"]["extra"] =
             invalid["serverOnly"]["grading"]["exercise-intention"].clone();
         assert!(Grader::from_source(&lesson, &invalid).is_err());
+    }
+
+    #[test]
+    fn author_diagnostics_locate_rules_and_runtime_errors_remain_opaque() {
+        let (lesson, original) = fixture();
+        for (pointer, value, expected) in [
+            (
+                "/serverOnly/grading/exercise-intention/correctOptionId",
+                serde_json::json!("private-missing-option"),
+                "/serverOnly/grading/exercise-intention/correctOptionId",
+            ),
+            (
+                "/serverOnly/grading/exercise-article/accepted",
+                serde_json::json!([]),
+                "/serverOnly/grading/exercise-article/accepted",
+            ),
+            (
+                "/serverOnly/grading/exercise-article/accepted/0",
+                serde_json::json!(" "),
+                "/serverOnly/grading/exercise-article/accepted/0",
+            ),
+            (
+                "/serverOnly/grading/exercise-order/correctTokenIds/1",
+                serde_json::json!("private-missing-token"),
+                "/serverOnly/grading/exercise-order/correctTokenIds/1",
+            ),
+            (
+                "/serverOnly/grading/exercise-order/correctTokenIds/1",
+                serde_json::json!("request"),
+                "/serverOnly/grading/exercise-order/correctTokenIds/1",
+            ),
+            (
+                "/serverOnly/grading/exercise-order/correctTokenIds",
+                serde_json::json!([]),
+                "/serverOnly/grading/exercise-order/correctTokenIds",
+            ),
+            (
+                "/serverOnly/grading/exercise-intention/feedbackZh",
+                serde_json::json!(""),
+                "/serverOnly/grading/exercise-intention/feedbackZh",
+            ),
+        ] {
+            let mut source = original.clone();
+            *source.pointer_mut(pointer).unwrap() = value;
+            let error = Grader::from_author_source(&lesson, &source)
+                .err()
+                .unwrap()
+                .to_string();
+            assert!(error.starts_with(&format!("{expected}: ")), "{error}");
+            assert!(!error.contains("private-missing"));
+            assert!(matches!(
+                Grader::from_source(&lesson, &source),
+                Err(GradeError::InvalidContent)
+            ));
+        }
+        let mut missing = original.clone();
+        missing["serverOnly"]["grading"]
+            .as_object_mut()
+            .unwrap()
+            .remove("exercise-intention");
+        assert!(
+            Grader::from_author_source(&lesson, &missing)
+                .err()
+                .unwrap()
+                .to_string()
+                .starts_with("/serverOnly/grading/exercise-intention:")
+        );
+        let mut extra = original.clone();
+        extra["serverOnly"]["grading"]["a/b~c"] =
+            original["serverOnly"]["grading"]["exercise-intention"].clone();
+        assert!(
+            Grader::from_author_source(&lesson, &extra)
+                .err()
+                .unwrap()
+                .to_string()
+                .starts_with("/serverOnly/grading/a~1b~0c:")
+        );
+        let mut mismatch = original.clone();
+        mismatch["serverOnly"]["grading"]["exercise-intention"] =
+            original["serverOnly"]["grading"]["exercise-article"].clone();
+        assert!(
+            Grader::from_author_source(&lesson, &mismatch)
+                .err()
+                .unwrap()
+                .to_string()
+                .starts_with("/serverOnly/grading/exercise-intention/kind:")
+        );
+        let mut duplicate = lesson.clone();
+        duplicate.blocks.push(
+            lesson
+                .blocks
+                .iter()
+                .find(|b| matches!(b, Block::Exercise { .. }))
+                .unwrap()
+                .clone(),
+        );
+        assert!(matches!(
+            Grader::from_source(&duplicate, &original),
+            Err(GradeError::InvalidContent)
+        ));
+        assert!(Grader::from_author_source(&lesson, &original).is_ok());
     }
 }

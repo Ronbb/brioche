@@ -83,45 +83,72 @@ fn identifier(value: &str) -> bool {
 fn text(value: &str) -> bool {
     !value.trim().is_empty() && value.len() <= 1000 && !value.chars().any(char::is_control)
 }
+
 impl ReleaseManifest {
     pub fn deserialize_file(path: &str) -> anyhow::Result<Self> {
         crate::author_json::load(path)
     }
     pub fn validate(&self) -> Result<(), AppError> {
-        if !identifier(&self.id) || self.schema_version != "1.0" || self.levels.len() > 20 {
-            return Err(AppError::InvalidInput);
-        }
+        self.validate_author().map_err(|_| AppError::InvalidInput)
+    }
+    /// Local author diagnostics; public callers retain the opaque AppError.
+    pub fn validate_author(&self) -> anyhow::Result<()> {
+        use anyhow::ensure;
+        ensure!(identifier(&self.id), "/id: invalid release ID");
+        ensure!(
+            self.schema_version == "1.0",
+            "/schemaVersion: unsupported schema version"
+        );
+        ensure!(
+            self.levels.len() <= 20,
+            "/levels: at most 20 levels are allowed"
+        );
         let (mut levels, mut units, mut lessons) =
             (BTreeSet::new(), BTreeSet::new(), BTreeSet::new());
-        for level in &self.levels {
-            if !identifier(&level.id)
-                || !text(&level.label)
-                || !levels.insert(&level.id)
-                || level.units.is_empty()
-            {
-                return Err(AppError::InvalidInput);
-            }
-            for unit in &level.units {
-                if !identifier(&unit.id)
-                    || !text(&unit.title_zh)
-                    || !units.insert(&unit.id)
-                    || unit.lessons.is_empty()
-                {
-                    return Err(AppError::InvalidInput);
+        for (li, level) in self.levels.iter().enumerate() {
+            let level_path = format!("/levels/{li}");
+            ensure!(
+                identifier(&level.id) && levels.insert(&level.id),
+                "{level_path}/id: invalid or duplicate level ID"
+            );
+            ensure!(
+                text(&level.label),
+                "{level_path}/label: expected nonempty label without control characters, at most 1000 bytes"
+            );
+            ensure!(
+                !level.units.is_empty(),
+                "{level_path}/units: level must contain a unit"
+            );
+            for (ui, unit) in level.units.iter().enumerate() {
+                let unit_path = format!("{level_path}/units/{ui}");
+                ensure!(
+                    identifier(&unit.id) && units.insert(&unit.id),
+                    "{unit_path}/id: invalid or duplicate unit ID"
+                );
+                ensure!(
+                    text(&unit.title_zh),
+                    "{unit_path}/titleZh: expected nonempty title without control characters, at most 1000 bytes"
+                );
+                ensure!(
+                    !unit.lessons.is_empty(),
+                    "{unit_path}/lessons: unit must contain a lesson"
+                );
+                for (ri, lesson) in unit.lessons.iter().enumerate() {
+                    let lesson_path = format!("{unit_path}/lessons/{ri}");
+                    ensure!(
+                        identifier(&lesson.lesson_id) && lessons.insert(&lesson.lesson_id),
+                        "{lesson_path}/lessonId: invalid or duplicate lesson reference"
+                    );
+                    ensure!(
+                        lesson.revision > 0 && lesson.revision <= i32::MAX as u32,
+                        "{lesson_path}/revision: expected positive database-compatible revision"
+                    );
+                    ensure!(
+                        lessons.len() <= 5000,
+                        "{unit_path}/lessons: at most 5000 lesson references are allowed"
+                    );
                 }
-                for lesson in &unit.lessons {
-                    if !identifier(&lesson.lesson_id)
-                        || lesson.revision == 0
-                        || lesson.revision > i32::MAX as u32
-                        || !lessons.insert(&lesson.lesson_id)
-                    {
-                        return Err(AppError::InvalidInput);
-                    }
-                }
             }
-        }
-        if lessons.len() > 5000 {
-            return Err(AppError::InvalidInput);
         }
         Ok(())
     }
@@ -370,4 +397,112 @@ pub async fn catalog<C: ConnectionTrait>(db: &C) -> Result<Catalog, AppError> {
             })
             .collect(),
     })
+}
+
+#[cfg(test)]
+mod author_tests {
+    use super::*;
+    fn fixture() -> serde_json::Value {
+        serde_json::from_str(include_str!("../../../docs/examples/catalog.release.json")).unwrap()
+    }
+    #[test]
+    fn locates_release_fields_and_preserves_opaque_public_errors() {
+        for (pointer, value) in [
+            ("/id", serde_json::json!("bad release")),
+            ("/schemaVersion", serde_json::json!("2.0")),
+            ("/levels/0/id", serde_json::json!("bad level")),
+            ("/levels/0/label", serde_json::json!(" ")),
+            ("/levels/0/units", serde_json::json!([])),
+            ("/levels/0/units/0/id", serde_json::json!("bad unit")),
+            ("/levels/0/units/0/titleZh", serde_json::json!("\n")),
+            ("/levels/0/units/0/lessons", serde_json::json!([])),
+            (
+                "/levels/0/units/0/lessons/0/lessonId",
+                serde_json::json!("bad lesson"),
+            ),
+            ("/levels/0/units/0/lessons/0/revision", serde_json::json!(0)),
+            (
+                "/levels/0/units/0/lessons/0/revision",
+                serde_json::json!(2147483648u32),
+            ),
+        ] {
+            let mut source = fixture();
+            *source.pointer_mut(pointer).unwrap() = value;
+            let manifest: ReleaseManifest = serde_json::from_value(source).unwrap();
+            assert!(
+                manifest
+                    .validate_author()
+                    .unwrap_err()
+                    .to_string()
+                    .starts_with(&format!("{pointer}:"))
+            );
+            assert!(matches!(manifest.validate(), Err(AppError::InvalidInput)));
+        }
+        let manifest: ReleaseManifest = serde_json::from_value(fixture()).unwrap();
+        assert!(manifest.validate().is_ok());
+        let empty: ReleaseManifest = serde_json::from_value(
+            serde_json::json!({"id":"empty","schemaVersion":"1.0","levels":[]}),
+        )
+        .unwrap();
+        assert!(empty.validate().is_ok());
+    }
+    #[test]
+    fn identifies_second_duplicate_and_bounds_catalog_size() {
+        let mut source = fixture();
+        let reference = source["levels"][0]["units"][0]["lessons"][0].clone();
+        source["levels"][0]["units"][0]["lessons"]
+            .as_array_mut()
+            .unwrap()
+            .push(reference);
+        let manifest: ReleaseManifest = serde_json::from_value(source).unwrap();
+        assert!(
+            manifest
+                .validate_author()
+                .unwrap_err()
+                .to_string()
+                .starts_with("/levels/0/units/0/lessons/1/lessonId:")
+        );
+        let mut source = fixture();
+        let unit = source["levels"][0]["units"][0].clone();
+        source["levels"][0]["units"]
+            .as_array_mut()
+            .unwrap()
+            .push(unit);
+        let manifest: ReleaseManifest = serde_json::from_value(source).unwrap();
+        assert!(
+            manifest
+                .validate_author()
+                .unwrap_err()
+                .to_string()
+                .starts_with("/levels/0/units/1/id:")
+        );
+        let mut source = fixture();
+        source["levels"][0]["units"][0]["lessons"] = serde_json::json!(
+            (0..5001)
+                .map(|i| serde_json::json!({"lessonId":format!("lesson-{i}"),"revision":1}))
+                .collect::<Vec<_>>()
+        );
+        let manifest: ReleaseManifest = serde_json::from_value(source).unwrap();
+        assert!(
+            manifest
+                .validate_author()
+                .unwrap_err()
+                .to_string()
+                .starts_with("/levels/0/units/0/lessons:")
+        );
+        let mut source = fixture();
+        source["levels"] = serde_json::json!(
+            (0..21)
+                .map(|i| serde_json::json!({"id":format!("level-{i}"),"label":"A1","units":[]}))
+                .collect::<Vec<_>>()
+        );
+        let manifest: ReleaseManifest = serde_json::from_value(source).unwrap();
+        assert!(
+            manifest
+                .validate_author()
+                .unwrap_err()
+                .to_string()
+                .starts_with("/levels:")
+        );
+    }
 }
