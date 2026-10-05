@@ -19,7 +19,8 @@ test(
     const rejectedVolume = `${id}-rejected`;
     const helper = `${id}-media`;
     const root = await mkdtemp(join(tmpdir(), "brioche-backup-docker-"));
-    const image = "postgres:18.6-bookworm";
+    const image =
+      "postgres:18.6-bookworm@sha256:3725f4e2499eef5134592b3b4ab79a543ed7f8e533b05b5b637af926630f6650";
     const run = (command, args, allowFailure = false, input) =>
       new Promise((resolveRun, reject) => {
         const child = spawn(command, args, {

@@ -1,11 +1,11 @@
-FROM rust:1.99.0-bookworm AS build
+FROM rust:1.99.0-bookworm@sha256:59037199c44290f2befcdd58dcc540164763fc296950255aaefeef096a1866b0 AS build
 WORKDIR /src
 COPY Cargo.toml Cargo.lock ./
 COPY crates ./crates
 COPY docs/examples ./docs/examples
 RUN cargo build --locked --release -p brioche-server
 
-FROM debian:bookworm-slim
+FROM debian:bookworm-slim@sha256:3783cc01769c7b2b1b83a5c5ad96c815348e28ed7da68e2e3687004faa906251
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl && rm -rf /var/lib/apt/lists/* && useradd --uid 10001 --create-home brioche
 RUN mkdir -p /var/lib/brioche/media && chown brioche:brioche /var/lib/brioche/media
 COPY --from=build /src/target/release/brioche-server /usr/local/bin/brioche-server

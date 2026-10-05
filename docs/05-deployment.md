@@ -48,15 +48,17 @@ server → postgres:5432（内部网络）
 | --- | --- | --- |
 | traefik | HTTP 同源路由 | 固定 `30075:8080`；只读 file provider 配置 |
 | web | React Router SSR Node 服务 | Vite client/server 构建包含在镜像；内部 3000 |
-| server | Rust Axum 二进制 | 只读媒体/配置；内部 3001，DB 连接 |
+| server | Rust Axum 二进制与同镜像内容 CLI | 媒体持久卷；内部 3001，DB 连接 |
 | postgres | 数据库 | named volume；内部 5432 |
 | migrate / content-cli | 一次性维护任务 | 与当前 release 镜像一致；正常运行后退出 |
 
 Traefik/Web/API 共享应用内部网络，API/PostgreSQL 共享数据库网络，Web 不直接连接数据库。仅 Traefik 入口发布宿主端口，数据库和业务进程保留在内部网络。Traefik 使用 file provider，不挂 Docker socket；dashboard/API 未启用，健康检查仅监听容器 loopback `8082`。
 
+基础镜像已固定 registry index digest；实际核对与更新约定见 [容器镜像说明](../infra/images.md)。Linux/amd64 的完整 Compose 构建、迁移/健康顺序与 HTTP 30075 的账号/SSR/学习/媒体链路已在隔离项目验证；这不是实际域名、用户数据或公网生产验收。
+
 使用 Linux 容器。如果生产宿主机是 Windows，Docker Desktop/WSL2 的服务自启、网络转发和磁盘权限需要单独验证；不能把 `restart: unless-stopped` 当作 Docker 引擎本身会在开机后启动。媒体卷与 DB 卷路径必须确定，备份目录与 live volume 分开。
 
-多阶段构建、非 root 应用进程、生产依赖、frozen lockfile、healthcheck、日志轮转、资源上限。在 Compose 中 readiness 和迁移顺序显式配置，不能只靠 depends_on 的启动顺序猜测数据库已就绪。应用支持 SIGTERM 优雅停止。
+多阶段构建、非 root 应用进程、生产依赖、frozen lockfile、healthcheck 和日志轮转已配置；应用已有 body/pool/hash/media 并发限制，容器 CPU/内存配额仍需结合生产容量验证配置。在 Compose 中 readiness 和迁移顺序显式配置，不能只靠 depends_on 的启动顺序猜测数据库已就绪。应用支持 SIGTERM 优雅停止。
 
 Web 使用 React Router 官方 Node 部署方式运行 Vite 生成的 client/server bundle，正确复制 assets 和生产依赖；不使用 `vite preview` 作为生产服务器。Rust 单独多阶段构建 release 二进制，固定 target/libc/TLS 配套环境，避免在 Windows 直接构建的 exe 放进 Linux 容器。Cargo.lock 和 pnpm-lock.yaml 均保留；SeaORM 迁移随版本构建为一次性工具，应用启动不自动 schema sync。
 

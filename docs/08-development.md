@@ -159,7 +159,7 @@ docker compose build
 
 Web 镜像用 `pnpm deploy --prod` 保留生产依赖，使用 React Router Node 服务，API 为 Linux release 二进制。入口使用官方 `traefik:v3.7.13` 镜像，固定发布 `30075:8080`。配置位于 `infra/traefik`，file provider 保留 API 路径前缀、页面走 SSR；没有 Docker socket、公开 dashboard 或证书卷。版本依据：[Traefik 3.7.13](https://github.com/traefik/traefik/releases/tag/v3.7.13)、[PostgreSQL 18.6](https://www.postgresql.org/docs/release/18.6/)。
 
-媒体持久卷和备份/恢复尚待部署阶段补齐。旧 Caddy 镜像、配置和证书卷声明已移除；用户既有卷不会因修改 Compose 被删除。TLS/DNS/路由器设置尚未修改。
+数据库和媒体持久卷、备份/新目标恢复已接入并实际演练。Rust/Node/Debian/PostgreSQL 与既有 Traefik 的基础镜像固定 index digest，版本与更新方式见 [镜像说明](../infra/images.md)。完整 Compose 已在独立 brioche-compose-qa 项目验证：生产空目录、一次性迁移退出 0、四个长期服务 healthy、仅 HTTP 30075 发布、非 root Web/API 和可写媒体卷；同入口的邀请/注册/登录/退出、精确 Origin 拒绝、SSR/静态资源，以及恢复后的学习/收藏/复习/音频/幂等重放均通过。恢复的测试源只用于协议验收，不作为已审校正式课程。生产参数、容量、用户外部入口与公网验收继续待完成；TLS/DNS/路由器设置尚未修改。
 
 ## 下一阶段
 

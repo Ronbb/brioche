@@ -336,3 +336,12 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 - 负例实际拒绝已存在数据库、已存在媒体卷、被改动的 dump 和同一备份输出目录，核对拒绝前后目标不存在/原 manifest 不变。另加入 100000 行合成 payload，使 dump 达 2260481 字节，恢复后行数与按 id 聚合的内容哈希一致；发现并修复 pg_restore --list 提前关闭 stdin 的 Windows EOF/pipe buffer 路径，只在工具成功退出后接受目录读取的提前关闭，正式恢复仍校验完整传输。
 - `pnpm test:ops` 的两项单元测试及显式 BRIOCHE_BACKUP_DOCKER_TEST=1 的真实 Docker 测试均通过，后者含大流恢复、目标拒绝、损坏校验和“哈希正确但非 PG archive”拒绝，并清理自己创建的容器/卷。CI 已接入显式 Docker 测试。手动演练 API/容器/具名卷已清理，开发 API/Web 保留；私有演练文件只在忽略的 .local 下。Rust/Web/DTO/数据库结构未改，本轮没有重跑它们的完整验收。
 - 文档补充实际备份/恢复步骤，并修正 tracker 原先把备份演练写成已配置的过宽表述。本次证明样本能恢复；生产规模与 RPO/RTO、保留/异盘加密副本、监控和外部入口仍待验收，不宣称全部运维完成。
+
+## 2026-10-06：完整 Compose 构建与 HTTP 30075 链路
+
+- 实际执行多阶段 Rust release 与 React Router client/server 构建、pnpm deploy 生产依赖、Docker image export；固定 Rust/Node/Debian/PostgreSQL 的官方 registry manifest index digest，既有 Traefik digest 保留。核对映射与维护方式写入 infra/images.md，同步 PostgreSQL 的 CI/运维测试引用。固定后重新 build/up，缓存与运行均通过；仅 Linux/amd64 验证，不代表全部平台或完全离线/逐字节复现。
+- 使用独立 Compose project brioche-compose-qa、QA image tag、专用数据库/媒体卷和协议账号，不使用用户生产数据。初始运行 production/database 模式，10 个迁移完成，migrate exited 0，PostgreSQL/API/Web/Traefik 均 healthy；API 与 migrate 实际使用同一 image ID。API UID 10001、Web UID 1000，媒体卷可写；inspect/config 只有 Traefik 30075:8080 的 host binding，API/Web/PostgreSQL 未映射端口，绑定不指定宿主 IP。
+- 经真实 Traefik HTTP 30075 请求 /health、/api/health、/api/ready、空生产目录、首页/个人 SSR 与静态资源均成功。容器 CLI 生成仅测试的私有邀请，不打印 token；跨 Origin accept-invite 403、正确 Origin 注册成功、二次消费 400、账号/SSR 中身份一致、private/no-store、HttpOnly/SameSite=Lax 且当前 HTTP origin 不含 Secure、退出后 me 401、新登录成功均验证。未配置证书/HTTPS/跳转或修改用户外部入口。
+- 将此前真实应用备份恢复到新的 brioche_compose_restore 和独立 external 媒体卷，手动通过隔离 override 接入 QA stack；使用实际生产容器与非 root 媒体权限读取，旧会话/新登录、完整学习 progress、收藏/复习历史、版本/到期/周活动/续学、音频整文件 200 与单段 Range 206/100 字节校验通过。SSR 显示恢复账号与服务器实际当前步骤/题目；原 exercise 请求以相同 version/body/key 重放，仍一个尝试且 progress/version 不变。10 个迁移保持，无正式审校内容被发布。
+- PostgreSQL 固定 digest 后 `BRIOCHE_BACKUP_DOCKER_TEST=1 pnpm test:ops` 的三项检查通过，含真实大流与拒绝案例；Prettier/Compose config/diff 检查通过。没有改动 Rust/Web/DTO/数据库结构，本轮未重跑其完整单元/浏览器验收。QA stack、数据库与媒体卷清理，开发 3001/5173 保留，镜像留作本机构建缓存；仅 .local 保留私有 QA artifact，未推送 Docker registry。
+- 修正部署文档中“媒体/恢复尚未接入”及“容器资源上限已经配置”的旧宽泛表述。基础镜像与 Compose 样本链路现有实际证据；容器容量预算、应用生产镜像记录、异盘/加密副本、主机自启动、外部域名/HTTPS/端口映射与公网验收仍待完成。
