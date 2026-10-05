@@ -3496,3 +3496,10 @@ h2[tabindex="-1"]:focus {
 .course-level + .course-level, .course-unit + .course-unit { margin-top: 30px; }
 @media (min-width: 900px) { .study-overview { grid-template-columns: minmax(0,1.4fr) minmax(0,1fr); } }
 @media (max-width: 360px) { .study-week { padding: 20px 16px; } .study-week-days { gap: 4px; } .study-day-mark { width: 30px; height: 30px; } }
+.courses-page { max-width: 880px; margin-inline: auto; padding: 32px max(20px, env(safe-area-inset-right)) 64px max(20px, env(safe-area-inset-left)); }
+.course-search { margin-block: 28px 16px; }
+.course-search label { display: block; color: var(--muted); margin-bottom: 10px; }
+.course-search-field { display: flex; align-items: center; gap: 12px; border: 1px solid var(--line); background: var(--surface); border-radius: 18px; padding: 8px 14px; }
+.course-search-field input { min-width: 0; flex: 1; border: 0; background: transparent; padding: 12px 0; font: inherit; color: inherit; }
+.course-search-field button { flex-shrink: 0; min-height: 44px; }
+.courses-page .lesson-label small { white-space: normal; }

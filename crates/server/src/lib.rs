@@ -180,7 +180,20 @@ async fn ready(State(state): State<Arc<AppState>>) -> Result<Json<serde_json::Va
     }
     Ok(Json(serde_json::json!({"status":"ready"})))
 }
-async fn catalog(State(state): State<Arc<AppState>>) -> Result<Json<Catalog>, AppError> {
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct CatalogQuery {
+    q: Option<String>,
+}
+async fn catalog(
+    State(state): State<Arc<AppState>>,
+    Query(query): Query<CatalogQuery>,
+) -> Result<Json<Catalog>, AppError> {
+    let query = content::search_terms(query.q.as_deref().unwrap_or(""))?;
+    let Json(catalog) = catalog_all(State(state)).await?;
+    Ok(Json(content::search_catalog(catalog, &query)))
+}
+async fn catalog_all(State(state): State<Arc<AppState>>) -> Result<Json<Catalog>, AppError> {
     if let Some(db) = &state.db {
         return content::catalog(db).await.map(Json);
     }
@@ -285,6 +298,59 @@ mod tests {
     use super::*;
     use http_body_util::BodyExt;
     use tower::ServiceExt;
+    #[tokio::test]
+    async fn catalog_search_matches_scenes_normalizes_french_and_bounds_queries() {
+        let app = router(AppState {
+            db: None,
+            fixture: Some(development_fixture().unwrap()),
+        });
+        for (query, status, count) in [
+            ("", StatusCode::OK, 1),
+            ("?q=%E9%9D%A2%E5%8C%85%E5%BA%97", StatusCode::OK, 1),
+            ("?q=BOULANGERIE%20matin", StatusCode::OK, 1),
+            (
+                "?q=%EF%BD%82%EF%BD%8F%EF%BD%95%EF%BD%8C%EF%BD%81%EF%BD%8E%EF%BD%87%EF%BD%85%EF%BD%92%EF%BD%89%EF%BD%85",
+                StatusCode::OK,
+                1,
+            ),
+            ("?q=boulangerie%20introuvable", StatusCode::OK, 0),
+            ("?q=%25", StatusCode::OK, 0),
+            ("?q=%00", StatusCode::BAD_REQUEST, 0),
+        ] {
+            let response = app
+                .clone()
+                .oneshot(
+                    axum::http::Request::builder()
+                        .uri(format!("/api/catalog{query}"))
+                        .body(axum::body::Body::empty())
+                        .unwrap(),
+                )
+                .await
+                .unwrap();
+            assert_eq!(response.status(), status);
+            if status == StatusCode::OK {
+                let catalog: Catalog = serde_json::from_slice(
+                    &response.into_body().collect().await.unwrap().to_bytes(),
+                )
+                .unwrap();
+                assert_eq!(
+                    catalog
+                        .levels
+                        .iter()
+                        .flat_map(|l| &l.units)
+                        .flat_map(|u| &u.lessons)
+                        .count(),
+                    count
+                );
+                assert!(catalog.development_fixture);
+            }
+        }
+        assert!(content::search_terms(&"a".repeat(121)).is_err());
+        assert_eq!(
+            content::search_terms(" CAFÉ  café\u{301} ").unwrap(),
+            vec!["cafe", "cafe"]
+        );
+    }
     #[tokio::test]
     async fn public_api_no_answers() {
         let app = router(AppState {

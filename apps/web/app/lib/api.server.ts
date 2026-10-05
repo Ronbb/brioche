@@ -57,7 +57,10 @@ async function api<T>(path: string): Promise<T> {
     );
   return response.json() as Promise<T>;
 }
-export const getCatalog = () => api<Catalog>("/api/catalog");
+export const getCatalog = (query?: string) =>
+  api<Catalog>(
+    "/api/catalog" + (query ? "?q=" + encodeURIComponent(query) : ""),
+  );
 export const getLesson = (id: string, revision?: number) =>
   api<PublicLesson>(
     "/api/lessons/" +

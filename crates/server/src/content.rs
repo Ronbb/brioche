@@ -9,6 +9,43 @@ use brioche_course_contract::{Catalog, Level, PublicLesson, Unit};
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement, TransactionTrait};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
+use unicode_normalization::{UnicodeNormalization, char::is_combining_mark};
+
+fn search_text(value: &str) -> String {
+    value
+        .nfkd()
+        .filter(|c| !is_combining_mark(*c))
+        .collect::<String>()
+        .to_lowercase()
+}
+pub fn search_terms(query: &str) -> Result<Vec<String>, AppError> {
+    if query.chars().count() > 120 || query.chars().any(|c| c.is_control() && !c.is_whitespace()) {
+        return Err(AppError::InvalidInput);
+    }
+    Ok(search_text(query)
+        .split_whitespace()
+        .map(str::to_owned)
+        .collect())
+}
+pub fn search_catalog(mut catalog: Catalog, terms: &[String]) -> Catalog {
+    if terms.is_empty() {
+        return catalog;
+    }
+    for level in &mut catalog.levels {
+        for unit in &mut level.units {
+            unit.lessons.retain(|lesson| {
+                let text = search_text(&format!(
+                    "{} {} {} {} {}",
+                    level.label, unit.title_zh, lesson.title.zh, lesson.title.fr, lesson.summary_zh
+                ));
+                terms.iter().all(|term| text.contains(term))
+            });
+        }
+        level.units.retain(|unit| !unit.lessons.is_empty());
+    }
+    catalog.levels.retain(|level| !level.units.is_empty());
+    catalog
+}
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ReleaseManifest {

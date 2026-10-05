@@ -1,0 +1,106 @@
+import { Form, Link, useNavigation } from "react-router";
+import { getCatalog } from "../lib/api.server";
+import { Icon } from "../components/icon";
+import type { Route } from "./+types/courses";
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const query = new URL(request.url).searchParams.get("q")?.trim() ?? "";
+  if ([...query].length > 120)
+    throw new Response("搜索内容请控制在 120 字以内。", { status: 400 });
+  return { catalog: await getCatalog(query), query };
+}
+export default function Courses({
+  loaderData: { catalog, query },
+}: Route.ComponentProps) {
+  const navigation = useNavigation();
+  const count = catalog.levels.reduce(
+    (total, level) =>
+      total + level.units.reduce((n, unit) => n + unit.lessons.length, 0),
+    0,
+  );
+  return (
+    <section className="page-arrive courses-page">
+      <div className="section-head">
+        <h1>课程</h1>
+        <Link className="text-button" to="/">
+          回到首页
+        </Link>
+      </div>
+      <Form
+        method="get"
+        action="/courses"
+        className="course-search"
+        role="search"
+      >
+        <label htmlFor="course-query">找一个日常场景</label>
+        <div className="course-search-field">
+          <input
+            key={query}
+            id="course-query"
+            name="q"
+            type="search"
+            maxLength={120}
+            defaultValue={query}
+            placeholder="早餐、面包店、bonjour…"
+          />
+          <button
+            type="submit"
+            className="text-button"
+            disabled={navigation.state !== "idle"}
+          >
+            搜索 <Icon name="arrow" />
+          </button>
+        </div>
+      </Form>
+      <p className="meta" role="status" aria-live="polite">
+        {navigation.state !== "idle"
+          ? "正在查找…"
+          : query
+            ? `找到 ${count} 堂课程`
+            : `${count} 堂课程`}
+      </p>
+      {catalog.levels.map((level) => (
+        <section key={level.id} className="course-level">
+          <p className="eyebrow">{level.label}</p>
+          {level.units.map((unit) => (
+            <div key={unit.id} className="course-unit">
+              <h2>{unit.titleZh}</h2>
+              {unit.lessons.map((lesson, index) => (
+                <Link
+                  key={lesson.id}
+                  className="lesson-row current"
+                  to={"/lessons/" + lesson.id}
+                >
+                  <span className="lesson-number">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="lesson-label">
+                    <b>{lesson.title.zh}</b>
+                    <small lang="fr">{lesson.title.fr}</small>
+                    <small>{lesson.summaryZh}</small>
+                  </span>
+                  <Icon name="arrow" />
+                </Link>
+              ))}
+            </div>
+          ))}
+        </section>
+      ))}
+      {!count && (
+        <div className="empty-state">
+          <h2>{query ? "还没有找到这个场景" : "课程正在准备中"}</h2>
+          <p>
+            {query
+              ? "试试中文场景或法语标题中的其他词。"
+              : "发布课程后，就可以开始学习。"}
+          </p>
+          {query && (
+            <Link className="text-button" to="/courses">
+              查看全部课程
+            </Link>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}

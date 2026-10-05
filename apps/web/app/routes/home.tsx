@@ -138,6 +138,12 @@ export default function Home({
           </div>
           <div className="below">
             <section>
+              <div className="section-head">
+                <h2>课程</h2>
+                <Link className="text-button" to="/courses">
+                  浏览与搜索 <Icon name="arrow" />
+                </Link>
+              </div>
               {catalog.levels.map((level) => (
                 <div key={level.id} className="course-level">
                   <p className="eyebrow">{level.label}</p>

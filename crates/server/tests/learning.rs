@@ -242,6 +242,14 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         serde_json::from_value(json!({"id":id,"schemaVersion":"1.0","levels":[{"id":"a1","label":"A1 入门","units":[{"id":"a1-breakfast-bakery","titleZh":"早餐与面包店","lessons":[{"lessonId":"release-z","revision":revision},{"lessonId":"release-a","revision":1}]}]}]})).unwrap()
     };
     assert!(content::catalog(&db).await.unwrap().levels.is_empty());
+    assert!(
+        content::search_catalog(
+            content::catalog(&db).await.unwrap(),
+            &content::search_terms("bakery").unwrap()
+        )
+        .levels
+        .is_empty()
+    );
     let mut bad = manifest("bad-draft", 1);
     bad.levels[0].units[0].lessons[1].lesson_id = "release-draft".into();
     assert!(matches!(
@@ -504,6 +512,7 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
     );
     assert_eq!(b.send("GET", &new_path, None, true).await.0, 410);
     let response = public_app
+        .clone()
         .oneshot(
             Request::builder()
                 .uri("/api/lessons/release-z?revision=2")
@@ -558,6 +567,21 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
     );
     let dashboard = a.send("GET", "/api/v1/me/dashboard", None, true).await.1;
     assert_eq!(dashboard["recommendedLesson"]["id"], "release-a");
+    let response = public_app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri("/api/catalog?q=boulangerie")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), 200);
+    let searched: brioche_course_contract::Catalog =
+        serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes()).unwrap();
+    assert_eq!(searched.levels[0].units[0].lessons.len(), 1);
+    assert_eq!(searched.levels[0].units[0].lessons[0].id, "release-a");
     assert_eq!(
         dashboard["catalog"]["levels"][0]["units"][0]["lessons"][0]["id"],
         dashboard["recommendedLesson"]["id"]

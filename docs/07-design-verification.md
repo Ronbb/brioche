@@ -171,3 +171,9 @@
 - PostgreSQL 发布测试覆盖未确认授权、planned、错哈希/尺寸、路径逃逸、篡改角色、激活前损坏文件、私有 staging 素材拒绝公开及最后引用撤回后 404；图片接口校验正确内容/安全 headers 和损坏 503。
 - 独立浏览器 390px 检查数据驱动插图与头像，页面 scrollWidth=390。临时移走测试头像发现 SSR 接管前 onError 漏报，已补接管检查；复测所有缺失头像均回退到 learner.svg 并成功加载，测试文件已恢复。真实 iPhone 与其他宽度仍需整体验收。
 - 本轮 cargo fmt、workspace clippy（warnings 拒绝）、18 项契约/服务端单元测试与四项 PostgreSQL 集成测试通过；pnpm contracts、TS 7 类型检查和 Web/SSR build 通过，Compose config 校验通过。PNG/JPEG/WebP 正向解码、错 MIME 与截断数据通过单元验证。
+
+## 2026-10-06：课程浏览与搜索
+
+- `/courses` SSR GET 表单与 `/api/catalog?q=` 搜索当前 release，保持教学顺序；中文场景、法语标题、多词、大小写/重音/全角规范化、无匹配与查询边界通过 API 单元测试。数据库测试确认草稿不进搜索，硬撤回后仅剩可用课程。
+- 独立浏览器实测 Enter 提交 BOULANGERIE 返回一课、URL 保留查询；无匹配显示空态和全部课程入口。390px 与 320px 无横向溢出，空态截图已检查并补齐页面安全区边距。真实 iPhone 待验证。
+- workspace clippy、单元测试、相关 PostgreSQL 发布集成测试、TS 7 类型检查与 Web/SSR build 通过。
