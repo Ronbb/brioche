@@ -23,6 +23,14 @@
 
 作者课程 `check <lesson.json>` 与目录 `check-release <manifest.json>` 保留原 JSON 的位置索引，类型错误与带 JSON pointer 的语义错误输出 `文件:行:列: /字段/路径: 原因`。行/列从 1 开始，列按原文件 Unicode 字符计数，CRLF、转义键与数组索引均保留；定位在投影之前建立，不使用重序列化课程的行号。没有对应字段时定位最近存在的父值；私有规则支持缺失/多余规则、kind、反馈、选项引用、accepted 项与排序 token 项的路径，release 支持各层 ID/名称/版本/重复引用与数量上限路径。正文流程校验定位角色快照字段、句子/段落/语块 ID、空句子的 segments、解释目标中出错的 blockId/entryId/segmentId、题目字段和步骤字段；重复数组引用定位第二次出现的项，不可达教学块定位其 id。题目字段位于 block 根部，路径不加入不存在的 exercise 层。严格 JSON/重复字段/2 MiB 限制保持；离线课程位置索引最多 100000 个值。课程导入和目录 staging 已接入原文件索引；素材/录音导入包及媒体发布内部诊断仍需细化，不表示作者工具全部完成。
 
+图片文件可先运行数据库无关的检查：
+
+```sh
+cargo run -p brioche-server -- asset-check docs/content/a1/assets/first-conversations.svg image/svg+xml
+```
+
+`asset-check <file> <MIME>` 支持 image/svg+xml、image/png、image/jpeg、image/webp，输出 JSON（sha256、byteLength、mimeType、width、height）。复用正式素材导入的格式解码与安全 SVG 白名单、32 MiB 文件和尺寸/内存限制，拒绝伪装 MIME；文件检查在 blocking worker 完成。它不登记文件或证明授权。首版新场景源文件与 planned 清单见 [课程素材记录](content/a1/README.md)。
+
 录音文件可先运行数据库无关的检查：
 
 ```sh

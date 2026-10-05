@@ -267,6 +267,32 @@ fn dimensions(bytes: &[u8], mime: &str) -> Result<(u32, u32)> {
     reader.limits(limits);
     Ok(reader.decode()?.dimensions())
 }
+
+/// Author inspection shares the exact format, size and SVG restrictions of imports.
+/// It does not store, register or authorize the asset.
+#[derive(Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct VisualFileInfo {
+    pub sha256: String,
+    pub byte_length: usize,
+    pub mime_type: String,
+    pub width: u32,
+    pub height: u32,
+}
+
+pub fn inspect_file(path: &Path, mime: &str) -> Result<VisualFileInfo> {
+    extension(mime)?;
+    let bytes = read_file(path)?;
+    let (width, height) = dimensions(&bytes, mime)?;
+    ensure!(width > 0 && height > 0, "asset dimensions must be positive");
+    Ok(VisualFileInfo {
+        sha256: digest(&bytes),
+        byte_length: bytes.len(),
+        mime_type: mime.into(),
+        width,
+        height,
+    })
+}
 pub fn media_root() -> PathBuf {
     std::env::var_os("MEDIA_ROOT")
         .map(PathBuf::from)

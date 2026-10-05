@@ -14,6 +14,21 @@ async fn main() -> Result<()> {
         )
         .init();
     let command = std::env::args().nth(1).unwrap_or_else(|| "serve".into());
+    if command == "asset-check" {
+        let args: Vec<String> = std::env::args().skip(2).collect();
+        if args.len() != 2 {
+            bail!(
+                "usage: brioche-server asset-check <image-file> <image/svg+xml|image/png|image/jpeg|image/webp>"
+            );
+        }
+        let info = tokio::task::spawn_blocking(move || {
+            brioche_server::media::inspect_file(std::path::Path::new(&args[0]), &args[1])
+                .with_context(|| format!("{}: invalid visual asset", args[0]))
+        })
+        .await??;
+        println!("{}", serde_json::to_string(&info)?);
+        return Ok(());
+    }
     if command == "audio-check" {
         let args: Vec<String> = std::env::args().skip(2).collect();
         if args.len() != 2 {

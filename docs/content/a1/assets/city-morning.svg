@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="470" viewBox="0 0 640 470" role="img" aria-labelledby="title desc">
+  <title id="title">城市出行的清晨</title>
+  <desc id="desc">一座虚构城市的车站入口。Camille 看着手中的路线卡，旁边有楼梯、街区建筑和抽象信息牌，没有真实线路或时刻表。</desc>
+  <rect width="640" height="470" rx="24" fill="#DCEAF0"/>
+  <circle cx="543" cy="76" r="34" fill="#FFC96F"/>
+  <path d="M32 231V119L108 94 180 123V276H32Z" fill="#E8DBB3"/>
+  <path d="M108 94L180 123V276H108Z" fill="#D4B290"/>
+  <g fill="#7DAACB"><rect x="51" y="142" width="23" height="36" rx="3"/><rect x="89" y="142" width="23" height="36" rx="3"/><rect x="51" y="194" width="23" height="36" rx="3"/><rect x="89" y="194" width="23" height="36" rx="3"/></g>
+  <path d="M153 252V96L203 72 259 100V280H153Z" fill="#FFC96F"/>
+  <path d="M203 72L259 100V280H203Z" fill="#E8B973"/>
+  <g fill="#FFFAEF"><rect x="171" y="119" width="17" height="31" rx="3"/><rect x="214" y="119" width="17" height="31" rx="3"/><rect x="171" y="169" width="17" height="31" rx="3"/><rect x="214" y="169" width="17" height="31" rx="3"/></g>
+  <path d="M477 248V147L563 130 626 150V307H477Z" fill="#FFE8C8"/>
+  <g fill="#91AE6E"><rect x="494" y="173" width="23" height="39" rx="3"/><rect x="534" y="173" width="23" height="39" rx="3"/><rect x="575" y="173" width="23" height="39" rx="3"/></g>
+  <path d="M0 326Q176 277 357 317T640 301V470H0Z" fill="#ACD793"/>
+  <path d="M0 384Q217 328 394 365T640 350V470H0Z" fill="#E8DBB3"/>
+  <path d="M0 429Q183 385 381 407T640 396" stroke="#D4B290" stroke-width="3" fill="none"/>
+  <rect x="277" y="169" width="196" height="210" rx="14" fill="#D4B290"/>
+  <path d="M298 363V234Q298 198 375 198T452 234V363Z" fill="#486150"/>
+  <path d="M312 341H438V362H312ZM323 322H426V341H323ZM334 303H415V322H334ZM345 284H404V303H345Z" fill="#B6C5AD"/>
+  <path d="M303 236L344 282M447 236L405 282" stroke="#FFFAEF" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <rect x="313" y="150" width="124" height="47" rx="10" fill="#689D4B"/>
+  <g stroke="#FFFAEF" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="357" y="159" width="36" height="24" rx="6"/><path d="M365 166H385M364 190L368 183M386 190L382 183"/></g>
+  <circle cx="366" cy="176" r="2" fill="#FFFAEF"/><circle cx="384" cy="176" r="2" fill="#FFFAEF"/>
+  <path d="M279 367H472V379H279Z" fill="#A27D58"/>
+  <path d="M528 377V258" stroke="#486150" stroke-width="8"/>
+  <rect x="494" y="242" width="68" height="80" rx="10" fill="#FFFAEF"/>
+  <circle cx="528" cy="264" r="9" fill="#7DAACB"/>
+  <path d="M509 286H547M509 298H535" stroke="#D4B290" stroke-width="5" stroke-linecap="round"/>
+  <ellipse cx="206" cy="420" rx="67" ry="12" fill="#C8A27D" opacity=".4"/>
+  <g>
+    <path d="M169 318L181 410H200L197 320M201 319L225 410H245L229 312" fill="#486150"/>
+    <path d="M180 408L169 419H200V408M225 408V419H258L245 408" fill="#594333"/>
+    <path d="M167 242Q195 228 219 244L235 315Q204 333 163 317Z" fill="#71886A"/>
+    <path d="M170 255L153 287 169 308" stroke="#E1B18E" stroke-width="13" fill="none" stroke-linecap="round"/>
+    <path d="M216 254L238 277 251 269" stroke="#E1B18E" stroke-width="13" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M173 207Q158 163 190 157Q231 149 236 194L229 237H174Z" fill="#594333"/>
+    <path d="M187 220V244H205V217" fill="#D4A17E"/>
+    <ellipse cx="197" cy="194" rx="25" ry="31" fill="#E1B18E"/>
+    <path d="M171 187Q167 159 194 155Q225 153 231 192Q213 184 209 167Q195 186 171 187" fill="#594333"/>
+    <path d="M187 195H189M207 195H209" stroke="#594333" stroke-width="3" stroke-linecap="round"/>
+    <path d="M191 208Q197 212 204 207" stroke="#A75D48" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M178 245L196 259 215 244" stroke="#C3CEB6" stroke-width="4" fill="none"/>
+    <path d="M238 260L264 253 271 280 246 287Z" fill="#FFFAEF"/>
+    <path d="M247 267L252 275 261 264" stroke="#7DAACB" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <path d="M75 350V241" stroke="#91AE6E" stroke-width="8"/>
+  <path d="M73 270Q38 270 39 234Q65 218 77 256M77 253Q94 215 117 228Q124 260 77 268" fill="#689D4B"/>
+  <path d="M568 374Q580 349 597 370M593 379Q606 353 624 372" stroke="#91AE6E" stroke-width="7" fill="none" stroke-linecap="round"/>
+</svg>

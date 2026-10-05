@@ -5,6 +5,29 @@ use serde_json::Value;
 use std::{collections::BTreeMap, path::Path};
 
 #[test]
+fn scene_inventory_matches_actual_svg_sources() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/content/a1");
+    let document = Document::load(root.join("scene-assets.bundle.json")).unwrap();
+    let bundle: brioche_server::media::AssetBundle =
+        serde_json::from_value(document.value).unwrap();
+    assert_eq!(bundle.schema_version, "1.0");
+    assert_eq!(bundle.assets.len(), 2);
+    for asset in bundle.assets {
+        let info = brioche_server::media::inspect_file(
+            &root.join("assets").join(&asset.file),
+            &asset.mime_type,
+        )
+        .unwrap();
+        assert_eq!(
+            info.sha256, asset.sha256,
+            "stale hash for {}",
+            asset.asset_id
+        );
+        assert_eq!((info.width, info.height), (asset.width, asset.height));
+    }
+}
+
+#[test]
 fn pilot_sources_match_catalog_and_shared_knowledge_and_grade_all_exercises() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs");
     let document = Document::load(root.join("content/a1/catalog.release.json")).unwrap();

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "assets": [
+    {
+      "assetId": "art-first-conversations",
+      "revision": 1,
+      "sha256": "97f2f556d706d35ec0211f426b8c9f2c35956f164fa13a70a800964c80f8ced0",
+      "mimeType": "image/svg+xml",
+      "width": 640,
+      "height": 470,
+      "altZh": "Camille 和 Léa 在社区活动室初次交谈",
+      "creditZh": "Brioche · 场景插图草稿",
+      "file": "first-conversations.svg",
+      "status": "planned",
+      "source": "Brioche 项目内以 SVG 独立绘制，2026-10-06；未使用外部位图或字体",
+      "license": "待确认素材分发授权",
+      "creator": "Brioche 项目（Codex 绘制 SVG）",
+      "rightsConfirmed": false
+    },
+    {
+      "assetId": "art-city-morning",
+      "revision": 1,
+      "sha256": "bd40f4d53c9e86e695f7edbd64156aa57279bae083fab43c805ae27af88f909b",
+      "mimeType": "image/svg+xml",
+      "width": 640,
+      "height": 470,
+      "altZh": "Camille 在虚构城市的车站入口查看路线卡",
+      "creditZh": "Brioche · 场景插图草稿",
+      "file": "city-morning.svg",
+      "status": "planned",
+      "source": "Brioche 项目内以 SVG 独立绘制，2026-10-06；未使用外部位图或字体",
+      "license": "待确认素材分发授权",
+      "creator": "Brioche 项目（Codex 绘制 SVG）",
+      "rightsConfirmed": false
+    }
+  ],
+  "characters": []
+}

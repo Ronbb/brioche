@@ -352,4 +352,11 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 
 新增 `curriculum` 集成测试（无数据库）：以正式作者投影与 Grader 核对 12 个文件和目录 ID/revision/等级/单元、共享知识定义一致、公共投影移除私有字段，36 题的正确答案均判为正确、合法错误答案均判为错误。已在本机运行通过，现有 `cargo test --workspace` CI 自动包含此测试。
 
-这些证据仅证明作者结构与判分规则一致，不能证明教学内容正确、素材授权或可发布。课程全部保持 draft；未导入数据库、未执行 release-stage/activate，development fixture 未替换。新增插图引用尚无资产文件，角色与旧插图授权仍待确认，正式录音尚未制作。逐课人工审校与来源记录见 `content/a1/README.md`；完整 A1/A2、真实 iPhone 和生产公网验收继续待完成。
+这些证据仅证明作者结构与判分规则一致，不能证明教学内容正确、素材授权或可发布。课程全部保持 draft；未导入数据库、未执行 release-stage/activate，development fixture 未替换。此时新增插图引用尚无资产文件，角色与旧插图授权仍待确认，正式录音尚未制作。逐课人工审校与来源记录见 `content/a1/README.md`；完整 A1/A2、真实 iPhone 和生产公网验收继续待完成。
+
+## 2026-10-06：新场景插图与离线素材检查
+
+- 制作初次交谈/城市出行两张 640×470 SVG，复用现有品牌配色与 Camille/Léa 外观；源文件仅在 `docs/content/a1/assets`，没有添加 Web public 路由或公开未登记素材。新清单包含实际哈希、尺寸、替代文本、来源与待确认授权，仍 planned/rightsConfirmed=false；没有导入数据库、伪造授权或激活课程。
+- 新增 `asset-check <file> <MIME>`，无需数据库，格式、大小、解码与安全 SVG 白名单复用正式导入函数；只输出实际元数据。作者 CLI 使用不可连接的数据库地址验证两图成功、错误 MIME/不支持 MIME 拒绝且不输出成功 JSON。8 项作者 CLI 测试通过；32 项服务端单元测试、2 项课程包检查和 all-targets Clippy 通过。新课程包测试核对两图清单哈希与尺寸，CI 会自动包含。
+- 使用 agent-browser 独立浏览器会话和仅含两图的临时本机页面实际渲染，390px/640px 无横向溢出，两图加载完成；核对 640px 截图的构图，显式尺寸后的浏览器 naturalWidth/naturalHeight 为 640×470。截图仅留 ignored `.local/scene-qa`；这不是正式课程发布或真实 iPhone 验收。
+- 检查结束关闭专用浏览器与临时静态服务，开发 API 3001/Web 5173 保留且 health 200。素材授权/登记、法语审校、正式录音和完整 A1/A2 继续待完成。

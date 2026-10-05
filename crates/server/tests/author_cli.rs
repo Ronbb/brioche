@@ -39,6 +39,40 @@ fn checks_drafts_without_database_and_does_not_claim_publication() {
 }
 
 #[test]
+fn checks_visual_sources_without_database_or_registration() {
+    use sha2::{Digest, Sha256};
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/content/a1/assets");
+    for name in ["first-conversations.svg", "city-morning.svg"] {
+        let path = root.join(name);
+        let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+            .args(["asset-check", path.to_str().unwrap(), "image/svg+xml"])
+            .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let info: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+        let bytes = std::fs::read(&path).unwrap();
+        assert_eq!(info["width"], 640);
+        assert_eq!(info["height"], 470);
+        assert_eq!(info["byteLength"], bytes.len());
+        assert_eq!(info["sha256"], format!("{:x}", Sha256::digest(&bytes)));
+        for mime in ["image/png", "text/html"] {
+            let rejected = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+                .args(["asset-check", path.to_str().unwrap(), mime])
+                .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+                .output()
+                .unwrap();
+            assert!(!rejected.status.success());
+            assert!(rejected.stdout.is_empty());
+        }
+    }
+}
+
+#[test]
 fn rejects_bad_grading_references_and_json_before_any_database_work() {
     let path = std::env::temp_dir().join(format!("brioche-check-{}.json", random_id()));
     let original = brioche_server::development_source().unwrap();

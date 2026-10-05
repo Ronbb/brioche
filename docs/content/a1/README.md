@@ -48,10 +48,12 @@
 
 | 引用 | 当前状态 | 发布前工作 |
 | --- | --- | --- |
-| art-first-conversations revision 1 | 仅有课程引用，未制作 | 制作社区初次交谈插图，核对尺寸、哈希、署名与授权，再登记 |
+| art-first-conversations revision 1 | [640×470 SVG 源文件](assets/first-conversations.svg)已制作，清单仍为 planned | 核对画面、署名与授权后登记 |
 | art-bakery-morning revision 1 | 已有仓库 SVG；示例素材包仍为 planned、rightsConfirmed=false | 确认来源授权后登记，不伪造确认 |
-| art-city-morning revision 1 | 仅有课程引用，未制作 | 制作虚构街区/车站插图，避免真实线路或品牌误导，再登记 |
+| art-city-morning revision 1 | [640×470 SVG 源文件](assets/city-morning.svg)已制作，清单仍为 planned | 核对画面、署名与授权后登记 |
 | 三位角色头像 revision 1 | 已有仓库 SVG 和示例快照，授权仍待确认 | 核对并登记素材与角色快照 |
 | 正式课程录音 | 尚未制作 | 法语审校后录制，记录授权、时长、哈希与正文时间轴，按 audio-check/audio-import 登记 |
 
 新课使用显式 `assetRefs` 固定版本；这些引用不会使未登记文件可用。没有伪造音频或时间轴；缺录音时沿用浏览器法语声音回退，设备没有法语声音时仍可阅读。正式录音与真实 iPhone 验收继续推进。
+
+两张新图源文件位于作者目录，未放入 Web public。它们的真实 SHA-256、MIME、尺寸、替代文本与来源记录见 [场景素材清单](scene-assets.bundle.json)，来源目录为 `docs/content/a1/assets`；清单保持 planned/rightsConfirmed=false，不能直接导入。图形由项目内 SVG 代码绘制，沿用品牌和已有角色外观，不含外部图片、字体或真实运营者标识。`asset-check` 与正式导入复用图片解码/安全 SVG 校验；`curriculum` 测试核对清单哈希与尺寸。浏览器已检查 390px 与 640px 显示，不替代真实 iPhone 或正式素材审校。
