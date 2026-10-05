@@ -174,7 +174,7 @@ pub async fn hydrate_source<C: ConnectionTrait>(
         return Ok(source);
     }
     let mut descriptors = Vec::new();
-    for reference in refs {
+    for (index, reference) in refs.into_iter().enumerate() {
         let row = one(
             db,
             "SELECT descriptor FROM audio_assets WHERE asset_id=$1 AND revision=$2",
@@ -185,7 +185,9 @@ pub async fn hydrate_source<C: ConnectionTrait>(
         )
         .await
         .map_err(anyhow::Error::msg)?
-        .context("registered recording revision missing")?;
+        .with_context(|| {
+            format!("/audioRefs/{index}/revision: registered recording revision missing")
+        })?;
         descriptors
             .push(field::<serde_json::Value>(&row, "descriptor").map_err(anyhow::Error::msg)?);
     }

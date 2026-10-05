@@ -69,6 +69,42 @@ async fn main() -> Result<()> {
         );
         return Ok(());
     }
+    // Preserve the original author text before hydration or database operations.
+    let import_document = if command == "import" {
+        let args: Vec<String> = std::env::args().skip(2).collect();
+        if args.iter().any(|arg| arg == "--publish") {
+            bail!("use release-stage and release-activate to publish an atomic directory");
+        }
+        if args.len() != 1 {
+            bail!("usage: brioche-server import <lesson.json>");
+        }
+        let document = brioche_server::author_json::Document::load(&args[0])?;
+        brioche_server::media::source_asset_refs(&document.value)
+            .map_err(|error| document.semantic(error))?;
+        brioche_server::recording::source_audio_refs(&document.value)
+            .map_err(|error| document.semantic(error))?;
+        brioche_server::author_source::editorial(&document.value)
+            .map_err(|error| document.semantic(error))?;
+        Some(document)
+    } else {
+        None
+    };
+    let release_source = if command == "release-stage" {
+        let args: Vec<String> = std::env::args().skip(2).collect();
+        if args.len() != 3 {
+            bail!("usage: release-stage <manifest.json> <actor> <reason>");
+        }
+        let document = brioche_server::author_json::Document::load(&args[0])?;
+        let manifest: brioche_server::content::ReleaseManifest =
+            brioche_server::author_json::from_value(document.value.clone(), "")
+                .map_err(|error| document.semantic(error))?;
+        manifest
+            .validate_author()
+            .map_err(|error| document.semantic(error))?;
+        Some((document, manifest))
+    } else {
+        None
+    };
     let fixture = std::env::var("CONTENT_MODE").unwrap_or_else(|_| "database".into()) == "fixture";
     let production =
         std::env::var("APP_ENV").unwrap_or_else(|_| "production".into()) != "development";
@@ -133,15 +169,16 @@ async fn main() -> Result<()> {
             if args.len() != 3 {
                 bail!("usage: release-stage <manifest.json> <actor> <reason>");
             }
-            let manifest = brioche_server::content::ReleaseManifest::deserialize_file(&args[0])?;
-            brioche_server::content::stage(
+            let (document, manifest) = release_source.as_ref().unwrap();
+            brioche_server::content::stage_author(
                 db.as_ref().unwrap(),
-                &manifest,
+                manifest,
                 &args[1],
                 &args[2],
                 &brioche_server::media::media_root(),
             )
-            .await?;
+            .await
+            .map_err(|error| document.semantic(error))?;
             tracing::info!("immutable directory release staged");
             return Ok(());
         }
@@ -205,30 +242,43 @@ async fn main() -> Result<()> {
             return Ok(());
         }
         "import" => {
-            let file = std::env::args()
-                .nth(2)
-                .context("usage: brioche-server import <lesson.json>")?;
-            let source: serde_json::Value = brioche_server::author_json::load(&file)?;
-            let source =
-                brioche_server::media::hydrate_source(db.as_ref().unwrap(), source).await?;
-            let source =
-                brioche_server::recording::hydrate_source(db.as_ref().unwrap(), source).await?;
-            let publish = std::env::args().any(|arg| arg == "--publish");
-            if publish {
-                bail!("use release-stage and release-activate to publish an atomic directory");
-            }
-            let lesson = project_source(source.clone())?;
-            brioche_server::grading::Grader::from_source(&lesson, &source)
-                .map_err(|_| anyhow::anyhow!("invalid private grading rules"))?;
+            let document = import_document.as_ref().unwrap();
+            let source = document.value.clone();
+            let source = brioche_server::media::hydrate_source(db.as_ref().unwrap(), source)
+                .await
+                .map_err(|error| document.semantic(error))?;
+            let source = brioche_server::recording::hydrate_source(db.as_ref().unwrap(), source)
+                .await
+                .map_err(|error| document.semantic(error))?;
+            let lesson =
+                project_source(source.clone()).map_err(|error| document.semantic(error))?;
+            brioche_server::grading::Grader::from_author_source(&lesson, &source)
+                .map_err(|error| document.semantic(error))?;
+            let revision = i32::try_from(lesson.revision)
+                .map_err(|_| document.diagnostic("/revision", "revision exceeds database range"))?;
             entity::ActiveModel {
                 lesson_id: Set(lesson.id.clone()),
-                revision: Set(i32::try_from(lesson.revision)?),
+                revision: Set(revision),
                 published: Set(false),
                 public_document: Set(serde_json::to_value(&lesson)?),
                 server_document: Set(source),
             }
             .insert(db.as_ref().unwrap())
-            .await?;
+            .await
+            .map_err(|error| {
+                use sea_orm::SqlErr;
+                if matches!(error.sql_err(), Some(SqlErr::UniqueConstraintViolation(_))) {
+                    document.diagnostic(
+                        "/revision",
+                        "lesson revision already exists; revisions are immutable",
+                    )
+                } else {
+                    document.diagnostic(
+                        "/",
+                        "database write failed; verify lesson revision before retrying",
+                    )
+                }
+            })?;
             tracing::info!("immutable lesson revision imported");
             return Ok(());
         }

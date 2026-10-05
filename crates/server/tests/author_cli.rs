@@ -293,3 +293,48 @@ fn private_rules_and_release_semantics_report_exact_source_fields() {
     }
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn import_and_stage_preflight_locate_invalid_source_before_database_connection() {
+    let path = std::env::temp_dir().join(format!("brioche-preflight-{}.json", random_id()));
+    for (command, source, pointer) in [
+        (
+            "import",
+            serde_json::json!({"assetRefs":[{"assetId":"scene","revision":"bad"}]}),
+            "/assetRefs/0/revision",
+        ),
+        (
+            "import",
+            serde_json::json!({"editorial":{"status":"bad","note":"test"}}),
+            "/editorial/status",
+        ),
+        (
+            "release-stage",
+            serde_json::json!({"id":"bad id","schemaVersion":"1.0","levels":[]}),
+            "/id",
+        ),
+        (
+            "release-stage",
+            serde_json::json!({"id":"release","schemaVersion":"1.0","levels":[{"id":"a1","label":"A1","units":[{"id":"unit","titleZh":"Unit","lessons":[{"lessonId":"lesson","revision":0}]}]}]}),
+            "/levels/0/units/0/lessons/0/revision",
+        ),
+    ] {
+        std::fs::write(&path, serde_json::to_vec_pretty(&source).unwrap()).unwrap();
+        let mut invocation = Command::new(env!("CARGO_BIN_EXE_brioche-server"));
+        invocation.args([command, path.to_str().unwrap()]);
+        if command == "release-stage" {
+            invocation.args(["test-actor", "test-reason"]);
+        }
+        let output = invocation
+            .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+            .env("CONTENT_MODE", "database")
+            .output()
+            .unwrap();
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success());
+        assert!(error.contains(&format!("{pointer}:")), "{error}");
+        assert!(error.contains(path.to_str().unwrap()), "{error}");
+        assert!(!error.contains("database connection"), "{error}");
+    }
+    std::fs::remove_file(path).unwrap();
+}

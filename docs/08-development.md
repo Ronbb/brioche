@@ -21,7 +21,7 @@
 
 ## 本机开发
 
-作者课程 `check <lesson.json>` 与目录 `check-release <manifest.json>` 保留原 JSON 的位置索引，类型错误与带 JSON pointer 的语义错误输出 `文件:行:列: /字段/路径: 原因`。行/列从 1 开始，列按原文件 Unicode 字符计数，CRLF、转义键与数组索引均保留；定位在投影之前建立，不使用重序列化课程的行号。没有对应字段时定位最近存在的父值；私有规则支持缺失/多余规则、kind、反馈、选项引用、accepted 项与排序 token 项的路径，release 支持各层 ID/名称/版本/重复引用与数量上限路径。正文流程校验定位角色快照字段、句子/段落/语块 ID、空句子的 segments、解释目标中出错的 blockId/entryId/segmentId、题目字段和步骤字段；重复数组引用定位第二次出现的项，不可达教学块定位其 id。题目字段位于 block 根部，路径不加入不存在的 exercise 层。严格 JSON/重复字段/2 MiB 限制保持；离线课程位置索引最多 100000 个值。导入与发布 CLI 的运行错误仍需完整位置映射，不表示作者工具全部完成。
+作者课程 `check <lesson.json>` 与目录 `check-release <manifest.json>` 保留原 JSON 的位置索引，类型错误与带 JSON pointer 的语义错误输出 `文件:行:列: /字段/路径: 原因`。行/列从 1 开始，列按原文件 Unicode 字符计数，CRLF、转义键与数组索引均保留；定位在投影之前建立，不使用重序列化课程的行号。没有对应字段时定位最近存在的父值；私有规则支持缺失/多余规则、kind、反馈、选项引用、accepted 项与排序 token 项的路径，release 支持各层 ID/名称/版本/重复引用与数量上限路径。正文流程校验定位角色快照字段、句子/段落/语块 ID、空句子的 segments、解释目标中出错的 blockId/entryId/segmentId、题目字段和步骤字段；重复数组引用定位第二次出现的项，不可达教学块定位其 id。题目字段位于 block 根部，路径不加入不存在的 exercise 层。严格 JSON/重复字段/2 MiB 限制保持；离线课程位置索引最多 100000 个值。课程导入和目录 staging 已接入原文件索引；素材/录音导入包及媒体发布内部诊断仍需细化，不表示作者工具全部完成。
 
 录音文件可先运行数据库无关的检查：
 
@@ -90,7 +90,9 @@ cargo run -p brioche-server -- import docs/examples/a1-bakery.lesson.json
 
 导入始终创建不可见 revision；旧的 `--publish` 参数被明确拒绝，改用目录 release 原子发布。本示例未审校，禁止为测试上线而直接改状态。相同 `(lesson_id, revision)` 重复导入失败，数据库触发器也拒绝改写或删除已有正文/私有答案；审校后重新导入需要新 revision。
 
-`check`、`check-release`、`import`、`assets-import` 与 `release-stage` 共用严格 JSON 文件读取：实际读取最多 2 MiB + 1 字节，超过 2 MiB 拒绝；所有层级的重复字段、尾随第二个文档、无效 UTF-8 和过深嵌套均拒绝。错误链包含输入文件名及 JSON 行列；重复字段显示 JSON Pointer（例如 `/steps/0/id`），素材/发布清单类型错误显示字段路径。类型定位使用 [serde_path_to_error](https://docs.rs/serde_path_to_error/0.1.20/serde_path_to_error/)。`check`/`check-release` 的公开投影、私有判分与目录语义校验已接入原文件位置索引；导入与发布 CLI 仍需先连接数据库，其运行错误尚未全面接入位置索引。
+`check`、`check-release`、`import`、`assets-import` 与 `release-stage` 共用严格 JSON 文件读取：实际读取最多 2 MiB + 1 字节，超过 2 MiB 拒绝；所有层级的重复字段、尾随第二个文档、无效 UTF-8 和过深嵌套均拒绝。错误链包含输入文件名及 JSON 行列；重复字段显示 JSON Pointer（例如 `/steps/0/id`），素材/发布清单类型错误显示字段路径。类型定位使用 [serde_path_to_error](https://docs.rs/serde_path_to_error/0.1.20/serde_path_to_error/)。`check`/`check-release` 的公开投影、私有判分与目录语义校验已接入原文件位置索引。
+
+`import` 在连接数据库前读取原课程并检查 editorial 和素材/录音引用类型，随后定位登记 revision 缺失、投影/私有判分错误、超出数据库范围的 revision 和重复 revision。拒绝多余参数，旧 `--publish` 在连接前明确拒绝。`release-stage` 在连接前校验原清单结构/语义，事务内通过同一个 stage 实现检查固定版本、撤回、reviewed 状态、目录对应关系、判分与媒体；诊断指向清单中的 revision、课程项或 release id。媒体发布错误目前定位课程项并提示检查登记/授权/文件，没有伪造数据库中课程源文件的行号；数据库异常定位根并提示核对实际状态后重试，不把响应失败等同于提交必然失败。运行时 stage 仍返回原有不透明 AppError。素材/录音导入包及每个媒体发布失败的内部细分位置仍待完善。
 
 ### 管理员固定版本预览
 

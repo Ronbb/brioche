@@ -476,7 +476,7 @@ pub async fn hydrate_source<C: ConnectionTrait>(
     }
     let refs = source_asset_refs(&source)?;
     let mut descriptors = Vec::new();
-    for reference in refs {
+    for (index, reference) in refs.into_iter().enumerate() {
         let row = one(
             db,
             "SELECT descriptor FROM media_assets WHERE asset_id=$1 AND revision=$2",
@@ -487,7 +487,9 @@ pub async fn hydrate_source<C: ConnectionTrait>(
         )
         .await
         .map_err(anyhow::Error::msg)?
-        .context("registered asset revision missing")?;
+        .with_context(|| {
+            format!("/assetRefs/{index}/revision: registered asset revision missing")
+        })?;
         descriptors
             .push(field::<serde_json::Value>(&row, "descriptor").map_err(anyhow::Error::msg)?);
     }

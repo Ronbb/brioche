@@ -160,9 +160,65 @@ pub async fn stage(
     reason: &str,
     media_root: &std::path::Path,
 ) -> Result<(), AppError> {
-    manifest.validate()?;
+    stage_impl(db, manifest, actor, reason, media_root)
+        .await
+        .map_err(|error| error.runtime)
+}
+
+/// Local CLI diagnostics use the same transaction and publication gates as stage.
+pub async fn stage_author(
+    db: &DatabaseConnection,
+    manifest: &ReleaseManifest,
+    actor: &str,
+    reason: &str,
+    media_root: &std::path::Path,
+) -> anyhow::Result<()> {
+    stage_impl(db, manifest, actor, reason, media_root)
+        .await
+        .map_err(|error| {
+            anyhow::anyhow!(error.diagnostic.unwrap_or_else(|| {
+                "/: staging database operation failed; verify release status before retrying".into()
+            }))
+        })
+}
+
+struct StageFailure {
+    runtime: AppError,
+    diagnostic: Option<String>,
+}
+impl From<AppError> for StageFailure {
+    fn from(runtime: AppError) -> Self {
+        Self {
+            runtime,
+            diagnostic: None,
+        }
+    }
+}
+impl StageFailure {
+    fn at(runtime: AppError, pointer: &str, message: &str) -> Self {
+        Self {
+            runtime,
+            diagnostic: Some(format!("{pointer}: {message}")),
+        }
+    }
+}
+async fn stage_impl(
+    db: &DatabaseConnection,
+    manifest: &ReleaseManifest,
+    actor: &str,
+    reason: &str,
+    media_root: &std::path::Path,
+) -> Result<(), StageFailure> {
+    manifest.validate_author().map_err(|error| StageFailure {
+        runtime: AppError::InvalidInput,
+        diagnostic: Some(error.to_string()),
+    })?;
     if !text(actor) || !text(reason) {
-        return Err(AppError::InvalidInput);
+        return Err(StageFailure::at(
+            AppError::InvalidInput,
+            "/",
+            "actor and reason must be nonempty, without control characters, at most 1000 bytes",
+        ));
     }
     let tx = db.begin().await.map_err(|_| AppError::Unavailable)?;
     // All content mutations lock the singleton before revision rows: no activation/withdrawal deadlock.
@@ -181,27 +237,51 @@ pub async fn stage(
     .await?
     .is_some()
     {
-        return Err(AppError::Conflict);
+        return Err(StageFailure::at(
+            AppError::Conflict,
+            "/id",
+            "release ID already exists; releases are immutable",
+        ));
     }
     let mut entries = Vec::new();
     let mut source_hashes = Vec::new();
-    for level in &manifest.levels {
-        for unit in &level.units {
-            for entry in &unit.lessons {
-                let row=one(&tx,"SELECT public_document,server_document,EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(r.lesson_id,r.revision)) AS withdrawn FROM lesson_revisions r WHERE lesson_id=$1 AND revision=$2 FOR SHARE",vec![entry.lesson_id.clone().into(),(entry.revision as i32).into()]).await?.ok_or(AppError::NotFound)?;
+    for (li, level) in manifest.levels.iter().enumerate() {
+        for (ui, unit) in level.units.iter().enumerate() {
+            for (ri, entry) in unit.lessons.iter().enumerate() {
+                let path = format!("/levels/{li}/units/{ui}/lessons/{ri}");
+                let revision_path = format!("{path}/revision");
+                let row=one(&tx,"SELECT public_document,server_document,EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(r.lesson_id,r.revision)) AS withdrawn FROM lesson_revisions r WHERE lesson_id=$1 AND revision=$2 FOR SHARE",vec![entry.lesson_id.clone().into(),(entry.revision as i32).into()]).await?.ok_or_else(|| StageFailure::at(AppError::NotFound, &revision_path, "referenced lesson revision has not been imported"))?;
                 if field::<bool>(&row, "withdrawn")? {
-                    return Err(AppError::Gone);
+                    return Err(StageFailure::at(
+                        AppError::Gone,
+                        &revision_path,
+                        "referenced lesson revision was withdrawn",
+                    ));
                 }
                 let source: serde_json::Value = field(&row, "server_document")?;
                 if !matches!(
                     crate::author_source::editorial(&source)
-                        .map_err(|_| AppError::InvalidInput)?
+                        .map_err(|_| StageFailure::at(
+                            AppError::InvalidInput,
+                            &path,
+                            "imported lesson has invalid editorial metadata"
+                        ))?
                         .status,
                     crate::author_source::EditorialStatus::Reviewed
                 ) {
-                    return Err(AppError::InvalidInput);
+                    return Err(StageFailure::at(
+                        AppError::InvalidInput,
+                        &path,
+                        "imported lesson requires reviewed editorial status",
+                    ));
                 }
-                let lesson = project_source(source.clone()).map_err(|_| AppError::InvalidInput)?;
+                let lesson = project_source(source.clone()).map_err(|error| {
+                    StageFailure::at(
+                        AppError::InvalidInput,
+                        &path,
+                        &format!("imported lesson validation failed: {error}"),
+                    )
+                })?;
                 if lesson.level_id != level.id
                     || lesson.unit_id != unit.id
                     || lesson.id != entry.lesson_id
@@ -209,10 +289,20 @@ pub async fn stage(
                     || serde_json::to_value(&lesson).map_err(|_| AppError::Unavailable)?
                         != field::<serde_json::Value>(&row, "public_document")?
                 {
-                    return Err(AppError::InvalidInput);
+                    return Err(StageFailure::at(
+                        AppError::InvalidInput,
+                        &path,
+                        "lesson level/unit/revision or stored public projection does not match this directory entry",
+                    ));
                 }
-                Grader::from_source(&lesson, &source).map_err(|_| AppError::InvalidInput)?;
-                crate::media::validate_lesson(&tx, &lesson, media_root).await?;
+                Grader::from_author_source(&lesson, &source).map_err(|error| {
+                    StageFailure::at(
+                        AppError::InvalidInput,
+                        &path,
+                        &format!("imported lesson grading validation failed: {error}"),
+                    )
+                })?;
+                crate::media::validate_lesson(&tx, &lesson, media_root).await.map_err(|error| StageFailure::at(error, &path, "registered visual/audio media failed publication validation; verify registration, rights and stored files"))?;
                 source_hashes.push(hash(&source)?);
                 entries.push(entry);
             }
@@ -234,7 +324,8 @@ pub async fn stage(
         exec(&tx,"INSERT INTO release_entries(release_id,lesson_id,revision,position) VALUES($1,$2,$3,$4)",vec![manifest.id.clone().into(),entry.lesson_id.clone().into(),(entry.revision as i32).into(),(position as i32).into()]).await?;
     }
     exec(&tx,"INSERT INTO content_audit(action,actor,reason,release_id,generation) VALUES('stage',$1,$2,$3,$4)",vec![actor.into(),reason.into(),manifest.id.clone().into(),field::<i64>(&state,"generation")?.into()]).await?;
-    tx.commit().await.map_err(|_| AppError::Unavailable)
+    tx.commit().await.map_err(|_| AppError::Unavailable)?;
+    Ok(())
 }
 pub async fn activate(
     db: &DatabaseConnection,

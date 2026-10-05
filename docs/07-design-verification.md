@@ -320,3 +320,10 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 - 解释目标按正文 block、句子、语块分别检查，以 HashSet 查找明确错误的 blockId/entryId/segmentId；保留原来的有效性要求，不执行作者代码或改动公共结构。
 - 新增表驱动测试覆盖 25 种字段/重复项错误，扩充真实 CLI 测试，独立按原 JSON 文本计算行列，覆盖角色快照、解释目标三级引用、步骤、空白文本和题目字段。命令使用不可达数据库地址，证明这些作者检查不依赖数据库。
 - Rust workspace 42 项单元测试、6 项 CLI 测试、fmt 与 all-targets clippy 通过；5 项 PostgreSQL 集成测试本轮保持 ignored，没有记为本轮数据库验收。API 构建后恢复，3001 API 与 5173 Web 健康检查均为 200。未修改 DTO/Schema、Web 或数据库结构；导入与发布 CLI 的运行错误位置映射仍未全面完成。
+
+## 2026-10-06：课程导入与目录 staging 原文件诊断
+
+- import/release-stage 在数据库连接前保留原 JSON 位置索引，检查参数、引用/审校类型及目录结构语义；旧 --publish 在连接前拒绝。课程投影、私有规则、未登记视觉/录音 revision、超出数据库范围和重复 revision 接入作者位置；数据库写入异常不回显 SQL，也不把响应错误当作未提交的证明。
+- stage_author 与原 stage 共用单一事务实现、发布条件和锁顺序。作者入口定位重复 release id、缺失/撤回课程 revision、未审校课程、目录/固定投影不匹配、私有规则或媒体发布校验失败；原 stage 将详细诊断转换为相同 AppError，不向 HTTP 返回作者信息。媒体内部原因目前归于具体目录课程项，未假称每个文件故障已有独立字段位置。
+- 新增离线 preflight 测试使用不可达数据库地址；新增真实 author_runtime CLI PostgreSQL 测试，按原 CRLF 文本独立计算行/Unicode 列，覆盖上述登记、判分、版本、目录和审校故障，损坏素材后拒绝并恢复文件，成功导入/staging、重复批次与撤回拒绝。核对失败后 release/entries/audit 没有新增，成功 staging 仍不激活目录、不改变 generation、不公开课程；仅测试 schema 使用合成 reviewed 标记。CI 已增加该显式 ignored 集成测试命令。
+- Rust workspace 42 项单元测试、7 项离线 CLI 测试、fmt 与 all-targets clippy 通过。专用 PostgreSQL 容器 brioche-author-runtime-qa、数据库 brioche_author_runtime_qa 中实际运行新作者 CLI 测试和现有两项 learning 测试，三项均通过，覆盖原有学习与发布事务/回滚/撤回行为；identity/postgres/recording 三项本轮未运行。未更改公共 DTO/Schema、Web 或数据库结构。素材/录音导入包与媒体内部细分诊断、正式教学审校和设备体验仍待完善。
