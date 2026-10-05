@@ -7,6 +7,7 @@ pub mod identity;
 pub mod learning;
 pub mod library;
 pub mod media;
+pub mod observability;
 pub mod password;
 pub mod reviews;
 pub mod session_store;
@@ -124,7 +125,6 @@ pub fn router(state: AppState) -> Router {
         .route("/api/lessons/{id}", get(lesson))
         .route("/api/demo/lessons/{id}/grade", post(demo_grade))
         .fallback(|| async { AppError::NotFound })
-        .layer(tower_http::trace::TraceLayer::new_for_http())
         .layer(axum::extract::DefaultBodyLimit::max(16 * 1024))
         .with_state(Arc::new(state))
 }

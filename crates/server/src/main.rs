@@ -254,7 +254,7 @@ async fn main() -> Result<()> {
             brioche_server::media::media_root(),
         ));
     }
-    axum::serve(listener, app)
+    axum::serve(listener, brioche_server::observability::observe(app))
         .with_graceful_shutdown(shutdown())
         .await?;
     if let Some(cleanup) = cleanup {

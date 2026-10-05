@@ -196,3 +196,9 @@
 - 排序题服务器 200 后丢失响应，SPA 返回首页再续学，原请求恢复；重试后总尝试数仍为 9，pending/answer 存储均清空，显示实际结果。确认原请求的通知独立于 attempt ID 变化，避免已在加载时读取到结果的页面仍停在编辑草稿。
 - 浏览器回退/冲突复测部分通过 DOM click/requestSubmit 触发实际 React 表单事件，未以脚本直发判分替代页面；CLI 坐标点击在长页上不稳定，不能据此宣称真实 iPhone 触控验收通过。复习/收藏端到端故障恢复与其他窗口/设备仍待逐项验收。
 - 五项 Web 协议测试、TS 7 检查、Web/SSR build 与 workspace clippy 通过。
+
+## 2026-10-06：请求观测与日志保留限制
+
+- 请求观测统一包围合并后的 API；响应生成新的 X-Request-Id，忽略客户端 ID。单元测试检查 400/404/413、唯一 ID、route template、duration_ms，并确认路径参数/query/body/cookie/Authorization/外部 ID 不出现在捕获日志中。
+- workspace clippy 与 20 项契约/服务端单元测试通过。数据库集成测试本轮未重跑：没有修改数据库、权限或写入规则。实际 API health 返回 200 与 32 位 hex ID，客户端 ID 未沿用，开发 Web 首页 200。
+- Docker local logging 插件存在；Compose config 确认五个服务均有 10m × 3 日志限制。未实际部署或进行磁盘轮换/告警演练。

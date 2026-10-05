@@ -194,3 +194,11 @@ cargo run -p brioche-server -- reset-password learner@example.com .local/reset-l
 `cargo run -p brioche-server --example browser_fixture` 仅接受 TEST_DATABASE_URL 指向 loopback 的 `/brioche_browser_qa` 数据库，执行迁移并创建合成协议课/测试账号。它绕过正式课程审校与素材发布流程，仅用于一次性浏览器测试，不能替代正式内容发布。该 example 使用与 PostgreSQL 集成测试相同的测试 release helper；拒绝其他数据库或 query 参数。账号为 browser-qa@example.test，固定口令仅用于此隔离测试库，源码内可见，不用于生产。
 
 验收可在独立 PostgreSQL 临时容器（55432）、数据库 API（3003、PUBLIC_APP_URL=http://127.0.0.1:5175）和独立 Web（INTERNAL_API_URL=http://127.0.0.1:3003，react-router dev --port 5175）进行，完成后清理这组资源；不替换用户开发进程或生产服务。测试单选/填空草稿刷新、服务器提交后丢失响应、刷新/SPA 离页后重试和两标签页不同答案冲突，同时核对数据库真实尝试数。
+
+## 请求观测与日志轮换
+
+API 在公共课程、身份/学习、媒体路由合并后统一添加观测层。每次请求由服务器生成 128-bit 随机 ID，通过 X-Request-Id 响应头返回；忽略调用者传入的同名 header。INFO 级请求完成日志只包含 request_id、规范 HTTP method、注册路由模板、status 和 duration_ms。路由参数不记录，未匹配请求记为 <unmatched>；不记录原始 URL/query、请求体、cookie、Authorization、CSRF 或用户资料。随机源不可用时明确返回服务不可用并写固定错误文本。
+
+耗时度量从进入路由中间件到产生响应头，包含处理与数据库等待，不代表网络下载结束。日志暂用于排查单次请求，指标采集、告警及性能基线仍待建立。日志由 RUST_LOG 控制；默认 brioche_server=info。此前只包围公共路由的通用 TraceLayer 已移除，避免高日志级别意外记录原始 URI。
+
+Compose 所有五个服务使用 Docker local 日志驱动，配置 max-size=10m、max-file=3，限制单个容器的保留日志。宿主 Docker local 驱动已确认可用，Compose 解析验证每个服务均应用该配置；本轮没有执行生产容器重建或声称实际磁盘轮换演练完成。仍可使用 docker compose logs 查看日志。
