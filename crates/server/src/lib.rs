@@ -1,3 +1,4 @@
+pub mod audio;
 pub mod author_json;
 pub mod author_source;
 pub mod content;

@@ -85,3 +85,31 @@ fn release_check_rejects_invalid_manifest_and_extra_arguments() {
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("usage:"));
 }
+
+#[test]
+fn audio_check_decodes_without_database_and_reports_actual_duration() {
+    let file = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/audio/synthetic.mp3");
+    let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+        .args(["audio-check", file.to_str().unwrap(), "audio/mpeg"])
+        .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+        .env("CONTENT_MODE", "fixture")
+        .env("APP_ENV", "production")
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let info: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert_eq!(info["durationMs"], 1000);
+    assert_eq!(info["channels"], 1);
+    assert_eq!(info["sha256"].as_str().unwrap().len(), 64);
+    let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+        .args(["audio-check", file.to_str().unwrap(), "audio/wav"])
+        .output()
+        .unwrap();
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("not RIFF WAVE"));
+    assert!(!run("audio-check", &file).status.success());
+}

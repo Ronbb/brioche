@@ -32,6 +32,7 @@ url = "2.5"
 argon2 = { version = "0.6.0", features = ["getrandom"] }
 quick-xml = "0.42.0"
 image = { version = "0.25.10", default-features = false, features = ["png", "jpeg", "webp"] }
+symphonia = { version = "0.6.1", default-features = false, features = ["mp3", "wav", "pcm", "id3v1", "id3v2"] }
 [dev-dependencies]
 tower = { version = "0.5", features = ["util"] }
 http-body-util = "0.1"

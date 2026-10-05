@@ -7,12 +7,36 @@ use sea_orm_migration::MigratorTrait;
 async fn main() -> Result<()> {
     dotenvy::dotenv().ok();
     tracing_subscriber::fmt()
+        .with_writer(std::io::stderr)
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
                 .unwrap_or_else(|_| "brioche_server=info,tower_http=info".into()),
         )
         .init();
     let command = std::env::args().nth(1).unwrap_or_else(|| "serve".into());
+    if command == "audio-check" {
+        let args: Vec<String> = std::env::args().skip(2).collect();
+        if args.len() != 2 {
+            bail!("usage: brioche-server audio-check <recording-file> <audio/mpeg|audio/wav>");
+        }
+        let (bytes, info) = tokio::task::spawn_blocking(move || {
+            brioche_server::audio::inspect_file(std::path::Path::new(&args[0]), &args[1])
+                .with_context(|| format!("{}: invalid recording", args[0]))
+        })
+        .await??;
+        use sha2::{Digest, Sha256};
+        println!(
+            "{}",
+            serde_json::json!({
+                "sha256": format!("{:x}", Sha256::digest(&bytes)),
+                "byteLength": bytes.len(),
+                "durationMs": info.duration_ms,
+                "sampleRate": info.sample_rate,
+                "channels": info.channels,
+            })
+        );
+        return Ok(());
+    }
     if matches!(command.as_str(), "check" | "check-release") {
         let args: Vec<String> = std::env::args().skip(2).collect();
         if args.len() != 1 {

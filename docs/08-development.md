@@ -20,6 +20,15 @@
 
 ## 本机开发
 
+录音文件可先运行数据库无关的检查：
+
+```sh
+cargo run -p brioche-server -- audio-check recording.mp3 audio/mpeg
+cargo run -p brioche-server -- audio-check recording.wav audio/wav
+```
+
+输出为 JSON（SHA-256、字节数、实际解码时长、采样率、声道数）；日志写 stderr。使用 [Symphonia 0.6.1](https://docs.rs/symphonia/0.6.1/symphonia/) 完整解码，拒绝解码错误，按解码帧计算时长并向上取整到毫秒。限制 32 MiB、30 分钟、8–96 kHz、单/双声道；MP3 要求标准 Layer III 帧，拒绝自由码率、截断帧及未知尾随数据，ID3 标签不超过 64 KiB。WAV 支持 RIFF PCM 8/16/24/32 位及 IEEE float 32/64 位，检查完整 chunk、样本对齐和头部一致性；当前不支持 RF64、WAVE extensible 或压缩 WAV。解码在 blocking worker 执行，不阻塞异步执行器。这项检查不登记文件、不证明授权，也不使含录音课程可发布；录音登记、发布校验、媒体路由和播放器仍待接入。
+
 要求 Node 24、pnpm 11.11.0、Rust 1.99.0。`rust-toolchain.toml` 会固定工具链并安装 rustfmt/clippy。
 
 ```sh
