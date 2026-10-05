@@ -8,6 +8,10 @@ import {
 } from "react";
 import { useLocation } from "react-router";
 import { Icon } from "./icon";
+import type { UserProfile } from "@brioche/contracts/UserProfile";
+import type { UpdateProfileRequest } from "@brioche/contracts/UpdateProfileRequest";
+import { ApiRequestError, privateRequest } from "../lib/api.client";
+export type ProfileChanges = Partial<Omit<UpdateProfileRequest, "version">>;
 type SpeechUnit = { id: string; text: string; locale?: string };
 type PlayerState = {
   status: "idle" | "playing" | "paused";
@@ -15,6 +19,10 @@ type PlayerState = {
   progress: number;
 };
 type Learning = {
+  profile: UserProfile | null;
+  saveProfile: (changes: ProfileChanges) => Promise<boolean>;
+  saveStatus: "idle" | "saving" | "saved" | "error";
+  saveError: string;
   translation: boolean;
   setTranslation: (v: boolean) => void;
   rate: number;
@@ -32,16 +40,32 @@ export function useLearning() {
   if (!value) throw Error("LearningProvider required");
   return value;
 }
-export function LearningProvider({ children }: { children: ReactNode }) {
-  const [translation, setTranslation] = useState(false),
-    [rate, setRateState] = useState(1),
+export function LearningProvider({
+  children,
+  user = null,
+}: {
+  children: ReactNode;
+  user?: UserProfile | null;
+}) {
+  const [profile, setProfile] = useState<UserProfile | null>(user),
+    [saveStatus, setSaveStatus] = useState<Learning["saveStatus"]>("idle"),
+    [saveError, setSaveError] = useState(""),
+    [translation, setTranslationState] = useState(
+      user?.settings.showTranslation ?? false,
+    ),
+    [rate, setRateState] = useState(user?.settings.speechRate ?? 1),
     [player, setPlayer] = useState<PlayerState>({
       status: "idle",
       id: null,
       progress: 0,
     }),
     [message, setMessage] = useState("");
-  const rateRef = useRef(1),
+  const savedProfile = useRef(user),
+    pendingChanges = useRef(new Map<symbol, ProfileChanges>()),
+    saves = useRef<Promise<boolean>>(Promise.resolve(true)),
+    saveGeneration = useRef(0),
+    saveCount = useRef(0);
+  const rateRef = useRef(user?.settings.speechRate ?? 1),
     state = useRef(player),
     queue = useRef<SpeechUnit[]>([]),
     index = useRef(0),
@@ -49,6 +73,88 @@ export function LearningProvider({ children }: { children: ReactNode }) {
     dialog = useRef<HTMLDialogElement>(null);
   const location = useLocation();
   const restartPaused = useRef(false);
+  function acceptProfile(value: UserProfile | null) {
+    savedProfile.current = value;
+    setProfile(value);
+    let show = value?.settings.showTranslation ?? false,
+      speed = value?.settings.speechRate ?? 1;
+    for (const changes of pendingChanges.current.values()) {
+      if (changes.showTranslation != null) show = changes.showTranslation;
+      if (changes.speechRate != null) speed = changes.speechRate;
+    }
+    setTranslationState(show);
+    applyRate(speed);
+  }
+  useEffect(() => {
+    if (
+      savedProfile.current?.id === user?.id &&
+      (savedProfile.current?.version ?? 0) > (user?.version ?? 0)
+    )
+      return;
+    saveGeneration.current++;
+    pendingChanges.current.clear();
+    setSaveStatus("idle");
+    setSaveError("");
+    acceptProfile(user);
+  }, [user?.id, user?.version]);
+  function saveProfile(changes: ProfileChanges): Promise<boolean> {
+    if (!savedProfile.current) return Promise.resolve(false);
+    const gen = saveGeneration.current;
+    const job = Symbol();
+    pendingChanges.current.set(job, changes);
+    saveCount.current++;
+    setSaveStatus("saving");
+    setSaveError("");
+    const next = saves.current.then(async () => {
+      if (gen !== saveGeneration.current || !savedProfile.current) return false;
+      try {
+        const value = await privateRequest<UserProfile>(
+          "/api/v1/me/settings",
+          "PATCH",
+          { ...changes, version: savedProfile.current.version },
+        );
+        if (gen !== saveGeneration.current) return false;
+        pendingChanges.current.delete(job);
+        acceptProfile(value);
+        return true;
+      } catch (error) {
+        if (gen !== saveGeneration.current) return false;
+        saveGeneration.current++;
+        pendingChanges.current.clear();
+        if (error instanceof ApiRequestError && error.status === 401)
+          acceptProfile(null);
+        else {
+          // A timed-out response may already have saved. Read the current state; never resend a write automatically.
+          try {
+            acceptProfile(
+              await privateRequest<UserProfile>("/api/v1/me", "GET"),
+            );
+          } catch {
+            acceptProfile(savedProfile.current);
+          }
+        }
+        setSaveStatus("error");
+        const message =
+          error instanceof ApiRequestError
+            ? error.message
+            : "保存未确认，请检查当前设置后重试。";
+        setSaveError(message);
+        setMessage(message);
+        return false;
+      }
+    });
+    saves.current = next;
+    void next.then((ok) => {
+      pendingChanges.current.delete(job);
+      saveCount.current--;
+      if (!saveCount.current && ok) setSaveStatus("saved");
+    });
+    return next;
+  }
+  function setTranslation(value: boolean) {
+    setTranslationState(value);
+    if (savedProfile.current) void saveProfile({ showTranslation: value });
+  }
   function update(value: PlayerState) {
     state.current = value;
     setPlayer(value);
@@ -140,7 +246,8 @@ export function LearningProvider({ children }: { children: ReactNode }) {
       }
     } else play(units);
   }
-  function setRate(value: number) {
+  function applyRate(value: number) {
+    if (rateRef.current === value) return;
     rateRef.current = value;
     setRateState(value);
     if (state.current.status === "playing") {
@@ -152,6 +259,10 @@ export function LearningProvider({ children }: { children: ReactNode }) {
       window.speechSynthesis.cancel();
       restartPaused.current = true;
     }
+  }
+  function setRate(value: number) {
+    applyRate(value);
+    if (savedProfile.current) void saveProfile({ speechRate: value });
   }
   useEffect(() => {
     stop();
@@ -172,6 +283,10 @@ export function LearningProvider({ children }: { children: ReactNode }) {
   return (
     <Context.Provider
       value={{
+        profile,
+        saveProfile,
+        saveStatus,
+        saveError,
         translation,
         setTranslation,
         rate,

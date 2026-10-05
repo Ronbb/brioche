@@ -11,7 +11,8 @@ use axum::{
 };
 use axum_login::{AuthManagerLayerBuilder, AuthUser, AuthnBackend};
 use brioche_course_contract::{
-    AcceptInviteRequest, AuthResult, CsrfToken, LoginRequest, ResetPasswordRequest, UserProfile,
+    AcceptInviteRequest, AuthResult, CsrfToken, LoginRequest, ResetPasswordRequest,
+    UpdateProfileRequest, UserProfile, UserSettings,
 };
 use sea_orm::{
     ConnectionTrait, DatabaseConnection, DbBackend, QueryResult, Statement, TransactionTrait,
@@ -28,6 +29,8 @@ pub struct User {
     display_name: String,
     role: String,
     password_hash: String,
+    settings: UserSettings,
+    version: u32,
 }
 impl std::fmt::Debug for User {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -43,6 +46,8 @@ impl User {
             email: self.email.clone(),
             display_name: self.display_name.clone(),
             role: self.role.clone(),
+            settings: self.settings.clone(),
+            version: self.version,
         }
     }
 }
@@ -74,6 +79,16 @@ fn row_user(row: QueryResult) -> Result<User, AppError> {
         password_hash: row
             .try_get("", "password_hash")
             .map_err(|_| AppError::Unavailable)?,
+        settings: serde_json::from_value(
+            row.try_get("", "settings")
+                .map_err(|_| AppError::Unavailable)?,
+        )
+        .map_err(|_| AppError::Unavailable)?,
+        version: u32::try_from(
+            row.try_get::<i32>("", "profile_version")
+                .map_err(|_| AppError::Unavailable)?,
+        )
+        .map_err(|_| AppError::Unavailable)?,
     })
 }
 pub fn normalize_email(email: &str) -> Result<String, AppError> {
@@ -142,7 +157,7 @@ impl Backend {
     pub async fn accept_invite(&self, request: AcceptInviteRequest) -> Result<User, AppError> {
         let email = normalize_email(&request.email)?;
         let name = request.display_name.trim();
-        if name.is_empty() || name.chars().count() > 80 {
+        if name.is_empty() || name.chars().count() > 80 || name.chars().any(char::is_control) {
             return Err(AppError::InvalidInput);
         }
         let hash = token_hash(&request.token)?;
@@ -170,7 +185,7 @@ impl Backend {
             .try_get("", "role")
             .map_err(|_| AppError::Unavailable)?;
         let row = tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,
-            "INSERT INTO users (email,password_hash,display_name,role) VALUES ($1,$2,$3,$4) ON CONFLICT (email) DO NOTHING RETURNING id,email,password_hash,display_name,role",
+            "INSERT INTO users (email,password_hash,display_name,role) VALUES ($1,$2,$3,$4) ON CONFLICT (email) DO NOTHING RETURNING id,email,password_hash,display_name,role,settings,profile_version",
             [email.into(), password_hash.into(), name.into(), role.into()])).await.map_err(|_| AppError::Unavailable)?.ok_or(AppError::InvalidInput)?;
         tx.execute_raw(Statement::from_sql_and_values(
             DbBackend::Postgres,
@@ -288,7 +303,7 @@ impl AuthnBackend for Backend {
             .db
             .query_one_raw(Statement::from_sql_and_values(
                 DbBackend::Postgres,
-                "SELECT id,email,password_hash,display_name,role FROM users WHERE email=$1",
+                "SELECT id,email,password_hash,display_name,role,settings,profile_version FROM users WHERE email=$1",
                 [email.into()],
             ))
             .await
@@ -307,7 +322,7 @@ impl AuthnBackend for Backend {
         self.db
             .query_one_raw(Statement::from_sql_and_values(
                 DbBackend::Postgres,
-                "SELECT id,email,password_hash,display_name,role FROM users WHERE id=$1",
+                "SELECT id,email,password_hash,display_name,role,settings,profile_version FROM users WHERE id=$1",
                 [(*id).into()],
             ))
             .await
@@ -377,6 +392,76 @@ async fn me(auth: AuthSession) -> Result<Json<UserProfile>, AppError> {
     Ok(Json(auth.user.ok_or(AppError::Unauthorized)?.profile()))
 }
 
+async fn update_profile(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    Json(request): Json<UpdateProfileRequest>,
+) -> Result<Json<UserProfile>, AppError> {
+    let user = auth.user.ok_or(AppError::Unauthorized)?;
+    if request.version != user.version {
+        return Err(AppError::Conflict);
+    }
+    let (name, settings) = profile_changes(&user, request)?;
+    let row = backend.db.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,
+        "UPDATE users SET display_name=$2,settings=$3,profile_version=profile_version+1 WHERE id=$1 AND profile_version=$4 AND profile_version < 2147483647 RETURNING id,email,password_hash,display_name,role,settings,profile_version",
+        [user.id.into(), name.into(), serde_json::to_value(settings).map_err(|_| AppError::Unavailable)?.into(), i32::try_from(user.version).map_err(|_| AppError::Unavailable)?.into()])).await.map_err(|_| AppError::Unavailable)?.ok_or(AppError::Conflict)?;
+    Ok(Json(row_user(row)?.profile()))
+}
+
+fn profile_changes(
+    user: &User,
+    request: UpdateProfileRequest,
+) -> Result<(String, UserSettings), AppError> {
+    if request.display_name.is_none()
+        && request.time_zone.is_none()
+        && request.weekly_days.is_none()
+        && request.daily_minutes.is_none()
+        && request.show_translation.is_none()
+        && request.speech_rate.is_none()
+    {
+        return Err(AppError::InvalidInput);
+    }
+    let name = request
+        .display_name
+        .as_deref()
+        .unwrap_or(&user.display_name)
+        .trim()
+        .to_owned();
+    if name.is_empty() || name.chars().count() > 80 || name.chars().any(char::is_control) {
+        return Err(AppError::InvalidInput);
+    }
+    let mut settings = user.settings.clone();
+    if let Some(zone) = request.time_zone {
+        // Only IANA database identifiers, never a machine-local zone or a UTC offset.
+        if zone.len() > 100 || zone != zone.trim() || jiff::tz::db().get(&zone).is_err() {
+            return Err(AppError::InvalidInput);
+        }
+        settings.time_zone = zone;
+    }
+    if let Some(days) = request.weekly_days {
+        if ![3, 5, 7].contains(&days) {
+            return Err(AppError::InvalidInput);
+        }
+        settings.weekly_days = days;
+    }
+    if let Some(minutes) = request.daily_minutes {
+        if ![5, 10, 15].contains(&minutes) {
+            return Err(AppError::InvalidInput);
+        }
+        settings.daily_minutes = minutes;
+    }
+    if let Some(show) = request.show_translation {
+        settings.show_translation = show;
+    }
+    if let Some(rate) = request.speech_rate {
+        if ![0.75, 1.0, 1.25, 1.5].contains(&rate) {
+            return Err(AppError::InvalidInput);
+        }
+        settings.speech_rate = rate;
+    }
+    Ok((name, settings))
+}
+
 pub fn router(backend: Backend, policy: CsrfPolicy, secure: bool) -> Router {
     let session_layer = SessionManagerLayer::new(PgSessionStore::new(backend.db.clone()))
         .with_name(if secure {
@@ -398,6 +483,7 @@ pub fn router(backend: Backend, policy: CsrfPolicy, secure: bool) -> Router {
         .route("/api/v1/auth/accept-invite", post(accept))
         .route("/api/v1/auth/reset-password", post(reset))
         .route("/api/v1/me", get(me))
+        .route("/api/v1/me/settings", axum::routing::patch(update_profile))
         .layer(axum::middleware::from_fn_with_state(
             Arc::new(policy),
             csrf::protect,

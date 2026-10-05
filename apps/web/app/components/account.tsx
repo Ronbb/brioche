@@ -15,7 +15,6 @@ export function Account({
   const identity = useRouteLoaderData<typeof loader>("root");
   const learning = useLearning();
   const busy = useRef(false);
-  const initializedMode = useRef<string | null>(null);
   const [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [name, setName] = useState(""),
@@ -24,17 +23,21 @@ export function Account({
     [error, setError] = useState(""),
     [done, setDone] = useState(false);
   useEffect(() => {
-    if (mode === "login" || initializedMode.current === mode) return;
-    initializedMode.current = mode;
-    const params = new URLSearchParams(window.location.hash.slice(1));
-    setToken(params.get("token") ?? "");
-    setEmail(params.get("email") ?? "");
-    if (window.location.hash)
+    if (mode === "login") return;
+    function readLink() {
+      if (!window.location.hash) return;
+      const params = new URLSearchParams(window.location.hash.slice(1));
+      setToken(params.get("token") ?? "");
+      setEmail(params.get("email") ?? "");
       window.history.replaceState(
         window.history.state,
         "",
         window.location.pathname,
       );
+    }
+    readLink();
+    window.addEventListener("hashchange", readLink);
+    return () => window.removeEventListener("hashchange", readLink);
   }, [mode]);
   const title =
     mode === "login"

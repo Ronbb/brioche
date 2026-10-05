@@ -8,6 +8,7 @@ import {
   isRouteErrorResponse,
   useRouteError,
   data,
+  useRouteLoaderData,
 } from "react-router";
 import { LearningProvider } from "./components/learning";
 import "./styles/app.css";
@@ -23,6 +24,7 @@ export function headers() {
   return { "Cache-Control": "private, no-store", Vary: "Cookie" };
 }
 export function Layout({ children }: { children: React.ReactNode }) {
+  const identity = useRouteLoaderData<typeof loader>("root");
   return (
     <html lang="zh-CN">
       <head>
@@ -37,7 +39,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <LearningProvider>
+        <LearningProvider user={identity?.user ?? null}>
           <div className="app">
             <header className="topbar">
               <Link className="brand" to="/" aria-label="Brioche 首页">

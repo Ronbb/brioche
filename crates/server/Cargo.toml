@@ -4,6 +4,7 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 [dependencies]
+jiff = { version = "0.2.37", features = ["tzdb-bundle-always"] }
 brioche-course-contract = { path = "../course-contract" }
 brioche-migration = { path = "../migration" }
 serde.workspace = true

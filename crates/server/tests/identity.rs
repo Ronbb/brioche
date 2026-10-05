@@ -98,6 +98,18 @@ async fn invite_login_reset_logout_and_races() {
     );
     let mut browser = Browser::new(app.clone()).await;
     assert_eq!(browser.send("GET", "/api/v1/me", None, true).await.0, 401);
+    assert_eq!(
+        browser
+            .send(
+                "PATCH",
+                "/api/v1/me/settings",
+                Some(serde_json::json!({"version":1,"showTranslation":true})),
+                true
+            )
+            .await
+            .0,
+        401
+    );
     let password = "correct horse baguette fromage";
     let token = backend
         .issue_token("LEARNER@example.test", false, false)
@@ -142,6 +154,53 @@ async fn invite_login_reset_logout_and_races() {
     );
     let (_, user) = browser.send("GET", "/api/v1/me", None, true).await;
     assert_eq!(user["displayName"], "Camille");
+    assert_eq!(user["version"], 1);
+    assert_eq!(user["settings"]["timeZone"], "Asia/Shanghai");
+    assert_eq!(
+        browser
+            .send(
+                "PATCH",
+                "/api/v1/me/settings",
+                Some(serde_json::json!({"version":1,"showTranslation":true})),
+                false
+            )
+            .await
+            .0,
+        403
+    );
+    for invalid in [
+        serde_json::json!({"version":1,"timeZone":"Mars/Olympus"}),
+        serde_json::json!({"version":1,"speechRate":2}),
+        serde_json::json!({"version":1,"weeklyDays":4}),
+        serde_json::json!({"version":1,"dailyMinutes":99}),
+        serde_json::json!({"version":1,"displayName":"\n"}),
+        serde_json::json!({"version":1}),
+    ] {
+        assert_eq!(
+            browser
+                .send("PATCH", "/api/v1/me/settings", Some(invalid), true)
+                .await
+                .0,
+            400
+        );
+    }
+    assert_eq!(
+        browser
+            .send(
+                "PATCH",
+                "/api/v1/me/settings",
+                Some(serde_json::json!({"version":1,"role":"operator","showTranslation":true})),
+                true
+            )
+            .await
+            .0,
+        422
+    );
+    let (_, updated) = browser.send("PATCH", "/api/v1/me/settings", Some(serde_json::json!({"version":1,"displayName":" Camille Li ","timeZone":"Europe/Paris","weeklyDays":3,"dailyMinutes":15,"showTranslation":true,"speechRate":0.75})), true).await;
+    assert_eq!(updated["displayName"], "Camille Li");
+    assert_eq!(updated["version"], 2);
+    assert_eq!(updated["settings"]["timeZone"], "Europe/Paris");
+    assert_eq!(updated["role"], "learner");
     let mut stale = Browser {
         app: app.clone(),
         cookie: before,
@@ -163,6 +222,33 @@ async fn invite_login_reset_logout_and_races() {
             .await
             .0,
         200
+    );
+    let (_, from_second) = second.send("GET", "/api/v1/me", None, true).await;
+    assert_eq!(
+        from_second["settings"], updated["settings"],
+        "settings survive a new login"
+    );
+    let (left, right) = tokio::join!(
+        browser.send(
+            "PATCH",
+            "/api/v1/me/settings",
+            Some(serde_json::json!({"version":2,"dailyMinutes":5})),
+            true
+        ),
+        second.send(
+            "PATCH",
+            "/api/v1/me/settings",
+            Some(serde_json::json!({"version":2,"weeklyDays":7})),
+            true
+        )
+    );
+    assert!(
+        (left.0 == 200 && right.0 == 409) || (right.0 == 200 && left.0 == 409),
+        "stale writes cannot overwrite another device"
+    );
+    assert_eq!(
+        browser.send("GET", "/api/v1/me", None, true).await.1["version"],
+        3
     );
     let reset = backend
         .issue_token("learner@example.test", true, false)
@@ -259,6 +345,23 @@ async fn invite_login_reset_logout_and_races() {
         backend.accept_invite(request)
     );
     assert_eq!(usize::from(left.is_ok()) + usize::from(right.is_ok()), 1);
+    let mut other = Browser::new(app.clone()).await;
+    assert_eq!(
+        other
+            .send(
+                "POST",
+                "/api/v1/auth/login",
+                Some(serde_json::json!({"email":"race@example.test","password":password})),
+                true
+            )
+            .await
+            .0,
+        200
+    );
+    let (_, other_profile) = other.send("GET", "/api/v1/me", None, true).await;
+    assert_eq!(other_profile["settings"]["timeZone"], "Asia/Shanghai");
+    assert_eq!(other_profile["settings"]["showTranslation"], false);
+    assert_eq!(other.send("PATCH", "/api/v1/me/settings", Some(serde_json::json!({"version":1,"userId":accepted["user"]["id"],"showTranslation":true})), true).await.0, 422);
     // Reissuing a token invalidates the previous link; expiry is checked in the transaction.
     let old = backend
         .issue_token("renew@example.test", false, false)

@@ -120,3 +120,11 @@
 - Rust workspace 单元测试通过；clippy 无警告，TS 独立类型检查与 Vite client/SSR 构建通过。
 - 浏览器 390×844：一次性邀请注册后 SSR 个人页显示实际昵称/邮箱，退出后恢复访客登录入口。修复 Strict Mode 重复 effect 清空邀请 token 的问题。未宣称真实 iPhone 或生产公网验证。
 - Compose 入口继续固定 Traefik HTTP 30075，无 TLS/证书端口；PUBLIC_APP_URL 用于浏览器 Origin 与 Secure Cookie，HTTPS 仍由用户在外部处理。
+
+## 2026-10-06 个人设置验证
+
+- 新增显式 profile_version 迁移、Rust UserSettings/UpdateProfileRequest 生成契约及受认证/Origin/CSRF 保护的 PATCH /api/v1/me/settings。字段 allowlist 禁止修改角色、邮箱或用户 ID；目标和语速必须属于指定档位，空昵称/空更新/无效时区均拒绝。
+- PostgreSQL 集成测试：设置从另一次登录读取；两个相同版本的并发写只有一个成功，另一请求 409；其他账号保持默认设置，越权字段被拒绝。全套迁移 up/down 通过。
+- 浏览器 390×844：改昵称、选择巴黎时区/每周 3 天、切换译文与 1.25 倍速，刷新后全部恢复；模拟另一设备更新，旧页面提示冲突并刷新已保存设置。320×740 页面宽度等于视口，没有横向溢出；自定义资料弹窗居中，时区搜索“巴黎”可选择结果。
+- 快速连续的阅读偏好修改在客户端按序提交版本，保留最新待保存视觉状态。网络异常不自动重放 PATCH；读取服务器现状并明确提示，编辑草稿保留。
+- 时区采用 [Jiff 0.2.37 的 IANA 数据库](https://docs.rs/jiff/0.2.37/jiff/tz/struct.TimeZoneDatabase.html)，包含 bundled fallback，避免 Windows 或精简容器缺少系统时区资料；后续复习排程使用同一来源。真实 iPhone、公网与学习进度仍待验收。

@@ -1,6 +1,6 @@
 use anyhow::{Context, Result, bail};
 use brioche_server::{AppState, development_fixture, entity, project_source, router};
-use sea_orm::{ActiveModelTrait, Database, Set};
+use sea_orm::{ActiveModelTrait, ConnectOptions, Database, Set};
 use sea_orm_migration::MigratorTrait;
 
 #[tokio::main]
@@ -22,13 +22,19 @@ async fn main() -> Result<()> {
     let db = if fixture && command == "serve" {
         None
     } else {
+        let mut options = ConnectOptions::new(
+            std::env::var("DATABASE_URL")
+                .map_err(|_| anyhow::anyhow!("DATABASE_URL is required for database mode"))?,
+        );
+        options
+            .sqlx_logging(false)
+            .max_connections(10)
+            .connect_timeout(std::time::Duration::from_secs(5))
+            .acquire_timeout(std::time::Duration::from_secs(5));
         Some(
-            Database::connect(
-                std::env::var("DATABASE_URL")
-                    .context("DATABASE_URL is required for database mode")?,
-            )
-            .await
-            .context("database connection failed")?,
+            Database::connect(options)
+                .await
+                .map_err(|_| anyhow::anyhow!("database connection failed"))?,
         )
     };
     match command.as_str() {

@@ -197,7 +197,36 @@ dto!(UserProfile {
     id: String,
     email: String,
     display_name: String,
-    role: String
+    role: String,
+    settings: UserSettings,
+    version: u32
+});
+dto!(UserSettings {
+    time_zone: String,
+    weekly_days: u8,
+    daily_minutes: u8,
+    show_translation: bool,
+    speech_rate: f64
+});
+impl Default for UserSettings {
+    fn default() -> Self {
+        Self {
+            time_zone: "Asia/Shanghai".into(),
+            weekly_days: 5,
+            daily_minutes: 10,
+            show_translation: false,
+            speech_rate: 1.0,
+        }
+    }
+}
+dto!(UpdateProfileRequest {
+    version: u32,
+    display_name: Option<String>,
+    time_zone: Option<String>,
+    weekly_days: Option<u8>,
+    daily_minutes: Option<u8>,
+    show_translation: Option<bool>,
+    speech_rate: Option<f64>
 });
 dto!(AuthResult {
     user: UserProfile,

@@ -166,7 +166,7 @@ async fn demo_grade(
 }
 async fn ready(State(state): State<Arc<AppState>>) -> Result<Json<serde_json::Value>, AppError> {
     if let Some(db) = &state.db {
-        db.execute_unprepared("SELECT 1 FROM lesson_revisions, users, browser_sessions, identity_tokens, auth_throttle LIMIT 0")
+        db.execute_unprepared("SELECT users.profile_version FROM lesson_revisions, users, browser_sessions, identity_tokens, auth_throttle LIMIT 0")
             .await
             .map_err(|_| AppError::Unavailable)?;
     } else if state.fixture.is_none() {

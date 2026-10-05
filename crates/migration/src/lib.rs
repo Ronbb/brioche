@@ -2,6 +2,7 @@ use sea_orm_migration::prelude::*;
 mod m20261006_000001_course_revisions;
 mod m20261006_000002_sessions;
 mod m20261006_000003_identity;
+mod m20261006_000004_profile;
 pub struct Migrator;
 #[async_trait::async_trait]
 impl MigratorTrait for Migrator {
@@ -10,6 +11,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20261006_000001_course_revisions::Migration),
             Box::new(m20261006_000002_sessions::Migration),
             Box::new(m20261006_000003_identity::Migration),
+            Box::new(m20261006_000004_profile::Migration),
         ]
     }
 }
