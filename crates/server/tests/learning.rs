@@ -13,6 +13,7 @@ use sea_orm::{
 use sea_orm_migration::MigratorTrait;
 use serde_json::{Value, json};
 use tower::ServiceExt;
+mod support;
 
 struct Browser {
     app: Router,
@@ -111,6 +112,7 @@ impl Browser {
 async fn publish(db: &DatabaseConnection, source: Value) {
     let lesson = project_source(source.clone()).unwrap();
     db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO lesson_revisions (lesson_id,revision,published,public_document,server_document) VALUES ($1,$2,true,$3,$4)",[lesson.id.clone().into(),(lesson.revision as i32).into(),serde_json::to_value(lesson).unwrap().into(),source.into()])).await.unwrap();
+    support::fixture_release(db).await;
 }
 async fn count(db: &DatabaseConnection, table: &str) -> i64 {
     db.query_one_raw(Statement::from_string(
@@ -125,6 +127,279 @@ async fn count(db: &DatabaseConnection, table: &str) -> i64 {
 }
 fn start_body(lesson: &str, key: &str) -> Value {
     json!({"lessonId":lesson,"schemaVersion":"1.0","idempotencyKey":key})
+}
+#[tokio::test]
+#[ignore = "set TEST_DATABASE_URL to a dedicated PostgreSQL database"]
+async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
+    use brioche_server::{AppError, content};
+    let url = std::env::var("TEST_DATABASE_URL").unwrap();
+    let admin = Database::connect(&url).await.unwrap();
+    let schema = format!(
+        "release_test_{}",
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    );
+    admin
+        .execute_unprepared(&format!("CREATE SCHEMA {schema}"))
+        .await
+        .unwrap();
+    let mut options = ConnectOptions::new(url);
+    options.set_schema_search_path(&schema).sqlx_logging(false);
+    let db = Database::connect(options).await.unwrap();
+    brioche_migration::Migrator::up(&db, None).await.unwrap();
+    // Synthetic review metadata is only for this isolated protocol test, never editorial evidence.
+    for (id, revision, reviewed) in [
+        ("release-z", 1, true),
+        ("release-z", 2, true),
+        ("release-a", 1, true),
+        ("release-draft", 1, false),
+    ] {
+        let mut source = development_source().unwrap();
+        source["id"] = json!(id);
+        source["revision"] = json!(revision);
+        if reviewed {
+            source["editorial"]["status"] = json!("reviewed");
+        }
+        let lesson = project_source(source.clone()).unwrap();
+        db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO lesson_revisions(lesson_id,revision,public_document,server_document) VALUES($1,$2,$3,$4)",[id.into(),revision.into(),serde_json::to_value(lesson).unwrap().into(),source.into()])).await.unwrap();
+    }
+    let manifest = |id: &str, revision: u32| -> content::ReleaseManifest {
+        serde_json::from_value(json!({"id":id,"schemaVersion":"1.0","levels":[{"id":"a1","label":"A1 入门","units":[{"id":"a1-breakfast-bakery","titleZh":"早餐与面包店","lessons":[{"lessonId":"release-z","revision":revision},{"lessonId":"release-a","revision":1}]}]}]})).unwrap()
+    };
+    assert!(content::catalog(&db).await.unwrap().levels.is_empty());
+    let mut bad = manifest("bad-draft", 1);
+    bad.levels[0].units[0].lessons[1].lesson_id = "release-draft".into();
+    assert!(matches!(
+        content::stage(&db, &bad, "tester", "draft rejected").await,
+        Err(AppError::InvalidInput)
+    ));
+    assert_eq!(count(&db, "content_releases").await, 0);
+    let mut missing = manifest("bad-missing", 1);
+    missing.levels[0].units[0].lessons[1].lesson_id = "missing".into();
+    assert!(matches!(
+        content::stage(&db, &missing, "tester", "missing reference").await,
+        Err(AppError::NotFound)
+    ));
+    let first = manifest("release-first", 1);
+    content::stage(&db, &first, "tester", "initial protocol fixture")
+        .await
+        .unwrap();
+    assert!(
+        content::catalog(&db).await.unwrap().levels.is_empty(),
+        "staging is private"
+    );
+    assert_eq!(
+        content::activate(&db, &first.id, 0, "tester", "initial activation")
+            .await
+            .unwrap(),
+        1
+    );
+    let catalog = content::catalog(&db).await.unwrap();
+    assert_eq!(catalog.levels[0].units[0].title_zh, "早餐与面包店");
+    assert_eq!(
+        catalog.levels[0].units[0]
+            .lessons
+            .iter()
+            .map(|l| l.id.as_str())
+            .collect::<Vec<_>>(),
+        ["release-z", "release-a"],
+        "explicit order beats lexical IDs"
+    );
+    let backend = Backend::new(db.clone()).await.unwrap();
+    let app = identity::router(
+        backend.clone(),
+        CsrfPolicy::new(["http://localhost:5173".into()]).unwrap(),
+        false,
+    );
+    let mut a = Browser::new(app.clone()).await;
+    a.account(&backend, "release-one@example.test").await;
+    let mut b = Browser::new(app.clone()).await;
+    b.account(&backend, "release-two@example.test").await;
+    let (_, old) = a
+        .send(
+            "POST",
+            "/api/v1/learning-sessions",
+            Some(start_body("release-z", "release-old-start")),
+            true,
+        )
+        .await;
+    assert_eq!(old["lesson"]["revision"], 1);
+    let newer = manifest("release-second", 2);
+    content::stage(&db, &newer, "tester", "second revision")
+        .await
+        .unwrap();
+    // Audit failure rolls back availability and pointer changes together.
+    db.execute_unprepared("ALTER TABLE content_audit ADD CONSTRAINT test_activate_failure CHECK(action<>'activate') NOT VALID").await.unwrap();
+    assert!(
+        content::activate(&db, &newer.id, 1, "tester", "injected failure")
+            .await
+            .is_err()
+    );
+    assert_eq!(
+        content::catalog(&db).await.unwrap().levels[0].units[0].lessons[0].revision,
+        1
+    );
+    let published: bool = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT published FROM lesson_revisions WHERE lesson_id='release-z' AND revision=2",
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get("", "published")
+        .unwrap();
+    assert!(!published);
+    db.execute_unprepared("ALTER TABLE content_audit DROP CONSTRAINT test_activate_failure")
+        .await
+        .unwrap();
+    let (left, right) = tokio::join!(
+        content::activate(&db, &newer.id, 1, "tester-a", "concurrent activation"),
+        content::activate(&db, &first.id, 1, "tester-b", "concurrent rollback")
+    );
+    assert!(matches!(
+        (&left, &right),
+        (Ok(2), Err(AppError::Conflict)) | (Err(AppError::Conflict), Ok(2))
+    ));
+    assert_eq!(
+        content::activate(&db, &newer.id, 2, "tester", "select new version")
+            .await
+            .unwrap(),
+        3
+    );
+    let (_, current) = b
+        .send(
+            "POST",
+            "/api/v1/learning-sessions",
+            Some(start_body("release-z", "release-new-start")),
+            true,
+        )
+        .await;
+    assert_eq!(current["lesson"]["revision"], 2);
+    let old_path = format!(
+        "/api/v1/learning-sessions/{}",
+        old["progress"]["id"].as_str().unwrap()
+    );
+    assert_eq!(
+        a.send("GET", &old_path, None, true).await.1["lesson"]["revision"],
+        1
+    );
+    assert_eq!(
+        content::activate(&db, &first.id, 3, "tester", "ordinary rollback")
+            .await
+            .unwrap(),
+        4
+    );
+    let new_path = format!(
+        "/api/v1/learning-sessions/{}",
+        current["progress"]["id"].as_str().unwrap()
+    );
+    assert_eq!(
+        b.send("GET", &new_path, None, true).await.1["lesson"]["revision"],
+        2,
+        "rollback does not withdraw pinned content"
+    );
+    let public_app = brioche_server::router(brioche_server::AppState {
+        db: Some(db.clone()),
+        fixture: None,
+    });
+    for (path, status, revision) in [
+        ("/api/lessons/release-z", 200, 1),
+        ("/api/lessons/release-z?revision=2", 200, 2),
+        ("/api/lessons/release-z?revision=0", 400, 0),
+    ] {
+        let response = public_app
+            .clone()
+            .oneshot(Request::builder().uri(path).body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+        assert_eq!(response.status().as_u16(), status);
+        if status == 200 {
+            let bytes = response.into_body().collect().await.unwrap().to_bytes();
+            let document: Value = serde_json::from_slice(&bytes).unwrap();
+            assert_eq!(document["revision"], revision);
+        }
+    }
+    assert_eq!(
+        content::withdraw(&db, "release-z", 2, 4, "tester", "hard withdrawal")
+            .await
+            .unwrap(),
+        5
+    );
+    assert_eq!(b.send("GET", &new_path, None, true).await.0, 410);
+    let response = public_app
+        .oneshot(
+            Request::builder()
+                .uri("/api/lessons/release-z?revision=2")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), 410);
+    assert!(matches!(
+        content::activate(&db, &newer.id, 5, "tester", "cannot restore withdrawn").await,
+        Err(AppError::Gone)
+    ));
+    assert!(
+        db.execute_unprepared(
+            "UPDATE lesson_revisions SET published=true WHERE lesson_id='release-z' AND revision=2"
+        )
+        .await
+        .is_err()
+    );
+    assert!(db.execute_unprepared("UPDATE lesson_revisions SET public_document=jsonb_set(public_document,'{summaryZh}','\"changed\"') WHERE lesson_id='release-z' AND revision=1").await.is_err());
+    assert!(
+        db.execute_unprepared("UPDATE content_releases SET manifest='{}'")
+            .await
+            .is_err()
+    );
+    assert!(
+        db.execute_unprepared("DELETE FROM content_audit")
+            .await
+            .is_err()
+    );
+    assert!(db.execute_unprepared("INSERT INTO release_entries(release_id,lesson_id,revision,position) VALUES('release-first','release-draft',1,2)").await.is_err());
+    assert_eq!(
+        content::withdraw(&db, "release-z", 1, 5, "tester", "withdraw current")
+            .await
+            .unwrap(),
+        6
+    );
+    assert_eq!(
+        content::catalog(&db).await.unwrap().levels[0].units[0]
+            .lessons
+            .len(),
+        1
+    );
+    let dashboard = a.send("GET", "/api/v1/me/dashboard", None, true).await.1;
+    assert_eq!(dashboard["recommendedLesson"]["id"], "release-a");
+    assert_eq!(
+        dashboard["catalog"]["levels"][0]["units"][0]["lessons"][0]["id"],
+        dashboard["recommendedLesson"]["id"]
+    );
+    assert!(dashboard["resume"].is_null());
+    let empty: content::ReleaseManifest =
+        serde_json::from_value(json!({"id":"release-empty","schemaVersion":"1.0","levels":[]}))
+            .unwrap();
+    content::stage(&db, &empty, "tester", "empty directory")
+        .await
+        .unwrap();
+    assert_eq!(
+        content::activate(&db, &empty.id, 6, "tester", "empty release")
+            .await
+            .unwrap(),
+        7
+    );
+    assert!(content::catalog(&db).await.unwrap().levels.is_empty());
+    brioche_migration::Migrator::down(&db, None).await.unwrap();
+    drop(db);
+    admin
+        .execute_unprepared(&format!("DROP SCHEMA {schema} CASCADE"))
+        .await
+        .unwrap();
 }
 #[tokio::test]
 #[ignore = "set TEST_DATABASE_URL to a dedicated PostgreSQL database"]

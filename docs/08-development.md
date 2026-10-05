@@ -16,7 +16,7 @@
 - 账号模块：邀请注册、登录、退出、密码恢复，Argon2id 密码哈希、PostgreSQL 会话与一次性 token、精确 Origin + CSRF、持久化登录限流及过期清理。Web 增加 `/login`、`/invite`、`/reset-password`，SSR 从 Cookie 读取实际身份，私有响应禁止缓存。
 - 个人资料与设置：昵称、IANA 时区、每周 3/5/7 天与每天 5/10/15 分钟目标、中文译文和 0.75/1/1.25/1.5 倍速。登录用户跨设备保存，访客保留浏览内设置；个人页使用可搜索的自定义时区面板。版本锁拒绝旧设备覆盖，失败保留编辑草稿，读取最新状态后明确重试。
 - 账号学习：`/learning/:sessionId` 按结构数据遍历所有步骤和正文块；服务端固定课程 revision，保存步骤、提示、首次及重试答案，确认完成后生成去重复习卡片。首页显示真实续学入口和课程完成记录。账号 `/reviews` 提供每批最多 10 项到期队列、自评与保存回顾；收藏与复习管理见下文。
-- 学习概览：`GET /api/v1/me/dashboard` 在一致性快照中读取个人目标、周学习事实、到期数量/下一次复习与实际续学。按个人 IANA 时区的周一至周日统计步骤确认、练习提交、复习自评和首次完成，打开页面/创建会话与幂等重试不产生额外活动。每天分钟数是设定的目标，没有假装测量已学时长；撤回课程保留历史完成总数，但屏蔽正文、续学和复习入口。续学读取全部最新课程状态，不受 20 项概览分页截断。首页按真实等级/单元组织目录并使用固定版本续学内容；当前推荐按未学过优先、课程 ID 稳定排序，教学顺序仍待目录 release 实现。
+- 学习概览：`GET /api/v1/me/dashboard` 在一致性快照中读取个人目标、周学习事实、到期数量/下一次复习与实际续学。按个人 IANA 时区的周一至周日统计步骤确认、练习提交、复习自评和首次完成，打开页面/创建会话与幂等重试不产生额外活动。每天分钟数是设定的目标，没有假装测量已学时长；撤回课程保留历史完成总数，但屏蔽正文、续学和复习入口。续学读取全部最新课程状态，不受 20 项概览分页截断。首页按真实等级/单元组织目录并使用固定版本续学内容；推荐按未学过优先、active release 的明确教学顺序排列。
 
 ## 本机开发
 
@@ -49,7 +49,26 @@ cargo run -p brioche-server -- migrate
 cargo run -p brioche-server -- import docs/examples/a1-bakery.lesson.json
 ```
 
-不带 `--publish` 导入不可见草稿；带 `--publish` 要求 `editorial.status=reviewed`。本示例未审校，禁止为测试上线而直接改状态。相同 `(lesson_id, revision)` 重复导入失败，不覆盖已有快照。正式发布流程还需内容哈希、媒体授权检查、目录 release、审计及撤回机制；当前导入工具不能替代完整发布流程。
+导入始终创建不可见 revision；旧的 `--publish` 参数被明确拒绝，改用目录 release 原子发布。本示例未审校，禁止为测试上线而直接改状态。相同 `(lesson_id, revision)` 重复导入失败，数据库触发器也拒绝改写或删除已有正文/私有答案；审校后重新导入需要新 revision。
+
+### 目录 release 操作
+
+`docs/examples/catalog.release.json` 展示显式等级/单元名称与课程 revision 的顺序。它引用未审校示例，正常 stage 会拒绝，不能作为正式发布包。生产模式没有 active release 时目录为空；迁移不自动把历史 published 记录当作审校并启用。
+
+对已完成审校的正式内容，本地管理员 CLI 支持以下流程（`actor` 是操作者记录，不是自动验证过的账号身份）：
+
+```sh
+cargo run -p brioche-server -- release-status
+cargo run -p brioche-server -- release-stage <manifest.json> <actor> <reason>
+cargo run -p brioche-server -- release-activate <release-id> <expected-generation> <actor> <reason>
+cargo run -p brioche-server -- content-withdraw <lesson-id> <revision> <expected-generation> <actor> <reason>
+```
+
+stage 校验整个清单、唯一 ID/引用、正文与私有规则一致、结构/语义和审校状态。清单顺序与每个私有完整源 JSON 的 SHA-256 共同组成 release 内容哈希；JSON 空白/对象键顺序不影响哈希，数组顺序保留。整批入库与审计同事务，stage 不公开目录。发布要求当前 generation 一致，在事务中启用引用版本、切换唯一指针和写审计；原包、目录条目与审计不可改写。回滚用相同 activate 命令选择以前的 release，新会话跟随指针，已有会话与复习继续固定旧 revision。硬撤回记录不可逆，阻止正文/新提交/复习与旧成功响应重放；包含撤回 revision 的 release 不能再激活。撤回后目录过滤空单元/等级，历史事实保留。空清单可显式停止新课程入口。
+
+**仍待完成**：媒体实际文件哈希/授权和角色库快照发布校验、可预览 staging 页面、完整作者错误定位与课程搜索。本轮 CLI 只证明发布事务边界；内容审核与媒体门槛未全部实现，不能据此宣称正式课程已可上线。
+
+公开 `/api/lessons/:id` 默认读取 active release；`?revision=N` 精确读取曾启用且未撤回的不可变版本，draft 不可见。学习概览同一数据库快照包含目录与推荐，SSR 首页按返回的 revision 取正文，避免发布恰好切换时混合两个版本。普通回滚仍可读取旧公开快照，硬撤回的精确版本返回 410。
 
 ## 实际检查命令
 
@@ -102,7 +121,7 @@ cargo run -p brioche-server -- reset-password learner@example.com .local/reset-l
 
 登录用户通过 `POST /api/v1/learning-sessions` 开始或恢复当前课程，通过 `GET /api/v1/learning-sessions/:id` 读取固定版本与进度。`PUT .../steps/:stepId` 确认步骤、`POST .../attempts` 提交答案、`POST .../hints/:exerciseId` 记录提示、`POST .../complete` 完成本课；写入携带版本和幂等键，答案只由 Rust 判分。`GET /api/v1/me/learning` 提供每课最近记录与游标分页。所有读写验证会话所有者，写入同时验证 Origin/CSRF。完成要求必需步骤确认与必需题目尝试，不要求全部答对；首次完成时间保持不变。
 
-步骤、判分记录、幂等结果和完成时复习卡片在事务中保存。相同键/载荷返回原结果，不同载荷拒绝；旧版本返回 409；固定快照撤回后返回 410，包括原幂等结果。浏览器遇到未确认的提交保留原请求和答案，明确重试原键，不自动生成第二次尝试。当前重试保留限于当前页面，刷新或离开后的未提交草稿恢复仍待补齐。完整 release/硬撤回管理工具尚待实现。
+步骤、判分记录、幂等结果和完成时复习卡片在事务中保存。相同键/载荷返回原结果，不同载荷拒绝；旧版本返回 409；固定快照撤回后返回 410，包括原幂等结果。浏览器遇到未确认的提交保留原请求和答案，明确重试原键，不自动生成第二次尝试。当前重试保留限于当前页面，刷新或离开后的未提交草稿恢复仍待补齐。目录发布与硬撤回由上述 CLI 管理。
 
 独立 `/practice/:lessonId` 和 `/review/:lessonId` 仍为演示流程，不保存账号复习自评；账号学习完成生成复习卡片，账号 `/reviews` 自评已持久化；其他验收缺口仍按 [实现清单](09-implementation-tracker.md) 继续实施。
 

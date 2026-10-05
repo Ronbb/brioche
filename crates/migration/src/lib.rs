@@ -6,6 +6,7 @@ mod m20261006_000004_profile;
 mod m20261006_000005_learning;
 mod m20261006_000006_reviews;
 mod m20261006_000007_saved;
+mod m20261006_000008_releases;
 pub struct Migrator;
 #[async_trait::async_trait]
 impl MigratorTrait for Migrator {
@@ -18,6 +19,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20261006_000005_learning::Migration),
             Box::new(m20261006_000006_reviews::Migration),
             Box::new(m20261006_000007_saved::Migration),
+            Box::new(m20261006_000008_releases::Migration),
         ]
     }
 }

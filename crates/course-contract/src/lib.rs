@@ -299,7 +299,7 @@ dto!(StudyDay {
     completed_lessons: u32,
     active: bool
 });
-dto!(StudyDashboard { local_date: String, time_zone: String, week_start: String, days: Vec<StudyDay>, active_days: u8, weekly_goal_days: u8, daily_goal_minutes: u8, due_reviews: u32, next_review_at: Option<String>, completed_lessons: u32, resume: Option<LearningOverviewItem>, recommended_lesson: Option<LessonSummary>, all_available_completed: bool, course_states: Vec<LearningOverviewItem> });
+dto!(StudyDashboard { local_date: String, time_zone: String, week_start: String, days: Vec<StudyDay>, active_days: u8, weekly_goal_days: u8, daily_goal_minutes: u8, due_reviews: u32, next_review_at: Option<String>, completed_lessons: u32, resume: Option<LearningOverviewItem>, recommended_lesson: Option<LessonSummary>, all_available_completed: bool, course_states: Vec<LearningOverviewItem>, catalog: Catalog });
 dto!(UserProfile {
     id: String,
     email: String,

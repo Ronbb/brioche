@@ -48,14 +48,22 @@ async function api<T>(path: string): Promise<T> {
   }
   if (!response.ok)
     throw new Response(
-      response.status === 404 ? "没有找到这堂课程。" : "课程服务暂时不可用。",
+      response.status === 404
+        ? "没有找到这堂课程。"
+        : response.status === 410
+          ? "课程已撤回，暂时无法继续学习。"
+          : "课程服务暂时不可用。",
       { status: response.status },
     );
   return response.json() as Promise<T>;
 }
 export const getCatalog = () => api<Catalog>("/api/catalog");
-export const getLesson = (id: string) =>
-  api<PublicLesson>("/api/lessons/" + encodeURIComponent(id));
+export const getLesson = (id: string, revision?: number) =>
+  api<PublicLesson>(
+    "/api/lessons/" +
+      encodeURIComponent(id) +
+      (revision ? "?revision=" + revision : ""),
+  );
 export async function getIdentity(
   request: Request,
 ): Promise<{ user: UserProfile | null; enabled: boolean }> {

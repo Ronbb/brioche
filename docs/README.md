@@ -15,6 +15,7 @@
 | [实现与验收清单](09-implementation-tracker.md) | 完整功能目标的状态、缺口与验收证据 |
 | [决策记录](decisions/0001-foundation.md) | 关键选择的依据、代价及重新评估条件 |
 | [示例课程](examples/a1-bakery.lesson.json) | 用一堂面包店课程检验数据设计 |
+| [目录 release 示例](examples/catalog.release.json) | 显式名称、课程 revision 与教学顺序；引用未审校示例，不能直接发布 |
 | [示例课程 Schema](examples/lesson.schema.json) | v0.1 数据契约草案；不等于已实现解释器 |
 | [界面概念稿](preview/index.html) | 可切换首页、阅读、练习、复习与个人设置的静态交互提案 |
 

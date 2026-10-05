@@ -156,8 +156,8 @@ async fn dashboard(
         .cloned();
     let totals=one(&tx,&format!("SELECT count(*) FILTER (WHERE c.due_at <= $2::timestamptz)::bigint AS due,to_char(min(c.due_at) FILTER (WHERE c.due_at > $2::timestamptz) AT TIME ZONE 'UTC','{STAMP}') AS next FROM review_cards c JOIN lesson_revisions r ON (r.lesson_id,r.revision)=(c.source_lesson_id,c.source_revision) WHERE c.user_id=$1 AND NOT c.suspended AND r.published"),vec![user.into(),now.to_string().into()]).await?.ok_or(AppError::Unavailable)?;
     let completed=one(&tx,"SELECT count(*)::bigint AS n FROM lesson_progress WHERE user_id=$1 AND first_completed_at IS NOT NULL",vec![user.into()]).await?.ok_or(AppError::Unavailable)?;
-    // Prefer courses without a first completion. The catalog release will later supply editorial order.
-    let recommendation=one(&tx,"SELECT r.public_document,EXISTS(SELECT 1 FROM lesson_progress p WHERE p.user_id=$1 AND p.lesson_id=r.lesson_id AND p.first_completed_at IS NOT NULL) AS learned FROM (SELECT DISTINCT ON(lesson_id) lesson_id,public_document FROM lesson_revisions WHERE published ORDER BY lesson_id,revision DESC) r ORDER BY learned,r.lesson_id LIMIT 1",vec![user.into()]).await?;
+    // Prefer unfinished courses in the active release's explicit editorial order.
+    let recommendation=one(&tx,"SELECT r.public_document,EXISTS(SELECT 1 FROM lesson_progress p WHERE p.user_id=$1 AND p.lesson_id=r.lesson_id AND p.first_completed_at IS NOT NULL) AS learned FROM content_state s JOIN release_entries e ON e.release_id=s.active_release JOIN lesson_revisions r ON (r.lesson_id,r.revision)=(e.lesson_id,e.revision) WHERE s.singleton AND r.published ORDER BY learned,e.position LIMIT 1",vec![user.into()]).await?;
     let (recommended_lesson, all_available_completed) = if let Some(row) = recommendation {
         let lesson: PublicLesson = serde_json::from_value(field(&row, "public_document")?)
             .map_err(|_| AppError::Unavailable)?;
@@ -167,6 +167,7 @@ async fn dashboard(
         (None, false)
     };
     let result = StudyDashboard {
+        catalog: crate::content::catalog(&tx).await?,
         local_date: today.to_string(),
         time_zone: settings.time_zone,
         week_start: days

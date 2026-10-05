@@ -1,3 +1,4 @@
+pub mod content;
 pub mod csrf;
 pub mod dashboard;
 pub mod entity;
@@ -10,7 +11,7 @@ pub mod reviews;
 pub mod session_store;
 use axum::{
     Json, Router,
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::{HeaderMap, StatusCode},
     response::{IntoResponse, Response},
     routing::{get, post},
@@ -18,7 +19,7 @@ use axum::{
 use brioche_course_contract::{
     ApiError, Catalog, GradeRequest, GradeResult, Level, PublicLesson, Unit,
 };
-use sea_orm::{ColumnTrait, ConnectionTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement};
 use std::{collections::BTreeMap, sync::Arc};
 
 pub struct AppState {
@@ -31,24 +32,18 @@ impl AppState {
             return Ok(vec![lesson.clone()]);
         }
         let db = self.db.as_ref().ok_or(AppError::Unavailable)?;
-        let rows = entity::Entity::find()
-            .filter(entity::Column::Published.eq(true))
-            .all(db)
-            .await
-            .map_err(|_| AppError::Unavailable)?;
-        let mut latest = BTreeMap::new();
+        let rows = db.query_all_raw(Statement::from_string(DbBackend::Postgres,
+            "SELECT r.public_document FROM content_state s JOIN release_entries e ON e.release_id=s.active_release JOIN lesson_revisions r ON (r.lesson_id,r.revision)=(e.lesson_id,e.revision) WHERE s.singleton AND r.published ORDER BY e.position"
+        )).await.map_err(|_| AppError::Unavailable)?;
+        let mut lessons = Vec::new();
         for row in rows {
             let lesson: PublicLesson =
-                serde_json::from_value(row.public_document).map_err(|_| AppError::Unavailable)?;
+                serde_json::from_value(learning::field(&row, "public_document")?)
+                    .map_err(|_| AppError::Unavailable)?;
             lesson.validate().map_err(|_| AppError::Unavailable)?;
-            if latest
-                .get(&lesson.id)
-                .is_none_or(|old: &PublicLesson| old.revision < lesson.revision)
-            {
-                latest.insert(lesson.id.clone(), lesson);
-            }
+            lessons.push(lesson);
         }
-        Ok(latest.into_values().collect())
+        Ok(lessons)
     }
 }
 #[derive(Debug)]
@@ -176,7 +171,7 @@ async fn demo_grade(
 }
 async fn ready(State(state): State<Arc<AppState>>) -> Result<Json<serde_json::Value>, AppError> {
     if let Some(db) = &state.db {
-        db.execute_unprepared("SELECT users.profile_version FROM lesson_revisions, users, browser_sessions, identity_tokens, auth_throttle, learning_sessions, review_cards, review_attempts, saved_items LIMIT 0")
+        db.execute_unprepared("SELECT users.profile_version FROM lesson_revisions, users, browser_sessions, identity_tokens, auth_throttle, learning_sessions, review_cards, review_attempts, saved_items, content_state, content_releases, content_withdrawals LIMIT 0")
             .await
             .map_err(|_| AppError::Unavailable)?;
     } else if state.fixture.is_none() {
@@ -185,6 +180,9 @@ async fn ready(State(state): State<Arc<AppState>>) -> Result<Json<serde_json::Va
     Ok(Json(serde_json::json!({"status":"ready"})))
 }
 async fn catalog(State(state): State<Arc<AppState>>) -> Result<Json<Catalog>, AppError> {
+    if let Some(db) = &state.db {
+        return content::catalog(db).await.map(Json);
+    }
     let mut levels: BTreeMap<String, BTreeMap<String, Vec<_>>> = BTreeMap::new();
     for lesson in state.lessons().await? {
         levels
@@ -217,10 +215,42 @@ async fn catalog(State(state): State<Arc<AppState>>) -> Result<Json<Catalog>, Ap
             .collect(),
     }))
 }
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct LessonQuery {
+    revision: Option<u32>,
+}
 async fn lesson(
     State(state): State<Arc<AppState>>,
     Path(id): Path<String>,
+    Query(query): Query<LessonQuery>,
 ) -> Result<Json<PublicLesson>, AppError> {
+    if let Some(revision) = query.revision {
+        if revision == 0 || revision > i32::MAX as u32 {
+            return Err(AppError::InvalidInput);
+        }
+        if let Some(fixture) = &state.fixture {
+            return if fixture.id == id && fixture.revision == revision {
+                Ok(Json(fixture.clone()))
+            } else {
+                Err(AppError::NotFound)
+            };
+        }
+        let db = state.db.as_ref().ok_or(AppError::Unavailable)?;
+        let row=learning::one(db,"SELECT public_document,published,EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(r.lesson_id,r.revision)) AS withdrawn FROM lesson_revisions r WHERE lesson_id=$1 AND revision=$2",vec![id.into(),(revision as i32).into()]).await?.ok_or(AppError::NotFound)?;
+        if !learning::field::<bool>(&row, "published")? {
+            return Err(if learning::field::<bool>(&row, "withdrawn")? {
+                AppError::Gone
+            } else {
+                AppError::NotFound
+            });
+        }
+        let lesson: PublicLesson =
+            serde_json::from_value(learning::field(&row, "public_document")?)
+                .map_err(|_| AppError::Unavailable)?;
+        lesson.validate().map_err(|_| AppError::Unavailable)?;
+        return Ok(Json(lesson));
+    }
     state
         .lessons()
         .await?

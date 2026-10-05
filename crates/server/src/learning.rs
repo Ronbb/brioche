@@ -309,7 +309,15 @@ async fn start(
     let id = if let Some(existing) = existing {
         field::<String>(&existing, "id")?
     } else {
-        let row = one(&tx,"SELECT revision,public_document FROM lesson_revisions WHERE lesson_id=$1 AND published=true ORDER BY revision DESC LIMIT 1 FOR SHARE",vec![request.lesson_id.clone().into()]).await?.ok_or(AppError::NotFound)?;
+        let state = one(
+            &tx,
+            "SELECT active_release FROM content_state WHERE singleton FOR SHARE",
+            vec![],
+        )
+        .await?
+        .ok_or(AppError::Unavailable)?;
+        let release: Option<String> = field(&state, "active_release")?;
+        let row = one(&tx,"SELECT r.revision,r.public_document FROM release_entries e JOIN lesson_revisions r ON (r.lesson_id,r.revision)=(e.lesson_id,e.revision) WHERE e.release_id=$1 AND e.lesson_id=$2 AND r.published FOR SHARE OF r",vec![release.into(),request.lesson_id.clone().into()]).await?.ok_or(AppError::NotFound)?;
         let lesson: PublicLesson = serde_json::from_value(field(&row, "public_document")?)
             .map_err(|_| AppError::Unavailable)?;
         lesson.validate().map_err(|_| AppError::Unavailable)?;

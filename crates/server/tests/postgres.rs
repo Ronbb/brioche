@@ -3,6 +3,7 @@ use brioche_server::{AppState, development_fixture, entity, router};
 use sea_orm::{ActiveModelTrait, ConnectOptions, ConnectionTrait, Database, Set};
 use sea_orm_migration::MigratorTrait;
 use tower::ServiceExt;
+mod support;
 
 #[tokio::test]
 #[ignore = "set TEST_DATABASE_URL to a dedicated PostgreSQL database"]
@@ -65,6 +66,7 @@ async fn migrations_publication_and_revision_uniqueness() {
     .insert(&db)
     .await
     .unwrap();
+    support::fixture_release(&db).await;
     let response = app.oneshot(request()).await.unwrap();
     assert_eq!(response.status(), 200);
     use http_body_util::BodyExt;

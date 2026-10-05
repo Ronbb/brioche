@@ -14,10 +14,11 @@ import { useLearning } from "../components/learning";
 import { Icon } from "../components/icon";
 import type { Route } from "./+types/home";
 export async function loader({ request }: Route.LoaderArgs) {
-  const [catalog, identity] = await Promise.all([
+  const [initialCatalog, identity] = await Promise.all([
     getCatalog(),
     getIdentity(request),
   ]);
+  let catalog = initialCatalog;
   let learning: StudyDashboard | null = null;
   if (identity.user) {
     try {
@@ -25,6 +26,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         request,
         "/api/v1/me/dashboard",
       );
+      catalog = learning.catalog;
     } catch (error) {
       if (!(error instanceof Response && error.status === 401)) throw error;
     }
@@ -42,9 +44,12 @@ export async function loader({ request }: Route.LoaderArgs) {
           )
         ).lesson
       : learning?.recommendedLesson
-        ? await getLesson(learning.recommendedLesson.id)
+        ? await getLesson(
+            learning.recommendedLesson.id,
+            learning.recommendedLesson.revision,
+          )
         : first
-          ? await getLesson(first.id)
+          ? await getLesson(first.id, first.revision)
           : null,
     learning,
   };

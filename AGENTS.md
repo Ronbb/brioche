@@ -2,7 +2,7 @@
 
 ## 项目阶段与阅读顺序
 
-当前进入工程开发，已有 React Router SSR Web、Rust 课程读取/判分 API、邀请认证、跨设备个人设置、固定版本学习提交/续学与 SeaORM 迁移。先读 `docs/README.md`、`docs/08-development.md` 和 `docs/09-implementation-tracker.md`，再按任务读对应文档。已有账号复习排程、收藏和复习管理；完整内容发布仍未实现，不要把计划或设计稿当成已实现功能。
+当前进入工程开发，已有 React Router SSR Web、Rust 课程读取/判分 API、邀请认证、跨设备个人设置、固定版本学习提交/续学与 SeaORM 迁移。先读 `docs/README.md`、`docs/08-development.md` 和 `docs/09-implementation-tracker.md`，再按任务读对应文档。已有账号复习排程、收藏、实际学习概览和目录 release 的原子切换/回滚/硬撤回；媒体与角色库发布校验仍未完成，不要把计划或设计稿当成已实现功能。
 
 若存在 `AGENTS.local.md`，也读取它；它是本机补充资料，应被显式读取，不假定工具自动加载。用户当次指令和已确认偏好优先于这里的约定。
 

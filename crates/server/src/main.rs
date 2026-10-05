@@ -1,6 +1,6 @@
 use anyhow::{Context, Result, bail};
 use brioche_server::{AppState, development_fixture, entity, project_source, router};
-use sea_orm::{ActiveModelTrait, ConnectOptions, Database, Set};
+use sea_orm::{ActiveModelTrait, ConnectOptions, ConnectionTrait, Database, Set};
 use sea_orm_migration::MigratorTrait;
 
 #[tokio::main]
@@ -38,6 +38,70 @@ async fn main() -> Result<()> {
         )
     };
     match command.as_str() {
+        "release-stage" => {
+            let args: Vec<String> = std::env::args().skip(2).collect();
+            if args.len() != 3 {
+                bail!("usage: release-stage <manifest.json> <actor> <reason>");
+            }
+            let manifest = brioche_server::content::ReleaseManifest::deserialize_file(&args[0])?;
+            brioche_server::content::stage(db.as_ref().unwrap(), &manifest, &args[1], &args[2])
+                .await?;
+            tracing::info!("immutable directory release staged");
+            return Ok(());
+        }
+        "release-activate" | "content-withdraw" => {
+            let args: Vec<String> = std::env::args().skip(2).collect();
+            let generation = if command == "release-activate" {
+                if args.len() != 4 {
+                    bail!(
+                        "usage: release-activate <release-id> <expected-generation> <actor> <reason>"
+                    );
+                }
+                brioche_server::content::activate(
+                    db.as_ref().unwrap(),
+                    &args[0],
+                    args[1].parse()?,
+                    &args[2],
+                    &args[3],
+                )
+                .await?
+            } else {
+                if args.len() != 5 {
+                    bail!(
+                        "usage: content-withdraw <lesson-id> <revision> <expected-generation> <actor> <reason>"
+                    );
+                }
+                brioche_server::content::withdraw(
+                    db.as_ref().unwrap(),
+                    &args[0],
+                    args[1].parse()?,
+                    args[2].parse()?,
+                    &args[3],
+                    &args[4],
+                )
+                .await?
+            };
+            println!("content generation: {generation}");
+            return Ok(());
+        }
+        "release-status" => {
+            let row = db
+                .as_ref()
+                .unwrap()
+                .query_one_raw(sea_orm::Statement::from_string(
+                    sea_orm::DbBackend::Postgres,
+                    "SELECT active_release,generation FROM content_state WHERE singleton",
+                ))
+                .await?
+                .context("content state missing")?;
+            let release: Option<String> = row.try_get("", "active_release")?;
+            let generation: i64 = row.try_get("", "generation")?;
+            println!(
+                "{}",
+                serde_json::json!({"activeRelease":release,"generation":generation})
+            );
+            return Ok(());
+        }
         "migrate" => {
             brioche_migration::Migrator::up(db.as_ref().unwrap(), None).await?;
             tracing::info!("migrations complete");
@@ -46,13 +110,11 @@ async fn main() -> Result<()> {
         "import" => {
             let file = std::env::args()
                 .nth(2)
-                .context("usage: brioche-server import <lesson.json> [--publish]")?;
+                .context("usage: brioche-server import <lesson.json>")?;
             let source: serde_json::Value = serde_json::from_slice(&std::fs::read(file)?)?;
             let publish = std::env::args().any(|arg| arg == "--publish");
-            if publish
-                && source.pointer("/editorial/status").and_then(|v| v.as_str()) != Some("reviewed")
-            {
-                bail!("only reviewed content can be published");
+            if publish {
+                bail!("use release-stage and release-activate to publish an atomic directory");
             }
             let lesson = project_source(source.clone())?;
             brioche_server::grading::Grader::from_source(&lesson, &source)
@@ -60,7 +122,7 @@ async fn main() -> Result<()> {
             entity::ActiveModel {
                 lesson_id: Set(lesson.id.clone()),
                 revision: Set(i32::try_from(lesson.revision)?),
-                published: Set(publish),
+                published: Set(false),
                 public_document: Set(serde_json::to_value(&lesson)?),
                 server_document: Set(source),
             }
