@@ -8,6 +8,7 @@
     "build": "pnpm --filter @brioche/web build",
     "typecheck": "pnpm --filter @brioche/web typecheck",
     "test:web": "node --experimental-strip-types --test apps/web/tests/*.test.ts",
+    "test:ops": "node --test scripts/tests/*.test.mjs",
     "contracts": "cargo run -p brioche-course-contract --example export && cargo run -p brioche-server --example export_author_schema"
   },
   "devDependencies": {

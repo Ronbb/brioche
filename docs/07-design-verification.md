@@ -327,3 +327,12 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 - stage_author 与原 stage 共用单一事务实现、发布条件和锁顺序。作者入口定位重复 release id、缺失/撤回课程 revision、未审校课程、目录/固定投影不匹配、私有规则或媒体发布校验失败；原 stage 将详细诊断转换为相同 AppError，不向 HTTP 返回作者信息。媒体内部原因目前归于具体目录课程项，未假称每个文件故障已有独立字段位置。
 - 新增离线 preflight 测试使用不可达数据库地址；新增真实 author_runtime CLI PostgreSQL 测试，按原 CRLF 文本独立计算行/Unicode 列，覆盖上述登记、判分、版本、目录和审校故障，损坏素材后拒绝并恢复文件，成功导入/staging、重复批次与撤回拒绝。核对失败后 release/entries/audit 没有新增，成功 staging 仍不激活目录、不改变 generation、不公开课程；仅测试 schema 使用合成 reviewed 标记。CI 已增加该显式 ignored 集成测试命令。
 - Rust workspace 42 项单元测试、7 项离线 CLI 测试、fmt 与 all-targets clippy 通过。专用 PostgreSQL 容器 brioche-author-runtime-qa、数据库 brioche_author_runtime_qa 中实际运行新作者 CLI 测试和现有两项 learning 测试，三项均通过，覆盖原有学习与发布事务/回滚/撤回行为；identity/postgres/recording 三项本轮未运行。未更改公共 DTO/Schema、Web 或数据库结构。素材/录音导入包与媒体内部细分诊断、正式教学审校和设备体验仍待完善。
+
+## 2026-10-06：Docker 数据库与媒体实际备份恢复
+
+- 新增 Node 运维工具 `scripts/backup.mjs` 的 backup/verify/restore。custom-format dump 以有界二进制流写入；不可变媒体登记在 dump 后读取，复制所有登记的图片/音频并核对 SHA-256，最后写入完整 manifest。只读/无网络 helper 使用实际数据库容器 image ID；不会复制环境秘密或创建自动调度。输出目录不覆盖，文件/目录有界并检查常规类型、大小、哈希及对象名，不接受路径穿越/重复媒体项。恢复要求相同 PostgreSQL major、新数据库/新媒体卷、操作标签，使用单事务与 no-owner/no-acl，写入 UID 10001 并重新校验哈希，不切换应用或线上目录。流传输也检查源文件被改写，失败保留现场。
+- 真实应用演练使用仅 loopback 暴露的 brioche-backup-qa / brioche_browser_qa：运行全部 10 个实际迁移，创建合成账号及记录，保存三个学习步骤、一个练习尝试、收藏、复习加入和自评、登录会话；登记四个测试 SVG 与一个合成 WAV。实际备份 database.dump 70395 字节与五个对象，恢复到新数据库 brioche_restore_qa 和新媒体卷；核对迁移数、active release/generation、练习/复习记录。
+- 以恢复副本在隔离 API 3004 运行：备份前 cookie 仍可访问所属账号，重新登录成功；完整 progress、收藏列表、复习历史与之前逐项一致，复习 stage=1/version=2/dueAt 保留，概览续学与周活动一致；恢复音频整文件 200 的实际哈希和 bytes=0-99 的 206/100 字节均通过。只使用协议账号与未审校合成内容，不作教学或生产上线证明。
+- 负例实际拒绝已存在数据库、已存在媒体卷、被改动的 dump 和同一备份输出目录，核对拒绝前后目标不存在/原 manifest 不变。另加入 100000 行合成 payload，使 dump 达 2260481 字节，恢复后行数与按 id 聚合的内容哈希一致；发现并修复 pg_restore --list 提前关闭 stdin 的 Windows EOF/pipe buffer 路径，只在工具成功退出后接受目录读取的提前关闭，正式恢复仍校验完整传输。
+- `pnpm test:ops` 的两项单元测试及显式 BRIOCHE_BACKUP_DOCKER_TEST=1 的真实 Docker 测试均通过，后者含大流恢复、目标拒绝、损坏校验和“哈希正确但非 PG archive”拒绝，并清理自己创建的容器/卷。CI 已接入显式 Docker 测试。手动演练 API/容器/具名卷已清理，开发 API/Web 保留；私有演练文件只在忽略的 .local 下。Rust/Web/DTO/数据库结构未改，本轮没有重跑它们的完整验收。
+- 文档补充实际备份/恢复步骤，并修正 tracker 原先把备份演练写成已配置的过宽表述。本次证明样本能恢复；生产规模与 RPO/RTO、保留/异盘加密副本、监控和外部入口仍待验收，不宣称全部运维完成。

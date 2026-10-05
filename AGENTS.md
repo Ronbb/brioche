@@ -46,3 +46,4 @@
 - 权限、判分、事务、幂等、版本与恢复做风险对应的验证；文档/低风险样式不添加无意义测试。
 - 实际命令：`pnpm dev:api`、`pnpm dev:web`、`pnpm contracts`、`pnpm typecheck`、`pnpm build`；Rust 使用 cargo fmt/check/clippy/test。PostgreSQL 集成测试显式设置专用 `TEST_DATABASE_URL` 后运行，禁止指向生产。TS 7 类型检查不能用 Vite build 代替。
 - 不自行修改用户 DNS/路由器或执行生产上线；按相应任务的授权范围工作。
+- 运维备份使用 `scripts/backup.mjs`，同时保留数据库与全部登记媒体；真实备份/会话/私有判分不得入 Git。restore 只创建新数据库和新媒体卷，不自动切换应用或清理失败目标。`pnpm test:ops` 运行运维检查，显式 `BRIOCHE_BACKUP_DOCKER_TEST=1` 才创建隔离 Docker 演练资源；恢复样本通过不等于生产 RPO/RTO 或公网验收通过。

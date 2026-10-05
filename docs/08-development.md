@@ -206,7 +206,27 @@ cargo run -p brioche-server -- reset-password learner@example.com .local/reset-l
 
 ## 视觉素材与角色库
 
-迁移 9 注册不可变素材 revision、角色快照及导入审计。`MEDIA_ROOT` 默认 `.local/media`；服务端和内容 CLI 必须使用同一个目录。Compose 的 server 挂载 `media_data` 到 `/var/lib/brioche/media`，镜像创建 UID 10001 可写的目录；备份和恢复必须同时保留 PostgreSQL 与这个卷，实际恢复演练仍待完成。
+迁移 9 注册不可变素材 revision、角色快照及导入审计。`MEDIA_ROOT` 默认 `.local/media`；服务端和内容 CLI 必须使用同一个目录。Compose 的 server 挂载 `media_data` 到 `/var/lib/brioche/media`，镜像创建 UID 10001 可写的目录；备份和恢复同时保留 PostgreSQL 与这个卷。隔离样本的实际恢复已验证，生产规模和异盘副本仍待验收，操作见下文。
+
+## Docker 备份与恢复
+
+需要 Node 24 与 Docker。`scripts/backup.mjs` 使用现有 PostgreSQL 容器内的工具，不要求宿主安装 psql/pg_dump，不通过 PowerShell 文本管道传输二进制，也不把数据库密码放到命令行。用 `docker compose ps -q postgres` 获取实际数据库容器 ID，用 `docker volume ls --filter label=com.docker.compose.project=brioche --filter label=com.docker.compose.volume=media_data --format '{{.Name}}'` 核对媒体卷；自定义 Compose 项目名时修改 project filter。下面的容器/卷名称是默认项目示例，应替换为实际核对值。
+
+```sh
+node scripts/backup.mjs backup --database-container brioche-postgres-1 --media-volume brioche_media_data --output backups/2026-10-06
+node scripts/backup.mjs verify --input backups/2026-10-06
+node scripts/backup.mjs restore --database-container brioche-postgres-1 --database brioche_restore_20261006 --media-volume brioche_restore_media_20261006 --input backups/2026-10-06
+```
+
+backup 默认数据库和角色为 brioche，可用 `--database`/`--user` 指定。输出目录必须不存在，父目录需要先创建；不会覆盖旧备份。数据库使用 pg_dump 的一致性快照；随后读取不可变视觉/录音登记，复制全部登记对象并核对 SHA-256，不只复制当前已公开课程。登记和对象只增不改，因此随后加入的额外对象不影响之前快照的可恢复性；备份期间禁止迁移、手工改写/删除登记文件或 prune。临时读取容器复用当前数据库的实际 image ID、无网络、媒体只读；退出后删除自己的临时容器。备份不会包含未登记临时文件、环境秘密、Docker 镜像或全局 PostgreSQL 角色，秘密和应用镜像版本应另行保存。
+
+目录包含 `database.dump`、`media/<sha>.<extension>` 与最后写入的 `manifest.json`。没有 manifest 或校验失败的目录不能视为完整备份。文件/目录采用 600/700 权限，Windows 仍需使用受限 ACL 的存放目录；脚本没有加密功能，真实备份包含账号、会话、私有判分和学习数据，必须保持私有并复制到异盘或加密存储。限制 dump 10 GiB、单媒体 32 MiB、最多 100000 个媒体对象；达到上限需调整运维方案，不应静默漏备份。
+
+restore 首先完整校验 manifest、文件大小/哈希和 pg_restore 的 archive 目录，并要求相同 PostgreSQL major。只允许显式的新数据库和新媒体卷，拒绝存在的目标；volume 的操作标签还防止并发创建后误写其他卷。数据库 pg_restore 使用 single-transaction/exit-on-error/no-owner/no-acl，目标归当前数据库角色所有；媒体写给应用 UID 10001，并重新核对容器中哈希。实际传输也重新计算源文件哈希，拒绝检查后被改写的备份。不会替换 DATABASE_URL、媒体卷绑定或 active release，不会启动应用；失败时保留目录/新目标供检查，不自动清除或覆盖。网络/提交失败仍应检查实际状态后再选择新的目标重试。
+
+恢复后先在隔离 origin 启动应用，校对迁移版本、release 指针/内容版本、媒体、旧会话和新登录、进度/判分/收藏/复习，再安排维护窗口切换数据库与媒体卷。不要在恢复副本上运行任意反向迁移。备份中的历史 cookie/token 状态也会被恢复，生产故障恢复时应决定是否强制退出旧会话和重发恢复链接。
+
+`pnpm test:ops` 运行两项无 Docker 验证测试；显式设置 `BRIOCHE_BACKUP_DOCKER_TEST=1` 后运行同命令，会创建自己的无网络 PostgreSQL 容器和媒体卷，验证大于 pipe buffer 的真实 custom archive、100000 行数据恢复、媒体校验及目标/坏备份拒绝，并清理自建资源。当前已实际执行该集成测试。另已用真实应用迁移和账号数据做恢复演练，证据见 `07-design-verification.md`；它证明样本可恢复，不能替代生产容量、RPO/RTO、保留策略和异盘存储验收。
 
 `cargo run -p brioche-server -- assets-import <bundle.json> <source-directory> <actor>` 读取严格字段的清单，登记素材与角色，文件按 SHA-256 命名。参考 `examples/asset-bundle.json`：它故意保持 planned 与 rightsConfirmed=false，作者/授权未确认，不能直接导入。正式素材必须明确来源、作者、license、中文替代文本/署名、ready 状态与人工确认授权；工具只记录操作者的声明，不能代替授权审核。
 
