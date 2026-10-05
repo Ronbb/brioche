@@ -12,6 +12,7 @@ import { Icon } from "./icon";
 import type { UserProfile } from "@brioche/contracts/UserProfile";
 import type { UpdateProfileRequest } from "@brioche/contracts/UpdateProfileRequest";
 import { ApiRequestError, privateRequest } from "../lib/api.client";
+import { clearLearningDrafts } from "../lib/learning-draft";
 export type ProfileChanges = Partial<Omit<UpdateProfileRequest, "version">>;
 type SpeechUnit = { id: string; text: string; locale?: string };
 type PlayerState = {
@@ -81,6 +82,8 @@ export function LearningProvider({
   const location = useLocation();
   const restartPaused = useRef(false);
   function acceptProfile(value: UserProfile | null) {
+    if (savedProfile.current && savedProfile.current.id !== value?.id)
+      clearLearningDrafts(savedProfile.current.id);
     savedProfile.current = value;
     setProfile(value);
     let show = value?.settings.showTranslation ?? false,

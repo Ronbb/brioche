@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { readDraft, saveDraft, validAnswer } from "../lib/learning-draft";
 import type { Block } from "@brioche/contracts/Block";
 import type { AttemptRecord } from "@brioche/contracts/AttemptRecord";
 import type { ExerciseAnswer } from "@brioche/contracts/ExerciseAnswer";
 import { Icon } from "./icon";
+import { useLearning } from "./learning";
 export function ExerciseEditor({
   block,
   latest,
@@ -11,6 +13,7 @@ export function ExerciseEditor({
   completed,
   submit,
   hint,
+  draftKey,
 }: {
   block: Extract<Block, { type: "exercise" }>;
   latest?: AttemptRecord;
@@ -19,6 +22,7 @@ export function ExerciseEditor({
   completed: boolean;
   submit: (answer: ExerciseAnswer, onSaved: () => void) => Promise<unknown>;
   hint: () => void;
+  draftKey: string;
 }) {
   const [choice, setChoice] = useState(
       latest?.answer.kind === "choice" ? latest.answer.optionId : "",
@@ -30,6 +34,39 @@ export function ExerciseEditor({
       latest?.answer.kind === "order" ? latest.answer.tokenIds : [],
     ),
     [editing, setEditing] = useState(!latest);
+  const previous = useRef(latest?.id);
+  const audio = useLearning(),
+    storageWarning = useRef(false);
+  useEffect(() => {
+    if (latest?.id !== previous.current) {
+      previous.current = latest?.id;
+      saveDraft(draftKey, null);
+      setEditing(false);
+      return;
+    }
+    const draft = readDraft(draftKey) as {
+      answer?: unknown;
+      baseline?: unknown;
+    } | null;
+    if (
+      draft?.baseline === (latest?.id ?? null) &&
+      validAnswer(draft.answer, block)
+    ) {
+      if (draft.answer.kind === "choice") setChoice(draft.answer.optionId);
+      if (draft.answer.kind === "text") setText(draft.answer.text);
+      if (draft.answer.kind === "order") setOrder(draft.answer.tokenIds);
+      setEditing(true);
+    } else saveDraft(draftKey, null);
+  }, [draftKey, latest?.id]);
+  function keep(answer: ExerciseAnswer) {
+    if (
+      !saveDraft(draftKey, { answer, baseline: latest?.id ?? null }) &&
+      !storageWarning.current
+    ) {
+      storageWarning.current = true;
+      audio.toast("浏览器无法保存草稿，离开前请保留答案。");
+    }
+  }
   const shownChoice =
     !editing && latest?.answer.kind === "choice"
       ? latest.answer.optionId
@@ -59,7 +96,10 @@ export function ExerciseEditor({
             : block.exerciseType === "fill-blank"
               ? { kind: "text", text }
               : { kind: "order", tokenIds: order },
-          () => setEditing(false),
+          () => {
+            saveDraft(draftKey, null);
+            setEditing(false);
+          },
         );
       }}
     >
@@ -81,7 +121,10 @@ export function ExerciseEditor({
                   name={block.id + "-answer"}
                   checked={shownChoice === option.id}
                   value={option.id}
-                  onChange={() => setChoice(option.id)}
+                  onChange={() => {
+                    setChoice(option.id);
+                    keep({ kind: "choice", optionId: option.id });
+                  }}
                 />
                 <span>{option.text}</span>
                 <Icon name="check" />
@@ -106,7 +149,10 @@ export function ExerciseEditor({
               spellCheck={false}
               maxLength={1024}
               value={shownText}
-              onChange={(event) => setText(event.target.value)}
+              onChange={(event) => {
+                setText(event.target.value);
+                keep({ kind: "text", text: event.target.value });
+              }}
             />
           </>
         )}
@@ -122,9 +168,11 @@ export function ExerciseEditor({
                       "移回词库：" +
                       block.tokens.find((token) => token.id === id)?.text
                     }
-                    onClick={() =>
-                      setOrder((old) => old.filter((value) => value !== id))
-                    }
+                    onClick={() => {
+                      const next = order.filter((value) => value !== id);
+                      setOrder(next);
+                      keep({ kind: "order", tokenIds: next });
+                    }}
                   >
                     {block.tokens.find((token) => token.id === id)?.text}
                   </button>
@@ -139,7 +187,11 @@ export function ExerciseEditor({
                   key={token.id}
                   type="button"
                   disabled={shownOrder.includes(token.id)}
-                  onClick={() => setOrder((old) => [...old, token.id])}
+                  onClick={() => {
+                    const next = [...order, token.id];
+                    setOrder(next);
+                    keep({ kind: "order", tokenIds: next });
+                  }}
                 >
                   {token.text}
                 </button>

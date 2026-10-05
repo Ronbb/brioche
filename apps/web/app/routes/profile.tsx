@@ -3,6 +3,7 @@ import { Icon } from "../components/icon";
 import { Link, useRouteLoaderData } from "react-router";
 import type { loader } from "../root";
 import { authRequest } from "../lib/auth.client";
+import { clearLearningDrafts } from "../lib/learning-draft";
 import { useEffect, useRef, useState } from "react";
 import { ChoiceDialog, type Choice } from "../components/choice-dialog";
 const commonZones: Choice[] = [
@@ -76,6 +77,7 @@ export default function Profile() {
     setPending(true);
     try {
       await authRequest("logout");
+      if (learning.profile) clearLearningDrafts(learning.profile.id);
       learning.stop();
       window.location.assign("/");
     } catch {

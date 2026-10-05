@@ -39,4 +39,5 @@ jobs:
       - run: pnpm contracts
       - run: git diff --exit-code -- packages/contracts/src/generated
       - run: pnpm typecheck
+      - run: pnpm test:web
       - run: pnpm build

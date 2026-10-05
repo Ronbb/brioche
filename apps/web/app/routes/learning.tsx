@@ -1,10 +1,11 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, redirect } from "react-router";
 import type { LearningSession } from "@brioche/contracts/LearningSession";
 import type { LearningState } from "@brioche/contracts/LearningState";
 import type { AttemptResult } from "@brioche/contracts/AttemptResult";
 import type { HintResult } from "@brioche/contracts/HintResult";
-import { getPrivate } from "../lib/api.server";
+import { getIdentity, getPrivate } from "../lib/api.server";
+import { draftScope, readDraft, saveDraft } from "../lib/learning-draft";
 import { useLearningSession } from "../components/learning-session";
 import { ReadingBlock } from "../components/reading-block";
 import { TeachingBlock } from "../components/teaching-block";
@@ -14,10 +15,14 @@ import { Icon } from "../components/icon";
 import type { Route } from "./+types/learning";
 export async function loader({ request, params }: Route.LoaderArgs) {
   try {
-    return await getPrivate<LearningSession>(
+    const session = await getPrivate<LearningSession>(
       request,
       "/api/v1/learning-sessions/" + encodeURIComponent(params.sessionId),
     );
+    const identity = await getIdentity(request);
+    if (!identity.user)
+      throw new Response("请登录后继续学习。", { status: 401 });
+    return { session, ownerId: identity.user.id };
   } catch (error) {
     if (error instanceof Response && error.status === 401)
       throw redirect(
@@ -27,10 +32,27 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   }
 }
 export default function Learning({ loaderData }: Route.ComponentProps) {
-  return <Session key={loaderData.progress.id} initial={loaderData} />;
+  return (
+    <Session
+      key={loaderData.ownerId + loaderData.session.progress.id}
+      initial={loaderData.session}
+      ownerId={loaderData.ownerId}
+    />
+  );
 }
-function Session({ initial }: { initial: LearningSession }) {
-  const session = useLearningSession(initial),
+function Session({
+  initial,
+  ownerId,
+}: {
+  initial: LearningSession;
+  ownerId: string;
+}) {
+  const scope = draftScope(
+    ownerId,
+    initial.progress.id,
+    initial.lesson.revision,
+  );
+  const session = useLearningSession(initial, scope),
     audio = useLearning(),
     lesson = initial.lesson;
   const [index, setIndex] = useState(
@@ -41,9 +63,15 @@ function Session({ initial }: { initial: LearningSession }) {
   );
   const heading = useRef<HTMLHeadingElement>(null),
     step = lesson.steps[index];
+  useEffect(() => {
+    const stored = readDraft(scope + ":step");
+    const restored = lesson.steps.findIndex((step) => step.id === stored);
+    if (restored >= 0) setIndex(restored);
+  }, [scope]);
   function move(next: number) {
     audio.stop();
     setIndex(next);
+    saveDraft(scope + ":step", lesson.steps[next].id);
     requestAnimationFrame(() => {
       heading.current?.focus();
       heading.current?.scrollIntoView({ block: "start", behavior: "instant" });
@@ -84,6 +112,18 @@ function Session({ initial }: { initial: LearningSession }) {
       <div className="learning-stage">
         {session.progress.completedAt ? (
           <>
+            {session.uncertain && (
+              <div role="status">
+                <p>{session.error}</p>
+                <button
+                  className="primary"
+                  disabled={session.saving}
+                  onClick={session.retry}
+                >
+                  {session.saving ? "正在确认" : "确认上次保存"}
+                </button>
+              </div>
+            )}
             <h2 ref={heading} tabIndex={-1}>
               本课已完成
             </h2>
@@ -147,6 +187,7 @@ function Session({ initial }: { initial: LearningSession }) {
                   return (
                     <ExerciseEditor
                       key={block.id}
+                      draftKey={scope + ":answer:" + block.id}
                       block={block}
                       latest={session.progress.attempts
                         .filter((attempt) => attempt.exerciseId === block.id)

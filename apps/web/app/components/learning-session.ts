@@ -5,6 +5,12 @@ import type { AttemptResult } from "@brioche/contracts/AttemptResult";
 import type { HintResult } from "@brioche/contracts/HintResult";
 import { ApiRequestError, privateRequest } from "../lib/api.client";
 import { operationKey } from "../lib/operation-key";
+import {
+  clearPending,
+  readDraft,
+  saveDraft,
+  validPending,
+} from "../lib/learning-draft";
 type Result = LearningState | AttemptResult | HintResult;
 type Pending = {
   path: string;
@@ -12,10 +18,11 @@ type Pending = {
   body: object;
   onSaved?: () => void;
 };
-export function useLearningSession(initial: LearningSession) {
+export function useLearningSession(initial: LearningSession, scope: string) {
   const [progress, setProgress] = useState(initial.progress),
     [saving, setSaving] = useState(false),
     [error, setError] = useState(""),
+    [restored, setRestored] = useState(false),
     [uncertain, setUncertain] = useState(false);
   const latest = useRef(initial.progress),
     busy = useRef(false),
@@ -23,10 +30,17 @@ export function useLearningSession(initial: LearningSession) {
     alive = useRef(true);
   useEffect(() => {
     alive.current = true;
+    const restored = readDraft(scope + ":pending");
+    if (validPending(restored, initial.progress.id, initial.lesson)) {
+      pending.current = restored;
+      setUncertain(true);
+      setError("上次提交尚未确认，请重试原提交。");
+    } else saveDraft(scope + ":pending", null);
+    setRestored(true);
     return () => {
       alive.current = false;
     };
-  }, []);
+  }, [scope]);
   useEffect(() => {
     if (!saving && !uncertain) return;
     const beforeUnload = (event: BeforeUnloadEvent) => {
@@ -45,10 +59,26 @@ export function useLearningSession(initial: LearningSession) {
     if (busy.current || !alive.current) return null;
     busy.current = true;
     pending.current = job;
+    if (
+      !saveDraft(scope + ":pending", {
+        path: job.path,
+        method: job.method,
+        body: job.body,
+      })
+    ) {
+      busy.current = false;
+      pending.current = null;
+      setError("浏览器无法保留这次提交，请允许本地存储后重试。");
+      return null;
+    }
     setSaving(true);
     setError("");
     try {
       const result = await privateRequest<T>(job.path, job.method, job.body);
+      clearPending(
+        scope + ":pending",
+        (job.body as Record<string, unknown>).idempotencyKey,
+      );
       if (!alive.current) return null;
       accept("progress" in result ? result.progress : result);
       pending.current = null;
@@ -58,6 +88,10 @@ export function useLearningSession(initial: LearningSession) {
     } catch (failure) {
       if (!alive.current) return null;
       if (failure instanceof ApiRequestError && failure.status < 500) {
+        clearPending(
+          scope + ":pending",
+          (job.body as Record<string, unknown>).idempotencyKey,
+        );
         pending.current = null;
         setUncertain(false);
         if (failure.status === 409) {
@@ -83,7 +117,7 @@ export function useLearningSession(initial: LearningSession) {
       } else {
         // Keep the exact body/key. A server commit may have happened before the connection failed.
         setUncertain(true);
-        setError("保存尚未确认。重试会确认这次提交，答案仍保留在当前页面。");
+        setError("保存尚未确认。重试会确认原提交，答案已保留在此标签页。");
       }
       return null;
     } finally {
@@ -117,7 +151,7 @@ export function useLearningSession(initial: LearningSession) {
     saving,
     error,
     uncertain,
-    blocked: saving || uncertain,
+    blocked: saving || uncertain || !restored,
     write,
     retry,
   };

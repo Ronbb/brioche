@@ -1,0 +1,126 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import {
+  draftScope,
+  readDraft,
+  saveDraft,
+  clearLearningDrafts,
+  clearPending,
+  validAnswer,
+  validPending,
+} from "../app/lib/learning-draft.ts";
+import type { PublicLesson } from "@brioche/contracts/PublicLesson";
+const lesson = JSON.parse(
+  readFileSync(
+    new URL("../../../docs/examples/a1-bakery.lesson.json", import.meta.url),
+    "utf8",
+  ),
+) as PublicLesson;
+const exercise = lesson.blocks.find(
+  (block) =>
+    block.type === "exercise" && block.exerciseType === "single-choice",
+)!;
+test("pending recovery accepts only this fixed session's valid mutations", () => {
+  assert.equal(exercise.type, "exercise");
+  if (exercise.type !== "exercise" || exercise.exerciseType !== "single-choice")
+    throw Error("fixture");
+  const job = {
+    path: "/api/v1/learning-sessions/session-one/attempts",
+    method: "POST",
+    body: {
+      exerciseId: exercise.id,
+      answer: { kind: "choice", optionId: exercise.options[0].id },
+      version: 1,
+      idempotencyKey: "pending-operation-12345",
+    },
+  };
+  assert.ok(validPending(job, "session-one", lesson));
+  assert.ok(!validPending(job, "session-two", lesson));
+  for (const changed of [
+    { ...job, path: "https://elsewhere.test/steal" },
+    { ...job, method: "GET" },
+    { ...job, body: { ...job.body, version: -1 } },
+    { ...job, body: { ...job.body, version: 1.5 } },
+    { ...job, body: { ...job.body, idempotencyKey: "bad" } },
+    {
+      ...job,
+      body: { ...job.body, answer: { kind: "choice", optionId: "unknown" } },
+    },
+    { ...job, body: { ...job.body, score: 100 } },
+  ])
+    assert.ok(!validPending(changed, "session-one", lesson));
+  assert.ok(
+    validPending(
+      {
+        ...job,
+        path:
+          "/api/v1/learning-sessions/session-one/steps/" + lesson.steps[0].id,
+        method: "PUT",
+        body: { version: 1, idempotencyKey: "pending-operation-12345" },
+      },
+      "session-one",
+      lesson,
+    ),
+  );
+  const order = lesson.blocks.find(
+    (b) => b.type === "exercise" && b.exerciseType === "order",
+  );
+  if (order?.type !== "exercise" || order.exerciseType !== "order")
+    throw Error("fixture order");
+  assert.ok(validAnswer({ kind: "order", tokenIds: [] }, order));
+  assert.ok(
+    !validAnswer(
+      { kind: "order", tokenIds: [order.tokens[0].id, order.tokens[0].id] },
+      order,
+    ),
+  );
+});
+test("tab storage restores exact JSON, separates owners and clears only signed-out owner's data", () => {
+  const data: Record<string, string> = {};
+  const storage = {
+    getItem: (k: string) => data[k] ?? null,
+    setItem: (k: string, v: string) => {
+      data[k] = v;
+      Object.defineProperty(storage, k, {
+        configurable: true,
+        enumerable: true,
+        value: v,
+      });
+    },
+    removeItem: (k: string) => {
+      delete data[k];
+      delete (storage as Record<string, unknown>)[k];
+    },
+  };
+  Object.defineProperty(globalThis, "sessionStorage", {
+    configurable: true,
+    value: storage,
+  });
+  const a = draftScope("a", "session", 1) + ":pending",
+    b = draftScope("b", "session", 1) + ":pending";
+  assert.notEqual(a, b);
+  assert.notEqual(a, draftScope("a", "session", 2) + ":pending");
+  assert.ok(saveDraft(a, { idempotencyKey: "exact", answer: "é" }));
+  assert.deepEqual(readDraft(a), { idempotencyKey: "exact", answer: "é" });
+  saveDraft(a, { body: { idempotencyKey: "newer" } });
+  clearPending(a, "older");
+  assert.deepEqual(readDraft(a), { body: { idempotencyKey: "newer" } });
+  clearPending(a, "newer");
+  assert.equal(readDraft(a), null);
+  saveDraft(b, { other: true });
+  clearLearningDrafts("a");
+  assert.equal(readDraft(a), null);
+  assert.deepEqual(readDraft(b), { other: true });
+  storage.setItem(a, "{broken");
+  assert.equal(readDraft(a), null);
+  Object.defineProperty(globalThis, "sessionStorage", {
+    configurable: true,
+    get() {
+      throw Error("storage denied");
+    },
+  });
+  assert.equal(readDraft(a), null);
+  assert.equal(saveDraft(a, { pending: true }), false);
+  clearLearningDrafts("a");
+});
