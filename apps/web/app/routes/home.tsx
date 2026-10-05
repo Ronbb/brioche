@@ -192,7 +192,7 @@ export default function Home({
               </button>
               <Link
                 className="home-review-link text-button"
-                to={"/review/" + lesson.id}
+                to={context.profile ? "/reviews" : "/review/" + lesson.id}
               >
                 <span>复习这组表达</span>
                 <Icon name="arrow" />

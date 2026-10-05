@@ -109,6 +109,10 @@ export default function Profile() {
         <>
           <h2>学习日常</h2>
           <div className="settings-group">
+            <Link className="setting-row setting-link" to="/reviews">
+              <span>我的复习</span>
+              <Icon name="chevron" />
+            </Link>
             <button className="setting-row setting-link" onClick={openEditor}>
               <span>学习目标</span>
               <span>

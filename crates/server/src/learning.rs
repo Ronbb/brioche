@@ -20,18 +20,18 @@ use sha2::{Digest, Sha256};
 use std::collections::BTreeSet;
 
 const STAMP: &str = "YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"";
-fn owner(auth: &AuthSession) -> Result<i64, AppError> {
+pub(crate) fn owner(auth: &AuthSession) -> Result<i64, AppError> {
     auth.user
         .as_ref()
         .map(AuthUser::id)
         .ok_or(AppError::Unauthorized)
 }
-fn random_id() -> Result<String, AppError> {
+pub(crate) fn random_id() -> Result<String, AppError> {
     let mut bytes = [0u8; 16];
     getrandom::fill(&mut bytes).map_err(|_| AppError::Unavailable)?;
     Ok(bytes.iter().map(|b| format!("{b:02x}")).collect())
 }
-fn validate_key(key: &str) -> Result<(), AppError> {
+pub(crate) fn validate_key(key: &str) -> Result<(), AppError> {
     if !(16..=128).contains(&key.len())
         || !key
             .bytes()
@@ -41,13 +41,13 @@ fn validate_key(key: &str) -> Result<(), AppError> {
     }
     Ok(())
 }
-fn hash<T: Serialize>(request: &T) -> Result<String, AppError> {
+pub(crate) fn hash<T: Serialize>(request: &T) -> Result<String, AppError> {
     Ok(format!(
         "{:x}",
         Sha256::digest(serde_json::to_vec(request).map_err(|_| AppError::Unavailable)?)
     ))
 }
-async fn one<C: ConnectionTrait>(
+pub(crate) async fn one<C: ConnectionTrait>(
     db: &C,
     sql: &str,
     values: Vec<Value>,
@@ -60,7 +60,11 @@ async fn one<C: ConnectionTrait>(
     .await
     .map_err(|_| AppError::Unavailable)
 }
-async fn exec<C: ConnectionTrait>(db: &C, sql: &str, values: Vec<Value>) -> Result<u64, AppError> {
+pub(crate) async fn exec<C: ConnectionTrait>(
+    db: &C,
+    sql: &str,
+    values: Vec<Value>,
+) -> Result<u64, AppError> {
     Ok(db
         .execute_raw(Statement::from_sql_and_values(
             DbBackend::Postgres,
@@ -71,10 +75,10 @@ async fn exec<C: ConnectionTrait>(db: &C, sql: &str, values: Vec<Value>) -> Resu
         .map_err(|_| AppError::Unavailable)?
         .rows_affected())
 }
-fn field<T: sea_orm::TryGetable>(row: &QueryResult, name: &str) -> Result<T, AppError> {
+pub(crate) fn field<T: sea_orm::TryGetable>(row: &QueryResult, name: &str) -> Result<T, AppError> {
     row.try_get("", name).map_err(|_| AppError::Unavailable)
 }
-async fn replay<T: DeserializeOwned>(
+pub(crate) async fn replay<T: DeserializeOwned>(
     tx: &DatabaseTransaction,
     user: i64,
     scope: &str,
@@ -90,7 +94,7 @@ async fn replay<T: DeserializeOwned>(
         serde_json::from_value(field(&row, "result")?).map_err(|_| AppError::Unavailable)?,
     ))
 }
-async fn record<T: Serialize>(
+pub(crate) async fn record<T: Serialize>(
     tx: &DatabaseTransaction,
     user: i64,
     scope: &str,

@@ -69,7 +69,9 @@ export function Account({
             ? new URLSearchParams(window.location.search).get("next")
             : null;
         window.location.assign(
-          next && /^\/(?:learning|lessons)\/[a-zA-Z0-9_-]+$/.test(next)
+          next &&
+            (next === "/reviews" ||
+              /^\/(?:learning|lessons)\/[a-zA-Z0-9_-]+$/.test(next))
             ? next
             : "/profile",
         );

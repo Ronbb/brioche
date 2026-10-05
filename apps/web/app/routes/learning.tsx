@@ -95,7 +95,7 @@ function Session({ initial }: { initial: LearningSession }) {
                 <li key={objective}>{objective}</li>
               ))}
             </ul>
-            <Link className="primary" to={"/review/" + lesson.id}>
+            <Link className="primary" to="/reviews">
               复习表达
               <Icon name="arrow" />
             </Link>

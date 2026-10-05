@@ -4,6 +4,7 @@ pub mod grading;
 pub mod identity;
 pub mod learning;
 pub mod password;
+pub mod reviews;
 pub mod session_store;
 use axum::{
     Json, Router,
@@ -173,7 +174,7 @@ async fn demo_grade(
 }
 async fn ready(State(state): State<Arc<AppState>>) -> Result<Json<serde_json::Value>, AppError> {
     if let Some(db) = &state.db {
-        db.execute_unprepared("SELECT users.profile_version FROM lesson_revisions, users, browser_sessions, identity_tokens, auth_throttle, learning_sessions, review_cards LIMIT 0")
+        db.execute_unprepared("SELECT users.profile_version FROM lesson_revisions, users, browser_sessions, identity_tokens, auth_throttle, learning_sessions, review_cards, review_attempts LIMIT 0")
             .await
             .map_err(|_| AppError::Unavailable)?;
     } else if state.fixture.is_none() {

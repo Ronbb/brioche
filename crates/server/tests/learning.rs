@@ -718,9 +718,173 @@ async fn learning_revision_ownership_idempotency_and_completion() {
         a.send("GET", "/api/v1/me/learning", None, true).await.1["completedLessons"],
         1
     );
+    let (status, queue) = a.send("GET", "/api/v1/me/reviews", None, true).await;
+    assert_eq!(status, 200);
+    assert_eq!(queue["dueCount"], 3);
+    assert_eq!(queue["items"].as_array().unwrap().len(), 3);
+    assert_eq!(
+        b.send("GET", "/api/v1/me/reviews", None, true).await.1["dueCount"],
+        0
+    );
+    assert_eq!(
+        a.send("GET", "/api/v1/me/reviews?date=2999-01-01", None, true)
+            .await
+            .0,
+        400
+    );
+    assert_eq!(
+        a.send("GET", "/api/v1/me/reviews?date=bad", None, true)
+            .await
+            .0,
+        400
+    );
+    let review_id = queue["items"][0]["id"].as_str().unwrap().to_owned();
+    let review_path = format!("/api/v1/me/reviews/{review_id}/attempts");
+    let review_body =
+        json!({"cardVersion":1,"idempotencyKey":"review-key-000001","rating":"familiar"});
+    assert_eq!(
+        b.send("POST", &review_path, Some(review_body.clone()), true)
+            .await
+            .0,
+        404
+    );
+    assert_eq!(
+        b.send(
+            "GET",
+            &format!("/api/v1/me/reviews/{review_id}"),
+            None,
+            true
+        )
+        .await
+        .0,
+        404
+    );
+    assert_eq!(a.send("POST", &review_path, Some(json!({"cardVersion":1,"idempotencyKey":"review-key-forged","rating":"familiar","stage":4})),true).await.0,422);
+    assert_eq!(
+        a.send(
+            "POST",
+            &review_path,
+            Some(json!({"cardVersion":1,"idempotencyKey":"review-key-badval","rating":"invented"})),
+            true
+        )
+        .await
+        .0,
+        422
+    );
+    db.execute_unprepared(
+        "ALTER TABLE review_attempts ADD CONSTRAINT test_review_failure CHECK (false) NOT VALID",
+    )
+    .await
+    .unwrap();
+    assert_eq!(
+        a.send("POST", &review_path, Some(review_body.clone()), true)
+            .await
+            .0,
+        503
+    );
+    assert_eq!(count(&db, "review_attempts").await, 0);
+    assert_eq!(
+        a.send(
+            "GET",
+            &format!("/api/v1/me/reviews/{review_id}"),
+            None,
+            true
+        )
+        .await
+        .1["version"],
+        1
+    );
+    db.execute_unprepared("ALTER TABLE review_attempts DROP CONSTRAINT test_review_failure")
+        .await
+        .unwrap();
+    let (status, reviewed) = a
+        .send("POST", &review_path, Some(review_body.clone()), true)
+        .await;
+    assert_eq!(status, 200);
+    assert_eq!(reviewed["card"]["stage"], 1);
+    assert_eq!(reviewed["card"]["version"], 2);
+    assert_eq!(reviewed["timeZone"], "Asia/Shanghai");
+    assert_eq!(count(&db, "review_attempts").await, 1);
+    assert_eq!(
+        a.send("POST", &review_path, Some(review_body.clone()), true)
+            .await
+            .1,
+        reviewed
+    );
+    assert_eq!(count(&db, "review_attempts").await, 1);
+    assert_eq!(
+        a.send(
+            "POST",
+            &review_path,
+            Some(json!({"cardVersion":1,"idempotencyKey":"review-key-000001","rating":"again"})),
+            true
+        )
+        .await
+        .0,
+        409
+    );
+    assert_eq!(
+        a.send(
+            "POST",
+            &review_path,
+            Some(json!({"cardVersion":1,"idempotencyKey":"review-key-stale01","rating":"again"})),
+            true
+        )
+        .await
+        .0,
+        409
+    );
+    assert_eq!(
+        a.send(
+            "POST",
+            &review_path,
+            Some(json!({"cardVersion":2,"idempotencyKey":"review-key-future1","rating":"again"})),
+            true
+        )
+        .await
+        .0,
+        409
+    );
+    assert_eq!(
+        a.send("GET", "/api/v1/me/reviews", None, true).await.1["dueCount"],
+        2
+    );
+    // A timezone edit preserves existing UTC due times. Idempotent replay keeps the original zone.
+    db.execute_unprepared(
+        "UPDATE users SET settings=jsonb_set(settings,'{timeZone}','\"Europe/Paris\"')",
+    )
+    .await
+    .unwrap();
+    assert_eq!(
+        a.send(
+            "GET",
+            &format!("/api/v1/me/reviews/{review_id}"),
+            None,
+            true
+        )
+        .await
+        .1["dueAt"],
+        reviewed["card"]["dueAt"]
+    );
+    assert_eq!(
+        a.send("POST", &review_path, Some(review_body.clone()), true)
+            .await
+            .1,
+        reviewed
+    );
     db.execute_unprepared("UPDATE lesson_revisions SET published=false")
         .await
         .unwrap();
+    assert_eq!(
+        a.send("GET", "/api/v1/me/reviews", None, true).await.1["dueCount"],
+        0
+    );
+    assert_eq!(
+        a.send("POST", &review_path, Some(review_body), true)
+            .await
+            .0,
+        410
+    );
     assert_eq!(
         a.send(
             "GET",
@@ -802,6 +966,30 @@ async fn learning_revision_ownership_idempotency_and_completion() {
             .await
             .0,
         400
+    );
+    db.execute_unprepared("INSERT INTO review_cards (id,user_id,knowledge_id,source_lesson_id,source_revision,snapshot,due_at) SELECT md5('review-batch-'||n),c.user_id,'batch-'||n,'pagination-lesson-0',1,jsonb_set(c.snapshot,'{id}',to_jsonb('batch-'||n)),CURRENT_TIMESTAMP - (n||' days')::interval FROM (SELECT user_id,snapshot FROM review_cards LIMIT 1) c CROSS JOIN generate_series(1,12) n").await.unwrap();
+    let (_, batch) = a.send("GET", "/api/v1/me/reviews", None, true).await;
+    assert_eq!(batch["dueCount"], 12);
+    assert_eq!(batch["items"].as_array().unwrap().len(), 10);
+    assert_eq!(batch["items"][0]["knowledgeId"], "batch-12");
+    let batch_id = batch["items"][0]["id"].as_str().unwrap();
+    let concurrent_path = format!("/api/v1/me/reviews/{batch_id}/attempts");
+    let mut other_tab = Browser {
+        app: a.app.clone(),
+        cookie: a.cookie.clone(),
+        csrf: a.csrf.clone(),
+    };
+    let (left,right)=tokio::join!(
+        a.send("POST",&concurrent_path,Some(json!({"cardVersion":1,"idempotencyKey":"review-concurrent-a","rating":"again"})),true),
+        other_tab.send("POST",&concurrent_path,Some(json!({"cardVersion":1,"idempotencyKey":"review-concurrent-b","rating":"remembered"})),true)
+    );
+    let mut statuses = [left.0, right.0];
+    statuses.sort();
+    assert_eq!(statuses, [200, 409]);
+    assert_eq!(count(&db, "review_attempts").await, 2);
+    assert_eq!(
+        a.send("GET", "/api/v1/me/reviews", None, true).await.1["dueCount"],
+        11
     );
     brioche_migration::Migrator::down(&db, None).await.unwrap();
     drop(db);

@@ -166,6 +166,35 @@ dto!(ApiError {
     message: String
 });
 
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, TS)]
+#[serde(rename_all = "kebab-case")]
+pub enum ReviewRating {
+    Again,
+    Remembered,
+    Familiar,
+}
+dto!(ReviewCard {
+    id: String,
+    knowledge_id: String,
+    source_lesson_id: String,
+    source_revision: u32,
+    vocabulary: Vocabulary,
+    stage: i16,
+    due_at: String,
+    version: u32
+});
+dto!(ReviewQueue { items: Vec<ReviewCard>, due_count: u32, next_due_at: Option<String>, local_date: String, time_zone: String });
+dto!(ReviewAttemptRequest {
+    card_version: u32,
+    idempotency_key: String,
+    rating: ReviewRating
+});
+dto!(ReviewAttemptResult {
+    card: ReviewCard,
+    reviewed_at: String,
+    time_zone: String
+});
+
 /// Submitted values are IDs/text, never a client supplied score or answer key.
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, TS)]
 #[serde(tag = "kind", rename_all = "kebab-case", deny_unknown_fields)]
