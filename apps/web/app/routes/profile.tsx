@@ -113,6 +113,14 @@ export default function Profile() {
               <span>我的复习</span>
               <Icon name="chevron" />
             </Link>
+            <Link className="setting-row setting-link" to="/library">
+              <span>我的表达</span>
+              <Icon name="chevron" />
+            </Link>
+            <Link className="setting-row setting-link" to="/review-history">
+              <span>复习记录</span>
+              <Icon name="chevron" />
+            </Link>
             <button className="setting-row setting-link" onClick={openEditor}>
               <span>学习目标</span>
               <span>

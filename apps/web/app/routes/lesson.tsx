@@ -290,6 +290,18 @@ function LessonContent({
               <h2 lang="fr">{term.lemma}</h2>
               <p className="meaning">{term.meaningZh}</p>
               <p className="explain">{term.noteZh}</p>
+              <Bookmark
+                key={term.id}
+                knowledgeId={term.id}
+                lessonId={lesson.id}
+                revision={lesson.revision}
+              />
+              <Enroll
+                key={"enroll-" + term.id}
+                knowledgeId={term.id}
+                lessonId={lesson.id}
+                revision={lesson.revision}
+              />
               {lesson.knowledge.grammar
                 .filter((g) =>
                   entries.some((e) =>
@@ -337,3 +349,5 @@ function LessonContent({
     </section>
   );
 }
+import { Bookmark } from "../components/bookmark";
+import { Enroll } from "../components/enroll";

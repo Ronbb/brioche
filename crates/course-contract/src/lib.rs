@@ -181,9 +181,33 @@ dto!(ReviewCard {
     vocabulary: Vocabulary,
     stage: i16,
     due_at: String,
-    version: u32
+    version: u32,
+    suspended: bool
 });
+dto!(ReviewPreferenceRequest {
+    card_version: u32,
+    idempotency_key: String,
+    suspended: bool
+});
+dto!(ReviewEnrollmentRequest {
+    knowledge_id: String,
+    source_lesson_id: String,
+    source_revision: u32,
+    idempotency_key: String
+});
+dto!(SavedItem { id: String, knowledge_id: String, source_lesson_id: String, source_revision: u32, vocabulary: Option<Vocabulary>, saved: bool, withdrawn: bool, version: u32, created_at: String });
+dto!(SavedWriteRequest {
+    source_lesson_id: String,
+    source_revision: u32,
+    saved: bool,
+    version: u32,
+    idempotency_key: String
+});
+dto!(SavedPage { items: Vec<SavedItem>, next_cursor: Option<String> });
+dto!(ReviewHistoryItem { id: String, card_id: String, vocabulary: Option<Vocabulary>, withdrawn: bool, rating: ReviewRating, old_stage: i16, new_stage: i16, reviewed_at: String, due_at: String, time_zone: String, algorithm_version: String });
+dto!(ReviewHistoryPage { items: Vec<ReviewHistoryItem>, next_cursor: Option<String> });
 dto!(ReviewQueue { items: Vec<ReviewCard>, due_count: u32, next_due_at: Option<String>, local_date: String, time_zone: String });
+dto!(ReviewCardsPage { items: Vec<ReviewCard>, next_cursor: Option<String> });
 dto!(ReviewAttemptRequest {
     card_version: u32,
     idempotency_key: String,

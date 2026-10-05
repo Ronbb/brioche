@@ -6,6 +6,8 @@ export default [
   route("practice/:lessonId", "routes/practice.tsx"),
   route("review/:lessonId", "routes/review.tsx"),
   route("reviews", "routes/reviews.tsx"),
+  route("library", "routes/library.tsx"),
+  route("review-history", "routes/review-history.tsx"),
   route("profile", "routes/profile.tsx"),
   route("login", "routes/login.tsx"),
   route("invite", "routes/invite.tsx"),

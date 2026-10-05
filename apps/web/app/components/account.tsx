@@ -70,7 +70,7 @@ export function Account({
             : null;
         window.location.assign(
           next &&
-            (next === "/reviews" ||
+            (["/reviews", "/library", "/review-history"].includes(next) ||
               /^\/(?:learning|lessons)\/[a-zA-Z0-9_-]+$/.test(next))
             ? next
             : "/profile",

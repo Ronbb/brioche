@@ -137,6 +137,18 @@ export function ReadingBlock({
           <>
             <p className="meaning">{term.meaningZh}</p>
             <p className="explain">{term.noteZh}</p>
+            <Bookmark
+              key={term.id}
+              knowledgeId={term.id}
+              lessonId={lesson.id}
+              revision={lesson.revision}
+            />
+            <Enroll
+              key={"enroll-" + term.id}
+              knowledgeId={term.id}
+              lessonId={lesson.id}
+              revision={lesson.revision}
+            />
             <div className="example" lang="fr">
               {entries
                 .find((entry) =>
@@ -176,3 +188,5 @@ export function ReadingBlock({
     </div>
   );
 }
+import { Bookmark } from "./bookmark";
+import { Enroll } from "./enroll";

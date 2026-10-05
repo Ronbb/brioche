@@ -7,7 +7,7 @@ use crate::{
 use axum::{
     Json, Router,
     extract::{Path, Query, State},
-    routing::{get, post},
+    routing::{get, post, put},
 };
 use brioche_course_contract::*;
 use jiff::{Timestamp, ToSpan, civil::Date};
@@ -28,17 +28,19 @@ fn card(row: &QueryResult) -> Result<ReviewCard, AppError> {
         vocabulary: serde_json::from_value(field(row, "snapshot")?)
             .map_err(|_| AppError::Unavailable)?,
         stage: field(row, "stage")?,
+        suspended: field(row, "suspended")?,
         due_at: field(row, "due")?,
         version: u32::try_from(field::<i32>(row, "version")?).map_err(|_| AppError::Unavailable)?,
     })
 }
-async fn load(tx: &DatabaseTransaction, user: i64, id: &str) -> Result<ReviewCard, AppError> {
+pub(crate) async fn load(
+    tx: &DatabaseTransaction,
+    user: i64,
+    id: &str,
+) -> Result<ReviewCard, AppError> {
     let row=one(tx,&format!("SELECT {COLUMNS},to_char(c.due_at AT TIME ZONE 'UTC','{STAMP}') AS due FROM review_cards c JOIN lesson_revisions r ON (r.lesson_id,r.revision)=(c.source_lesson_id,c.source_revision) WHERE c.user_id=$1 AND c.id=$2 FOR UPDATE OF c FOR SHARE OF r"),vec![user.into(),id.into()]).await?.ok_or(AppError::NotFound)?;
     if !field::<bool>(&row, "published")? {
         return Err(AppError::Gone);
-    }
-    if field::<bool>(&row, "suspended")? {
-        return Err(AppError::Conflict);
     }
     card(&row)
 }
@@ -91,6 +93,8 @@ pub fn router() -> Router<Backend> {
         .route("/api/v1/me/reviews", get(queue))
         .route("/api/v1/me/reviews/{id}", get(detail))
         .route("/api/v1/me/reviews/{id}/attempts", post(attempt))
+        .route("/api/v1/me/reviews/{id}/preferences", put(preferences))
+        .route("/api/v1/me/review-cards", get(cards))
 }
 async fn queue(
     auth: AuthSession,
@@ -175,6 +179,9 @@ async fn attempt(
     if let Some(cached) = replay(&tx, user, &scope, &request.idempotency_key, &fingerprint).await? {
         return Ok(Json(cached));
     }
+    if old.suspended {
+        return Err(AppError::Conflict);
+    }
     if request.card_version != old.version || old.version >= i32::MAX as u32 {
         return Err(AppError::Conflict);
     }
@@ -212,6 +219,85 @@ async fn attempt(
     tx.commit().await.map_err(|_| AppError::Unavailable)?;
     Ok(Json(result))
 }
+async fn preferences(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    Path(id): Path<String>,
+    Json(request): Json<ReviewPreferenceRequest>,
+) -> Result<Json<ReviewCard>, AppError> {
+    let user = owner(&auth)?;
+    validate_key(&request.idempotency_key)?;
+    let tx = backend
+        .db
+        .begin()
+        .await
+        .map_err(|_| AppError::Unavailable)?;
+    let old = load(&tx, user, &id).await?;
+    let scope = format!("review:{id}:preferences");
+    let fingerprint = hash(&request)?;
+    if let Some(cached) = replay(&tx, user, &scope, &request.idempotency_key, &fingerprint).await? {
+        return Ok(Json(cached));
+    }
+    if old.version != request.card_version || old.version >= i32::MAX as u32 {
+        return Err(AppError::Conflict);
+    }
+    if old.suspended != request.suspended {
+        exec(
+            &tx,
+            "UPDATE review_cards SET suspended=$3,version=version+1 WHERE user_id=$1 AND id=$2",
+            vec![user.into(), id.clone().into(), request.suspended.into()],
+        )
+        .await?;
+    }
+    let result = load(&tx, user, &id).await?;
+    record(
+        &tx,
+        user,
+        &scope,
+        &request.idempotency_key,
+        &fingerprint,
+        &result,
+    )
+    .await?;
+    tx.commit().await.map_err(|_| AppError::Unavailable)?;
+    Ok(Json(result))
+}
+async fn cards(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    Query(page): Query<crate::library::Page>,
+) -> Result<Json<ReviewCardsPage>, AppError> {
+    let (stamp, id) = crate::library::cursor(page.cursor)?;
+    let sql = format!(
+        "SELECT {COLUMNS},to_char(c.due_at AT TIME ZONE 'UTC','{STAMP}') AS due,to_char(c.created_at AT TIME ZONE 'UTC','{STAMP}') AS created FROM review_cards c JOIN lesson_revisions r ON (r.lesson_id,r.revision)=(c.source_lesson_id,c.source_revision) WHERE c.user_id=$1 AND r.published AND ($2::timestamptz IS NULL OR (c.created_at,c.id)<($2::timestamptz,$3::text)) ORDER BY c.created_at DESC,c.id DESC LIMIT 21"
+    );
+    let rows = backend
+        .db
+        .query_all_raw(Statement::from_sql_and_values(
+            DbBackend::Postgres,
+            sql,
+            [owner(&auth)?.into(), stamp.into(), id.into()],
+        ))
+        .await
+        .map_err(|_| AppError::Unavailable)?;
+    let items = rows
+        .iter()
+        .take(20)
+        .map(card)
+        .collect::<Result<Vec<_>, _>>()?;
+    let next_cursor = if rows.len() > 20 {
+        let last = &rows[19];
+        Some(format!(
+            "{}@{}",
+            field::<String>(last, "created")?,
+            field::<String>(last, "id")?
+        ))
+    } else {
+        None
+    };
+    Ok(Json(ReviewCardsPage { items, next_cursor }))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

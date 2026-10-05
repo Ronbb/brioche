@@ -14,6 +14,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     GradeResult::export_all(&config)?;
     CsrfToken::export_all(&config)?;
     brioche_course_contract::ReviewQueue::export_all(&config)?;
+    brioche_course_contract::ReviewCardsPage::export_all(&config)?;
+    brioche_course_contract::ReviewPreferenceRequest::export_all(&config)?;
+    brioche_course_contract::ReviewEnrollmentRequest::export_all(&config)?;
+    brioche_course_contract::SavedPage::export_all(&config)?;
+    brioche_course_contract::SavedWriteRequest::export_all(&config)?;
+    brioche_course_contract::ReviewHistoryPage::export_all(&config)?;
     brioche_course_contract::ReviewAttemptRequest::export_all(&config)?;
     brioche_course_contract::ReviewAttemptResult::export_all(&config)?;
     brioche_course_contract::StartLearningRequest::export_all(&config)?;

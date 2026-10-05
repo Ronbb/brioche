@@ -872,9 +872,161 @@ async fn learning_revision_ownership_idempotency_and_completion() {
             .1,
         reviewed
     );
+    let saved_path = "/api/v1/me/saved-items/word-baguette";
+    let save_body = json!({"sourceLessonId":lesson_id,"sourceRevision":1,"saved":true,"version":0,"idempotencyKey":"saved-create-0001"});
+    let (status, saved) = a
+        .send("PUT", saved_path, Some(save_body.clone()), true)
+        .await;
+    assert_eq!(status, 200);
+    assert_eq!(saved["version"], 1);
+    assert_eq!(saved["saved"], true);
+    assert_eq!(
+        count(&db, "review_cards").await,
+        3,
+        "bookmark does not add or reset reviews"
+    );
+    assert_eq!(
+        a.send("PUT", saved_path, Some(save_body.clone()), true)
+            .await
+            .1,
+        saved
+    );
+    assert_eq!(
+        a.send("GET", "/api/v1/me/saved-items", None, true).await.1["items"]
+            .as_array()
+            .unwrap()
+            .len(),
+        1
+    );
+    assert_eq!(b.send("GET", saved_path, None, true).await.0, 404);
+    assert_eq!(
+        b.send("GET", "/api/v1/me/saved-items", None, true).await.1["items"],
+        json!([])
+    );
+    assert_eq!(a.send("PUT",saved_path,Some(json!({"sourceLessonId":lesson_id,"sourceRevision":1,"saved":false,"version":0,"idempotencyKey":"saved-stale-0001"})),true).await.0,409);
+    assert_eq!(a.send("PUT",saved_path,Some(json!({"sourceLessonId":lesson_id,"sourceRevision":1,"saved":false,"version":1,"idempotencyKey":"saved-create-0001"})),true).await.0,409);
+    assert_eq!(
+        a.send(
+            "PUT",
+            "/api/v1/me/saved-items/unknown",
+            Some(save_body),
+            true
+        )
+        .await
+        .0,
+        404
+    );
+    let removed=a.send("PUT",saved_path,Some(json!({"sourceLessonId":lesson_id,"sourceRevision":1,"saved":false,"version":1,"idempotencyKey":"saved-remove-0001"})),true).await;
+    assert_eq!(removed.0, 200);
+    assert_eq!(removed.1["version"], 2);
+    assert_eq!(
+        count(&db, "review_cards").await,
+        3,
+        "removing a bookmark leaves reviews intact"
+    );
+    let restored=a.send("PUT",saved_path,Some(json!({"sourceLessonId":lesson_id,"sourceRevision":2,"saved":true,"version":2,"idempotencyKey":"saved-restore-001"})),true).await;
+    assert_eq!(restored.0, 200);
+    assert_eq!(restored.1["sourceRevision"], 1);
+    assert_eq!(restored.1["createdAt"], saved["createdAt"]);
+    let enrollment = json!({"knowledgeId":"word-baguette","sourceLessonId":lesson_id,"sourceRevision":2,"idempotencyKey":"enroll-repeat-001"});
+    let enrolled = a
+        .send(
+            "POST",
+            "/api/v1/me/review-enrollments",
+            Some(enrollment.clone()),
+            true,
+        )
+        .await;
+    assert_eq!(enrolled.0, 200);
+    assert_eq!(enrolled.1["sourceRevision"], 1);
+    assert_eq!(
+        a.send(
+            "POST",
+            "/api/v1/me/review-enrollments",
+            Some(enrollment),
+            true
+        )
+        .await
+        .1,
+        enrolled.1
+    );
+    assert_eq!(count(&db, "review_cards").await, 3);
+    let prefs_path = format!("/api/v1/me/reviews/{review_id}/preferences");
+    let pause = json!({"cardVersion":2,"idempotencyKey":"pause-review-0001","suspended":true});
+    assert_eq!(
+        b.send("PUT", &prefs_path, Some(pause.clone()), true)
+            .await
+            .0,
+        404
+    );
+    let paused = a.send("PUT", &prefs_path, Some(pause.clone()), true).await;
+    assert_eq!(paused.0, 200);
+    assert_eq!(paused.1["suspended"], true);
+    assert_eq!(paused.1["version"], 3);
+    assert_eq!(paused.1["dueAt"], reviewed["card"]["dueAt"]);
+    assert_eq!(
+        a.send("PUT", &prefs_path, Some(pause), true).await.1,
+        paused.1
+    );
+    assert_eq!(
+        a.send(
+            "POST",
+            &review_path,
+            Some(json!({"cardVersion":3,"idempotencyKey":"paused-attempt-01","rating":"again"})),
+            true
+        )
+        .await
+        .0,
+        409
+    );
+    let resumed = a
+        .send(
+            "PUT",
+            &prefs_path,
+            Some(json!({"cardVersion":3,"idempotencyKey":"resume-review-01","suspended":false})),
+            true,
+        )
+        .await;
+    assert_eq!(resumed.0, 200);
+    assert_eq!(resumed.1["suspended"], false);
+    assert_eq!(resumed.1["dueAt"], paused.1["dueAt"]);
+    assert_eq!(resumed.1["stage"], paused.1["stage"]);
+    assert_eq!(
+        a.send("GET", "/api/v1/me/review-cards", None, true).await.1["items"]
+            .as_array()
+            .unwrap()
+            .len(),
+        3
+    );
+    assert_eq!(
+        b.send("GET", "/api/v1/me/review-cards", None, true).await.1["items"],
+        json!([])
+    );
+    let history = a.send("GET", "/api/v1/me/review-history", None, true).await;
+    assert_eq!(history.0, 200);
+    assert_eq!(history.1["items"].as_array().unwrap().len(), 1);
+    assert_eq!(history.1["items"][0]["algorithmVersion"], "fixed-v1");
+    assert_eq!(history.1["items"][0]["timeZone"], "Asia/Shanghai");
+    assert_eq!(
+        b.send("GET", "/api/v1/me/review-history", None, true)
+            .await
+            .1["items"],
+        json!([])
+    );
     db.execute_unprepared("UPDATE lesson_revisions SET published=false")
         .await
         .unwrap();
+    let withdrawn_saved = a.send("GET", saved_path, None, true).await;
+    assert_eq!(withdrawn_saved.0, 200);
+    assert_eq!(withdrawn_saved.1["withdrawn"], true);
+    assert!(withdrawn_saved.1["vocabulary"].is_null());
+    assert!(
+        a.send("GET", "/api/v1/me/review-history", None, true)
+            .await
+            .1["items"][0]["vocabulary"]
+            .is_null()
+    );
+    assert_eq!(a.send("PUT",saved_path,Some(json!({"sourceLessonId":lesson_id,"sourceRevision":1,"saved":false,"version":3,"idempotencyKey":"withdraw-unsave01"})),true).await.0,200);
     assert_eq!(
         a.send("GET", "/api/v1/me/reviews", None, true).await.1["dueCount"],
         0
@@ -991,6 +1143,59 @@ async fn learning_revision_ownership_idempotency_and_completion() {
         a.send("GET", "/api/v1/me/reviews", None, true).await.1["dueCount"],
         11
     );
+    db.execute_unprepared("INSERT INTO saved_items (id,user_id,knowledge_id,source_lesson_id,source_revision,snapshot) SELECT md5('saved-page-'||n),c.user_id,'saved-page-'||n,'pagination-lesson-0',1,jsonb_set(c.snapshot,'{id}',to_jsonb('saved-page-'||n)) FROM (SELECT user_id,snapshot FROM review_cards WHERE user_id=(SELECT id FROM users WHERE email='one@example.test') LIMIT 1) c CROSS JOIN generate_series(1,25) n").await.unwrap();
+    let (_, saved_page1) = a.send("GET", "/api/v1/me/saved-items", None, true).await;
+    assert_eq!(saved_page1["items"].as_array().unwrap().len(), 20);
+    let saved_cursor = saved_page1["nextCursor"].as_str().unwrap();
+    let (_, saved_page2) = a
+        .send(
+            "GET",
+            &format!("/api/v1/me/saved-items?cursor={saved_cursor}"),
+            None,
+            true,
+        )
+        .await;
+    assert_eq!(saved_page2["items"].as_array().unwrap().len(), 5);
+    assert!(saved_page2["nextCursor"].is_null());
+    let bookmark = saved_page1["items"][0].clone();
+    let knowledge = bookmark["knowledgeId"].as_str().unwrap();
+    let bookmark_path = format!("/api/v1/me/saved-items/{knowledge}");
+    let body = json!({"sourceLessonId":"pagination-lesson-0","sourceRevision":1,"saved":false,"version":1,"idempotencyKey":"saved-concurrent-a"});
+    let mut other_tab = Browser {
+        app: a.app.clone(),
+        cookie: a.cookie.clone(),
+        csrf: a.csrf.clone(),
+    };
+    let (left,right)=tokio::join!(a.send("PUT",&bookmark_path,Some(body.clone()),true),other_tab.send("PUT",&bookmark_path,Some(json!({"sourceLessonId":"pagination-lesson-0","sourceRevision":1,"saved":false,"version":1,"idempotencyKey":"saved-concurrent-b"})),true));
+    let mut statuses = [left.0, right.0];
+    statuses.sort();
+    assert_eq!(statuses, [200, 409]);
+    db.execute_unprepared("INSERT INTO review_attempts (id,card_id,user_id,rating,old_stage,new_stage,old_version,new_version,due_at,reviewed_at,time_zone) SELECT md5('history-page-'||n),c.id,c.user_id,'again',0,0,100+n,101+n,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP-(n||' days')::interval,'Europe/Paris' FROM (SELECT id,user_id FROM review_cards WHERE user_id=(SELECT id FROM users WHERE email='one@example.test') LIMIT 1) c CROSS JOIN generate_series(1,30) n").await.unwrap();
+    let (_, history_page1) = a.send("GET", "/api/v1/me/review-history", None, true).await;
+    assert_eq!(history_page1["items"].as_array().unwrap().len(), 20);
+    let history_cursor = history_page1["nextCursor"].as_str().unwrap();
+    let (_, history_page2) = a
+        .send(
+            "GET",
+            &format!("/api/v1/me/review-history?cursor={history_cursor}"),
+            None,
+            true,
+        )
+        .await;
+    assert_eq!(history_page2["items"].as_array().unwrap().len(), 12);
+    let mut history_ids = std::collections::BTreeSet::new();
+    for page in [&history_page1, &history_page2] {
+        for item in page["items"].as_array().unwrap() {
+            assert!(history_ids.insert(item["id"].as_str().unwrap()));
+        }
+    }
+    for path in [
+        "/api/v1/me/saved-items?cursor=bad",
+        "/api/v1/me/review-history?cursor=bad",
+        "/api/v1/me/review-cards?cursor=bad",
+    ] {
+        assert_eq!(a.send("GET", path, None, true).await.0, 400);
+    }
     brioche_migration::Migrator::down(&db, None).await.unwrap();
     drop(db);
     admin
