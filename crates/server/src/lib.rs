@@ -1,12 +1,15 @@
 pub mod entity;
+pub mod grading;
 use axum::{
     Json, Router,
     extract::{Path, State},
-    http::StatusCode,
+    http::{HeaderMap, StatusCode},
     response::{IntoResponse, Response},
-    routing::get,
+    routing::{get, post},
 };
-use brioche_course_contract::{ApiError, Catalog, Level, PublicLesson, Unit};
+use brioche_course_contract::{
+    ApiError, Catalog, GradeRequest, GradeResult, Level, PublicLesson, Unit,
+};
 use sea_orm::{ColumnTrait, ConnectionTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use std::{collections::BTreeMap, sync::Arc};
 
@@ -43,10 +46,24 @@ impl AppState {
 pub enum AppError {
     NotFound,
     Unavailable,
+    InvalidAnswer,
+    Forbidden,
+    Conflict,
 }
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, code, message) = match self {
+            Self::InvalidAnswer => (
+                StatusCode::BAD_REQUEST,
+                "invalid_answer",
+                "请检查答案后重试",
+            ),
+            Self::Forbidden => (StatusCode::FORBIDDEN, "forbidden", "请求来源无法验证"),
+            Self::Conflict => (
+                StatusCode::CONFLICT,
+                "revision_conflict",
+                "课程版本已变化，请重新打开课程",
+            ),
             Self::NotFound => (StatusCode::NOT_FOUND, "not_found", "课程不存在"),
             Self::Unavailable => (
                 StatusCode::SERVICE_UNAVAILABLE,
@@ -74,9 +91,53 @@ pub fn router(state: AppState) -> Router {
         .route("/api/ready", get(ready))
         .route("/api/catalog", get(catalog))
         .route("/api/lessons/{id}", get(lesson))
+        .route("/api/demo/lessons/{id}/grade", post(demo_grade))
         .fallback(|| async { AppError::NotFound })
         .layer(tower_http::trace::TraceLayer::new_for_http())
+        .layer(axum::extract::DefaultBodyLimit::max(16 * 1024))
         .with_state(Arc::new(state))
+}
+/// Development only, stateless grading. Production learning submissions require authenticated sessions.
+async fn demo_grade(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<String>,
+    headers: HeaderMap,
+    Json(request): Json<GradeRequest>,
+) -> Result<impl IntoResponse, AppError> {
+    let lesson = state
+        .fixture
+        .as_ref()
+        .filter(|l| l.id == id)
+        .ok_or(AppError::NotFound)?;
+    let origin = headers
+        .get("origin")
+        .and_then(|h| h.to_str().ok())
+        .and_then(|origin| origin.parse::<axum::http::Uri>().ok())
+        .ok_or(AppError::Forbidden)?;
+    let host = headers
+        .get("host")
+        .and_then(|h| h.to_str().ok())
+        .ok_or(AppError::Forbidden)?;
+    if !matches!(origin.scheme_str(), Some("http" | "https"))
+        || origin.authority().map(|a| a.as_str()) != Some(host)
+        || origin.path() != "/"
+    {
+        return Err(AppError::Forbidden);
+    }
+    if request.revision != lesson.revision {
+        return Err(AppError::Conflict);
+    }
+    let source = development_source().map_err(|_| AppError::Unavailable)?;
+    let grader =
+        grading::Grader::from_source(lesson, &source).map_err(|_| AppError::Unavailable)?;
+    let result: GradeResult = grader
+        .grade(lesson, &request.exercise_id, &request.answer)
+        .map_err(|error| match error {
+            grading::GradeError::UnknownExercise => AppError::NotFound,
+            grading::GradeError::InvalidAnswer => AppError::InvalidAnswer,
+            grading::GradeError::InvalidContent => AppError::Unavailable,
+        })?;
+    Ok(([("Cache-Control", "no-store")], Json(result)))
 }
 async fn ready(State(state): State<Arc<AppState>>) -> Result<Json<serde_json::Value>, AppError> {
     if let Some(db) = &state.db {
@@ -143,10 +204,13 @@ pub fn project_source(mut source: serde_json::Value) -> anyhow::Result<PublicLes
     lesson.validate().map_err(anyhow::Error::msg)?;
     Ok(lesson)
 }
-pub fn development_fixture() -> anyhow::Result<PublicLesson> {
-    project_source(serde_json::from_str(include_str!(
+pub fn development_source() -> anyhow::Result<serde_json::Value> {
+    Ok(serde_json::from_str(include_str!(
         "../../../docs/examples/a1-bakery.lesson.json"
     ))?)
+}
+pub fn development_fixture() -> anyhow::Result<PublicLesson> {
+    project_source(development_source()?)
 }
 
 #[cfg(test)]
@@ -196,5 +260,86 @@ mod tests {
         .await
         .unwrap();
         assert_eq!(response.status(), StatusCode::SERVICE_UNAVAILABLE);
+    }
+
+    #[tokio::test]
+    async fn demo_grading_checks_origin_version_and_payload_without_exposing_keys() {
+        for (origin, revision, answer, expected) in [
+            (
+                Some("http://localhost:5173"),
+                1,
+                serde_json::json!({"kind":"choice","optionId":"request-bread"}),
+                StatusCode::OK,
+            ),
+            (
+                Some("https://evil.example"),
+                1,
+                serde_json::json!({"kind":"choice","optionId":"request-bread"}),
+                StatusCode::FORBIDDEN,
+            ),
+            (
+                None,
+                1,
+                serde_json::json!({"kind":"choice","optionId":"request-bread"}),
+                StatusCode::FORBIDDEN,
+            ),
+            (
+                Some("http://localhost:5173"),
+                2,
+                serde_json::json!({"kind":"choice","optionId":"request-bread"}),
+                StatusCode::CONFLICT,
+            ),
+            (
+                Some("http://localhost:5173"),
+                1,
+                serde_json::json!({"kind":"choice","optionId":"missing"}),
+                StatusCode::BAD_REQUEST,
+            ),
+            (
+                Some("http://localhost:5173"),
+                1,
+                serde_json::json!({"kind":"choice","optionId":"request-bread","score":100}),
+                StatusCode::UNPROCESSABLE_ENTITY,
+            ),
+        ] {
+            let mut request = axum::http::Request::builder()
+                .method("POST")
+                .uri("/api/demo/lessons/a1-bakery-buy-breakfast/grade")
+                .header("host", "localhost:5173")
+                .header("content-type", "application/json");
+            if let Some(origin) = origin {
+                request = request.header("origin", origin);
+            }
+            let response = router(AppState {
+                db: None,
+                fixture: Some(development_fixture().unwrap()),
+            })
+            .oneshot(
+                request
+                    .body(axum::body::Body::from(
+                        serde_json::to_vec(&serde_json::json!({
+                            "revision":revision,"exerciseId":"exercise-intention","answer":answer
+                        }))
+                        .unwrap(),
+                    ))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+            assert_eq!(response.status(), expected);
+            if expected == StatusCode::OK {
+                assert_eq!(response.headers()["cache-control"], "no-store");
+                let bytes = response.into_body().collect().await.unwrap().to_bytes();
+                let json: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
+                assert_eq!(json["correct"], true);
+                assert!(json.get("correctOptionId").is_none());
+            }
+        }
+        let response = router(AppState { db: None, fixture: None }).oneshot(
+            axum::http::Request::builder().method("POST").uri("/api/demo/lessons/a1-bakery-buy-breakfast/grade")
+                .header("content-type","application/json")
+                .body(axum::body::Body::from(r#"{"revision":1,"exerciseId":"exercise-intention","answer":{"kind":"choice","optionId":"request-bread"}}"#)).unwrap()
+        ).await.unwrap();
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
     }
 }

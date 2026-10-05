@@ -12,6 +12,7 @@
 | [开发顺序与验收](06-roadmap.md) | 从设计进入开发的阶段目标、验证方法与待定事项 |
 | [设计验证记录](07-design-verification.md) | 哪些草案与交互实际检查过，哪些留待实现 |
 | [工程开发说明](08-development.md) | 当前已实现范围、实际启动与检查命令、Docker Compose |
+| [实现与验收清单](09-implementation-tracker.md) | 完整功能目标的状态、缺口与验收证据 |
 | [决策记录](decisions/0001-foundation.md) | 关键选择的依据、代价及重新评估条件 |
 | [示例课程](examples/a1-bakery.lesson.json) | 用一堂面包店课程检验数据设计 |
 | [示例课程 Schema](examples/lesson.schema.json) | v0.1 数据契约草案；不等于已实现解释器 |

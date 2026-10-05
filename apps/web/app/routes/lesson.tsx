@@ -3,6 +3,8 @@ import { Link } from "react-router";
 import type { Segment } from "@brioche/contracts/Segment";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
 import type { Vocabulary } from "@brioche/contracts/Vocabulary";
+import type { Grammar } from "@brioche/contracts/Grammar";
+import { TeachingBlock } from "../components/teaching-block";
 import { getLesson } from "../lib/api.server";
 import { Player, useLearning } from "../components/learning";
 import { Icon } from "../components/icon";
@@ -22,10 +24,12 @@ export function Sentence({
   segments,
   lesson,
   onTerm,
+  onGrammar,
 }: {
   segments: Segment[];
   lesson: PublicLesson;
   onTerm: (v: Vocabulary) => void;
+  onGrammar: (v: Grammar) => void;
 }) {
   const learning = useLearning();
   return (
@@ -39,7 +43,10 @@ export function Sentence({
           token.isWordLike ? (
             <button
               key={segment.id + i}
-              className={"word" + (segment.vocabularyId ? " known" : "")}
+              className={
+                "word" +
+                (segment.vocabularyId || segment.grammarId ? " known" : "")
+              }
               onClick={() => {
                 learning.play([
                   { id: "word-" + segment.id + "-" + i, text: token.segment },
@@ -48,6 +55,12 @@ export function Sentence({
                   (v) => v.id === segment.vocabularyId,
                 );
                 if (term) onTerm(term);
+                else {
+                  const grammar = lesson.knowledge.grammar.find(
+                    (g) => g.id === segment.grammarId,
+                  );
+                  if (grammar) onGrammar(grammar);
+                }
               }}
             >
               {token.segment}
@@ -63,10 +76,30 @@ export function Sentence({
 export default function Lesson({
   loaderData: { lesson },
 }: Route.ComponentProps) {
+  return (
+    <LessonContent key={lesson.id + ":" + lesson.revision} lesson={lesson} />
+  );
+}
+function LessonContent({ lesson }: { lesson: PublicLesson }) {
   const learning = useLearning(),
-    [mode, setMode] = useState<"dialogue" | "article">("dialogue"),
+    [mode, setMode] = useState<"dialogue" | "article">(
+      lesson.blocks.some((b) => b.type === "dialogue") ? "dialogue" : "article",
+    ),
     [revealed, setRevealed] = useState<Set<string>>(new Set()),
     [term, setTerm] = useState<Vocabulary | null>(null);
+  const [grammar, setGrammar] = useState<Grammar | null>(null);
+  const showTerm = (value: Vocabulary) => {
+    setGrammar(null);
+    setTerm(value);
+  };
+  const showGrammar = (value: Grammar) => {
+    setTerm(null);
+    setGrammar(value);
+  };
+  const closeNote = () => {
+    setTerm(null);
+    setGrammar(null);
+  };
   const dialogue = lesson.blocks.find((b) => b.type === "dialogue"),
     article = lesson.blocks.find((b) => b.type === "article");
   const entries =
@@ -82,7 +115,7 @@ export default function Lesson({
   function changeMode(next: "dialogue" | "article") {
     learning.stop();
     setMode(next);
-    setTerm(null);
+    closeNote();
   }
   return (
     <section className="page-arrive">
@@ -91,21 +124,28 @@ export default function Lesson({
           {lesson.levelId.toUpperCase()} / {lesson.title.zh}
         </div>
         <h1 lang="fr">{lesson.title.fr}</h1>
+        {lesson.blocks
+          .filter((b) => b.type === "scene")
+          .map((b) => (
+            <TeachingBlock key={b.id} block={b} lesson={lesson} />
+          ))}
         <Player units={units} />
       </div>
       <div className="reading-layout">
         <div className="reading">
           <div className="reading-tabs" role="tablist" aria-label="正文">
-            {(["dialogue", "article"] as const).map((value) => (
-              <button
-                key={value}
-                role="tab"
-                aria-selected={mode === value}
-                onClick={() => changeMode(value)}
-              >
-                {value === "dialogue" ? "对话" : "短文"}
-              </button>
-            ))}
+            {(["dialogue", "article"] as const)
+              .filter((value) => lesson.blocks.some((b) => b.type === value))
+              .map((value) => (
+                <button
+                  key={value}
+                  role="tab"
+                  aria-selected={mode === value}
+                  onClick={() => changeMode(value)}
+                >
+                  {value === "dialogue" ? "对话" : "短文"}
+                </button>
+              ))}
           </div>
           {mode === "dialogue" && dialogue?.type === "dialogue" && (
             <ul className="reading-characters">
@@ -154,7 +194,8 @@ export default function Lesson({
                   <Sentence
                     segments={entry.segments}
                     lesson={lesson}
-                    onTerm={setTerm}
+                    onTerm={showTerm}
+                    onGrammar={showGrammar}
                   />
                   {(learning.translation || revealed.has(entry.id)) && (
                     <p className="translation">{entry.translationZh}</p>
@@ -163,30 +204,77 @@ export default function Lesson({
               </div>
             );
           })}
+          <div className="lesson-explore">
+            {lesson.steps
+              .filter((s) => s.kind === "explore")
+              .flatMap((s) => s.blockIds)
+              .map((id) => {
+                const block = lesson.blocks.find((b) => b.id === id)!;
+                if (block.type === "dialogue" || block.type === "article")
+                  return null;
+                return <TeachingBlock key={id} block={block} lesson={lesson} />;
+              })}
+          </div>
           <div className="reading-footer">
-            <Link className="primary" to={"/review/" + lesson.id}>
-              复习表达
+            <Link className="primary" to={"/practice/" + lesson.id}>
+              练习
               <Icon name="arrow" />
             </Link>
           </div>
         </div>
         <aside
-          className={"knowledge" + (term ? " is-open" : "")}
+          className={"knowledge" + (term || grammar ? " is-open" : "")}
           aria-label="表达解释"
         >
           <button
             className="icon-button note-close"
             aria-label="关闭解释"
-            onClick={() => setTerm(null)}
+            onClick={closeNote}
           >
             <Icon name="close" />
           </button>
-          {term ? (
+          {grammar ? (
+            <>
+              <span className="knowledge-label">语法</span>
+              <h2>{grammar.titleZh}</h2>
+              <p className="explain">{grammar.bodyZh}</p>
+              {grammar.examples.map((e, i) => (
+                <div className="grammar-example" key={i}>
+                  <button
+                    lang="fr"
+                    onClick={() =>
+                      learning.play([{ id: grammar.id + i, text: e.fr }])
+                    }
+                  >
+                    {e.fr}
+                  </button>
+                  <p>{e.zh}</p>
+                </div>
+              ))}
+            </>
+          ) : term ? (
             <>
               <span className="knowledge-label">表达与词汇</span>
               <h2 lang="fr">{term.lemma}</h2>
               <p className="meaning">{term.meaningZh}</p>
               <p className="explain">{term.noteZh}</p>
+              {lesson.knowledge.grammar
+                .filter((g) =>
+                  entries.some((e) =>
+                    e.segments.some(
+                      (s) => s.vocabularyId === term.id && s.grammarId === g.id,
+                    ),
+                  ),
+                )
+                .map((g) => (
+                  <button
+                    className="text-button"
+                    key={g.id}
+                    onClick={() => showGrammar(g)}
+                  >
+                    {g.titleZh}
+                  </button>
+                ))}
               <div className="example" lang="fr">
                 {entries
                   .find((e) =>
@@ -207,11 +295,11 @@ export default function Lesson({
           )}
         </aside>
       </div>
-      {term && (
+      {(term || grammar) && (
         <button
           className="knowledge-backdrop"
           aria-label="关闭解释"
-          onClick={() => setTerm(null)}
+          onClick={closeNote}
         />
       )}
     </section>

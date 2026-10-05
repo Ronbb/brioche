@@ -10,6 +10,8 @@
 - Axum 公共目录和课程 API、health/readiness、SIGINT/SIGTERM 优雅退出。
 - Rust Serde 公共 DTO，生成 TS 联合类型和公共课程 JSON Schema；Web 只导入公共契约。私有答案与编辑状态不进入课程响应。
 - SeaORM PostgreSQL Entity、版本化显式迁移、仅插入的课程导入工具、草稿过滤及最新发布 revision 读取。
+- `/practice/:lessonId` 示例练习：选择、填空、排序由 Rust 判分，错误反馈/重试/回顾由页面呈现。私有答案规则在导入时校验，公共契约只包含提交和反馈 DTO。
+- 正文增加结构化解释、文化范围、词汇与语法；点语法锚点可打开解释。校验拒绝坏解释锚点、重复题目选项、未知步骤类型和不可达教学块。
 - Docker Compose：PostgreSQL → 一次性迁移 → API → SSR Web → Caddy。数据库不映射宿主端口，生产关闭示例课程模式。
 
 ## 本机开发
@@ -81,6 +83,10 @@ Web 镜像用 `pnpm deploy --prod` 保留生产依赖，使用 React Router Node
 
 ## 下一阶段
 
-账号邀请/登录、cookie 会话与 CSRF、服务端练习判分、学习会话固定 revision、幂等提交、进度续学、账号复习排程、个人资料保存尚未实现。现在为访客阅读与临时自评，不宣称保存到账号。结构化课程已能提供正文和知识锚点，完整步骤解释器与全部教学块渲染继续按路线图实施。
+账号邀请/登录、cookie 会话与 CSRF、学习会话固定 revision、幂等提交、进度续学、账号复习排程、个人资料保存尚未实现。现在为访客阅读、示例练习与临时自评，不宣称保存到账号。完整步骤解释器和持久化继续按路线图实施，验收缺口见 [实现清单](09-implementation-tracker.md)。
+
+示例练习通过 `POST /api/demo/lessons/:id/grade` 调用 Rust 判分，仅在服务端启用 development fixture 时可用，不写数据库；数据库模式返回 404，不替代未来受认证/CSRF 保护的学习提交。请求必须携带匹配 Host 的 Origin，限定版本、题目 ID、答案类型、选项/词块范围与 body 大小。填空规范化 NFC、空白、大小写（按题配置）和法语弯引号，保留重音差异。规则源只在 Rust 服务端加载，生成 TS/前端 bundle 不含答案键。Unicode 处理依据 [unicode-normalization 文档](https://docs.rs/unicode-normalization/0.1.25/unicode_normalization/)。
+
+速度弹窗显式使用 fixed/inset/auto margin 居中，避免 Tailwind reset 覆盖原生 dialog 的默认 margin；最大高度考虑动态视口与安全区，内部滚动不占额外宽度。
 
 依赖兼容依据：[React Router Framework](https://reactrouter.com/start/framework/installation)、[Vite 8](https://vite.dev/blog/announcing-vite8)、[SeaORM 发布记录](https://github.com/SeaQL/sea-orm/releases)。具体依赖以提交的 Cargo.lock / pnpm-lock.yaml 为准。

@@ -96,3 +96,12 @@
 - API、Web、Caddy 三个 Linux 镜像构建通过。隔离 Compose 项目验证 PostgreSQL → migrate → API → SSR Web → Caddy；只映射本机 18080 测试端口，health/readiness 与同源路由可用，SSR 空目录显示准备中。导入草稿仍不显示，生产 fixture 模式明确拒绝。
 - Web 与 API 开发服务本机/局域网访问成功。未改 DNS、路由器或启动公网生产服务。
 - 当前完成工程基础和阅读链路；账号、判分、进度续学、完整步骤/发布流水线与正式媒体仍按工程说明继续实现。
+
+## 2026-10-06：示例练习与速度面板修正
+
+- Rust 增加三类私有判分规则、导入前检查、公共提交/反馈契约；NFC、法语弯引号与空白规范化保留重音。选择/排序只接受当前题定义的 ID。单元与 HTTP 测试合计 12 项通过；PostgreSQL 测试本轮未重复运行，迁移未变更。
+- `cargo fmt --all --check`、`cargo clippy --workspace --all-targets --locked -- -D warnings`、`cargo test --workspace --locked`、`pnpm contracts`、`pnpm typecheck`、`pnpm build` 通过。
+- 在 390×844 浏览器验证：错误选择反馈 → 再试 → 正确选择 → 填空 ` UNE ` → 排序 → 三题回顾。判分走真实 Rust API，无成功响应替身。示例结果不保存到账号，生产数据库模式不开放 demo 判分。
+- 正文加入结构化教学补充及语法锚点；完整学习步骤与多正文块流程仍在实现清单中，不能宣称课程解释器全部完成。
+- 用户反馈速度面板贴左上角；原因是 CSS reset 覆盖原生 dialog 自动 margin。显式 fixed/inset/auto margin 后，564×884 截图与 320×568、390×844、768×1024、1440×900 几何检查通过，面板中心误差小于 1px。
+- 564×260 横屏检查：面板保持 16px 上下边距，内区可滚动且不占额外宽度；无页面横向溢出。自定义 radio 保留 roving tabIndex，Escape 关闭。真实 iPhone 语音与安全区仍需实机验收。

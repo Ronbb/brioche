@@ -3,6 +3,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use ts_rs::TS;
+mod validation;
 
 macro_rules! dto {
     ($name:ident { $($field:ident : $ty:ty),* $(,)? }) => {
@@ -165,6 +166,33 @@ dto!(ApiError {
     message: String
 });
 
+/// Submitted values are IDs/text, never a client supplied score or answer key.
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, TS)]
+#[serde(tag = "kind", rename_all = "kebab-case", deny_unknown_fields)]
+pub enum ExerciseAnswer {
+    #[serde(rename_all = "camelCase")]
+    Choice {
+        option_id: String,
+    },
+    Text {
+        text: String,
+    },
+    #[serde(rename_all = "camelCase")]
+    Order {
+        token_ids: Vec<String>,
+    },
+}
+dto!(GradeRequest {
+    revision: u32,
+    exercise_id: String,
+    answer: ExerciseAnswer
+});
+dto!(GradeResult {
+    exercise_id: String,
+    correct: bool,
+    feedback_zh: String
+});
+
 impl PublicLesson {
     pub fn summary(&self) -> LessonSummary {
         LessonSummary {
@@ -306,14 +334,14 @@ impl PublicLesson {
         {
             return Err("unknown completion reference".into());
         }
-        Ok(())
+        self.validate_flow()
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    fn fixture() -> PublicLesson {
+    pub(crate) fn fixture() -> PublicLesson {
         let mut source: serde_json::Value =
             serde_json::from_str(include_str!("../../../docs/examples/a1-bakery.lesson.json"))
                 .unwrap();

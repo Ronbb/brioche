@@ -49,6 +49,8 @@ async fn main() -> Result<()> {
                 bail!("only reviewed content can be published");
             }
             let lesson = project_source(source.clone())?;
+            brioche_server::grading::Grader::from_source(&lesson, &source)
+                .map_err(|_| anyhow::anyhow!("invalid private grading rules"))?;
             entity::ActiveModel {
                 lesson_id: Set(lesson.id.clone()),
                 revision: Set(i32::try_from(lesson.revision)?),
