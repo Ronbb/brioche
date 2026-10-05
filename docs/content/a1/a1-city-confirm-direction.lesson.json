@@ -1,0 +1,581 @@
+{
+  "schemaVersion": "1.0",
+  "id": "a1-city-confirm-direction",
+  "revision": 1,
+  "levelId": "a1",
+  "unitId": "a1-city-travel",
+  "title": {
+    "fr": "Ce train va à la gare ?",
+    "zh": "确认乘车方向"
+  },
+  "summaryZh": "确认列车是否前往火车站，并理解另一方向的提示。",
+  "estimatedMinutes": 12,
+  "objectivesZh": [
+    "询问列车目的地",
+    "区分火车站和市中心",
+    "确认应查看的方向"
+  ],
+  "knowledge": {
+    "vocabulary": [
+      {
+        "id": "word-gare",
+        "lemma": "gare",
+        "partOfSpeech": "noun",
+        "meaningZh": "火车站",
+        "noteZh": "à la gare 表示在火车站或去火车站。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-centre-ville",
+        "lemma": "centre-ville",
+        "partOfSpeech": "noun",
+        "meaningZh": "市中心",
+        "noteZh": "au centre-ville 表示在市中心或去市中心。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-direction",
+        "lemma": "direction",
+        "partOfSpeech": "noun",
+        "meaningZh": "方向",
+        "noteZh": "确认列车方向；实际乘车需核对现场指示。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-train",
+        "lemma": "train",
+        "partOfSpeech": "noun",
+        "meaningZh": "列车",
+        "noteZh": "本课为虚构城市交通情境。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-panneau",
+        "lemma": "panneau",
+        "partOfSpeech": "noun",
+        "meaningZh": "指示牌；显示板",
+        "noteZh": "在车站可指显示方向、站台或时间的信息板。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-aller",
+        "lemma": "aller",
+        "partOfSpeech": "verb",
+        "meaningZh": "去；前往",
+        "noteZh": "正文 je vais / il va 是 aller 的现在时形式。"
+      },
+      {
+        "id": "expr-autre-cote",
+        "lemma": "l’autre côté",
+        "partOfSpeech": "phrase",
+        "meaningZh": "另一边",
+        "noteZh": "在本课指另一侧乘车位置；不等于可直接穿越轨道。"
+      }
+    ],
+    "grammar": [
+      {
+        "id": "grammar-aller-present",
+        "titleZh": "aller：je vais / il va",
+        "bodyZh": "aller 的现在时是不规则变化。je vais 表示“我去”，il va / ce train va 表示“他去/这班列车前往”。",
+        "examples": [
+          {
+            "fr": "Ce train va à la gare ?",
+            "zh": "这班列车去火车站吗？"
+          }
+        ]
+      },
+      {
+        "id": "grammar-destination-au",
+        "titleZh": "à la / au：目的地搭配",
+        "bodyZh": "gare 是阴性名词，因此说 à la gare；centre-ville 是阳性，à + le 缩合为 au，不能写 à le centre-ville。",
+        "examples": [
+          {
+            "fr": "Il va au centre-ville.",
+            "zh": "它去市中心。"
+          }
+        ]
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "id": "scene-main",
+      "type": "scene",
+      "placeZh": "一座虚构城市的街道与车站",
+      "situationZh": "确认列车是否前往火车站，并理解另一方向的提示。",
+      "illustrationId": "art-city-morning"
+    },
+    {
+      "id": "dialogue-main",
+      "type": "dialogue",
+      "titleZh": "确认乘车方向",
+      "speakers": [
+        {
+          "id": "speaker-1",
+          "labelZh": "出行者",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "avatarId": "avatar-camille-v1"
+        },
+        {
+          "id": "speaker-2",
+          "labelZh": "路人",
+          "characterId": "character-lea",
+          "displayName": "Léa",
+          "avatarId": "avatar-lea-v1"
+        }
+      ],
+      "turns": [
+        {
+          "id": "entry-1",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Excusez-moi, ce "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "train",
+              "vocabularyId": "word-train"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " "
+            },
+            {
+              "id": "segment-1-4",
+              "text": "va",
+              "vocabularyId": "word-aller",
+              "grammarId": "grammar-aller-present"
+            },
+            {
+              "id": "segment-1-5",
+              "text": " à la "
+            },
+            {
+              "id": "segment-1-6",
+              "text": "gare",
+              "vocabularyId": "word-gare"
+            },
+            {
+              "id": "segment-1-7",
+              "text": " ?"
+            }
+          ],
+          "translationZh": "打扰一下，这班列车去火车站吗？"
+        },
+        {
+          "id": "entry-2",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Non, il "
+            },
+            {
+              "id": "segment-2-2",
+              "text": "va",
+              "vocabularyId": "word-aller",
+              "grammarId": "grammar-aller-present"
+            },
+            {
+              "id": "segment-2-3",
+              "text": " "
+            },
+            {
+              "id": "segment-2-4",
+              "text": "au",
+              "grammarId": "grammar-destination-au"
+            },
+            {
+              "id": "segment-2-5",
+              "text": " "
+            },
+            {
+              "id": "segment-2-6",
+              "text": "centre-ville",
+              "vocabularyId": "word-centre-ville"
+            },
+            {
+              "id": "segment-2-7",
+              "text": "."
+            }
+          ],
+          "translationZh": "不，它去市中心。"
+        },
+        {
+          "id": "entry-3",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Pour la "
+            },
+            {
+              "id": "segment-3-2",
+              "text": "gare",
+              "vocabularyId": "word-gare"
+            },
+            {
+              "id": "segment-3-3",
+              "text": ", c’est l’autre "
+            },
+            {
+              "id": "segment-3-4",
+              "text": "direction",
+              "vocabularyId": "word-direction"
+            },
+            {
+              "id": "segment-3-5",
+              "text": " ?"
+            }
+          ],
+          "translationZh": "去火车站是另一个方向吗？"
+        },
+        {
+          "id": "entry-4",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Oui. Regardez le "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "panneau",
+              "vocabularyId": "word-panneau"
+            },
+            {
+              "id": "segment-4-3",
+              "text": "."
+            }
+          ],
+          "translationZh": "是的。请看指示牌。"
+        },
+        {
+          "id": "entry-5",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Je "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "vais",
+              "vocabularyId": "word-aller"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " à la "
+            },
+            {
+              "id": "segment-5-4",
+              "text": "gare",
+              "vocabularyId": "word-gare"
+            },
+            {
+              "id": "segment-5-5",
+              "text": "."
+            }
+          ],
+          "translationZh": "我要去火车站。"
+        },
+        {
+          "id": "entry-6",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Alors, prenez le "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "train",
+              "vocabularyId": "word-train"
+            },
+            {
+              "id": "segment-6-3",
+              "text": " de "
+            },
+            {
+              "id": "segment-6-4",
+              "text": "l’autre côté",
+              "vocabularyId": "expr-autre-cote"
+            },
+            {
+              "id": "segment-6-5",
+              "text": "."
+            }
+          ],
+          "translationZh": "那请乘另一边的列车。"
+        },
+        {
+          "id": "entry-7",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Merci beaucoup."
+            }
+          ],
+          "translationZh": "非常感谢。"
+        },
+        {
+          "id": "entry-8",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "De rien."
+            }
+          ],
+          "translationZh": "不客气。"
+        }
+      ]
+    },
+    {
+      "id": "explanation-main",
+      "type": "explanation",
+      "titleZh": "这句话如何使用",
+      "bodyZh": "aller 的现在时是不规则变化。je vais 表示“我去”，il va / ce train va 表示“他去/这班列车前往”。\n\ngare 是阴性名词，因此说 à la gare；centre-ville 是阳性，à + le 缩合为 au，不能写 à le centre-ville。",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4"
+        }
+      ]
+    },
+    {
+      "id": "culture-context",
+      "type": "culture",
+      "titleZh": "场景中的细节",
+      "bodyZh": "本课为虚构车站；换乘和到另一侧的路线需按现场标识行走，不能从对话推断可以穿越轨道。",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。"
+    },
+    {
+      "id": "vocabulary-targets",
+      "type": "vocabulary",
+      "entryIds": [
+        "word-gare",
+        "word-centre-ville",
+        "word-direction",
+        "word-train",
+        "word-panneau",
+        "word-aller",
+        "expr-autre-cote"
+      ]
+    },
+    {
+      "id": "grammar-targets",
+      "type": "grammar",
+      "entryIds": [
+        "grammar-aller-present",
+        "grammar-destination-au"
+      ]
+    },
+    {
+      "id": "exercise-comprehension",
+      "type": "exercise",
+      "exerciseType": "single-choice",
+      "promptZh": "顾客问的这班列车前往哪里？",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "火车站"
+        },
+        {
+          "id": "correct",
+          "text": "市中心"
+        },
+        {
+          "id": "distractor-b",
+          "text": "机场"
+        }
+      ]
+    },
+    {
+      "id": "exercise-fill",
+      "type": "exercise",
+      "exerciseType": "fill-blank",
+      "promptZh": "补完整列车前往市中心的句子。",
+      "templateFr": "Il va ___ centre-ville.",
+      "hintZh": "à + le 缩合成 au。"
+    },
+    {
+      "id": "exercise-order",
+      "type": "exercise",
+      "exerciseType": "order",
+      "promptZh": "把语块排成一句可以在本课场景中使用的话。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "à la gare ?"
+        },
+        {
+          "id": "token-2",
+          "text": "va"
+        },
+        {
+          "id": "token-1",
+          "text": "Ce train"
+        }
+      ]
+    },
+    {
+      "id": "habit-main",
+      "type": "habit",
+      "taskZh": "想一个出行目的地，用 Je vais à… 说出自己的方向。",
+      "alternativeZh": "如果暂时没有合适场景，可以在家用虚构信息练说，不需要真实购物或出行。"
+    },
+    {
+      "id": "summary-main",
+      "type": "summary",
+      "takeawaysZh": [
+        "我能询问列车目的地。",
+        "我能区分火车站和市中心。",
+        "我能确认应查看的方向。"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景",
+      "blockIds": [
+        "scene-main"
+      ]
+    },
+    {
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话",
+      "blockIds": [
+        "dialogue-main"
+      ]
+    },
+    {
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达",
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ]
+    },
+    {
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用",
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ]
+    },
+    {
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常",
+      "blockIds": [
+        "habit-main"
+      ]
+    },
+    {
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课",
+      "blockIds": [
+        "summary-main"
+      ]
+    }
+  ],
+  "completion": {
+    "strategy": "attempt-all",
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ]
+  },
+  "reviewItemIds": [
+    "word-gare",
+    "word-centre-ville",
+    "word-direction"
+  ],
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "kind": "choice",
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：市中心。"
+      },
+      "exercise-fill": {
+        "kind": "text",
+        "accepted": [
+          "au"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "à + le 缩合成 au。"
+      },
+      "exercise-order": {
+        "kind": "order",
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Ce train va à la gare ? 确认列车是否前往火车站，并理解另一方向的提示。"
+      }
+    }
+  },
+  "editorial": {
+    "status": "draft",
+    "note": "项目原创课程草稿，未完成人工法语、译文和教学审校。插图与头像引用尚待来源授权确认及登记；无正式录音。虚构价格、路线和时间不代表当前真实信息。审校记录见 docs/content/a1/README.md，禁止直接作为已审校课程发布。"
+  },
+  "assetRefs": [
+    {
+      "assetId": "art-city-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "cast": [
+    {
+      "characterId": "character-camille",
+      "revision": 1,
+      "displayName": "Camille",
+      "avatarId": "avatar-camille-v1",
+      "speechLocale": "fr-FR"
+    },
+    {
+      "characterId": "character-lea",
+      "revision": 1,
+      "displayName": "Léa",
+      "avatarId": "avatar-lea-v1",
+      "speechLocale": "fr-FR"
+    }
+  ]
+}

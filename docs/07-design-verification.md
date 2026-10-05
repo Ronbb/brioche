@@ -345,3 +345,11 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 - 将此前真实应用备份恢复到新的 brioche_compose_restore 和独立 external 媒体卷，手动通过隔离 override 接入 QA stack；使用实际生产容器与非 root 媒体权限读取，旧会话/新登录、完整学习 progress、收藏/复习历史、版本/到期/周活动/续学、音频整文件 200 与单段 Range 206/100 字节校验通过。SSR 显示恢复账号与服务器实际当前步骤/题目；原 exercise 请求以相同 version/body/key 重放，仍一个尝试且 progress/version 不变。10 个迁移保持，无正式审校内容被发布。
 - PostgreSQL 固定 digest 后 `BRIOCHE_BACKUP_DOCKER_TEST=1 pnpm test:ops` 的三项检查通过，含真实大流与拒绝案例；Prettier/Compose config/diff 检查通过。没有改动 Rust/Web/DTO/数据库结构，本轮未重跑其完整单元/浏览器验收。QA stack、数据库与媒体卷清理，开发 3001/5173 保留，镜像留作本机构建缓存；仅 .local 保留私有 QA artifact，未推送 Docker registry。
 - 修正部署文档中“媒体/恢复尚未接入”及“容器资源上限已经配置”的旧宽泛表述。基础镜像与 Compose 样本链路现有实际证据；容器容量预算、应用生产镜像记录、异盘/加密副本、主机自启动、外部域名/HTTPS/端口映射与公网验收仍待完成。
+
+## 2026-10-06：A1 首三个单元内容包校验
+
+`docs/content/a1` 新增 11 份原创作者草稿，与原有面包店示例组成 3 单元×4 课的固定 revision 目录。每课包含正文、解释、词汇、语法、三类练习、可选任务与回顾；最后一课以纯短文读取虚构发车时间。11 份新文件逐一运行现有 `check`，目录运行 `check-release`，均通过；原有示例沿用已有校验。
+
+新增 `curriculum` 集成测试（无数据库）：以正式作者投影与 Grader 核对 12 个文件和目录 ID/revision/等级/单元、共享知识定义一致、公共投影移除私有字段，36 题的正确答案均判为正确、合法错误答案均判为错误。已在本机运行通过，现有 `cargo test --workspace` CI 自动包含此测试。
+
+这些证据仅证明作者结构与判分规则一致，不能证明教学内容正确、素材授权或可发布。课程全部保持 draft；未导入数据库、未执行 release-stage/activate，development fixture 未替换。新增插图引用尚无资产文件，角色与旧插图授权仍待确认，正式录音尚未制作。逐课人工审校与来源记录见 `content/a1/README.md`；完整 A1/A2、真实 iPhone 和生产公网验收继续待完成。
