@@ -405,28 +405,34 @@ impl PublicLesson {
         }
     }
     pub fn validate(&self) -> Result<(), String> {
-        if self.schema_version != "1.0" || self.revision == 0 || self.blocks.is_empty() {
-            return Err("unsupported version or empty lesson".into());
+        if self.schema_version != "1.0" {
+            return Err("/schemaVersion: unsupported version".into());
+        }
+        if self.revision == 0 {
+            return Err("/revision: expected positive revision".into());
+        }
+        if self.blocks.is_empty() {
+            return Err("/blocks: empty lesson".into());
         }
         let mut ids = HashSet::new();
-        let mut insert = |id: &str| {
+        let mut insert = |id: &str, path: &str| {
             if id.is_empty() || !ids.insert(id.to_owned()) {
-                Err(format!("duplicate/empty id: {id}"))
+                Err(format!("{path}: duplicate/empty id: {id}"))
             } else {
                 Ok(())
             }
         };
-        for v in &self.knowledge.vocabulary {
-            insert(&v.id)?;
+        for (i, v) in self.knowledge.vocabulary.iter().enumerate() {
+            insert(&v.id, &format!("/knowledge/vocabulary/{i}/id"))?;
         }
-        for g in &self.knowledge.grammar {
-            insert(&g.id)?;
+        for (i, g) in self.knowledge.grammar.iter().enumerate() {
+            insert(&g.id, &format!("/knowledge/grammar/{i}/id"))?;
         }
-        for b in &self.blocks {
-            insert(b.id())?;
+        for (i, b) in self.blocks.iter().enumerate() {
+            insert(b.id(), &format!("/blocks/{i}/id"))?;
         }
-        for s in &self.steps {
-            insert(&s.id)?;
+        for (i, s) in self.steps.iter().enumerate() {
+            insert(&s.id, &format!("/steps/{i}/id"))?;
         }
         let vocab: HashSet<_> = self
             .knowledge
@@ -442,41 +448,47 @@ impl PublicLesson {
             .collect();
         let cast: HashSet<_> = self.cast.iter().map(|v| v.character_id.as_str()).collect();
         if cast.len() != self.cast.len() {
-            return Err("duplicate cast character".into());
+            return Err("/cast: duplicate cast character".into());
         }
-        let check_segments = |segments: &[Segment]| -> Result<(), String> {
-            for s in segments {
-                if s.vocabulary_id
-                    .as_deref()
-                    .is_some_and(|id| !vocab.contains(id))
-                    || s.grammar_id
-                        .as_deref()
-                        .is_some_and(|id| !grammar.contains(id))
-                {
-                    return Err(format!("unknown anchor at {}", s.id));
+        let check_segments = |segments: &[Segment], path: &str| -> Result<(), String> {
+            for (index, s) in segments.iter().enumerate() {
+                for (field, reference, known) in [
+                    ("vocabularyId", s.vocabulary_id.as_deref(), &vocab),
+                    ("grammarId", s.grammar_id.as_deref(), &grammar),
+                ] {
+                    if reference.is_some_and(|id| !known.contains(id)) {
+                        return Err(format!(
+                            "{path}/{index}/{field}: unknown anchor at {}",
+                            s.id
+                        ));
+                    }
                 }
             }
             Ok(())
         };
-        for b in &self.blocks {
+        for (bi, b) in self.blocks.iter().enumerate() {
             match b {
                 Block::Dialogue {
                     speakers, turns, ..
                 } => {
                     let speaker_ids: HashSet<_> = speakers.iter().map(|s| s.id.as_str()).collect();
                     if speaker_ids.len() != speakers.len() {
-                        return Err("duplicate speaker".into());
+                        return Err(format!("/blocks/{bi}/speakers: duplicate speaker"));
                     }
-                    for s in speakers {
+                    for (si, s) in speakers.iter().enumerate() {
                         if !cast.contains(s.character_id.as_str()) {
-                            return Err("unknown cast member".into());
+                            return Err(format!(
+                                "/blocks/{bi}/speakers/{si}/characterId: unknown cast member"
+                            ));
                         }
                     }
-                    for t in turns {
+                    for (ti, t) in turns.iter().enumerate() {
                         if !speaker_ids.contains(t.speaker_id.as_str()) {
-                            return Err("unknown speaker".into());
+                            return Err(format!(
+                                "/blocks/{bi}/turns/{ti}/speakerId: unknown speaker"
+                            ));
                         }
-                        check_segments(&t.segments)?;
+                        check_segments(&t.segments, &format!("/blocks/{bi}/turns/{ti}/segments"))?;
                     }
                 }
                 Block::Article {
@@ -485,53 +497,66 @@ impl PublicLesson {
                     ..
                 } => {
                     if !cast.contains(narrator_id.as_str()) {
-                        return Err("unknown narrator".into());
+                        return Err(format!("/blocks/{bi}/narratorId: unknown narrator"));
                     }
-                    for p in paragraphs {
-                        check_segments(&p.segments)?;
+                    for (pi, p) in paragraphs.iter().enumerate() {
+                        check_segments(
+                            &p.segments,
+                            &format!("/blocks/{bi}/paragraphs/{pi}/segments"),
+                        )?;
                     }
                 }
                 Block::Vocabulary { entry_ids, .. } => {
-                    if entry_ids.iter().any(|id| !vocab.contains(id.as_str())) {
-                        return Err("unknown vocabulary".into());
+                    if let Some(i) = entry_ids.iter().position(|id| !vocab.contains(id.as_str())) {
+                        return Err(format!("/blocks/{bi}/entryIds/{i}: unknown vocabulary"));
                     }
                 }
-                Block::Grammar { entry_ids, .. }
-                    if entry_ids.iter().any(|id| !grammar.contains(id.as_str())) =>
-                {
-                    return Err("unknown grammar".into());
+                Block::Grammar { entry_ids, .. } => {
+                    if let Some(i) = entry_ids
+                        .iter()
+                        .position(|id| !grammar.contains(id.as_str()))
+                    {
+                        return Err(format!("/blocks/{bi}/entryIds/{i}: unknown grammar"));
+                    }
                 }
                 _ => {}
             }
         }
-        for s in &self.steps {
-            if s.block_ids
+        for (si, s) in self.steps.iter().enumerate() {
+            if let Some(i) = s
+                .block_ids
                 .iter()
-                .any(|id| !self.blocks.iter().any(|b| b.id() == id))
+                .position(|id| !self.blocks.iter().any(|b| b.id() == id))
             {
-                return Err("unknown step block".into());
+                return Err(format!("/steps/{si}/blockIds/{i}: unknown step block"));
             }
         }
-        if self
+        if let Some(i) = self
             .review_item_ids
             .iter()
-            .any(|id| !vocab.contains(id.as_str()))
+            .position(|id| !vocab.contains(id.as_str()))
         {
-            return Err("unknown review item".into());
+            return Err(format!("/reviewItemIds/{i}: unknown review item"));
         }
-        if self
+        if let Some(i) = self
             .completion
             .required_step_ids
             .iter()
-            .any(|id| !self.steps.iter().any(|s| &s.id == id))
-            || self.completion.required_exercise_ids.iter().any(|id| {
-                !self
-                    .blocks
-                    .iter()
-                    .any(|b| matches!(b,Block::Exercise{id:bid,..} if bid==id))
-            })
+            .position(|id| !self.steps.iter().any(|s| &s.id == id))
         {
-            return Err("unknown completion reference".into());
+            return Err(format!(
+                "/completion/requiredStepIds/{i}: unknown completion reference"
+            ));
+        }
+        if let Some(i) = self.completion.required_exercise_ids.iter().position(|id| {
+            !self
+                .blocks
+                .iter()
+                .any(|b| matches!(b,Block::Exercise{id:bid,..} if bid==id))
+        }) {
+            return Err(format!(
+                "/completion/requiredExerciseIds/{i}: unknown completion reference"
+            ));
         }
         self.validate_flow()?;
         self.validate_audio()

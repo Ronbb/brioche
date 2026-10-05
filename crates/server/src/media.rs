@@ -452,9 +452,8 @@ pub(crate) fn source_refs(source: &serde_json::Value, key: &str) -> Result<Vec<A
     let Some(refs) = source.get(key) else {
         return Ok(Vec::new());
     };
-    let refs: Vec<AssetRef> = serde_path_to_error::deserialize(refs.clone())
-        .with_context(|| format!("{key}: invalid reference structure"))?;
-    ensure!(refs.len() <= 500, "{key}: too many asset references");
+    let refs: Vec<AssetRef> = crate::author_json::from_value(refs.clone(), &format!("/{key}"))?;
+    ensure!(refs.len() <= 500, "/{key}: too many asset references");
     let mut ids = BTreeSet::new();
     for (index, reference) in refs.iter().enumerate() {
         ensure!(
@@ -462,7 +461,7 @@ pub(crate) fn source_refs(source: &serde_json::Value, key: &str) -> Result<Vec<A
                 && reference.revision > 0
                 && reference.revision <= i32::MAX as u32
                 && ids.insert(reference.asset_id.clone()),
-            "{key}/{index}: invalid or duplicate asset reference"
+            "/{key}/{index}: invalid or duplicate asset reference"
         );
     }
     Ok(refs)

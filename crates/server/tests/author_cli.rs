@@ -120,3 +120,81 @@ fn audio_check_decodes_without_database_and_reports_actual_duration() {
     assert!(String::from_utf8_lossy(&output.stderr).contains("not RIFF WAVE"));
     assert!(!run("audio-check", &file).status.success());
 }
+
+#[test]
+fn semantic_and_projected_type_errors_point_into_original_author_source() {
+    let path = std::env::temp_dir().join(format!("brioche-locations-{}.json", random_id()));
+    let original = brioche_server::development_source().unwrap();
+    let dialogue_index = original["blocks"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .position(|block| block["type"] == "dialogue")
+        .unwrap();
+    for (pointer, marker) in [
+        (
+            format!("/blocks/{dialogue_index}/turns/0/segments/0/vocabularyId"),
+            "missing-vocabulary",
+        ),
+        ("/steps/0/blockIds/0".into(), "missing-block"),
+        ("/reviewItemIds/0".into(), "missing-review"),
+        ("/completion/requiredStepIds/0".into(), "missing-step"),
+        ("/revision".into(), "not-a-revision"),
+        ("/editorial/status".into(), "unknown-status"),
+    ] {
+        let mut source = original.clone();
+        *source.pointer_mut(&pointer).unwrap() = serde_json::json!(marker);
+        let text = serde_json::to_string_pretty(&source).unwrap();
+        std::fs::write(&path, &text).unwrap();
+        let offset = text.find(&format!("\"{marker}\"")).unwrap();
+        let before = &text[..offset];
+        let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+        let output = run("check", &path);
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success());
+        assert!(
+            error.contains(&format!("{}:{line}:{column}: {pointer}: ", path.display())),
+            "{error}"
+        );
+        assert!(!error.contains("database connection"));
+    }
+    let mut source = original;
+    source["audioRefs"] =
+        serde_json::json!([{"assetId":"test","revision":"invalid-audio-revision"}]);
+    let text = serde_json::to_string_pretty(&source).unwrap();
+    std::fs::write(&path, &text).unwrap();
+    let output = run("check", &path);
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("/audioRefs/0/revision:"));
+    source.as_object_mut().unwrap().remove("audioRefs");
+    let sha = "a".repeat(64);
+    source["audio"] = serde_json::json!([{
+        "assetId":"test-recording", "revision":1, "sha256":sha,
+        "mimeType":"audio/wav", "durationMs":1000, "creditZh":"Protocol test",
+        "url":format!("/api/audio/{sha}.wav")
+    }]);
+    source["audioTracks"] = serde_json::json!([{
+        "blockId":source["blocks"][dialogue_index]["id"], "assetId":"test-recording",
+        "cues":[{"entryId":source["blocks"][dialogue_index]["turns"][0]["id"],"startMs":0,"endMs":1500}]
+    }]);
+    let text = serde_json::to_string_pretty(&source).unwrap();
+    std::fs::write(&path, &text).unwrap();
+    let end_field = text.find("\"endMs\": 1500").unwrap();
+    let cue_start = text[..end_field].rfind('{').unwrap();
+    let before = &text[..cue_start];
+    let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+    let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+    let output = run("check", &path);
+    let error = String::from_utf8_lossy(&output.stderr);
+    assert!(!output.status.success());
+    assert!(
+        error.contains(&format!(
+            "{}:{line}:{column}: /audioTracks/0/cues/0:",
+            path.display()
+        )),
+        "{error}"
+    );
+    assert!(error.contains("interval outside recording duration"));
+    std::fs::remove_file(path).unwrap();
+}

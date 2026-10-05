@@ -287,7 +287,7 @@ pub fn project_source(mut source: serde_json::Value) -> anyhow::Result<PublicLes
     object.remove("editorial");
     object.remove("assetRefs");
     object.remove("audioRefs");
-    let lesson: PublicLesson = serde_path_to_error::deserialize(source)?;
+    let lesson: PublicLesson = author_json::from_value(source, "")?;
     lesson.validate().map_err(anyhow::Error::msg)?;
     Ok(lesson)
 }

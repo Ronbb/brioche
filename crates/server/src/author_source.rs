@@ -37,9 +37,8 @@ pub fn schema() -> serde_json::Value {
 pub fn editorial(source: &serde_json::Value) -> Result<Editorial> {
     let value = source
         .get("editorial")
-        .context("editorial: required author metadata missing")?;
-    let metadata: Editorial = serde_path_to_error::deserialize(value.clone())
-        .context("editorial: invalid author metadata")?;
+        .context("/editorial: required author metadata missing")?;
+    let metadata: Editorial = crate::author_json::from_value(value.clone(), "/editorial")?;
     ensure!(
         !metadata.note.trim().is_empty()
             && metadata.note.len() <= 8000
@@ -47,7 +46,7 @@ pub fn editorial(source: &serde_json::Value) -> Result<Editorial> {
                 .note
                 .chars()
                 .any(|c| c.is_control() && !matches!(c, '\n' | '\r' | '\t')),
-        "editorial.note: expected nonempty text of at most 8000 bytes without control characters"
+        "/editorial/note: expected nonempty text of at most 8000 bytes without control characters"
     );
     Ok(metadata)
 }

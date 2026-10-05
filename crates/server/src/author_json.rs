@@ -5,12 +5,17 @@ use serde::{
     de::{self, DeserializeOwned, DeserializeSeed, MapAccess, SeqAccess, Visitor},
 };
 use serde_json::Value;
-use std::{fmt, fs::File, io::Read, path::Path};
+use std::{
+    collections::BTreeMap,
+    fmt,
+    fs::File,
+    io::Read,
+    path::{Path, PathBuf},
+};
 
 const LIMIT: usize = 2 * 1024 * 1024;
 
-pub fn load<T: DeserializeOwned>(path: impl AsRef<Path>) -> Result<T> {
-    let path = path.as_ref();
+fn read(path: &Path) -> Result<Vec<u8>> {
     let file =
         File::open(path).with_context(|| format!("{}: cannot open author file", path.display()))?;
     let mut bytes = Vec::new();
@@ -21,9 +26,188 @@ pub fn load<T: DeserializeOwned>(path: impl AsRef<Path>) -> Result<T> {
         bail!("{}: author JSON exceeds 2 MiB", path.display());
     }
     parse(&bytes).with_context(|| format!("{}: invalid author JSON", path.display()))?;
+    Ok(bytes)
+}
+
+pub fn load<T: DeserializeOwned>(path: impl AsRef<Path>) -> Result<T> {
+    let path = path.as_ref();
+    let bytes = read(path)?;
     let mut deserializer = serde_json::Deserializer::from_slice(&bytes);
     serde_path_to_error::deserialize(&mut deserializer)
         .with_context(|| format!("{}: invalid author document", path.display()))
+}
+
+pub fn from_value<T: DeserializeOwned>(value: Value, prefix: &str) -> Result<T> {
+    serde_path_to_error::deserialize(value).map_err(|error| {
+        use serde_path_to_error::Segment;
+        let mut pointer = prefix.to_owned();
+        for segment in error.path().iter() {
+            let token = match segment {
+                Segment::Seq { index } => index.to_string(),
+                Segment::Map { key } => key.clone(),
+                Segment::Enum { .. } | Segment::Unknown => continue,
+            };
+            pointer.push('/');
+            pointer.push_str(&token.replace('~', "~0").replace('/', "~1"));
+        }
+        anyhow::anyhow!(
+            "{}: {}",
+            if pointer.is_empty() { "/" } else { &pointer },
+            error.inner()
+        )
+    })
+}
+
+/// Original source positions, retained before any author-to-public projection.
+pub struct Document {
+    pub value: Value,
+    path: PathBuf,
+    text: String,
+    offsets: BTreeMap<String, usize>,
+}
+impl Document {
+    pub fn load(path: impl AsRef<Path>) -> Result<Self> {
+        let path = path.as_ref();
+        let bytes = read(path)?;
+        let value = parse(&bytes)?;
+        let mut index = SourceIndex {
+            bytes: &bytes,
+            position: 0,
+            offsets: BTreeMap::new(),
+        };
+        index
+            .value(String::new())
+            .with_context(|| format!("{}: cannot index author source", path.display()))?;
+        Ok(Self {
+            value,
+            path: path.to_owned(),
+            offsets: index.offsets,
+            text: String::from_utf8(bytes).expect("validated JSON is UTF-8"),
+        })
+    }
+    pub fn diagnostic(&self, pointer: &str, message: &str) -> anyhow::Error {
+        let mut found = if pointer == "/" { "" } else { pointer };
+        while !self.offsets.contains_key(found) {
+            found = found.rsplit_once('/').map_or("", |(parent, _)| parent);
+        }
+        let before = &self.text[..self.offsets[found]];
+        let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap_or("").chars().count() + 1;
+        anyhow::anyhow!(
+            "{}:{line}:{column}: {}: {message}",
+            self.path.display(),
+            if pointer.is_empty() { "/" } else { pointer }
+        )
+    }
+    pub fn semantic(&self, error: anyhow::Error) -> anyhow::Error {
+        // Existing domain validators expose JSON pointers. Locate their first
+        // diagnostic in the unmodified source rather than serialized DTO text.
+        for cause in error.chain() {
+            let message = cause.to_string();
+            if let Some((pointer, reason)) = message.split_once(": ")
+                && pointer.starts_with('/')
+            {
+                return self.diagnostic(pointer, reason);
+            }
+        }
+        self.diagnostic("", &format!("{error:#}"))
+    }
+}
+
+// This only indexes JSON already accepted by the strict parser above; it does
+// not replace syntax, duplicate-member, UTF-8 or depth validation.
+struct SourceIndex<'a> {
+    bytes: &'a [u8],
+    position: usize,
+    offsets: BTreeMap<String, usize>,
+}
+impl SourceIndex<'_> {
+    fn whitespace(&mut self) {
+        while self
+            .bytes
+            .get(self.position)
+            .is_some_and(u8::is_ascii_whitespace)
+        {
+            self.position += 1;
+        }
+    }
+    fn string(&mut self) -> &[u8] {
+        let start = self.position;
+        self.position += 1;
+        loop {
+            match self.bytes[self.position] {
+                b'\\' => self.position += 2,
+                b'"' => {
+                    self.position += 1;
+                    break;
+                }
+                _ => self.position += 1,
+            }
+        }
+        &self.bytes[start..self.position]
+    }
+    fn value(&mut self, pointer: String) -> Result<()> {
+        self.whitespace();
+        if self.offsets.len() >= 100_000 {
+            bail!("author JSON exceeds 100000 source locations");
+        }
+        self.offsets.insert(pointer.clone(), self.position);
+        match self.bytes[self.position] {
+            b'{' => {
+                self.position += 1;
+                self.whitespace();
+                if self.bytes[self.position] != b'}' {
+                    loop {
+                        let key: String = serde_json::from_slice(self.string())?;
+                        self.whitespace();
+                        self.position += 1;
+                        self.value(format!(
+                            "{}/{}",
+                            pointer,
+                            key.replace('~', "~0").replace('/', "~1")
+                        ))?;
+                        self.whitespace();
+                        if self.bytes[self.position] == b'}' {
+                            break;
+                        }
+                        self.position += 1;
+                        self.whitespace();
+                    }
+                }
+                self.position += 1;
+            }
+            b'[' => {
+                self.position += 1;
+                self.whitespace();
+                if self.bytes[self.position] != b']' {
+                    let mut item = 0;
+                    loop {
+                        self.value(format!("{pointer}/{item}"))?;
+                        item += 1;
+                        self.whitespace();
+                        if self.bytes[self.position] == b']' {
+                            break;
+                        }
+                        self.position += 1;
+                    }
+                }
+                self.position += 1;
+            }
+            b'"' => {
+                self.string();
+            }
+            _ => {
+                while self
+                    .bytes
+                    .get(self.position)
+                    .is_some_and(|b| !b.is_ascii_whitespace() && !matches!(b, b',' | b']' | b'}'))
+                {
+                    self.position += 1;
+                }
+            }
+        }
+        Ok(())
+    }
 }
 
 fn parse(bytes: &[u8]) -> Result<Value, serde_json::Error> {
@@ -169,5 +353,105 @@ mod tests {
         load::<Value>(root.join("a1-bakery.lesson.json")).unwrap();
         load::<crate::content::ReleaseManifest>(root.join("catalog.release.json")).unwrap();
         load::<crate::media::AssetBundle>(root.join("asset-bundle.json")).unwrap();
+    }
+
+    #[test]
+    fn source_index_preserves_unicode_escaped_keys_arrays_and_nearest_parent() {
+        let text = "{\r\n  \"汉字\": \"\\\"[]{}\",\r\n  \"a\\u002fb~c\": [true, {\"bad\": 7}],\r\n  \"empty\": []\r\n}";
+        let bytes = text.as_bytes();
+        parse(bytes).unwrap();
+        let mut index = SourceIndex {
+            bytes,
+            position: 0,
+            offsets: BTreeMap::new(),
+        };
+        index.value(String::new()).unwrap();
+        let document = Document {
+            value: parse(bytes).unwrap(),
+            path: "original.json".into(),
+            text: text.into(),
+            offsets: index.offsets,
+        };
+        assert_eq!(
+            document.value.pointer("/a~1b~0c/1/bad"),
+            Some(&serde_json::json!(7))
+        );
+        assert!(
+            document
+                .diagnostic("/a~1b~0c/1/bad", "bad reference")
+                .to_string()
+                .contains("original.json:3:32:")
+        );
+        let expected = text.find('7').unwrap();
+        assert_eq!(document.offsets["/a~1b~0c/1/bad"], expected);
+        assert!(
+            document
+                .diagnostic("/汉字", "bad text")
+                .to_string()
+                .contains("original.json:2:9:")
+        );
+        assert!(
+            document
+                .diagnostic("/empty/missing", "missing")
+                .to_string()
+                .contains("original.json:4:12:")
+        );
+        let typed = from_value::<Vec<u32>>(serde_json::json!(["bad"]), "/items").unwrap_err();
+        assert!(typed.to_string().starts_with("/items/0:"));
+    }
+
+    #[test]
+    fn indexes_all_values_without_confusing_primitive_or_string_delimiters() {
+        for text in [
+            "null",
+            "42",
+            "-1.25e+2",
+            "false",
+            "\"é \\\" /\"",
+            "{}",
+            "[]",
+            "[{},[],null,\"abc\",true,1]",
+        ] {
+            parse(text.as_bytes()).unwrap();
+            let mut index = SourceIndex {
+                bytes: text.as_bytes(),
+                position: 0,
+                offsets: BTreeMap::new(),
+            };
+            index.value(String::new()).unwrap();
+            assert_eq!(index.position, text.len());
+            for (pointer, offset) in index.offsets {
+                let expected = parse(text.as_bytes())
+                    .unwrap()
+                    .pointer(&pointer)
+                    .unwrap()
+                    .clone();
+                let actual = serde_json::Deserializer::from_slice(&text.as_bytes()[offset..])
+                    .into_iter::<Value>()
+                    .next()
+                    .unwrap()
+                    .unwrap();
+                assert_eq!(actual, expected);
+            }
+        }
+    }
+
+    #[test]
+    fn bounds_number_of_indexed_values() {
+        let text = format!("[{}]", vec!["0"; 100_000].join(","));
+        parse(text.as_bytes()).unwrap();
+        let mut index = SourceIndex {
+            bytes: text.as_bytes(),
+            position: 0,
+            offsets: BTreeMap::new(),
+        };
+        assert!(
+            index
+                .value(String::new())
+                .unwrap_err()
+                .to_string()
+                .contains("100000 source locations")
+        );
+        assert_eq!(index.offsets.len(), 100_000);
     }
 }

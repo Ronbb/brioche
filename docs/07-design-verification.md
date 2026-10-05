@@ -297,3 +297,11 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 - 收藏同样注入实际成功后的响应丢失：保存请求为 saved=true/version=0/固定来源 revision=1，页面保留原幂等键；SQL saved_items.saved=true/version=1。从页面头像进入个人页，再进入“未确认保存”，SPA 离页后原收藏操作仍列出。
 - 首次确认时响应丢失注入还在生效，原操作再次重放、数据库版本仍 1，页面继续保留待确认项；此尝试不算恢复成功。随后用同源空白 iframe 的未包装原生 fetch 移除故障注入，保留实际接口/cookie/CSRF 请求；点击“确认原提交”重放同一 body，页面显示没有待确认保存、存储项清除，SQL 收藏版本仍 1。实际进入收藏页后显示 1 个 bonjour，390px DOM 无横向溢出。
 - 本次只验收上述响应丢失/刷新/SPA 离页路径；两标签版本冲突、会话失效、暂停/恢复与完整键盘/屏幕阅读器/iPhone 仍待补验。没有修改业务代码，因此未重复运行已通过的构建和协议测试。
+
+## 2026-10-06：作者课程原文件语义定位
+
+- 新增 author_json::Document，在严格 JSON 读取/重复字段/深度/2 MiB 检查之后索引原字节位置，最多 100000 个值；索引不替代解析器。JSON pointer 使用 ~0/~1 转义，键经 JSON 解码，数组逐项定位；缺失字段回退最近父值。显示行/列均从 1 开始，列按 Unicode 字符计数，定位依据未投影的原文件。
+- 公开 DTO、editorial 与 assetRefs/audioRefs 的 Value 反序列化错误保留 JSON pointer；正文词汇/语法锚点、角色/叙述者、步骤/词汇/语法/复习/完成引用和重复领域 ID 返回路径。已有 flow/audio 的带路径错误连接到相同索引；私有判分不一致目前定位整个 `/serverOnly/grading`，未假称逐条规则定位完成。
+- 三项新增索引测试覆盖 CRLF/Unicode 列、转义引号/括号、Unicode 转义 key 与 ~1/~0、嵌套数组、根 primitive/空容器、最近父值、实际索引值与严格 JSON 结果一致，以及 100000 上限。
+- 新增 CLI 测试用例分别修改正文锚点、步骤块、复习知识、完成步骤、revision 类型、editorial status、audioRefs revision，并独立由原文本计算行列核对 stderr；另外构造超出录音时长的 cue，确认 `/audioTracks/0/cues/0` 与原容器行列。CLI 使用不可连接的数据库 URL，验证失败发生于离线检查。
+- Rust workspace 38 项单元测试、5 项 CLI 测试、fmt 与 all-targets clippy 通过；5 项 PostgreSQL 测试保持显式 ignored，本轮未运行，不算数据库验收。未变更公共 DTO/Schema、Web 或数据库结构。Windows 编译 CLI 时暂时停止持有二进制的本机 API，完成后通过 pnpm dev:api 恢复；完整 release/私有判分规则/部分 block 内语义位置继续补齐。

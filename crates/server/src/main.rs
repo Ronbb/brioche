@@ -47,16 +47,18 @@ async fn main() -> Result<()> {
             let manifest = brioche_server::content::ReleaseManifest::deserialize_file(path)?;
             manifest.validate().map_err(|_| anyhow::anyhow!("{path}: invalid directory IDs, revisions, schema version or duplicate references"))?;
         } else {
-            let source: serde_json::Value = brioche_server::author_json::load(path)?;
-            brioche_server::media::source_asset_refs(&source)
-                .with_context(|| format!("{path}: invalid asset references"))?;
-            brioche_server::recording::source_audio_refs(&source)
-                .with_context(|| format!("{path}: invalid recording references"))?;
-            let lesson = project_source(source.clone())
-                .with_context(|| format!("{path}: invalid lesson structure or references"))?;
-            brioche_server::grading::Grader::from_source(&lesson, &source).map_err(|_| {
-                anyhow::anyhow!(
-                    "{path}: serverOnly.grading: invalid or inconsistent private grading rules"
+            let document = brioche_server::author_json::Document::load(path)?;
+            let source = &document.value;
+            brioche_server::media::source_asset_refs(source)
+                .map_err(|error| document.semantic(error))?;
+            brioche_server::recording::source_audio_refs(source)
+                .map_err(|error| document.semantic(error))?;
+            let lesson =
+                project_source(source.clone()).map_err(|error| document.semantic(error))?;
+            brioche_server::grading::Grader::from_source(&lesson, source).map_err(|_| {
+                document.diagnostic(
+                    "/serverOnly/grading",
+                    "serverOnly.grading: invalid or inconsistent private grading rules",
                 )
             })?;
         }
