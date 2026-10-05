@@ -26,6 +26,7 @@ sha2 = "0.10"
 getrandom = "0.4.3"
 subtle = "2.6"
 url = "2.5"
+argon2 = { version = "0.6.0", features = ["getrandom"] }
 [dev-dependencies]
 tower = { version = "0.5", features = ["util"] }
 http-body-util = "0.1"

@@ -1,6 +1,8 @@
 pub mod csrf;
 pub mod entity;
 pub mod grading;
+pub mod identity;
+pub mod password;
 pub mod session_store;
 use axum::{
     Json, Router,
@@ -45,16 +47,37 @@ impl AppState {
         Ok(latest.into_values().collect())
     }
 }
+#[derive(Debug)]
 pub enum AppError {
+    InvalidInput,
+    Unauthorized,
+    RateLimited,
     NotFound,
     Unavailable,
     InvalidAnswer,
     Forbidden,
     Conflict,
 }
+impl std::fmt::Display for AppError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "request failed")
+    }
+}
+impl std::error::Error for AppError {}
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, code, message) = match self {
+            Self::InvalidInput => (StatusCode::BAD_REQUEST, "invalid_input", "请检查填写的信息"),
+            Self::Unauthorized => (
+                StatusCode::UNAUTHORIZED,
+                "unauthorized",
+                "登录信息无效或已过期",
+            ),
+            Self::RateLimited => (
+                StatusCode::TOO_MANY_REQUESTS,
+                "rate_limited",
+                "请求较多，请稍后重试",
+            ),
             Self::InvalidAnswer => (
                 StatusCode::BAD_REQUEST,
                 "invalid_answer",
@@ -143,7 +166,7 @@ async fn demo_grade(
 }
 async fn ready(State(state): State<Arc<AppState>>) -> Result<Json<serde_json::Value>, AppError> {
     if let Some(db) = &state.db {
-        db.execute_unprepared("SELECT 1 FROM lesson_revisions LIMIT 0")
+        db.execute_unprepared("SELECT 1 FROM lesson_revisions, users, browser_sessions, identity_tokens, auth_throttle LIMIT 0")
             .await
             .map_err(|_| AppError::Unavailable)?;
     } else if state.fixture.is_none() {

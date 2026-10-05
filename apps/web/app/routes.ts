@@ -5,5 +5,8 @@ export default [
   route("practice/:lessonId", "routes/practice.tsx"),
   route("review/:lessonId", "routes/review.tsx"),
   route("profile", "routes/profile.tsx"),
+  route("login", "routes/login.tsx"),
+  route("invite", "routes/invite.tsx"),
+  route("reset-password", "routes/reset-password.tsx"),
   route("health", "routes/health.ts"),
 ] satisfies RouteConfig;

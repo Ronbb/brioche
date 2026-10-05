@@ -7,10 +7,21 @@ import {
   Link,
   isRouteErrorResponse,
   useRouteError,
+  data,
 } from "react-router";
 import { LearningProvider } from "./components/learning";
 import "./styles/app.css";
 import { Scrollbar } from "./components/scrollbar";
+import { getIdentity } from "./lib/api.server";
+import type { Route } from "./+types/root";
+export async function loader({ request }: Route.LoaderArgs) {
+  return data(await getIdentity(request), {
+    headers: { "Cache-Control": "private, no-store", Vary: "Cookie" },
+  });
+}
+export function headers() {
+  return { "Cache-Control": "private, no-store", Vary: "Cookie" };
+}
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-CN">

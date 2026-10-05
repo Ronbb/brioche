@@ -193,6 +193,37 @@ dto!(GradeResult {
     feedback_zh: String
 });
 dto!(CsrfToken { csrf_token: String });
+dto!(UserProfile {
+    id: String,
+    email: String,
+    display_name: String,
+    role: String
+});
+dto!(AuthResult {
+    user: UserProfile,
+    csrf_token: String
+});
+macro_rules! secret_dto {
+    ($name:ident { $($field:ident : $ty:ty),* $(,)? }) => {
+        #[derive(Clone, Serialize, Deserialize, JsonSchema, TS)]
+        #[serde(rename_all="camelCase", deny_unknown_fields)]
+        pub struct $name { $(pub $field: $ty),* }
+    };
+}
+secret_dto!(LoginRequest {
+    email: String,
+    password: String
+});
+secret_dto!(AcceptInviteRequest {
+    token: String,
+    email: String,
+    password: String,
+    display_name: String
+});
+secret_dto!(ResetPasswordRequest {
+    token: String,
+    password: String
+});
 
 impl PublicLesson {
     pub fn summary(&self) -> LessonSummary {

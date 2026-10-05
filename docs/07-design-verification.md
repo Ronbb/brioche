@@ -113,3 +113,10 @@
 - 用户指定入口 Traefik、HTTP 30075、外部自行处理 HTTPS；已移除 Caddy 文件和 Compose 证书卷声明，新增只读 file provider。官方 traefik:v3.7.13 拉取成功并固定 digest。
 - 隔离 brioche-traefik-test Compose 使用已有 Web/API 测试镜像验证新网关，PostgreSQL/migrate/API/Web/Traefik 启动健康，HTTP 30075 的首页 SSR、/health、/api/health、/api/ready、/api/catalog 全部 200。此烟测验证入口替换，未宣称重新构建本轮账号模块镜像。
 - 网关以非 root 运行，无 Docker socket 和公开管理入口；healthcheck 经内部 127.0.0.1:8082/ping 成功，只有 8080 映射到宿主 30075。测试 override 临时限定 loopback，共享 Compose 默认映射全部接口。测试资源随后清理，不修改外部 HTTPS/DNS/路由器。
+
+## 2026-10-06 认证接入验证
+
+- PostgreSQL 18 临时隔离容器：所有迁移、课程读取/唯一约束及认证集成测试通过。认证覆盖邀请重放/并发消费/重新签发/到期、Origin/CSRF 拒绝、登录轮换、密码恢复撤销两端会话、旧密码拒绝、退出及未知邮箱限流。
+- Rust workspace 单元测试通过；clippy 无警告，TS 独立类型检查与 Vite client/SSR 构建通过。
+- 浏览器 390×844：一次性邀请注册后 SSR 个人页显示实际昵称/邮箱，退出后恢复访客登录入口。修复 Strict Mode 重复 effect 清空邀请 token 的问题。未宣称真实 iPhone 或生产公网验证。
+- Compose 入口继续固定 Traefik HTTP 30075，无 TLS/证书端口；PUBLIC_APP_URL 用于浏览器 Origin 与 Secure Cookie，HTTPS 仍由用户在外部处理。

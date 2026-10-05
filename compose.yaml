@@ -32,6 +32,8 @@ services:
       CONTENT_MODE: database
       DATABASE_URL: postgres://brioche:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/brioche
       API_BIND: 0.0.0.0:3001
+      PUBLIC_APP_URL: ${PUBLIC_APP_URL:?Set the browser-facing PUBLIC_APP_URL}
+      ADDITIONAL_APP_ORIGINS: ${ADDITIONAL_APP_ORIGINS:-}
     depends_on:
       migrate: { condition: service_completed_successfully }
     networks: [app, database]

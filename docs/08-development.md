@@ -13,7 +13,7 @@
 - `/practice/:lessonId` 示例练习：选择、填空、排序由 Rust 判分，错误反馈/重试/回顾由页面呈现。私有答案规则在导入时校验，公共契约只包含提交和反馈 DTO。
 - 正文增加结构化解释、文化范围、词汇与语法；点语法锚点可打开解释。校验拒绝坏解释锚点、重复题目选项、未知步骤类型和不可达教学块。
 - Docker Compose：PostgreSQL → 一次性迁移 → API → SSR Web → Traefik。入口仅 HTTP 30075，HTTPS 由用户外部处理；数据库不映射宿主端口，生产关闭示例课程模式。
-- 账号基础模块：SeaORM PostgreSQL `tower-sessions` 适配、显式会话表迁移、会话绑定 CSRF token 与精确 Origin 策略；已用真实 PostgreSQL 与 HTTP cookie 验证。它们尚未挂到生产认证路由，登录/邀请/退出页面仍待接入。
+- 账号模块：邀请注册、登录、退出、密码恢复，Argon2id 密码哈希、PostgreSQL 会话与一次性 token、精确 Origin + CSRF、持久化登录限流及过期清理。Web 增加 `/login`、`/invite`、`/reset-password`，SSR 从 Cookie 读取实际身份，私有响应禁止缓存。
 
 ## 本机开发
 
@@ -63,13 +63,14 @@ PostgreSQL 集成测试显式要求 `TEST_DATABASE_URL` 指向专用测试数据
 
 ```sh
 cargo test -p brioche-server --test postgres -- --ignored
+cargo test -p brioche-server --test identity -- --ignored
 ```
 
 测试在独立、随机命名的 schema 中执行迁移、发布读取与唯一约束验证。普通测试运行会跳过它；CI 使用隔离的 PostgreSQL 服务执行。测试失败可能留下该测试 schema，禁止在生产数据库运行。
 
 ## Docker Compose
 
-用户已确认部署可使用 Docker Compose。复制 `infra/production.env.example` 为根目录 `.env`，填写随机数据库秘密；密码使用字母数字或正确 URL 编码。然后先检查并构建：
+用户已确认部署可使用 Docker Compose。复制 `infra/production.env.example` 为根目录 `.env`，填写随机数据库秘密和 `PUBLIC_APP_URL`；密码使用字母数字或正确 URL 编码。`PUBLIC_APP_URL` 必须是浏览器最终访问的 origin，如外部 HTTPS 域名；后端由此选择 Secure Cookie 和 CSRF allowlist，内部网关仍为 HTTP。手机开发访问可用 `ADDITIONAL_APP_ORIGINS` 显式补充实际 LAN origin，不接受通配符。然后先检查并构建：
 
 ```sh
 docker compose config --quiet
@@ -84,9 +85,18 @@ Web 镜像用 `pnpm deploy --prod` 保留生产依赖，使用 React Router Node
 
 ## 下一阶段
 
-会话基础采用 `axum-login 0.18.0` 配套的 `tower-sessions 0.14.0`，避免与 0.15 创建两套 Session 类型（[官方依赖清单](https://docs.rs/crate/axum-login/0.18.0/source/Cargo.toml)）。只存会话 ID 的 SHA-256，记录用 `timestamptz` 到期；create 不覆盖冲突、save 不插入，撤销后的旧响应不能恢复记录。CSRF 用 [getrandom 0.4.3](https://docs.rs/getrandom/0.4.3/getrandom/fn.fill.html) 的系统随机数、常量时间比较和配置的 origin allowlist，不从代理 header 推断可信 origin。接下来将这些基础接入完整账号模块，同时增加密码/邀请、过期清理任务和会话生命周期配置。
+认证采用 `axum-login 0.18.0` 配套的 `tower-sessions 0.14.0`，避免与 0.15 创建两套 Session 类型（[官方依赖清单](https://docs.rs/crate/axum-login/0.18.0/source/Cargo.toml)）。只存会话 ID 的 SHA-256，记录用 `timestamptz` 到期；create 不覆盖冲突、save 不插入，撤销后的旧响应不能恢复记录。CSRF 用系统随机数、常量时间比较和配置的 origin allowlist，不从代理 header 推断可信 origin。密码哈希通过有限并发的 blocking worker 执行；登录轮换会话，密码恢复撤销所有旧会话，定时清理过期记录。
 
-账号邀请/登录、cookie 会话与 CSRF、学习会话固定 revision、幂等提交、进度续学、账号复习排程、个人资料保存尚未实现。现在为访客阅读、示例练习与临时自评，不宣称保存到账号。完整步骤解释器和持久化继续按路线图实施，验收缺口见 [实现清单](09-implementation-tracker.md)。
+账号通过管理员 CLI 发出一次性邀请；恢复也由管理员确认邮箱后生成链接，没有尚未配置的邮件发送入口。设置 `DATABASE_URL`、`PUBLIC_APP_URL` 并执行迁移后运行：
+
+```sh
+cargo run -p brioche-server -- invite learner@example.com .local/invite-link.txt
+cargo run -p brioche-server -- reset-password learner@example.com .local/reset-link.txt
+```
+
+输出文件必须尚不存在；链接只写入该私有文件，不输出到日志。邀请有效 48 小时，恢复有效 30 分钟；重新签发撤销同类旧链接。链接 token 放在 URL fragment 中，页面读取后移除，数据库只保留 SHA-256。生产容器可用 `docker compose exec server brioche-server invite learner@example.com /tmp/invite-link.txt`，管理员私下读取和交付，再删除该文件。Unix 创建权限为 0600；Windows 输出位置应使用管理员私有目录。`--operator` 仅用于邀请授予管理员角色；当前尚未提供后台页面。不要提交、截图或公开链接文件。
+
+学习会话固定 revision、幂等提交、进度续学、账号复习排程、个人资料保存尚未实现。当前练习和自评不宣称保存到账号。完整步骤解释器和持久化继续按路线图实施，验收缺口见 [实现清单](09-implementation-tracker.md)。
 
 示例练习通过 `POST /api/demo/lessons/:id/grade` 调用 Rust 判分，仅在服务端启用 development fixture 时可用，不写数据库；数据库模式返回 404，不替代未来受认证/CSRF 保护的学习提交。请求必须携带匹配 Host 的 Origin，限定版本、题目 ID、答案类型、选项/词块范围与 body 大小。填空规范化 NFC、空白、大小写（按题配置）和法语弯引号，保留重音差异。规则源只在 Rust 服务端加载，生成 TS/前端 bundle 不含答案键。Unicode 处理依据 [unicode-normalization 文档](https://docs.rs/unicode-normalization/0.1.25/unicode_normalization/)。
 
