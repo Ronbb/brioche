@@ -69,7 +69,7 @@ cargo test -p brioche-server --test postgres -- --ignored
 
 ## Docker Compose
 
-用户已确认部署可使用 Docker Compose。复制 `infra/production.env.example` 为根目录 `.env`，填写域名和随机数据库秘密；密码使用字母数字或正确 URL 编码。然后先检查并构建：
+用户已确认部署可使用 Docker Compose。复制 `infra/production.env.example` 为根目录 `.env`，填写随机数据库秘密；密码使用字母数字或正确 URL 编码。然后先检查并构建：
 
 ```sh
 docker compose config --quiet
