@@ -12,6 +12,7 @@ import { StudyOverview } from "../components/study-overview";
 import { StartLearning } from "../components/start-learning";
 import { useLearning } from "../components/learning";
 import { Icon } from "../components/icon";
+import { Illustration, illustration } from "../components/illustration";
 import type { Route } from "./+types/home";
 export async function loader({ request }: Route.LoaderArgs) {
   const [initialCatalog, identity] = await Promise.all([
@@ -65,7 +66,7 @@ export default function Home({
     lesson.reviewItemIds.includes(entry.id),
   );
   const scene = lesson?.blocks.find((block) => block.type === "scene");
-  const artwork = scene?.illustrationId === "art-bakery-morning";
+  const artwork = lesson ? illustration(lesson, scene?.illustrationId) : null;
   return (
     <section className="home page-arrive">
       <div className="intro">
@@ -131,12 +132,7 @@ export default function Home({
             </div>
             {artwork && (
               <div className="hero-art">
-                <img
-                  src="/assets/bakery.svg"
-                  width="640"
-                  height="470"
-                  alt="社区面包店的清晨"
-                />
+                <Illustration asset={artwork} />
               </div>
             )}
           </div>

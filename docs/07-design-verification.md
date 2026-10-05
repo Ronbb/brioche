@@ -164,3 +164,10 @@
 - 硬撤回实际返回 410，含撤回 revision 的包不能激活，直接把 withdrawn 版本 published 改回 true 也被数据库拒绝；当前目录过滤撤回课程，学习概览继续推荐其余课程。显式空 release 可清空目录。触发器实际拒绝正文、release 清单和审计改写，以及向 staged release 追加条目；迁移完整 down/up 与既有认证/学习测试通过。
 - 这些测试使用隔离 schema 的合成审校元数据，只验证发布协议，不代表任何法语内容通过人工审核。完整媒体/授权/角色库与 staging 预览仍待实现；现有示例文件保持 draft。
 - 精确 revision API 验证普通回滚后仍可读取旧公开快照、无 revision 时读取当前目录、错误 revision 拒绝、硬撤回的精确版本返回 410。账号首页的目录和推荐来自同一事务快照，正文按明确 revision 读取。
+
+## 2026-10-06：视觉素材与角色库
+
+- 素材/角色/导入审计迁移，登记后不可变；发布再次验证注册描述、精确角色快照、头像 revision 及存储哈希。隔离协议测试使用合成授权声明，不代表示例课程已完成人工审校或素材授权确认。
+- PostgreSQL 发布测试覆盖未确认授权、planned、错哈希/尺寸、路径逃逸、篡改角色、激活前损坏文件、私有 staging 素材拒绝公开及最后引用撤回后 404；图片接口校验正确内容/安全 headers 和损坏 503。
+- 独立浏览器 390px 检查数据驱动插图与头像，页面 scrollWidth=390。临时移走测试头像发现 SSR 接管前 onError 漏报，已补接管检查；复测所有缺失头像均回退到 learner.svg 并成功加载，测试文件已恢复。真实 iPhone 与其他宽度仍需整体验收。
+- 本轮 cargo fmt、workspace clippy（warnings 拒绝）、18 项契约/服务端单元测试与四项 PostgreSQL 集成测试通过；pnpm contracts、TS 7 类型检查和 Web/SSR build 通过，Compose config 校验通过。PNG/JPEG/WebP 正向解码、错 MIME 与截断数据通过单元验证。

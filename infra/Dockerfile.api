@@ -7,6 +7,7 @@ RUN cargo build --locked --release -p brioche-server
 
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl && rm -rf /var/lib/apt/lists/* && useradd --uid 10001 --create-home brioche
+RUN mkdir -p /var/lib/brioche/media && chown brioche:brioche /var/lib/brioche/media
 COPY --from=build /src/target/release/brioche-server /usr/local/bin/brioche-server
 USER brioche
 EXPOSE 3001

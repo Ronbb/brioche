@@ -2,6 +2,7 @@ import type { Block } from "@brioche/contracts/Block";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
 import { Link } from "react-router";
 import { useLearning } from "./learning";
+import { Illustration, illustration } from "./illustration";
 
 type TeachingBlock = Exclude<Block, { type: "dialogue" | "article" }>;
 export function TeachingBlock({
@@ -16,13 +17,10 @@ export function TeachingBlock({
     case "scene":
       return (
         <div className="lesson-scene">
-          {block.illustrationId === "art-bakery-morning" && (
-            <img
+          {illustration(lesson, block.illustrationId) && (
+            <Illustration
               className="scene-illustration"
-              src="/assets/bakery.svg"
-              alt="社区面包店的清晨"
-              width="640"
-              height="470"
+              asset={illustration(lesson, block.illustrationId)!}
             />
           )}
           <p className="knowledge-label">{block.placeZh}</p>

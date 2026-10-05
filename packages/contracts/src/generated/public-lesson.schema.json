@@ -32,6 +32,13 @@
     "levelId": {
       "type": "string"
     },
+    "media": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/MediaAsset"
+      }
+    },
     "objectivesZh": {
       "type": "array",
       "items": {
@@ -527,6 +534,56 @@
       "required": [
         "vocabulary",
         "grammar"
+      ]
+    },
+    "MediaAsset": {
+      "type": "object",
+      "properties": {
+        "altZh": {
+          "type": "string"
+        },
+        "assetId": {
+          "type": "string"
+        },
+        "creditZh": {
+          "type": "string"
+        },
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "mimeType": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "assetId",
+        "revision",
+        "sha256",
+        "mimeType",
+        "width",
+        "height",
+        "altZh",
+        "creditZh",
+        "url"
       ]
     },
     "OptionItem": {

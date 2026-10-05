@@ -3,7 +3,12 @@ import type { Block } from "@brioche/contracts/Block";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
 import type { Vocabulary } from "@brioche/contracts/Vocabulary";
 import type { Grammar } from "@brioche/contracts/Grammar";
-import { Sentence, avatar } from "../routes/lesson";
+import {
+  Sentence,
+  avatar,
+  avatarFallback,
+  avatarReady,
+} from "../routes/lesson";
 import { Player, useLearning } from "./learning";
 import { Icon } from "./icon";
 export function ReadingBlock({
@@ -41,7 +46,12 @@ export function ReadingBlock({
         <ul className="reading-characters">
           {block.speakers.map((speaker) => (
             <li key={speaker.id}>
-              <img src={avatar(speaker.avatarId)} alt="" />
+              <img
+                src={avatar(speaker.avatarId, lesson)}
+                alt=""
+                ref={avatarReady}
+                onError={avatarFallback}
+              />
               <div>
                 <span lang="fr">{speaker.displayName}</span>
                 <small>{speaker.labelZh}</small>
@@ -84,7 +94,12 @@ export function ReadingBlock({
                   ]);
                 }}
               >
-                <img src={avatar(speaker.avatarId)} alt="" />
+                <img
+                  src={avatar(speaker.avatarId, lesson)}
+                  alt=""
+                  ref={avatarReady}
+                  onError={avatarFallback}
+                />
               </button>
             )}
             <div>

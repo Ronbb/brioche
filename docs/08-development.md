@@ -148,3 +148,17 @@ cargo run -p brioche-server -- reset-password learner@example.com .local/reset-l
 `POST /api/v1/me/review-enrollments` 接受 knowledgeId、来源与幂等键，创建或读取已有复习卡，不重置档位/排期/暂停状态。`GET /api/v1/me/review-cards` 分页读取含暂停卡的所属列表；`PUT /api/v1/me/reviews/:id/preferences` 接受 cardVersion/suspended/idempotencyKey，暂停/恢复只改变标记和版本，保留 UTC 到期时间和档位。
 
 `GET /api/v1/me/review-history` 每页 20 条，显示原自评及提交时区的时间；数据库保留旧/新档位、排程和算法版本。撤回来源时隐藏词汇正文，仍保留历史事实。三个列表游标均以时间与随机 ID 排序，校验格式，绑定当前登录账号。读写受既有认证/Origin/CSRF/private-no-store 保护，写入与原幂等结果同事务保存。浏览器明确重试不确定请求，离开页面后的未确认操作恢复仍待补齐。
+
+## 视觉素材与角色库
+
+迁移 9 注册不可变素材 revision、角色快照及导入审计。`MEDIA_ROOT` 默认 `.local/media`；服务端和内容 CLI 必须使用同一个目录。Compose 的 server 挂载 `media_data` 到 `/var/lib/brioche/media`，镜像创建 UID 10001 可写的目录；备份和恢复必须同时保留 PostgreSQL 与这个卷，实际恢复演练仍待完成。
+
+`cargo run -p brioche-server -- assets-import <bundle.json> <source-directory> <actor>` 读取严格字段的清单，登记素材与角色，文件按 SHA-256 命名。参考 `examples/asset-bundle.json`：它故意保持 planned 与 rightsConfirmed=false，作者/授权未确认，不能直接导入。正式素材必须明确来源、作者、license、中文替代文本/署名、ready 状态与人工确认授权；工具只记录操作者的声明，不能代替授权审核。
+
+图片支持静态 SVG、PNG、JPEG、WebP，逐文件验证实际 MIME、SHA-256、尺寸和完整解码，大小 1–32 MiB，宽高最多 8192。SVG 仅允许静态图形白名单，拒绝脚本、外部引用、事件属性、DOCTYPE 和任意 HTML；栅格解码分配上限 64 MiB。来源路径必须在指定素材目录内，拒绝绝对路径、父级和 symlink 逃逸。角色引用精确头像 revision，头像必须正方形；当前角色语音 locale 为 fr-FR。
+
+课程私有源增加 `assetRefs`，例如 `[{"assetId":"art-bakery-morning","revision":1}]`，同时引用正文所需的全部头像。课程 import 根据注册表填充公共 `media`，移除私有 assetRefs；cast 必须与已注册角色 revision 的完整快照一致。release-stage 和 release-activate 都核对每个场景插图、角色头像、注册描述与存储文件哈希，缺文件或篡改阻止整个发布。
+
+`GET /api/media/<sha256>.<extension>` 只提供仍被已发布课程引用的素材；仅登记和 staging 不会公开。最后一项引用撤回后返回 404；损坏/缺文件返回 503，响应 no-store，禁止 MIME 嗅探，SVG 不执行脚本。读取使用有限 blocking 并发。网页使用结构化尺寸、中文 alt、署名与缺图回退，SSR 接管时也检查已失败的图片。
+
+文件写入先于数据库事务，采用临时文件和不可覆盖的硬链接。数据库导入失败可能留下未引用的哈希对象，它们不会公开；自动垃圾回收尚未实现，勿直接删除仍被旧发布快照引用的文件。录音、时间对齐和流式播放待后续实现。

@@ -3,7 +3,8 @@ import type { Block } from "./Block";
 import type { Character } from "./Character";
 import type { Completion } from "./Completion";
 import type { Knowledge } from "./Knowledge";
+import type { MediaAsset } from "./MediaAsset";
 import type { Step } from "./Step";
 import type { Title } from "./Title";
 
-export type PublicLesson = { schemaVersion: string, id: string, revision: number, levelId: string, unitId: string, title: Title, summaryZh: string, estimatedMinutes: number, objectivesZh: Array<string>, knowledge: Knowledge, blocks: Array<Block>, steps: Array<Step>, completion: Completion, reviewItemIds: Array<string>, cast: Array<Character>, };
+export type PublicLesson = { schemaVersion: string, id: string, revision: number, levelId: string, unitId: string, title: Title, summaryZh: string, estimatedMinutes: number, objectivesZh: Array<string>, knowledge: Knowledge, blocks: Array<Block>, steps: Array<Step>, completion: Completion, reviewItemIds: Array<string>, cast: Array<Character>, media: Array<MediaAsset>, };

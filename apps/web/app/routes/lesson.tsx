@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type SyntheticEvent } from "react";
 import { Link } from "react-router";
 import type { Segment } from "@brioche/contracts/Segment";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
@@ -17,14 +17,25 @@ export async function loader({ params }: Route.LoaderArgs) {
   ]);
   return { lesson, demo: catalog.developmentFixture };
 }
-export const avatar = (id: string) =>
+export const avatar = (id: string, lesson?: PublicLesson) =>
+  lesson?.media.find((asset) => asset.assetId === id)?.url ??
   "/assets/avatars/" +
-  ({
-    "avatar-camille-v1": "camille",
-    "avatar-luc-v1": "luc",
-    "avatar-lea-v1": "lea",
-  }[id] ?? "learner") +
-  ".svg";
+    ({
+      "avatar-camille-v1": "camille",
+      "avatar-luc-v1": "luc",
+      "avatar-lea-v1": "lea",
+    }[id] ?? "learner") +
+    ".svg";
+export function avatarFallback(event: SyntheticEvent<HTMLImageElement>) {
+  replaceAvatar(event.currentTarget);
+}
+export function avatarReady(image: HTMLImageElement | null) {
+  if (image?.complete && image.naturalWidth === 0) replaceAvatar(image);
+}
+function replaceAvatar(image: HTMLImageElement) {
+  const fallback = "/assets/avatars/learner.svg";
+  if (image.getAttribute("src") !== fallback) image.src = fallback;
+}
 export function Sentence({
   segments,
   lesson,
@@ -171,7 +182,12 @@ function LessonContent({
             <ul className="reading-characters">
               {dialogue.speakers.map((s) => (
                 <li key={s.id}>
-                  <img src={avatar(s.avatarId)} alt="" />
+                  <img
+                    src={avatar(s.avatarId, lesson)}
+                    alt=""
+                    ref={avatarReady}
+                    onError={avatarFallback}
+                  />
                   <div>
                     <span lang="fr">{s.displayName}</span>
                     <small>{s.labelZh}</small>
@@ -207,7 +223,12 @@ function LessonContent({
                       ]);
                     }}
                   >
-                    <img src={avatar(speaker.avatarId)} alt="" />
+                    <img
+                      src={avatar(speaker.avatarId, lesson)}
+                      alt=""
+                      ref={avatarReady}
+                      onError={avatarFallback}
+                    />
                   </button>
                 )}
                 <div>

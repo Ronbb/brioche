@@ -38,14 +38,41 @@ async fn main() -> Result<()> {
         )
     };
     match command.as_str() {
+        "assets-import" => {
+            let args: Vec<String> = std::env::args().skip(2).collect();
+            if args.len() != 3 {
+                bail!("usage: assets-import <bundle.json> <source-directory> <actor>");
+            }
+            let bytes = std::fs::read(&args[0])?;
+            if bytes.len() > 2 * 1024 * 1024 {
+                bail!("asset bundle exceeds 2 MiB");
+            }
+            let bundle = serde_json::from_slice(&bytes)?;
+            brioche_server::media::import_bundle(
+                db.as_ref().unwrap(),
+                bundle,
+                std::path::Path::new(&args[1]),
+                &brioche_server::media::media_root(),
+                &args[2],
+            )
+            .await?;
+            tracing::info!("asset and character revisions imported");
+            return Ok(());
+        }
         "release-stage" => {
             let args: Vec<String> = std::env::args().skip(2).collect();
             if args.len() != 3 {
                 bail!("usage: release-stage <manifest.json> <actor> <reason>");
             }
             let manifest = brioche_server::content::ReleaseManifest::deserialize_file(&args[0])?;
-            brioche_server::content::stage(db.as_ref().unwrap(), &manifest, &args[1], &args[2])
-                .await?;
+            brioche_server::content::stage(
+                db.as_ref().unwrap(),
+                &manifest,
+                &args[1],
+                &args[2],
+                &brioche_server::media::media_root(),
+            )
+            .await?;
             tracing::info!("immutable directory release staged");
             return Ok(());
         }
@@ -63,6 +90,7 @@ async fn main() -> Result<()> {
                     args[1].parse()?,
                     &args[2],
                     &args[3],
+                    &brioche_server::media::media_root(),
                 )
                 .await?
             } else {
@@ -112,6 +140,8 @@ async fn main() -> Result<()> {
                 .nth(2)
                 .context("usage: brioche-server import <lesson.json>")?;
             let source: serde_json::Value = serde_json::from_slice(&std::fs::read(file)?)?;
+            let source =
+                brioche_server::media::hydrate_source(db.as_ref().unwrap(), source).await?;
             let publish = std::env::args().any(|arg| arg == "--publish");
             if publish {
                 bail!("use release-stage and release-activate to publish an atomic directory");
@@ -206,6 +236,7 @@ async fn main() -> Result<()> {
     )
     .await?;
     tracing::info!(address=%listener.local_addr()?,"API listening");
+    let media_db = db.clone();
     let mut app = router(AppState {
         db,
         fixture: if fixture {
@@ -216,6 +247,12 @@ async fn main() -> Result<()> {
     });
     if let Some(auth) = auth_router {
         app = app.merge(auth);
+    }
+    if let Some(db) = media_db {
+        app = app.merge(brioche_server::media::router(
+            db,
+            brioche_server::media::media_root(),
+        ));
     }
     axum::serve(listener, app)
         .with_graceful_shutdown(shutdown())

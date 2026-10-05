@@ -13,6 +13,8 @@ use sea_orm::{
 use sea_orm_migration::MigratorTrait;
 use serde_json::{Value, json};
 use tower::ServiceExt;
+#[path = "support/assets.rs"]
+mod asset_fixtures;
 mod support;
 
 struct Browser {
@@ -150,6 +152,73 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
     let db = Database::connect(options).await.unwrap();
     brioche_migration::Migrator::up(&db, None).await.unwrap();
     // Synthetic review metadata is only for this isolated protocol test, never editorial evidence.
+    let media_root = asset_fixtures::fixture_assets(&db, &schema).await;
+    let asset_row = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT provenance,descriptor FROM media_assets WHERE asset_id='art-bakery-morning'",
+        ))
+        .await
+        .unwrap()
+        .unwrap();
+    let spec: Value = asset_row.try_get("", "provenance").unwrap();
+    let descriptor: Value = asset_row.try_get("", "descriptor").unwrap();
+    let source_root =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../apps/web/public/assets");
+    for (field, value) in [
+        ("status", json!("planned")),
+        ("rightsConfirmed", json!(false)),
+        ("sha256", json!("0".repeat(64))),
+        ("width", json!(12)),
+        ("file", json!("../outside.svg")),
+    ] {
+        let mut invalid = spec.clone();
+        invalid["assetId"] = json!("invalid-asset");
+        invalid[field] = value;
+        let bundle = serde_json::from_value(
+            json!({"schemaVersion":"1.0","assets":[invalid],"characters":[]}),
+        )
+        .unwrap();
+        assert!(
+            brioche_server::media::import_bundle(
+                &db,
+                bundle,
+                &source_root,
+                &media_root,
+                "negative-test"
+            )
+            .await
+            .is_err()
+        );
+        assert_eq!(count(&db, "media_assets").await, 4);
+    }
+    assert!(
+        db.execute_unprepared("UPDATE character_revisions SET snapshot='{}'")
+            .await
+            .is_err()
+    );
+    assert!(
+        db.execute_unprepared("UPDATE media_assets SET descriptor='{}'")
+            .await
+            .is_err()
+    );
+    let media_app = brioche_server::media::router(db.clone(), media_root.clone());
+    let asset_path = descriptor["url"].as_str().unwrap();
+    let response = media_app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri(asset_path)
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        response.status(),
+        404,
+        "registered assets are private before release activation"
+    );
     for (id, revision, reviewed) in [
         ("release-z", 1, true),
         ("release-z", 2, true),
@@ -159,9 +228,13 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         let mut source = development_source().unwrap();
         source["id"] = json!(id);
         source["revision"] = json!(revision);
+        source["assetRefs"] = asset_fixtures::fixture_refs();
         if reviewed {
             source["editorial"]["status"] = json!("reviewed");
         }
+        let source = brioche_server::media::hydrate_source(&db, source)
+            .await
+            .unwrap();
         let lesson = project_source(source.clone()).unwrap();
         db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO lesson_revisions(lesson_id,revision,public_document,server_document) VALUES($1,$2,$3,$4)",[id.into(),revision.into(),serde_json::to_value(lesson).unwrap().into(),source.into()])).await.unwrap();
     }
@@ -172,31 +245,62 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
     let mut bad = manifest("bad-draft", 1);
     bad.levels[0].units[0].lessons[1].lesson_id = "release-draft".into();
     assert!(matches!(
-        content::stage(&db, &bad, "tester", "draft rejected").await,
+        content::stage(&db, &bad, "tester", "draft rejected", &media_root).await,
         Err(AppError::InvalidInput)
     ));
     assert_eq!(count(&db, "content_releases").await, 0);
     let mut missing = manifest("bad-missing", 1);
     missing.levels[0].units[0].lessons[1].lesson_id = "missing".into();
     assert!(matches!(
-        content::stage(&db, &missing, "tester", "missing reference").await,
+        content::stage(&db, &missing, "tester", "missing reference", &media_root).await,
         Err(AppError::NotFound)
     ));
     let first = manifest("release-first", 1);
-    content::stage(&db, &first, "tester", "initial protocol fixture")
-        .await
-        .unwrap();
+    content::stage(
+        &db,
+        &first,
+        "tester",
+        "initial protocol fixture",
+        &media_root,
+    )
+    .await
+    .unwrap();
     assert!(
         content::catalog(&db).await.unwrap().levels.is_empty(),
         "staging is private"
     );
     assert_eq!(
-        content::activate(&db, &first.id, 0, "tester", "initial activation")
-            .await
-            .unwrap(),
+        content::activate(
+            &db,
+            &first.id,
+            0,
+            "tester",
+            "initial activation",
+            &media_root
+        )
+        .await
+        .unwrap(),
         1
     );
     let catalog = content::catalog(&db).await.unwrap();
+    let response = media_app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri(asset_path)
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), 200);
+    assert_eq!(response.headers()["cache-control"], "no-store");
+    assert_eq!(response.headers()["content-type"], "image/svg+xml");
+    let bytes = response.into_body().collect().await.unwrap().to_bytes();
+    assert_eq!(
+        bytes.as_ref(),
+        std::fs::read(source_root.join("bakery.svg")).unwrap()
+    );
     assert_eq!(catalog.levels[0].units[0].title_zh, "早餐与面包店");
     assert_eq!(
         catalog.levels[0].units[0]
@@ -226,14 +330,56 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         )
         .await;
     assert_eq!(old["lesson"]["revision"], 1);
+    let mut mismatched = project_source(
+        brioche_server::media::hydrate_source(&db, {
+            let mut source = development_source().unwrap();
+            source["assetRefs"] = asset_fixtures::fixture_refs();
+            source
+        })
+        .await
+        .unwrap(),
+    )
+    .unwrap();
+    mismatched.cast[2].display_name = "changed narrator".into();
+    assert!(matches!(
+        brioche_server::media::validate_lesson(&db, &mismatched, &media_root).await,
+        Err(AppError::InvalidInput)
+    ));
     let newer = manifest("release-second", 2);
-    content::stage(&db, &newer, "tester", "second revision")
+    content::stage(&db, &newer, "tester", "second revision", &media_root)
         .await
         .unwrap();
+    let stored_path = media_root.join(asset_path.rsplit('/').next().unwrap());
+    let original_bytes = std::fs::read(&stored_path).unwrap();
+    std::fs::write(&stored_path, b"corrupt object").unwrap();
+    assert!(matches!(
+        content::activate(
+            &db,
+            &newer.id,
+            1,
+            "tester",
+            "corruption must prevent publish",
+            &media_root
+        )
+        .await,
+        Err(AppError::InvalidInput)
+    ));
+    let response = media_app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri(asset_path)
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), 503);
+    std::fs::write(&stored_path, original_bytes).unwrap();
     // Audit failure rolls back availability and pointer changes together.
     db.execute_unprepared("ALTER TABLE content_audit ADD CONSTRAINT test_activate_failure CHECK(action<>'activate') NOT VALID").await.unwrap();
     assert!(
-        content::activate(&db, &newer.id, 1, "tester", "injected failure")
+        content::activate(&db, &newer.id, 1, "tester", "injected failure", &media_root)
             .await
             .is_err()
     );
@@ -256,17 +402,38 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         .await
         .unwrap();
     let (left, right) = tokio::join!(
-        content::activate(&db, &newer.id, 1, "tester-a", "concurrent activation"),
-        content::activate(&db, &first.id, 1, "tester-b", "concurrent rollback")
+        content::activate(
+            &db,
+            &newer.id,
+            1,
+            "tester-a",
+            "concurrent activation",
+            &media_root
+        ),
+        content::activate(
+            &db,
+            &first.id,
+            1,
+            "tester-b",
+            "concurrent rollback",
+            &media_root
+        )
     );
     assert!(matches!(
         (&left, &right),
         (Ok(2), Err(AppError::Conflict)) | (Err(AppError::Conflict), Ok(2))
     ));
     assert_eq!(
-        content::activate(&db, &newer.id, 2, "tester", "select new version")
-            .await
-            .unwrap(),
+        content::activate(
+            &db,
+            &newer.id,
+            2,
+            "tester",
+            "select new version",
+            &media_root
+        )
+        .await
+        .unwrap(),
         3
     );
     let (_, current) = b
@@ -287,9 +454,16 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         1
     );
     assert_eq!(
-        content::activate(&db, &first.id, 3, "tester", "ordinary rollback")
-            .await
-            .unwrap(),
+        content::activate(
+            &db,
+            &first.id,
+            3,
+            "tester",
+            "ordinary rollback",
+            &media_root
+        )
+        .await
+        .unwrap(),
         4
     );
     let new_path = format!(
@@ -340,7 +514,15 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         .unwrap();
     assert_eq!(response.status(), 410);
     assert!(matches!(
-        content::activate(&db, &newer.id, 5, "tester", "cannot restore withdrawn").await,
+        content::activate(
+            &db,
+            &newer.id,
+            5,
+            "tester",
+            "cannot restore withdrawn",
+            &media_root
+        )
+        .await,
         Err(AppError::Gone)
     ));
     assert!(
@@ -384,17 +566,48 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
     let empty: content::ReleaseManifest =
         serde_json::from_value(json!({"id":"release-empty","schemaVersion":"1.0","levels":[]}))
             .unwrap();
-    content::stage(&db, &empty, "tester", "empty directory")
+    content::stage(&db, &empty, "tester", "empty directory", &media_root)
         .await
         .unwrap();
     assert_eq!(
-        content::activate(&db, &empty.id, 6, "tester", "empty release")
+        content::activate(&db, &empty.id, 6, "tester", "empty release", &media_root)
             .await
             .unwrap(),
         7
     );
     assert!(content::catalog(&db).await.unwrap().levels.is_empty());
+    content::withdraw(
+        &db,
+        "release-a",
+        1,
+        7,
+        "tester",
+        "withdraw final shared reference",
+    )
+    .await
+    .unwrap();
+    let response = media_app
+        .oneshot(
+            Request::builder()
+                .uri(asset_path)
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        response.status(),
+        404,
+        "no remaining published reference makes media private"
+    );
     brioche_migration::Migrator::down(&db, None).await.unwrap();
+    assert!(
+        media_root
+            .canonicalize()
+            .unwrap()
+            .starts_with(std::env::temp_dir().canonicalize().unwrap())
+    );
+    std::fs::remove_dir_all(&media_root).unwrap();
     drop(db);
     admin
         .execute_unprepared(&format!("DROP SCHEMA {schema} CASCADE"))

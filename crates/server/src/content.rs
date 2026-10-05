@@ -98,6 +98,7 @@ pub async fn stage(
     manifest: &ReleaseManifest,
     actor: &str,
     reason: &str,
+    media_root: &std::path::Path,
 ) -> Result<(), AppError> {
     manifest.validate()?;
     if !text(actor) || !text(reason) {
@@ -150,6 +151,7 @@ pub async fn stage(
                     return Err(AppError::InvalidInput);
                 }
                 Grader::from_source(&lesson, &source).map_err(|_| AppError::InvalidInput)?;
+                crate::media::validate_lesson(&tx, &lesson, media_root).await?;
                 source_hashes.push(hash(&source)?);
                 entries.push(entry);
             }
@@ -179,6 +181,7 @@ pub async fn activate(
     expected: i64,
     actor: &str,
     reason: &str,
+    media_root: &std::path::Path,
 ) -> Result<i64, AppError> {
     if !identifier(id) || expected < 0 || !text(actor) || !text(reason) {
         return Err(AppError::InvalidInput);
@@ -207,6 +210,12 @@ pub async fn activate(
     }
     if one(&tx,"SELECT 1 AS n FROM release_entries e JOIN content_withdrawals w USING(lesson_id,revision) WHERE e.release_id=$1 LIMIT 1",vec![id.into()]).await?.is_some(){return Err(AppError::Gone);}
     let next = generation.checked_add(1).ok_or(AppError::Unavailable)?;
+    let rows=tx.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT r.public_document FROM release_entries e JOIN lesson_revisions r USING(lesson_id,revision) WHERE e.release_id=$1 ORDER BY e.position",[id.into()])).await.map_err(|_|AppError::Unavailable)?;
+    for row in rows {
+        let lesson: PublicLesson = serde_json::from_value(field(&row, "public_document")?)
+            .map_err(|_| AppError::Unavailable)?;
+        crate::media::validate_lesson(&tx, &lesson, media_root).await?;
+    }
     exec(&tx,"UPDATE lesson_revisions r SET published=true FROM release_entries e WHERE e.release_id=$1 AND (r.lesson_id,r.revision)=(e.lesson_id,e.revision)",vec![id.into()]).await?;
     exec(
         &tx,

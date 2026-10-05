@@ -6,10 +6,10 @@ use ts_rs::TS;
 mod validation;
 
 macro_rules! dto {
-    ($name:ident { $($field:ident : $ty:ty),* $(,)? }) => {
+    ($name:ident { $($(#[$meta:meta])* $field:ident : $ty:ty),* $(,)? }) => {
         #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, TS)]
         #[serde(rename_all="camelCase", deny_unknown_fields)]
-        pub struct $name { $(pub $field: $ty),* }
+        pub struct $name { $($(#[$meta])* pub $field: $ty),* }
     };
 }
 dto!(Title {
@@ -25,6 +25,17 @@ dto!(Character {
     display_name: String,
     avatar_id: String,
     speech_locale: String
+});
+dto!(MediaAsset {
+    asset_id: String,
+    revision: u32,
+    sha256: String,
+    mime_type: String,
+    width: u32,
+    height: u32,
+    alt_zh: String,
+    credit_zh: String,
+    url: String
 });
 dto!(Speaker {
     id: String,
@@ -147,7 +158,7 @@ dto!(PublicLesson {
     schema_version: String, id: String, revision: u32, level_id: String, unit_id: String,
     title: Title, summary_zh: String, estimated_minutes: u32, objectives_zh: Vec<String>,
     knowledge: Knowledge, blocks: Vec<Block>, steps: Vec<Step>, completion: Completion,
-    review_item_ids: Vec<String>, cast: Vec<Character>
+    review_item_ids: Vec<String>, cast: Vec<Character>, #[serde(default)] media: Vec<MediaAsset>
 });
 dto!(LessonSummary {
     id: String,

@@ -6,6 +6,7 @@ pub mod grading;
 pub mod identity;
 pub mod learning;
 pub mod library;
+pub mod media;
 pub mod password;
 pub mod reviews;
 pub mod session_store;
@@ -171,7 +172,7 @@ async fn demo_grade(
 }
 async fn ready(State(state): State<Arc<AppState>>) -> Result<Json<serde_json::Value>, AppError> {
     if let Some(db) = &state.db {
-        db.execute_unprepared("SELECT users.profile_version FROM lesson_revisions, users, browser_sessions, identity_tokens, auth_throttle, learning_sessions, review_cards, review_attempts, saved_items, content_state, content_releases, content_withdrawals LIMIT 0")
+        db.execute_unprepared("SELECT users.profile_version FROM lesson_revisions, users, browser_sessions, identity_tokens, auth_throttle, learning_sessions, review_cards, review_attempts, saved_items, content_state, content_releases, content_withdrawals, media_assets, character_revisions, asset_import_audit LIMIT 0")
             .await
             .map_err(|_| AppError::Unavailable)?;
     } else if state.fixture.is_none() {
@@ -265,6 +266,7 @@ pub fn project_source(mut source: serde_json::Value) -> anyhow::Result<PublicLes
         .ok_or_else(|| anyhow::anyhow!("lesson must be an object"))?;
     object.remove("serverOnly");
     object.remove("editorial");
+    object.remove("assetRefs");
     let lesson: PublicLesson = serde_json::from_value(source)?;
     lesson.validate().map_err(anyhow::Error::msg)?;
     Ok(lesson)

@@ -3489,6 +3489,10 @@ h2[tabindex="-1"]:focus {
 .study-review-entry span > span { font-size: 13px; color: var(--muted); }
 .study-review-entry > svg { flex-shrink: 0; }
 .hero-without-art { grid-template-columns: 1fr; }
+.lesson-media { margin: 0; }
+.lesson-media img { display: block; width: 100%; height: auto; }
+.media-credit { padding: 8px 12px; color: var(--muted); font-size: 11px; text-align: right; }
+.media-fallback { min-height: 180px; display: grid; place-items: center; padding: 24px; background: var(--leaf); border-radius: 22px; color: var(--green); }
 .course-level + .course-level, .course-unit + .course-unit { margin-top: 30px; }
 @media (min-width: 900px) { .study-overview { grid-template-columns: minmax(0,1.4fr) minmax(0,1fr); } }
 @media (max-width: 360px) { .study-week { padding: 20px 16px; } .study-week-days { gap: 4px; } .study-day-mark { width: 30px; height: 30px; } }
