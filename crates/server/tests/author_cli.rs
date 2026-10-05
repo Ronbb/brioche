@@ -372,3 +372,101 @@ fn import_and_stage_preflight_locate_invalid_source_before_database_connection()
     }
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn media_import_preflight_reports_original_fields_without_connecting() {
+    use serde_json::json;
+    let path = std::env::temp_dir().join(format!("brioche-media-preflight-{}.json", random_id()));
+    let mut visual: serde_json::Value =
+        serde_json::from_str(include_str!("../../../docs/examples/asset-bundle.json")).unwrap();
+    for asset in visual["assets"].as_array_mut().unwrap() {
+        asset["status"] = json!("ready");
+        asset["rightsConfirmed"] = json!(true);
+        asset["license"] = json!("LicenseRef-TestOnly");
+    }
+    let audio = json!({"schemaVersion":"1.0","assets":[{"assetId":"recording-test","revision":1,"sha256":"0".repeat(64),"mimeType":"audio/wav","durationMs":100,"creditZh":"仅测试·中文","file":"test.wav","status":"ready","source":"synthetic fixture","license":"LicenseRef-TestOnly","creator":"protocol-test","rightsConfirmed":true}]});
+    for (command, baseline, pointer, value) in [
+        ("assets-import", &visual, "/assets/0/revision", json!("bad")),
+        ("assets-import", &visual, "/assets/0/width", json!(0)),
+        (
+            "assets-import",
+            &visual,
+            "/assets/0/rightsConfirmed",
+            json!(false),
+        ),
+        (
+            "assets-import",
+            &visual,
+            "/assets/0/file",
+            json!("../escape.svg"),
+        ),
+        (
+            "assets-import",
+            &visual,
+            "/assets/0/mimeType",
+            json!("text/html"),
+        ),
+        (
+            "assets-import",
+            &visual,
+            "/characters/0/avatarRevision",
+            json!(0),
+        ),
+        (
+            "assets-import",
+            &visual,
+            "/characters/0/snapshot/displayName",
+            json!(""),
+        ),
+        ("audio-import", &audio, "/assets/0/durationMs", json!("bad")),
+        ("audio-import", &audio, "/assets/0/durationMs", json!(0)),
+        ("audio-import", &audio, "/assets/0/sha256", json!("invalid")),
+        ("audio-import", &audio, "/assets/0/status", json!("planned")),
+        (
+            "audio-import",
+            &audio,
+            "/assets/0/rightsConfirmed",
+            json!(false),
+        ),
+        ("audio-import", &audio, "/assets/0/license", json!("")),
+        (
+            "audio-import",
+            &audio,
+            "/assets/0/file",
+            json!("../escape.wav"),
+        ),
+    ] {
+        let mut source = baseline.clone();
+        *source.pointer_mut(pointer).unwrap() = value.clone();
+        let text = serde_json::to_string_pretty(&source)
+            .unwrap()
+            .replace('\n', "\r\n");
+        std::fs::write(&path, &text).unwrap();
+        let field = pointer.rsplit('/').next().unwrap();
+        let key = format!("\"{field}\": ");
+        let marker = format!("{key}{}", serde_json::to_string(&value).unwrap());
+        let offset = text.find(&marker).unwrap() + key.len();
+        let before = &text[..offset];
+        let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+        let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+            .args([
+                command,
+                path.to_str().unwrap(),
+                "missing-source-directory",
+                "protocol-test",
+            ])
+            .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+            .env("CONTENT_MODE", "database")
+            .output()
+            .unwrap();
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success());
+        assert!(
+            error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
+            "{error}"
+        );
+        assert!(!error.contains("database connection"), "{error}");
+    }
+    std::fs::remove_file(path).unwrap();
+}

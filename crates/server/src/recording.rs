@@ -37,48 +37,67 @@ pub struct AudioSpec {
 }
 
 impl AudioBundle {
-    fn validate(&self, actor: &str) -> Result<()> {
+    pub fn validate_author(&self, actor: &str) -> Result<()> {
+        ensure!(self.schema_version == "1.0", "/schemaVersion: expected 1.0");
         ensure!(
-            self.schema_version == "1.0"
-                && (1..=500).contains(&self.assets.len())
-                && media::text(actor),
-            "invalid recording bundle or actor"
+            (1..=500).contains(&self.assets.len()),
+            "/assets: expected 1..500 recordings"
         );
+        ensure!(media::text(actor), "/: invalid import actor");
         let mut ids = BTreeSet::new();
-        for spec in &self.assets {
+        for (index, spec) in self.assets.iter().enumerate() {
+            let p = format!("/assets/{index}");
             ensure!(
-                media::valid_id(&spec.asset_id)
-                    && (1..=i32::MAX as u32).contains(&spec.revision)
-                    && ids.insert((&spec.asset_id, spec.revision)),
-                "invalid or duplicate recording identity"
+                media::valid_id(&spec.asset_id),
+                "{p}/assetId: invalid recording ID"
             );
             ensure!(
-                spec.status == "ready"
-                    && spec.rights_confirmed
-                    && [&spec.source, &spec.license, &spec.creator, &spec.credit_zh]
-                        .into_iter()
-                        .all(|value| media::text(value)),
-                "recording requires ready status, confirmed rights, source, license, creator and credit"
+                (1..=i32::MAX as u32).contains(&spec.revision),
+                "{p}/revision: outside database range"
             );
+            ensure!(
+                ids.insert((&spec.asset_id, spec.revision)),
+                "{p}/assetId: duplicate recording revision"
+            );
+            ensure!(
+                spec.status == "ready",
+                "{p}/status: recording must be ready"
+            );
+            ensure!(
+                spec.rights_confirmed,
+                "{p}/rightsConfirmed: confirmed rights required"
+            );
+            for (field, value) in [
+                ("source", &spec.source),
+                ("license", &spec.license),
+                ("creator", &spec.creator),
+                ("creditZh", &spec.credit_zh),
+            ] {
+                ensure!(
+                    media::text(value),
+                    "{p}/{field}: expected nonempty provenance text"
+                );
+            }
             ensure!(
                 spec.sha256.len() == 64
                     && spec
                         .sha256
                         .bytes()
                         .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)),
-                "recording SHA-256 must be lowercase hex"
+                "{p}/sha256: expected lowercase SHA-256"
             );
             ensure!(
                 (1..=1_800_000).contains(&spec.duration_ms),
-                "recording duration out of range"
+                "{p}/durationMs: duration out of range"
             );
-            audio::extension(&spec.mime_type)?;
+            audio::extension(&spec.mime_type)
+                .with_context(|| format!("{p}/mimeType: unsupported recording MIME"))?;
             ensure!(
                 !spec.file.is_empty()
                     && Path::new(&spec.file)
                         .components()
                         .all(|c| matches!(c, Component::Normal(_))),
-                "recording path must be relative without traversal"
+                "{p}/file: expected relative path without traversal"
             );
         }
         Ok(())
@@ -92,27 +111,32 @@ pub async fn import_bundle(
     store: &Path,
     actor: &str,
 ) -> Result<()> {
-    bundle.validate(actor)?;
+    bundle.validate_author(actor)?;
     let bundle_hash = hash(&bundle).map_err(anyhow::Error::msg)?;
     let source_root = source_root.canonicalize()?;
     let store = store.to_path_buf();
     let specs = bundle.assets.clone();
     let recordings = tokio::task::spawn_blocking(move || -> Result<Vec<_>> {
         let mut result = Vec::new();
-        for spec in specs {
-            let path = source_root.join(&spec.file).canonicalize()?;
+        for (index, spec) in specs.into_iter().enumerate() {
+            let p = format!("/assets/{index}");
+            let path = source_root
+                .join(&spec.file)
+                .canonicalize()
+                .with_context(|| format!("{p}/file: recording file unavailable"))?;
             ensure!(
                 path.starts_with(&source_root),
-                "recording escapes source directory"
+                "{p}/file: recording escapes source directory"
             );
-            let (bytes, info) = audio::inspect_file(&path, &spec.mime_type)?;
+            let (bytes, info) = audio::inspect_file(&path, &spec.mime_type)
+                .with_context(|| format!("{p}/file: invalid recording file"))?;
             ensure!(
                 media::digest(&bytes) == spec.sha256,
-                "recording hash mismatch"
+                "{p}/sha256: recording hash mismatch"
             );
             ensure!(
                 info.duration_ms == spec.duration_ms,
-                "recording duration does not match decoded frames"
+                "{p}/durationMs: recording duration does not match decoded frames"
             );
             let ext = audio::extension(&spec.mime_type)?;
             media::store_file(&store, &bytes, &spec.sha256, ext)?;
@@ -214,7 +238,7 @@ pub async fn validate_lesson<C: ConnectionTrait>(
             schema_version: "1.0".into(),
             assets: vec![spec],
         }
-        .validate("publication-validation")
+        .validate_author("publication-validation")
         .map_err(|_| crate::AppError::InvalidInput)?;
         let expected_size = field::<i64>(&row, "byte_size")?;
         let expected_rate = field::<i32>(&row, "sample_rate")?;
@@ -442,11 +466,11 @@ mod tests {
                 rights_confirmed: true,
             }],
         };
-        assert!(bundle.validate("operator").is_ok());
+        assert!(bundle.validate_author("operator").is_ok());
         bundle.assets[0].rights_confirmed = false;
-        assert!(bundle.validate("operator").is_err());
+        assert!(bundle.validate_author("operator").is_err());
         bundle.assets[0].rights_confirmed = true;
         bundle.assets[0].file = "../escape.mp3".into();
-        assert!(bundle.validate("operator").is_err());
+        assert!(bundle.validate_author("operator").is_err());
     }
 }

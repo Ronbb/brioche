@@ -45,6 +45,104 @@ pub struct CharacterSpec {
     pub snapshot: Character,
     pub avatar_revision: u32,
 }
+impl AssetBundle {
+    /// Metadata checks run before database access and filesystem mutation.
+    pub fn validate_author(&self, actor: &str) -> Result<()> {
+        ensure!(self.schema_version == "1.0", "/schemaVersion: expected 1.0");
+        ensure!(self.assets.len() <= 500, "/assets: at most 500 assets");
+        ensure!(
+            self.characters.len() <= 500,
+            "/characters: at most 500 characters"
+        );
+        ensure!(text(actor), "/: invalid import actor");
+        let mut ids = BTreeSet::new();
+        for (index, asset) in self.assets.iter().enumerate() {
+            let p = format!("/assets/{index}");
+            ensure!(valid_id(&asset.asset_id), "{p}/assetId: invalid asset ID");
+            ensure!(
+                (1..=i32::MAX as u32).contains(&asset.revision),
+                "{p}/revision: outside database range"
+            );
+            ensure!(
+                ids.insert((&asset.asset_id, asset.revision)),
+                "{p}/assetId: duplicate asset revision"
+            );
+            ensure!(asset.status == "ready", "{p}/status: asset must be ready");
+            ensure!(
+                asset.rights_confirmed,
+                "{p}/rightsConfirmed: confirmed rights required"
+            );
+            for (field, value) in [
+                ("source", &asset.source),
+                ("license", &asset.license),
+                ("creator", &asset.creator),
+                ("creditZh", &asset.credit_zh),
+                ("altZh", &asset.alt_zh),
+            ] {
+                ensure!(text(value), "{p}/{field}: expected nonempty text");
+            }
+            ensure!(
+                asset.sha256.len() == 64
+                    && asset
+                        .sha256
+                        .bytes()
+                        .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)),
+                "{p}/sha256: expected lowercase SHA-256"
+            );
+            extension(&asset.mime_type)
+                .with_context(|| format!("{p}/mimeType: unsupported visual MIME"))?;
+            ensure!(
+                (1..=8192).contains(&asset.width),
+                "{p}/width: outside image dimension range"
+            );
+            ensure!(
+                (1..=8192).contains(&asset.height),
+                "{p}/height: outside image dimension range"
+            );
+            ensure!(
+                !asset.file.is_empty()
+                    && Path::new(&asset.file)
+                        .components()
+                        .all(|c| matches!(c, Component::Normal(_))),
+                "{p}/file: expected relative path without traversal"
+            );
+        }
+        let mut ids = BTreeSet::new();
+        for (index, character) in self.characters.iter().enumerate() {
+            let p = format!("/characters/{index}");
+            let snapshot = &character.snapshot;
+            ensure!(
+                valid_id(&snapshot.character_id),
+                "{p}/snapshot/characterId: invalid character ID"
+            );
+            ensure!(
+                (1..=i32::MAX as u32).contains(&snapshot.revision),
+                "{p}/snapshot/revision: outside database range"
+            );
+            ensure!(
+                ids.insert((&snapshot.character_id, snapshot.revision)),
+                "{p}/snapshot/characterId: duplicate character revision"
+            );
+            ensure!(
+                text(&snapshot.display_name),
+                "{p}/snapshot/displayName: expected nonempty name"
+            );
+            ensure!(
+                snapshot.speech_locale == "fr-FR",
+                "{p}/snapshot/speechLocale: expected fr-FR"
+            );
+            ensure!(
+                valid_id(&snapshot.avatar_id),
+                "{p}/snapshot/avatarId: invalid avatar ID"
+            );
+            ensure!(
+                (1..=i32::MAX as u32).contains(&character.avatar_revision),
+                "{p}/avatarRevision: outside database range"
+            );
+        }
+        Ok(())
+    }
+}
 #[derive(Clone, Debug, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct AssetRef {
@@ -339,6 +437,7 @@ pub async fn import_bundle(
     store: &Path,
     actor: &str,
 ) -> Result<()> {
+    bundle.validate_author(actor)?;
     ensure!(
         bundle.schema_version == "1.0"
             && bundle.assets.len() <= 500
@@ -355,7 +454,8 @@ pub async fn import_bundle(
         tokio::task::spawn_blocking(move || -> Result<Vec<(MediaAsset, String, usize)>> {
             let mut ids = BTreeSet::new();
             let mut descriptors = Vec::new();
-            for asset in &assets {
+            for (index, asset) in assets.iter().enumerate() {
+                let p = format!("/assets/{index}");
                 ensure!(
                     valid_id(&asset.asset_id)
                         && asset.revision > 0
@@ -388,18 +488,29 @@ pub async fn import_bundle(
                         .all(|c| matches!(c, Component::Normal(_))),
                     "asset path must be relative, without traversal"
                 );
-                let path = source_root.join(relative).canonicalize()?;
+                let path = source_root
+                    .join(relative)
+                    .canonicalize()
+                    .with_context(|| format!("{p}/file: visual file unavailable"))?;
                 ensure!(
                     path.starts_with(&source_root),
-                    "asset escapes source directory"
+                    "{p}/file: asset escapes source directory"
                 );
-                let bytes = read_file(&path)?;
-                ensure!(digest(&bytes) == asset.sha256, "asset hash mismatch");
+                let bytes =
+                    read_file(&path).with_context(|| format!("{p}/file: invalid visual file"))?;
                 ensure!(
-                    dimensions(&bytes, &asset.mime_type)? == (asset.width, asset.height)
-                        && asset.width > 0
-                        && asset.height > 0,
-                    "declared dimensions do not match file"
+                    digest(&bytes) == asset.sha256,
+                    "{p}/sha256: asset hash mismatch"
+                );
+                let (width, height) = dimensions(&bytes, &asset.mime_type)
+                    .with_context(|| format!("{p}/file: invalid visual format"))?;
+                ensure!(
+                    width == asset.width,
+                    "{p}/width: declared width does not match file"
+                );
+                ensure!(
+                    height == asset.height,
+                    "{p}/height: declared height does not match file"
                 );
                 let ext = extension(&asset.mime_type)?;
                 store_file(&store, &bytes, &asset.sha256, ext)?;
@@ -435,7 +546,8 @@ pub async fn import_bundle(
         exec(&tx,"INSERT INTO media_assets(asset_id,revision,descriptor,provenance,sha256,extension,byte_size) VALUES($1,$2,$3,$4,$5,$6,$7)",vec![spec.asset_id.clone().into(),(spec.revision as i32).into(),serde_json::to_value(descriptor)?.into(),serde_json::to_value(spec)?.into(),spec.sha256.clone().into(),ext.clone().into(),(*size as i64).into()]).await.map_err(anyhow::Error::msg)?;
     }
     let mut ids = BTreeSet::new();
-    for character in &bundle.characters {
+    for (index, character) in bundle.characters.iter().enumerate() {
+        let p = format!("/characters/{index}");
         let snapshot = &character.snapshot;
         ensure!(
             valid_id(&snapshot.character_id)
@@ -458,12 +570,12 @@ pub async fn import_bundle(
         )
         .await
         .map_err(anyhow::Error::msg)?
-        .context("character avatar is missing")?;
+        .with_context(|| format!("{p}/avatarRevision: character avatar revision is missing"))?;
         let descriptor: MediaAsset =
             serde_json::from_value(field(&asset, "descriptor").map_err(anyhow::Error::msg)?)?;
         ensure!(
             descriptor.width == descriptor.height,
-            "avatar must be square"
+            "{p}/snapshot/avatarId: avatar must be square"
         );
         exec(&tx,"INSERT INTO character_revisions(character_id,revision,snapshot,avatar_id,avatar_revision) VALUES($1,$2,$3,$4,$5)",vec![snapshot.character_id.clone().into(),(snapshot.revision as i32).into(),serde_json::to_value(snapshot)?.into(),snapshot.avatar_id.clone().into(),(character.avatar_revision as i32).into()]).await.map_err(anyhow::Error::msg)?;
     }

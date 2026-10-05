@@ -120,6 +120,31 @@ async fn main() -> Result<()> {
     } else {
         None
     };
+    let media_document = if matches!(command.as_str(), "assets-import" | "audio-import") {
+        let args: Vec<String> = std::env::args().skip(2).collect();
+        if args.len() != 3 {
+            bail!("usage: {command} <bundle.json> <source-directory> <actor>");
+        }
+        let document = brioche_server::author_json::Document::load(&args[0])?;
+        if command == "assets-import" {
+            let bundle: brioche_server::media::AssetBundle =
+                brioche_server::author_json::from_value(document.value.clone(), "")
+                    .map_err(|error| document.semantic(error))?;
+            bundle
+                .validate_author(&args[2])
+                .map_err(|error| document.semantic(error))?;
+        } else {
+            let bundle: brioche_server::recording::AudioBundle =
+                brioche_server::author_json::from_value(document.value.clone(), "")
+                    .map_err(|error| document.semantic(error))?;
+            bundle
+                .validate_author(&args[2])
+                .map_err(|error| document.semantic(error))?;
+        }
+        Some(document)
+    } else {
+        None
+    };
     let fixture = std::env::var("CONTENT_MODE").unwrap_or_else(|_| "database".into()) == "fixture";
     let production =
         std::env::var("APP_ENV").unwrap_or_else(|_| "production".into()) != "development";
@@ -150,7 +175,9 @@ async fn main() -> Result<()> {
             if args.len() != 3 {
                 bail!("usage: audio-import <bundle.json> <source-directory> <actor>");
             }
-            let bundle = brioche_server::author_json::load(&args[0])?;
+            let document = media_document.as_ref().unwrap();
+            let bundle = brioche_server::author_json::from_value(document.value.clone(), "")
+                .map_err(|error| document.semantic(error))?;
             brioche_server::recording::import_bundle(
                 db.as_ref().unwrap(),
                 bundle,
@@ -158,7 +185,8 @@ async fn main() -> Result<()> {
                 &brioche_server::media::media_root(),
                 &args[2],
             )
-            .await?;
+            .await
+            .map_err(|error| document.semantic(error))?;
             tracing::info!("immutable recording revisions imported");
             return Ok(());
         }
@@ -167,7 +195,9 @@ async fn main() -> Result<()> {
             if args.len() != 3 {
                 bail!("usage: assets-import <bundle.json> <source-directory> <actor>");
             }
-            let bundle = brioche_server::author_json::load(&args[0])?;
+            let document = media_document.as_ref().unwrap();
+            let bundle = brioche_server::author_json::from_value(document.value.clone(), "")
+                .map_err(|error| document.semantic(error))?;
             brioche_server::media::import_bundle(
                 db.as_ref().unwrap(),
                 bundle,
@@ -175,7 +205,8 @@ async fn main() -> Result<()> {
                 &brioche_server::media::media_root(),
                 &args[2],
             )
-            .await?;
+            .await
+            .map_err(|error| document.semantic(error))?;
             tracing::info!("asset and character revisions imported");
             return Ok(());
         }

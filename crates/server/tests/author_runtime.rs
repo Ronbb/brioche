@@ -80,6 +80,104 @@ async fn import_and_stage_cli_locate_original_source_and_preserve_atomicity() {
     let db = Database::connect(url.as_str()).await.unwrap();
     brioche_migration::Migrator::up(&db, None).await.unwrap();
     let root = asset_fixtures::fixture_assets(&db, &schema).await;
+    // File checks occur after connection, but still report the original bundle field.
+    // Synthetic provenance below authorizes only this isolated protocol fixture.
+    let media_file = root.join("media-bundle.json");
+    let visual_source = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../apps/web/public/assets");
+    let mut visual: Value =
+        serde_json::from_str(include_str!("../../../docs/examples/asset-bundle.json")).unwrap();
+    visual["assets"].as_array_mut().unwrap().truncate(1);
+    visual["characters"] = json!([]);
+    visual["assets"][0]["status"] = json!("ready");
+    visual["assets"][0]["rightsConfirmed"] = json!(true);
+    visual["assets"][0]["license"] = json!("LicenseRef-TestOnly");
+    let recording_file = root.join("synthetic.mp3");
+    std::fs::write(
+        &recording_file,
+        include_bytes!("fixtures/audio/synthetic.mp3"),
+    )
+    .unwrap();
+    let (recording_bytes, info) =
+        brioche_server::audio::inspect_file(&recording_file, "audio/mpeg").unwrap();
+    use sha2::{Digest, Sha256};
+    let audio = json!({"schemaVersion":"1.0","assets":[{"assetId":"author-recording","revision":1,"sha256":format!("{:x}", Sha256::digest(&recording_bytes)),"mimeType":"audio/mpeg","durationMs":info.duration_ms,"creditZh":"仅测试","file":"synthetic.mp3","status":"ready","source":"synthetic protocol fixture","license":"LicenseRef-TestOnly","creator":"protocol-test","rightsConfirmed":true}]});
+    let visual_count = count(&db, "media_assets").await;
+    let audit_count = count(&db, "asset_import_audit").await;
+    for (command, baseline, source_root, pointer, value, reason) in [
+        (
+            "assets-import",
+            &visual,
+            &visual_source,
+            "/assets/0/sha256",
+            json!("0".repeat(64)),
+            "hash mismatch",
+        ),
+        (
+            "assets-import",
+            &visual,
+            &visual_source,
+            "/assets/0/width",
+            json!(641),
+            "width does not match",
+        ),
+        (
+            "assets-import",
+            &visual,
+            &visual_source,
+            "/assets/0/file",
+            json!("missing.svg"),
+            "file unavailable",
+        ),
+        (
+            "audio-import",
+            &audio,
+            &root,
+            "/assets/0/sha256",
+            json!("0".repeat(64)),
+            "hash mismatch",
+        ),
+        (
+            "audio-import",
+            &audio,
+            &root,
+            "/assets/0/durationMs",
+            json!(info.duration_ms + 1),
+            "duration does not match",
+        ),
+        (
+            "audio-import",
+            &audio,
+            &root,
+            "/assets/0/file",
+            json!("missing.mp3"),
+            "file unavailable",
+        ),
+    ] {
+        let mut bundle = baseline.clone();
+        *bundle.pointer_mut(pointer).unwrap() = value.clone();
+        let text = write(&media_file, &bundle);
+        let key = format!("\"{}\": ", pointer.rsplit('/').next().unwrap());
+        let marker = format!("{key}{}", serde_json::to_string(&value).unwrap());
+        let offset = text.find(&marker).unwrap() + key.len();
+        let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+            .args([
+                command,
+                media_file.to_str().unwrap(),
+                source_root.to_str().unwrap(),
+                "protocol-test",
+            ])
+            .env("DATABASE_URL", url.as_str())
+            .env("CONTENT_MODE", "database")
+            .env("APP_ENV", "production")
+            .env("MEDIA_ROOT", &root)
+            .output()
+            .unwrap();
+        located(output, &media_file, &text, pointer, offset, reason);
+        assert_eq!(count(&db, "media_assets").await, visual_count);
+        assert_eq!(count(&db, "asset_import_audit").await, audit_count);
+        assert_eq!(count(&db, "audio_assets").await, 0);
+        assert_eq!(count(&db, "audio_import_audit").await, 0);
+    }
     let lesson_file = root.join("lesson.json");
     let release_file = root.join("release.json");
     let mut source = brioche_server::development_source().unwrap();
