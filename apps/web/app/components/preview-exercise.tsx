@@ -3,7 +3,10 @@ import type { Block } from "@brioche/contracts/Block";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
 import type { ExerciseAnswer } from "@brioche/contracts/ExerciseAnswer";
 import type { GradeResult } from "@brioche/contracts/GradeResult";
-import { privateRequest as requestApi } from "../lib/api.client";
+import {
+  ApiRequestError,
+  privateRequest as requestApi,
+} from "../lib/api.client";
 import { ExerciseEditor } from "./exercise-editor";
 import { useLearning } from "./learning";
 
@@ -52,7 +55,9 @@ export function PreviewExercise({
     } catch (error) {
       if (active.current && ownerRef.current === expectedOwner)
         audio.toast(
-          error instanceof Error ? error.message : "预览判分暂时不可用。",
+          error instanceof ApiRequestError
+            ? error.message
+            : "预览判分暂时无法连接，请稍后重试。",
         );
     } finally {
       pending.current = false;

@@ -239,3 +239,11 @@
 - 新增 operator-only grade POST，复用 GradeRequest/GradeResult 与正式 Grader，固定路径/request revision；只读取版本内容，私有规则不返回。前端复用 ExerciseEditor，预览不提供 draftKey，关闭存储与草稿恢复，仅保留本页题目答案/提示/结果，失败 toast 并保留答案；普通学习页仍传入原有 draftKey。
 - 独立 PostgreSQL brioche_preview_grade_qa（loopback 55437）两项学习/release 集成测试通过。新增三题型正确/错误判分、匿名 401、learner 403、缺 CSRF 403、降权 403、撤回 410、revision 不符 400、未知题 404、伪造选项/重复排序 token 400、额外 correct 字段 422、结果仅三个字段及 learning_sessions/exercise_attempts 数量不变的断言。
 - workspace 27 项单元测试、3 项 CLI 测试、all-targets clippy、TS 7、Web/SSR build 与 5 项 Web 协议测试通过；现有普通学习事务测试保持通过。真实浏览器答题/刷新/退出/请求失败和 iPhone 仍待下一步验收，不能用数据库测试代替 UI 证据。
+
+## 2026-10-06：管理员预览浏览器验收
+
+- 使用 agent-browser 隔离浏览器 brioche-preview-qa，独立 PostgreSQL brioche_browser_qa（loopback 55437）、数据库 API 3003、Web 5175；通过已有受限 browser_fixture 建立合成协议数据，仅将临时测试账号角色设为 operator。未改真实示例的审校状态或正式数据库。
+- 真实登录后打开批次目录并进入指定版本，单选正确、填空错误后改为正确、排序正确均显示服务器实际反馈。长页面坐标点击偶尔未触发；先 scrollintoview，部分重试/提交/排序通过 DOM click/requestSubmit 触发真实 React 事件，未直接调用判分 API 替代页面。
+- network route abort 的尝试未得到故障证据，移除拦截后改用页面 fetch 包装仅拒绝 grade 请求。失败后 une 保留、提交重新可用，toast 显示中文；修复此前直接显示浏览器技术错误的行为。恢复原 fetch 后原答案判分成功。标签页仅有 react-router-scroll-positions，无预览草稿；SQL 核对 learning_sessions=0、exercise_attempts=0。
+- 刷新清空答案与反馈，退出登录后直接打开预览被拒绝。320/390/768/1440 的 DOM/body 宽度等于 viewport，未发现横向越界元素；查看 390 宽度目录与题目截图（本机 .local/preview-qa），基础 Tab 焦点有 solid outline，reduced-motion 媒体模拟生效。这不是完整键盘/屏幕阅读器/iPhone 实机验收。
+- 已关闭隔离浏览器、3003/5175 测试进程及临时 PostgreSQL 容器；用户 3001/5173 开发服务保留。TS 7 与 Web/SSR 构建通过。真实私有图片、跨标签退出与迟到响应等完整浏览器流程仍需继续验收。
