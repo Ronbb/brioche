@@ -341,6 +341,92 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         .unwrap();
     assert_eq!(operator.send("POST", "/api/v1/auth/accept-invite", Some(json!({"email":"preview-operator@example.test","token":token,"password":"isolated operator test passphrase","displayName":"Operator"})), true).await.0,200);
     let before_preview = count(&db, "learning_sessions").await;
+    let before_attempts = count(&db, "exercise_attempts").await;
+    let grade_path = format!("{preview}/grade");
+    let choice = json!({"revision":1,"exerciseId":"exercise-intention","answer":{"kind":"choice","optionId":"request-bread"}});
+    assert_eq!(
+        anonymous
+            .send("POST", &grade_path, Some(choice.clone()), true)
+            .await
+            .0,
+        401
+    );
+    assert_eq!(
+        a.send("POST", &grade_path, Some(choice.clone()), true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", &grade_path, Some(choice.clone()), false)
+            .await
+            .0,
+        403
+    );
+    for (exercise, answer, correct) in [
+        (
+            "exercise-intention",
+            json!({"kind":"choice","optionId":"request-bread"}),
+            true,
+        ),
+        (
+            "exercise-article",
+            json!({"kind":"text","text":" UNE "}),
+            true,
+        ),
+        (
+            "exercise-article",
+            json!({"kind":"text","text":"un"}),
+            false,
+        ),
+        (
+            "exercise-order",
+            json!({"kind":"order","tokenIds":["request","bread","please"]}),
+            true,
+        ),
+        (
+            "exercise-order",
+            json!({"kind":"order","tokenIds":["please","bread","request"]}),
+            false,
+        ),
+    ] {
+        let body = json!({"revision":1,"exerciseId":exercise,"answer":answer});
+        let (status, result) = operator.send("POST", &grade_path, Some(body), true).await;
+        assert_eq!(status, 200);
+        assert_eq!(result["correct"], correct);
+        assert_eq!(result["exerciseId"], exercise);
+        assert_eq!(result.as_object().unwrap().len(), 3);
+    }
+    for (body, status) in [
+        (
+            json!({"revision":2,"exerciseId":"exercise-intention","answer":{"kind":"choice","optionId":"request-bread"}}),
+            400,
+        ),
+        (
+            json!({"revision":1,"exerciseId":"missing","answer":{"kind":"choice","optionId":"request-bread"}}),
+            404,
+        ),
+        (
+            json!({"revision":1,"exerciseId":"exercise-intention","answer":{"kind":"choice","optionId":"forged"}}),
+            400,
+        ),
+        (
+            json!({"revision":1,"exerciseId":"exercise-order","answer":{"kind":"order","tokenIds":["request","request","please"]}}),
+            400,
+        ),
+        (
+            json!({"revision":1,"exerciseId":"exercise-article","answer":{"kind":"text","text":"une"},"correct":true}),
+            422,
+        ),
+    ] {
+        assert_eq!(
+            operator.send("POST", &grade_path, Some(body), true).await.0,
+            status
+        );
+    }
+    assert_eq!(count(&db, "exercise_attempts").await, before_attempts);
+    assert_eq!(count(&db, "learning_sessions").await, before_preview);
     let staged = manifest("preview-only-release", 1);
     content::stage(&db, &staged, "tester", "isolated preview test", &media_root)
         .await
@@ -460,6 +546,13 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
     .await
     .unwrap();
     assert_eq!(operator.send("GET", preview, None, true).await.0, 403);
+    assert_eq!(
+        operator
+            .send("POST", &grade_path, Some(choice.clone()), true)
+            .await
+            .0,
+        403
+    );
     assert_eq!(operator.send("GET", release_path, None, true).await.0, 403);
     db.execute_raw(Statement::from_string(
         DbBackend::Postgres,
@@ -667,6 +760,20 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
     );
     assert_eq!(
         operator.send("GET", &withdrawn_media, None, true).await.0,
+        410
+    );
+    let mut withdrawn_grade = choice.clone();
+    withdrawn_grade["revision"] = json!(2);
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                "/api/v1/operator/lessons/release-z/revisions/2/grade",
+                Some(withdrawn_grade),
+                true
+            )
+            .await
+            .0,
         410
     );
     let response = public_app

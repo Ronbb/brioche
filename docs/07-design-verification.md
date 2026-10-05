@@ -233,3 +233,9 @@
 - 新增 operator release 读取与生成的 PreviewRelease 公共 DTO，按不可变清单逐项核对 entries/public_document 的 ID、revision、父级及顺序，repeatable-read 快照读取撤回信息；异常或缺失内容不静默省略。只返回目录摘要，未返回完整私有源、审校元数据或答案。
 - 隔离 PostgreSQL brioche_release_preview_qa（loopback 55437）两项集成测试通过。新增未激活批次预览、401/403/200/404、清单顺序与版本/名称、私有键不存在、active release/generation 不变、降权拒绝、撤回后目录保留条目并标注的断言；原固定版本预览及私有媒体验证仍通过。
 - workspace 27 项单元测试、3 项 CLI 测试与 all-targets clippy 通过；契约生成、TS 7 和 Web/SSR build 通过。同页新增批次表单/目录/固定版本课程链接与统一表单样式；浏览器视觉、键盘、窄屏与真实 iPhone 仍待验收，题目判分预览继续待实现。
+
+## 2026-10-06：管理员题目交互判分
+
+- 新增 operator-only grade POST，复用 GradeRequest/GradeResult 与正式 Grader，固定路径/request revision；只读取版本内容，私有规则不返回。前端复用 ExerciseEditor，预览不提供 draftKey，关闭存储与草稿恢复，仅保留本页题目答案/提示/结果，失败 toast 并保留答案；普通学习页仍传入原有 draftKey。
+- 独立 PostgreSQL brioche_preview_grade_qa（loopback 55437）两项学习/release 集成测试通过。新增三题型正确/错误判分、匿名 401、learner 403、缺 CSRF 403、降权 403、撤回 410、revision 不符 400、未知题 404、伪造选项/重复排序 token 400、额外 correct 字段 422、结果仅三个字段及 learning_sessions/exercise_attempts 数量不变的断言。
+- workspace 27 项单元测试、3 项 CLI 测试、all-targets clippy、TS 7、Web/SSR build 与 5 项 Web 协议测试通过；现有普通学习事务测试保持通过。真实浏览器答题/刷新/退出/请求失败和 iPhone 仍待下一步验收，不能用数据库测试代替 UI 证据。

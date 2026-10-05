@@ -7,9 +7,11 @@ use crate::{
 use axum::{
     Json, Router,
     extract::{Path, State},
-    routing::get,
+    routing::{get, post},
 };
-use brioche_course_contract::{Catalog, Level, PreviewRelease, PublicLesson, Unit};
+use brioche_course_contract::{
+    Catalog, GradeRequest, GradeResult, Level, PreviewRelease, PublicLesson, Unit,
+};
 use sea_orm::{ConnectionTrait, DbBackend, IsolationLevel, Statement, TransactionTrait};
 
 #[derive(Clone)]
@@ -20,6 +22,10 @@ struct PreviewMedia {
 pub fn router(root: std::path::PathBuf) -> Router<Backend> {
     Router::new()
         .route("/api/v1/operator/releases/{id}", get(release))
+        .route(
+            "/api/v1/operator/lessons/{id}/revisions/{revision}/grade",
+            post(grade),
+        )
         .route(
             "/api/v1/operator/lessons/{id}/revisions/{revision}",
             get(lesson),
@@ -156,6 +162,42 @@ async fn lesson(
 ) -> Result<Json<PublicLesson>, AppError> {
     require_operator(&auth)?;
     Ok(Json(read(&backend, &id, revision).await?))
+}
+
+async fn grade(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    Path((id, revision)): Path<(String, u32)>,
+    Json(request): Json<GradeRequest>,
+) -> Result<Json<GradeResult>, AppError> {
+    require_operator(&auth)?;
+    if !valid_id(&id) || revision == 0 || revision > i32::MAX as u32 || request.revision != revision
+    {
+        return Err(AppError::InvalidInput);
+    }
+    let row = one(&backend.db,
+        "SELECT public_document,server_document,EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(r.lesson_id,r.revision)) AS withdrawn FROM lesson_revisions r WHERE lesson_id=$1 AND revision=$2",
+        vec![id.clone().into(),(revision as i32).into()]).await?.ok_or(AppError::NotFound)?;
+    if field::<bool>(&row, "withdrawn")? {
+        return Err(AppError::Gone);
+    }
+    let lesson: PublicLesson = serde_json::from_value(field(&row, "public_document")?)
+        .map_err(|_| AppError::Unavailable)?;
+    lesson.validate().map_err(|_| AppError::Unavailable)?;
+    if lesson.id != id || lesson.revision != revision {
+        return Err(AppError::Unavailable);
+    }
+    let source: serde_json::Value = field(&row, "server_document")?;
+    let grader =
+        crate::grading::Grader::from_source(&lesson, &source).map_err(|_| AppError::Unavailable)?;
+    let result = grader
+        .grade(&lesson, &request.exercise_id, &request.answer)
+        .map_err(|error| match error {
+            crate::grading::GradeError::InvalidContent => AppError::Unavailable,
+            crate::grading::GradeError::UnknownExercise => AppError::NotFound,
+            crate::grading::GradeError::InvalidAnswer => AppError::InvalidAnswer,
+        })?;
+    Ok(Json(result))
 }
 async fn media(
     auth: AuthSession,

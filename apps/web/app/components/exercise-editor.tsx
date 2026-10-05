@@ -17,13 +17,13 @@ export function ExerciseEditor({
   confirmedSubmission,
 }: {
   block: Extract<Block, { type: "exercise" }>;
-  latest?: AttemptRecord;
+  latest?: Pick<AttemptRecord, "id" | "answer" | "result">;
   hinted: boolean;
   blocked: boolean;
   completed: boolean;
   submit: (answer: ExerciseAnswer, onSaved: () => void) => Promise<unknown>;
   hint: () => void;
-  draftKey: string;
+  draftKey?: string;
   confirmedSubmission?: string;
 }) {
   const [choice, setChoice] = useState(
@@ -44,6 +44,10 @@ export function ExerciseEditor({
   useEffect(() => {
     const changed = latest?.id !== previous.current;
     previous.current = latest?.id;
+    if (!draftKey) {
+      if (changed) setEditing(false);
+      return;
+    }
     if (
       confirmedSubmission &&
       confirmedSubmission !== previousConfirmation.current
@@ -71,6 +75,7 @@ export function ExerciseEditor({
     }
   }, [draftKey, latest?.id, confirmedSubmission]);
   function keep(answer: ExerciseAnswer) {
+    if (!draftKey) return;
     if (
       !saveDraft(draftKey, { answer, baseline: latest?.id ?? null }) &&
       !storageWarning.current
@@ -109,7 +114,7 @@ export function ExerciseEditor({
               ? { kind: "text", text }
               : { kind: "order", tokenIds: order },
           () => {
-            saveDraft(draftKey, null);
+            if (draftKey) saveDraft(draftKey, null);
             setEditing(false);
           },
         );

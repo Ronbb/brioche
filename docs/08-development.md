@@ -68,13 +68,15 @@ cargo run -p brioche-server -- import docs/examples/a1-bakery.lesson.json
 
 ### 管理员固定版本预览
 
-使用 `invite <email> <private-output-file> --operator` 建立内容管理员，邀请链接仍只写私有文件。登录后个人页显示“课程预览”，进入 `/author-preview` 输入已导入的课程 ID 和 revision。页面按课程步骤展示全部正文/教学内容与只读练习题面；点词、头像和正文朗读复用现有组件，不创建学习会话或提交答案。只有管理员可访问，开发 fixture 模式没有管理员身份入口。
+使用 `invite <email> <private-output-file> --operator` 建立内容管理员，邀请链接仍只写私有文件。登录后个人页显示“课程预览”，进入 `/author-preview` 输入已导入的课程 ID 和 revision。页面按课程步骤展示全部正文/教学内容与交互练习；点词、头像和正文朗读复用现有组件，不创建学习会话。只有管理员可访问，开发 fixture 模式没有管理员身份入口。
 
 `GET /api/v1/operator/lessons/{id}/revisions/{revision}` 返回公开 DTO，允许已导入但未发布的 draft；不返回 editorial 或私有答案。图片 URL 改为该版本下的私有 media 路径，每次读取都验证当前 operator 身份与未撤回状态，只能读取该课程引用的素材。私有与公开媒体共用限量文件读取、路径 containment、SHA-256 校验及安全响应头；预览媒体独立限并发为 2。所有预览响应 private/no-store，退出、降权和撤回均使后续请求失去权限。
 
 同页可以输入已 stage 的发布批次 ID，按清单的等级、单元、课程顺序预览整个目录；点击课程使用清单指定的 revision，保留批次上下文。`GET /api/v1/operator/releases/{id}` 在 repeatable-read 快照中读取清单、不可变 entries 与撤回信息，仅返回公共目录摘要和撤回 ID。未激活的批次也可预览，不切换 active release 或 generation；已撤回课程保留摘要并标注，正文/媒体仍拒绝访问。页面所选课程必须属于所选批次的固定版本。
 
-固定 revision 与整批 staging 目录已接入；题目交互判分预览、浏览器完整体验验收和自动审校仍未实现。线上发布仍通过 release-stage/release-activate。
+管理员题目预览复用单选、填空、排序编辑器；提示与答案只保留在页面内存，不保存标签页草稿。`POST /api/v1/operator/lessons/{id}/revisions/{revision}/grade` 接受现有 GradeRequest，要求当前 operator、有效 Origin/CSRF、请求 revision 与路径一致以及课程未撤回。它读取固定版本私有规则，使用正式 Grader，仅返回 correct/feedbackZh/exerciseId，不返回答案键，不写 learning_sessions、exercise_attempts、完成状态或复习数据；无需学习提交幂等键。失败保留页面答案并用 toast 提示，可以重试；离页后丢弃预览结果。
+
+固定 revision、整批 staging 目录和三类题目判分预览已接入；浏览器完整体验验收和自动审校仍未完成。线上发布仍通过 release-stage/release-activate。
 
 ### 目录 release 命令
 

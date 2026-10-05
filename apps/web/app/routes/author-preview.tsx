@@ -4,6 +4,7 @@ import type { PreviewRelease } from "@brioche/contracts/PreviewRelease";
 import { getIdentity, getPrivate } from "../lib/api.server";
 import { ReadingBlock } from "../components/reading-block";
 import { TeachingBlock } from "../components/teaching-block";
+import { PreviewExercise } from "../components/preview-exercise";
 import type { Route } from "./+types/author-preview";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -170,27 +171,7 @@ export default function AuthorPreview({
                   );
                 if (block.type === "exercise")
                   return (
-                    <div key={id} className="lesson-note">
-                      <h3>{block.promptZh}</h3>
-                      {block.exerciseType === "single-choice" && (
-                        <ul>
-                          {block.options.map((option) => (
-                            <li key={option.id}>{option.text}</li>
-                          ))}
-                        </ul>
-                      )}
-                      {block.exerciseType === "fill-blank" && (
-                        <>
-                          <p lang="fr">{block.templateFr}</p>
-                          <p>{block.hintZh}</p>
-                        </>
-                      )}
-                      {block.exerciseType === "order" && (
-                        <p lang="fr">
-                          {block.tokens.map((token) => token.text).join(" · ")}
-                        </p>
-                      )}
-                    </div>
+                    <PreviewExercise key={id} block={block} lesson={lesson} />
                   );
                 return <TeachingBlock key={id} block={block} lesson={lesson} />;
               })}
