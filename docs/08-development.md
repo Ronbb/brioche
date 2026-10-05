@@ -51,6 +51,10 @@ cargo run -p brioche-server -- check-release docs/examples/catalog.release.json
 
 `check` 使用实际公共 DTO、课程引用/步骤校验及服务端私有判分校验，另检查素材引用 ID、revision 和重复引用；`check-release` 校验目录清单结构及 ID、revision、重复引用。两者不连接数据库、不写入内容，也不验证数据库中的素材是否存在或已授权、目录引用的课程是否存在及人工审校是否完成。成功明确提示后续仍需媒体登记、审校和 release-stage；CI 运行两份示例的检查。公共投影类型错误显示字段路径，尚不提供源文件行列；私有判分错误保持通用提示，不输出答案。
 
+`editorial` 是必需的严格作者信息：status 仅接受 draft/reviewed，note 必需且非空、最多 8000 UTF-8 字节，拒绝未知字段及控制字符（允许换行/制表符）。课程检查、导入、release-stage 共用该校验，发布仅接受 reviewed；该状态是作者声明，不构成人工审校真实性的自动证明。
+
+`pnpm contracts` 同时生成公共契约和 `docs/generated/author-lesson.schema.json`。作者 Schema 引用实际 Rust 公开 DTO、私有规则、审校类型和素材引用类型，单独保存在 docs，禁止导入 Web 契约包。它描述结构类型，语义限制（例如正 revision、引用关联、判分一致性、note 文本边界、发布授权）仍由 Rust 校验；check 使用 Serde 与语义校验，不运行另一套 JSON Schema 引擎。CI 校验生成文件无漂移；原 `docs/examples/lesson.schema.json` 保留为设计快照。
+
 导入时，在本机 PostgreSQL 中建立专用数据库并设置 `DATABASE_URL`。使用 CLI 执行迁移，服务启动不会自动同步表结构。
 
 ```sh

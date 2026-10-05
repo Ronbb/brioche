@@ -18,6 +18,7 @@
 | [目录 release 示例](examples/catalog.release.json) | 显式名称、课程 revision 与教学顺序；引用未审校示例，不能直接发布 |
 | [素材与角色清单示例](examples/asset-bundle.json) | 图片哈希、尺寸、来源/授权与角色快照；保持 planned/未确认授权，不能直接导入 |
 | [示例课程 Schema](examples/lesson.schema.json) | v0.1 数据契约草案；不等于已实现解释器 |
+| [生成的作者课程 Schema](generated/author-lesson.schema.json) | Rust 公共 DTO、私有判分、审校信息和素材引用组成的作者结构契约；不包含语义或发布审校证明 |
 | [界面概念稿](preview/index.html) | 可切换首页、阅读、练习、复习与个人设置的静态交互提案 |
 
 ## 已确认约束

@@ -4,9 +4,9 @@ use serde::Deserialize;
 use std::collections::{BTreeMap, HashSet};
 use unicode_normalization::UnicodeNormalization;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
 #[serde(tag = "kind", rename_all = "lowercase", deny_unknown_fields)]
-enum Rule {
+pub(crate) enum Rule {
     #[serde(rename_all = "camelCase")]
     Choice {
         correct_option_id: String,
@@ -24,9 +24,9 @@ enum Rule {
         feedback_zh: String,
     },
 }
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
-struct PrivateRules {
+pub(crate) struct PrivateRules {
     grading: BTreeMap<String, Rule>,
 }
 

@@ -45,7 +45,7 @@ pub struct CharacterSpec {
     pub snapshot: Character,
     pub avatar_revision: u32,
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct AssetRef {
     pub asset_id: String,

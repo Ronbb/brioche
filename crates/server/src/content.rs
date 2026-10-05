@@ -166,11 +166,12 @@ pub async fn stage(
                     return Err(AppError::Gone);
                 }
                 let source: serde_json::Value = field(&row, "server_document")?;
-                if source
-                    .pointer("/editorial/status")
-                    .and_then(serde_json::Value::as_str)
-                    != Some("reviewed")
-                {
+                if !matches!(
+                    crate::author_source::editorial(&source)
+                        .map_err(|_| AppError::InvalidInput)?
+                        .status,
+                    crate::author_source::EditorialStatus::Reviewed
+                ) {
                     return Err(AppError::InvalidInput);
                 }
                 let lesson = project_source(source.clone()).map_err(|_| AppError::InvalidInput)?;

@@ -514,6 +514,7 @@ dependencies = [
  "image",
  "jiff",
  "quick-xml",
+ "schemars",
  "sea-orm",
  "sea-orm-migration",
  "serde",

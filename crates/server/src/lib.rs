@@ -1,4 +1,5 @@
 pub mod author_json;
+pub mod author_source;
 pub mod content;
 pub mod csrf;
 pub mod dashboard;
@@ -275,6 +276,7 @@ async fn lesson(
         .ok_or(AppError::NotFound)
 }
 pub fn project_source(mut source: serde_json::Value) -> anyhow::Result<PublicLesson> {
+    author_source::editorial(&source)?;
     let object = source
         .as_object_mut()
         .ok_or_else(|| anyhow::anyhow!("lesson must be an object"))?;

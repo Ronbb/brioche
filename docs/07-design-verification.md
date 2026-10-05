@@ -214,3 +214,10 @@
 - 新增 check 与 check-release，在数据库连接和运行模式检查前执行纯文件校验。CLI 子进程测试显式传入不可用数据库与 production/fixture 组合，验证示例草稿检查成功且明确提示发布仍需审校/媒体/目录检查，不输出私有答案。
 - 子进程验证拒绝无效私有规则、重复素材引用、错误课程 revision 类型、重复 JSON、错误清单版本和多余参数。素材引用结构/ID/revision 校验由离线检查与数据库 hydration 共用，公共投影补充字段路径。
 - workspace 25 项单元测试与 3 项 CLI 集成测试、all-targets clippy 通过；四项 PostgreSQL 测试默认忽略，本轮未执行。CI 增加两份作者示例检查；尚未验证本次远程 CI 结果。离线检查不会验证实际媒体文件、数据库 revision、授权或人工审校，完整源 Schema 与语义行列诊断仍待补齐。
+
+## 2026-10-06：审校元数据与生成的作者 Schema
+
+- 课程投影前校验必需 editorial 的严格状态/说明/未知字段，stage 使用相同类型化状态；不再只比较任意 JSON 的 status 字符串。draft/reviewed 仍是作者声明，未将示例改为真实已审校内容。
+- pnpm contracts 从实际 Rust 类型生成 docs/generated/author-lesson.schema.json，包含公共结构、私有规则、审校、可选非 null 素材引用；CI 增加生成文件漂移检查。Rust 测试确认必需字段、私有 Schema 与公共契约隔离。独立 Python Draft202012Validator 验证 Schema 有效、当前草稿通过、非法审校状态/未知审校字段/null 素材引用拒绝；Python 使用本机既有验证依赖，并非新增 CI 依赖。
+- 27 项契约/服务端单元测试、3 项 CLI 测试、all-targets clippy、契约导出通过。独立临时 PostgreSQL brioche_author_qa（loopback 55437）通过两项学习/release 集成测试，覆盖固定版本与事务、原子切换、回滚、撤回；临时容器已清理。身份/基础迁移专门测试本轮未单独重跑。
+- Schema 仍不取代 Rust 语义校验、实际媒体授权和人工审校；完整语义错误定位、staging 预览与录音继续待实现。
