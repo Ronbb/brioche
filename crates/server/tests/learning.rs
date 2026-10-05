@@ -341,6 +341,61 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         .unwrap();
     assert_eq!(operator.send("POST", "/api/v1/auth/accept-invite", Some(json!({"email":"preview-operator@example.test","token":token,"password":"isolated operator test passphrase","displayName":"Operator"})), true).await.0,200);
     let before_preview = count(&db, "learning_sessions").await;
+    let staged = manifest("preview-only-release", 1);
+    content::stage(&db, &staged, "tester", "isolated preview test", &media_root)
+        .await
+        .unwrap();
+    let release_path = "/api/v1/operator/releases/preview-only-release";
+    assert_eq!(
+        anonymous.send("GET", release_path, None, false).await.0,
+        401
+    );
+    assert_eq!(a.send("GET", release_path, None, true).await.0, 403);
+    let (status, release_preview) = operator.send("GET", release_path, None, true).await;
+    assert_eq!(status, 200);
+    assert_eq!(release_preview["id"], "preview-only-release");
+    let entries = release_preview["catalog"]["levels"][0]["units"][0]["lessons"]
+        .as_array()
+        .unwrap();
+    assert_eq!(
+        entries
+            .iter()
+            .map(|e| e["id"].as_str().unwrap())
+            .collect::<Vec<_>>(),
+        ["release-z", "release-a"]
+    );
+    assert_eq!(entries[0]["revision"], 1);
+    assert_eq!(release_preview["catalog"]["levels"][0]["label"], "A1 入门");
+    assert_eq!(release_preview["withdrawnLessonIds"], json!([]));
+    assert_eq!(
+        operator
+            .send("GET", "/api/v1/operator/releases/missing", None, true)
+            .await
+            .0,
+        404
+    );
+    for key in [
+        "serverOnly",
+        "editorial",
+        "accepted",
+        "correctOptionId",
+        "correctTokenIds",
+    ] {
+        assert!(!release_preview.to_string().contains(key));
+    }
+    let state = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT active_release,generation FROM content_state WHERE singleton",
+        ))
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        state.try_get::<String>("", "active_release").unwrap(),
+        "release-first"
+    );
+    assert_eq!(state.try_get::<i64>("", "generation").unwrap(), 1);
     let (status, draft) = operator.send("GET", preview, None, true).await;
     assert_eq!(status, 200);
     assert_eq!(draft["id"], "release-draft");
@@ -405,6 +460,7 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
     .await
     .unwrap();
     assert_eq!(operator.send("GET", preview, None, true).await.0, 403);
+    assert_eq!(operator.send("GET", release_path, None, true).await.0, 403);
     db.execute_raw(Statement::from_string(
         DbBackend::Postgres,
         "UPDATE users SET role='operator' WHERE email='preview-operator@example.test'",
@@ -668,6 +724,19 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         1
     );
     let dashboard = a.send("GET", "/api/v1/me/dashboard", None, true).await.1;
+    let (status, withdrawn_release) = operator.send("GET", release_path, None, true).await;
+    assert_eq!(status, 200);
+    assert_eq!(
+        withdrawn_release["withdrawnLessonIds"],
+        json!(["release-z"])
+    );
+    assert_eq!(
+        withdrawn_release["catalog"]["levels"][0]["units"][0]["lessons"]
+            .as_array()
+            .unwrap()
+            .len(),
+        2
+    );
     assert_eq!(dashboard["recommendedLesson"]["id"], "release-a");
     let response = public_app
         .clone()

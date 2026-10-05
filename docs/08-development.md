@@ -72,7 +72,9 @@ cargo run -p brioche-server -- import docs/examples/a1-bakery.lesson.json
 
 `GET /api/v1/operator/lessons/{id}/revisions/{revision}` 返回公开 DTO，允许已导入但未发布的 draft；不返回 editorial 或私有答案。图片 URL 改为该版本下的私有 media 路径，每次读取都验证当前 operator 身份与未撤回状态，只能读取该课程引用的素材。私有与公开媒体共用限量文件读取、路径 containment、SHA-256 校验及安全响应头；预览媒体独立限并发为 2。所有预览响应 private/no-store，退出、降权和撤回均使后续请求失去权限。
 
-当前实现是固定 revision 的内容预览，尚未提供整批 staging release 目录预览、题目交互判分预览或自动审校。线上发布仍通过 release-stage/release-activate。
+同页可以输入已 stage 的发布批次 ID，按清单的等级、单元、课程顺序预览整个目录；点击课程使用清单指定的 revision，保留批次上下文。`GET /api/v1/operator/releases/{id}` 在 repeatable-read 快照中读取清单、不可变 entries 与撤回信息，仅返回公共目录摘要和撤回 ID。未激活的批次也可预览，不切换 active release 或 generation；已撤回课程保留摘要并标注，正文/媒体仍拒绝访问。页面所选课程必须属于所选批次的固定版本。
+
+固定 revision 与整批 staging 目录已接入；题目交互判分预览、浏览器完整体验验收和自动审校仍未实现。线上发布仍通过 release-stage/release-activate。
 
 ### 目录 release 命令
 

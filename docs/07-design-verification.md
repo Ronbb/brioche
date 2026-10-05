@@ -227,3 +227,9 @@
 - 新增私有 operator 课程/媒体路由及 /author-preview SSR 页面，个人页仅管理员显示入口；读取已导入固定 revision，按步骤展示正文、教学块和只读题面，不接入学习提交。返回公共 DTO，替换为课程版本范围内的私有素材 URL；没有返回 serverOnly、editorial 或答案键。
 - 独立 PostgreSQL brioche_preview_qa（loopback 55437）两项学习/release 集成测试通过，新增验证匿名 401、learner 403、operator draft 200、私有素材权限/200、未引用媒体 404、缺课程 404、无效 revision 400、降权同会话 403、撤回正文与素材 410、预览不增加学习会话。现有公开素材、切换/回滚/硬撤回校验保持通过。
 - workspace 27 项单元测试、3 项 CLI 测试、all-targets clippy、TS 7、Web/SSR build 和 5 项 Web 协议测试通过。页面真实浏览器交互、窄屏及退出后的前端残留内容仍待专门验收，未宣称 iPhone 验收完成；整批 staging 目录和题目判分预览继续待补齐。
+
+## 2026-10-06：整批 staging 目录预览
+
+- 新增 operator release 读取与生成的 PreviewRelease 公共 DTO，按不可变清单逐项核对 entries/public_document 的 ID、revision、父级及顺序，repeatable-read 快照读取撤回信息；异常或缺失内容不静默省略。只返回目录摘要，未返回完整私有源、审校元数据或答案。
+- 隔离 PostgreSQL brioche_release_preview_qa（loopback 55437）两项集成测试通过。新增未激活批次预览、401/403/200/404、清单顺序与版本/名称、私有键不存在、active release/generation 不变、降权拒绝、撤回后目录保留条目并标注的断言；原固定版本预览及私有媒体验证仍通过。
+- workspace 27 项单元测试、3 项 CLI 测试与 all-targets clippy 通过；契约生成、TS 7 和 Web/SSR build 通过。同页新增批次表单/目录/固定版本课程链接与统一表单样式；浏览器视觉、键盘、窄屏与真实 iPhone 仍待验收，题目判分预览继续待实现。

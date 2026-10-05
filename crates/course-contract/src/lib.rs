@@ -172,6 +172,7 @@ dto!(LessonSummary {
 dto!(Unit { id: String, title_zh: String, lessons: Vec<LessonSummary> });
 dto!(Level { id: String, label: String, units: Vec<Unit> });
 dto!(Catalog { levels: Vec<Level>, development_fixture: bool });
+dto!(PreviewRelease { id: String, catalog: Catalog, withdrawn_lesson_ids: Vec<String> });
 dto!(ApiError {
     code: String,
     message: String

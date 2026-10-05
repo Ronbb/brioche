@@ -9,7 +9,8 @@ use axum::{
     extract::{Path, State},
     routing::get,
 };
-use brioche_course_contract::PublicLesson;
+use brioche_course_contract::{Catalog, Level, PreviewRelease, PublicLesson, Unit};
+use sea_orm::{ConnectionTrait, DbBackend, IsolationLevel, Statement, TransactionTrait};
 
 #[derive(Clone)]
 struct PreviewMedia {
@@ -18,6 +19,7 @@ struct PreviewMedia {
 }
 pub fn router(root: std::path::PathBuf) -> Router<Backend> {
     Router::new()
+        .route("/api/v1/operator/releases/{id}", get(release))
         .route(
             "/api/v1/operator/lessons/{id}/revisions/{revision}",
             get(lesson),
@@ -38,6 +40,86 @@ fn valid_id(id: &str) -> bool {
         && id
             .bytes()
             .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_'))
+}
+
+async fn release(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    Path(id): Path<String>,
+) -> Result<Json<PreviewRelease>, AppError> {
+    require_operator(&auth)?;
+    if !valid_id(&id) {
+        return Err(AppError::InvalidInput);
+    }
+    let tx = backend
+        .db
+        .begin_with_config(Some(IsolationLevel::RepeatableRead), None)
+        .await
+        .map_err(|_| AppError::Unavailable)?;
+    let row = one(
+        &tx,
+        "SELECT manifest FROM content_releases WHERE id=$1",
+        vec![id.clone().into()],
+    )
+    .await?
+    .ok_or(AppError::NotFound)?;
+    let manifest: crate::content::ReleaseManifest =
+        serde_json::from_value(field(&row, "manifest")?).map_err(|_| AppError::Unavailable)?;
+    manifest.validate().map_err(|_| AppError::Unavailable)?;
+    if manifest.id != id {
+        return Err(AppError::Unavailable);
+    }
+    let rows = tx.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,
+        "SELECT r.public_document,EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(r.lesson_id,r.revision)) AS withdrawn FROM release_entries e JOIN lesson_revisions r ON (r.lesson_id,r.revision)=(e.lesson_id,e.revision) WHERE e.release_id=$1 ORDER BY e.position",
+        [id.clone().into()])).await.map_err(|_| AppError::Unavailable)?;
+    let mut rows = rows.into_iter();
+    let mut levels = Vec::new();
+    let mut withdrawn = Vec::new();
+    for level in manifest.levels {
+        let mut units = Vec::new();
+        for unit in level.units {
+            let mut lessons = Vec::new();
+            for entry in unit.lessons {
+                let row = rows.next().ok_or(AppError::Unavailable)?;
+                let lesson: PublicLesson = serde_json::from_value(field(&row, "public_document")?)
+                    .map_err(|_| AppError::Unavailable)?;
+                lesson.validate().map_err(|_| AppError::Unavailable)?;
+                if lesson.id != entry.lesson_id
+                    || lesson.revision != entry.revision
+                    || lesson.level_id != level.id
+                    || lesson.unit_id != unit.id
+                {
+                    return Err(AppError::Unavailable);
+                }
+                if field::<bool>(&row, "withdrawn")? {
+                    withdrawn.push(lesson.id.clone());
+                }
+                lessons.push(lesson.summary());
+            }
+            units.push(Unit {
+                id: unit.id,
+                title_zh: unit.title_zh,
+                lessons,
+            });
+        }
+        levels.push(Level {
+            id: level.id,
+            label: level.label,
+            units,
+        });
+    }
+    if rows.next().is_some() {
+        return Err(AppError::Unavailable);
+    }
+    tx.commit().await.map_err(|_| AppError::Unavailable)?;
+    Ok(Json(PreviewRelease {
+        id,
+        catalog: Catalog {
+            levels,
+            development_fixture: false,
+        },
+        withdrawn_lesson_ids: withdrawn,
+    }))
 }
 async fn read(backend: &Backend, id: &str, revision: u32) -> Result<PublicLesson, AppError> {
     if !valid_id(id) || revision == 0 || revision > i32::MAX as u32 {
