@@ -287,3 +287,13 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 - 为验证 revision 切换，仅在隔离数据库复制协议课程生成 unpublished revision 2，不伪造课程审校或发布。预览 GET 表单从版本 1 切到 2，旧录音在 0.342283 秒时停止/清来源；新播放 URL 为 `/api/v1/operator/lessons/a1-bakery-buy-breakfast/revisions/2/audio/<sha>.wav`，实际 currentTime=0.11269、paused=false。SQL revision 2 保持 published=false；预览操作没有增加学习步骤/练习记录。
 - 键盘从播放器 Shift+F10 打开速度面板，初始焦点为选中的 1× radio；ArrowDown 移至 1.25×，Enter 确认关闭并将焦点返回 playback-line，新播放实际 playbackRate=1.25。再次 Shift+F10、Escape 关闭并返回焦点。只覆盖此调速流程，不代表完整键盘/屏幕阅读器验收。
 - 已关闭会话、3003/5175 服务及专用 PostgreSQL 容器，未修改用户开发服务。一次点击“继续”在屏幕外未触发，滚动后成功；一次 SQL 查询使用不存在的聚合字段失败，依据真实表结构改查 step_progress 后取得证据，不把失败命令计入通过。真实 iPhone、有法语声音设备回退、完整背景/BFCache 和可访问性继续待验收。
+
+## 2026-10-06：收藏与复习响应丢失恢复
+
+- 隔离 PostgreSQL brioche_browser_qa（loopback 55439）、API 3003、Web 5175 与 agent-browser brioche-review-qa。使用受限 browser_fixture 的未审校协议课程和测试账号，未创建真实课程审校或正式用户记录。页面打开 bonjour、手动加入复习，经实际接口生成 version=1 的到期卡片。
+- 页面 fetch 包装先发送原请求、等待真实成功响应，再丢弃响应并抛 transport 错误；没有伪造保存结果。选择“记住了”后页面进入“确认上次复习”，sessionStorage 保留 cardVersion=1、rating=familiar 与原幂等键；SQL review_attempts=1、review_cards.version=2/stage=1。
+- 同一标签刷新已实际完成，页面提示“上次复习保存尚未确认”。卡片虽已不在到期队列，pending 仍恢复。点击“重试保存”发送完全相同的版本/评分/幂等键，页面显示已保存 1 个表达且 pending 清空；SQL 记录仍 1 条、版本仍 2，未重复排程。
+- agent-browser 在刷新后多次控制观察超时；doctor 确认 daemon 存活，Chrome 本地 DevTools /json/version 返回 200。未重启/清空测试浏览器；使用同一已确认进程与页面的 CDP 连接读到实际刷新结果，随后以 DOM button.click 触发真实 React 控件和真实网络操作。该回退不是原 CLI 自动化通过证据。未打开任何用户页面或读取 cookies/token。
+- 收藏同样注入实际成功后的响应丢失：保存请求为 saved=true/version=0/固定来源 revision=1，页面保留原幂等键；SQL saved_items.saved=true/version=1。从页面头像进入个人页，再进入“未确认保存”，SPA 离页后原收藏操作仍列出。
+- 首次确认时响应丢失注入还在生效，原操作再次重放、数据库版本仍 1，页面继续保留待确认项；此尝试不算恢复成功。随后用同源空白 iframe 的未包装原生 fetch 移除故障注入，保留实际接口/cookie/CSRF 请求；点击“确认原提交”重放同一 body，页面显示没有待确认保存、存储项清除，SQL 收藏版本仍 1。实际进入收藏页后显示 1 个 bonjour，390px DOM 无横向溢出。
+- 本次只验收上述响应丢失/刷新/SPA 离页路径；两标签版本冲突、会话失效、暂停/恢复与完整键盘/屏幕阅读器/iPhone 仍待补验。没有修改业务代码，因此未重复运行已通过的构建和协议测试。
