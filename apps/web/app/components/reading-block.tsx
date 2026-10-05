@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Block } from "@brioche/contracts/Block";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
 import type { Vocabulary } from "@brioche/contracts/Vocabulary";
@@ -11,6 +11,7 @@ import {
 } from "../routes/lesson";
 import { Player, useLearning } from "./learning";
 import { Icon } from "./icon";
+import { readingScope, readingUnits } from "../lib/recording-playback";
 export function ReadingBlock({
   block,
   lesson,
@@ -34,10 +35,21 @@ export function ReadingBlock({
     setTerm(null);
     if (!dialog.current?.open) dialog.current?.showModal();
   }
-  const units = entries.map((entry) => ({
-    id: block.id + ":" + entry.id,
-    text: entry.segments.map((segment) => segment.text).join(""),
-  }));
+  const units = readingUnits(lesson, block);
+  const currentLearning = useRef(learning);
+  currentLearning.current = learning;
+  const scope = readingScope(lesson, block.id);
+  useEffect(
+    () => () => {
+      const value = currentLearning.current;
+      if (
+        value.player.owner?.startsWith(scope) ||
+        value.player.id?.startsWith(scope)
+      )
+        value.stop();
+    },
+    [scope],
+  );
   return (
     <div className="reading session-reading">
       <h3 className="reading-block-title">{block.titleZh}</h3>
@@ -60,12 +72,12 @@ export function ReadingBlock({
           ))}
         </ul>
       )}
-      {entries.map((entry) => {
+      {entries.map((entry, index) => {
         const speaker =
           block.type === "dialogue" && "speakerId" in entry
             ? block.speakers.find((speaker) => speaker.id === entry.speakerId)
             : null;
-        const id = block.id + ":" + entry.id;
+        const id = units[index].id;
         return (
           <div
             key={entry.id}
@@ -82,10 +94,7 @@ export function ReadingBlock({
                   setRevealed((old) => new Set([...old, entry.id]));
                   learning.play([
                     {
-                      id,
-                      text: entry.segments
-                        .map((segment) => segment.text)
-                        .join(""),
+                      ...units[index],
                       locale: lesson.cast.find(
                         (character) =>
                           character.characterId === speaker.characterId,
@@ -106,7 +115,8 @@ export function ReadingBlock({
               <Sentence
                 segments={entry.segments}
                 lesson={lesson}
-                prefix={block.id + ":"}
+                blockId={block.id}
+                entryId={entry.id}
                 onTerm={showTerm}
                 onGrammar={showGrammar}
               />
@@ -186,7 +196,7 @@ export function ReadingBlock({
                   onClick={() =>
                     learning.play([
                       {
-                        id: block.id + ":" + grammar.id + index,
+                        id: scope + "grammar:" + grammar.id + ":" + index,
                         text: example.fr,
                       },
                     ])

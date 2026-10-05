@@ -13,12 +13,19 @@ import type { UserProfile } from "@brioche/contracts/UserProfile";
 import type { UpdateProfileRequest } from "@brioche/contracts/UpdateProfileRequest";
 import { ApiRequestError, privateRequest } from "../lib/api.client";
 import { clearLearningDrafts } from "../lib/learning-draft";
+import {
+  RecordingPlayer,
+  continuousRecording,
+  type RecordingClip,
+  type SpeechUnit,
+} from "../lib/recording-playback";
 export type ProfileChanges = Partial<Omit<UpdateProfileRequest, "version">>;
-type SpeechUnit = { id: string; text: string; locale?: string };
 type PlayerState = {
-  status: "idle" | "playing" | "paused";
+  status: "idle" | "loading" | "playing" | "paused";
   id: string | null;
   progress: number;
+  owner?: string | null;
+  wordId?: string | null;
 };
 type Learning = {
   profile: UserProfile | null;
@@ -81,9 +88,12 @@ export function LearningProvider({
     dialog = useRef<HTMLDialogElement>(null);
   const location = useLocation();
   const restartPaused = useRef(false);
+  const recording = useRef<RecordingPlayer | null>(null);
   function acceptProfile(value: UserProfile | null) {
-    if (savedProfile.current && savedProfile.current.id !== value?.id)
+    if (savedProfile.current && savedProfile.current.id !== value?.id) {
+      stop();
       clearLearningDrafts(savedProfile.current.id);
+    }
     savedProfile.current = value;
     setProfile(value);
     let show = value?.settings.showTranslation ?? false,
@@ -166,13 +176,19 @@ export function LearningProvider({
     if (savedProfile.current) void saveProfile({ showTranslation: value });
   }
   function update(value: PlayerState) {
+    value = {
+      ...value,
+      owner: queue.current[0]?.id ?? null,
+      wordId: value.wordId ?? (value.id?.includes(":word:") ? value.id : null),
+    };
     state.current = value;
     setPlayer(value);
   }
-  function stop() {
+  function stop(keepRecording = false) {
     restartPaused.current = false;
     generation.current++;
     if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+    recording.current?.stop(!keepRecording);
     queue.current = [];
     update({ status: "idle", id: null, progress: 0 });
   }
@@ -180,6 +196,15 @@ export function LearningProvider({
     const unit = queue.current[index.current];
     if (!unit) {
       update({ status: "idle", id: null, progress: 1 });
+      return;
+    }
+    if (unit.recording) {
+      playRecording(unit.recording, false);
+      return;
+    }
+    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+      stop();
+      notify("当前浏览器不支持语音朗读");
       return;
     }
     const gen = generation.current,
@@ -196,7 +221,16 @@ export function LearningProvider({
     utterance.lang = unit.locale ?? "fr-FR";
     utterance.voice = voice;
     utterance.rate = rateRef.current;
+    update({
+      status: "loading",
+      id: unit.id,
+      progress: index.current / queue.current.length,
+    });
     utterance.onstart = () => {
+      if (gen === generation.current && state.current.status === "paused") {
+        window.speechSynthesis.pause();
+        return;
+      }
       if (gen === generation.current)
         update({
           status: "playing",
@@ -205,7 +239,7 @@ export function LearningProvider({
         });
     };
     utterance.onboundary = (event) => {
-      if (gen === generation.current)
+      if (gen === generation.current && state.current.status !== "paused")
         update({
           status: "playing",
           id: unit.id,
@@ -217,6 +251,10 @@ export function LearningProvider({
     utterance.onend = () => {
       if (gen === generation.current) {
         index.current++;
+        if (state.current.status === "paused") {
+          restartPaused.current = true;
+          return;
+        }
         speakCurrent();
       }
     };
@@ -232,29 +270,93 @@ export function LearningProvider({
     };
     window.speechSynthesis.speak(utterance);
   }
+  function playRecording(clip: RecordingClip, whole: boolean) {
+    const gen = generation.current;
+    recording.current ??= new RecordingPlayer();
+    update({
+      status: "loading",
+      id: queue.current[index.current]?.id ?? null,
+      progress: whole ? 0 : index.current / queue.current.length,
+    });
+    recording.current.play(clip, rateRef.current, {
+      status: (status) => {
+        if (gen === generation.current) update({ ...state.current, status });
+      },
+      progress: (fraction, id, wordId) => {
+        if (gen !== generation.current) return;
+        if (whole && id) {
+          const activeIndex = queue.current.findIndex((unit) => unit.id === id);
+          if (activeIndex >= 0) index.current = activeIndex;
+        }
+        update({
+          status: state.current.status === "loading" ? "loading" : "playing",
+          id,
+          wordId,
+          progress: whole
+            ? fraction
+            : (index.current + fraction) / queue.current.length,
+        });
+      },
+      end: () => {
+        if (gen !== generation.current) return;
+        index.current = whole ? queue.current.length : index.current + 1;
+        speakCurrent();
+      },
+      error: (blocked) => {
+        if (gen !== generation.current) return;
+        if (blocked) {
+          stop();
+          notify("请再次点击播放，允许浏览器开始朗读。");
+          return;
+        }
+        const voices = window.speechSynthesis?.getVoices() ?? [];
+        if (
+          !window.SpeechSynthesisUtterance ||
+          !voices.some((voice) => voice.lang.startsWith("fr"))
+        ) {
+          stop();
+          notify("录音暂时无法播放，请重试。");
+          return;
+        }
+        const currentIndex = queue.current.findIndex(
+          (unit) => unit.id === state.current.id,
+        );
+        if (whole && currentIndex >= 0) index.current = currentIndex;
+        queue.current = queue.current.map(({ recording: _, ...unit }) => unit);
+        generation.current++;
+        notify("录音暂时不可用，已切换为浏览器语音。");
+        speakCurrent();
+      },
+    });
+  }
   function play(units: SpeechUnit[]) {
-    stop();
-    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
-      notify("当前浏览器不支持语音朗读");
-      return;
-    }
+    stop(true);
     queue.current = units;
     index.current = 0;
-    speakCurrent();
+    const clip = units.length > 1 ? continuousRecording(units) : null;
+    if (clip) playRecording(clip, true);
+    else speakCurrent();
   }
   function toggle(units: SpeechUnit[]) {
     if (
-      state.current.id &&
-      !units.some((unit) => unit.id === state.current.id)
+      (state.current.owner || state.current.id) &&
+      !units.some(
+        (unit) => unit.id === (state.current.owner || state.current.id),
+      )
     ) {
       play(units);
       return;
     }
-    if (state.current.status === "playing") {
-      window.speechSynthesis.pause();
+    if (
+      state.current.status === "playing" ||
+      state.current.status === "loading"
+    ) {
+      if (recording.current?.isActive) recording.current.pause();
+      else window.speechSynthesis?.pause();
       update({ ...state.current, status: "paused" });
     } else if (state.current.status === "paused") {
-      if (restartPaused.current) {
+      if (recording.current?.isActive) recording.current.resume();
+      else if (restartPaused.current) {
         restartPaused.current = false;
         speakCurrent();
       } else {
@@ -267,6 +369,10 @@ export function LearningProvider({
     if (rateRef.current === value) return;
     rateRef.current = value;
     setRateState(value);
+    if (recording.current?.isActive) {
+      recording.current.setRate(value);
+      return;
+    }
     if (state.current.status === "playing") {
       generation.current++;
       window.speechSynthesis.cancel();
@@ -286,11 +392,12 @@ export function LearningProvider({
     dialog.current?.close();
     setMessage("");
     setToastHost(null);
-  }, [location.pathname]);
+  }, [location.pathname, location.search, user?.id]);
   useEffect(
     () => () => {
       generation.current++;
       window.speechSynthesis?.cancel();
+      recording.current?.stop();
     },
     [],
   );
@@ -434,9 +541,15 @@ export function Player({ units }: { units: SpeechUnit[] }) {
     hold = useRef<ReturnType<typeof setTimeout> | null>(null),
     long = useRef(false),
     start = useRef({ x: 0, y: 0 });
-  const ownsPlayback = units.some((unit) => unit.id === learning.player.id);
+  const ownsPlayback = units.some(
+    (unit) =>
+      unit.id === learning.player.id || unit.id === learning.player.owner,
+  );
   const progress = ownsPlayback ? learning.player.progress : 0;
-  const playing = ownsPlayback && learning.player.status === "playing";
+  const playing =
+    ownsPlayback &&
+    (learning.player.status === "playing" ||
+      learning.player.status === "loading");
   const cancel = () => {
     if (hold.current) clearTimeout(hold.current);
     hold.current = null;

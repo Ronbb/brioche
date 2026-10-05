@@ -147,5 +147,7 @@ v1 只做线性流程。用户可以回到已访问步骤、预览目录和退�
 
 AudioTrack 将一份录音绑定到 dialogue/article block；cues 使用 entryId、可选 segmentId、可选 wordRange 和 startMs/endMs。整篇录音需要覆盖该正文的每个 entry，按正文顺序排列且整句区间不重叠；语块区间位于整句区间内，单词区间必须有对应语块区间且位于其中。wordRange 使用 segment.text 的 **Unicode scalar** 起止偏移（左闭右开），不使用 JavaScript UTF-16 索引；例如 `🥐 Bonjour` 的 Bonjour 是 [2,9)，转换时不能把 emoji 当作一个 UTF-16 code unit。
 
-Rust 校验音频/正文引用、重复目标、时间区间、父子范围和单词边界，Schema/TS 从 DTO 生成。录音登记使用 `audio-import`：原始来源、授权、创作者和确认状态保存在私有不可变记录中；`audioRefs` 固定素材 ID/revision，由导入工具填充公共 `audio` 描述。`audio-check` 与发布校验使用 [Symphonia 0.6.1](https://docs.rs/symphonia/0.6.1/symphonia/) 完整解码，按实际样本帧核对时长；发布还比较已登记描述与磁盘哈希，拒绝伪造/缺失/损坏录音。公开 `/api/audio` 仅提供已发布且未撤回课程引用的素材，管理员预览使用课程范围内的私有 URL，两者支持有界单段 Range 请求。前端录音播放与时间轴同步仍待接入，浏览器 TTS 尚不能代表录音链路验收。
+Rust 校验音频/正文引用、重复目标、时间区间、父子范围和单词边界，Schema/TS 从 DTO 生成。录音登记使用 `audio-import`：原始来源、授权、创作者和确认状态保存在私有不可变记录中；`audioRefs` 固定素材 ID/revision，由导入工具填充公共 `audio` 描述。`audio-check` 与发布校验使用 [Symphonia 0.6.1](https://docs.rs/symphonia/0.6.1/symphonia/) 完整解码，按实际样本帧核对时长；发布还比较已登记描述与磁盘哈希，拒绝伪造/缺失/损坏录音。公开 `/api/audio` 仅提供已发布且未撤回课程引用的素材，管理员预览使用课程范围内的私有 URL，两者支持有界单段 Range 请求。
+
+前端现优先选用正文的固定录音：头像选择整句 cue；点词将 Intl.Segmenter 的 UTF-16 偏移转换为 Unicode scalar 后精确匹配 wordRange。无单词 cue 时仅合成该词，不扩大为整句。全文将同源录音的所有整句区间合成一次连续播放，保留真实停顿，按媒体 currentTime 更新进度/句子/可选单词高亮；缺少单词时间标注不伪造高亮。播放标识包含课程/revision/block/entry/segment，避免不同正文复用相同 segment ID 时串联。录音调速保持 currentTime，暂停/恢复保持位置。单个 Audio 元素复用，监听/播放 Promise/帧回调均受 generation 约束；正文卸载、路由/预览版本切换与身份改变会取消播放。文件失败时有法语设备声音则转 TTS，否则 toast 并停止；自动播放权限拒绝提示再次点击。HTMLMediaElement 时间与定时边界用于片段控制，浏览器量化/调度不提供样本级剪辑保证。参考 [currentTime](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/currentTime)、[WebKit 用户手势策略](https://webkit.org/blog/6784/new-video-policies-for-ios/)。完整私有预览前端、真实 iPhone 与有声音设备上的回退继续验收。
 

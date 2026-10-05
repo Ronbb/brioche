@@ -27,7 +27,106 @@ async fn main() -> Result<()> {
     );
     let db = Database::connect(connection).await?;
     brioche_migration::Migrator::up(&db, None).await?;
-    let source = development_source()?;
+    let mut source = development_source()?;
+    if let Some(file) = std::env::var_os("BROWSER_QA_RECORDING") {
+        use brioche_course_contract::{AudioAsset, AudioCue, AudioTrack, AudioWordRange, Block};
+        use brioche_server::{
+            audio,
+            recording::{AudioBundle, AudioSpec},
+        };
+        use sha2::{Digest, Sha256};
+        let file = std::path::PathBuf::from(file).canonicalize()?;
+        let (bytes, info) = audio::inspect_file(&file, "audio/wav")?;
+        let sha = format!("{:x}", Sha256::digest(&bytes));
+        recording_import(
+            &db,
+            AudioBundle {
+                schema_version: "1.0".into(),
+                assets: vec![AudioSpec {
+                    asset_id: "audio-browser-qa".into(),
+                    revision: 1,
+                    sha256: sha.clone(),
+                    mime_type: "audio/wav".into(),
+                    duration_ms: info.duration_ms,
+                    credit_zh: "合成协议测试音，非教学配音".into(),
+                    file: file.file_name().unwrap().to_string_lossy().into_owned(),
+                    status: "ready".into(),
+                    source: "local FFmpeg sine generator".into(),
+                    license: "original protocol fixture; no third-party recording".into(),
+                    creator: "Brioche browser protocol tests".into(),
+                    rights_confirmed: true,
+                }],
+            },
+            file.parent().unwrap(),
+        )
+        .await?;
+        let mut lesson = project_source(source.clone())?;
+        lesson.audio = vec![AudioAsset {
+            asset_id: "audio-browser-qa".into(),
+            revision: 1,
+            sha256: sha.clone(),
+            mime_type: "audio/wav".into(),
+            duration_ms: info.duration_ms,
+            credit_zh: "合成协议测试音，非教学配音".into(),
+            url: format!("/api/audio/{sha}.wav"),
+        }];
+        for block in &lesson.blocks {
+            let (id, entries) = match block {
+                Block::Dialogue { id, turns, .. } => (
+                    id,
+                    turns
+                        .iter()
+                        .map(|entry| (&entry.id, &entry.segments))
+                        .collect::<Vec<_>>(),
+                ),
+                Block::Article { id, paragraphs, .. } => (
+                    id,
+                    paragraphs
+                        .iter()
+                        .map(|entry| (&entry.id, &entry.segments))
+                        .collect::<Vec<_>>(),
+                ),
+                _ => continue,
+            };
+            let mut cues: Vec<_> = entries
+                .iter()
+                .enumerate()
+                .map(|(i, (entry, _))| AudioCue {
+                    entry_id: (*entry).clone(),
+                    segment_id: None,
+                    word_range: None,
+                    start_ms: i as u32 * 1000,
+                    end_ms: (i as u32 + 1) * 1000,
+                })
+                .collect();
+            if let Some((entry, segments)) = entries.first()
+                && segments[0].text.starts_with("Bonjour")
+            {
+                cues.push(AudioCue {
+                    entry_id: (*entry).clone(),
+                    segment_id: Some(segments[0].id.clone()),
+                    word_range: None,
+                    start_ms: 50,
+                    end_ms: 900,
+                });
+                cues.push(AudioCue {
+                    entry_id: (*entry).clone(),
+                    segment_id: Some(segments[0].id.clone()),
+                    word_range: Some(AudioWordRange { start: 0, end: 7 }),
+                    start_ms: 100,
+                    end_ms: 600,
+                });
+            }
+            lesson.audio_tracks.push(AudioTrack {
+                block_id: id.clone(),
+                asset_id: "audio-browser-qa".into(),
+                cues,
+            });
+        }
+        lesson.validate().map_err(anyhow::Error::msg)?;
+        source["audio"] = serde_json::to_value(lesson.audio)?;
+        source["audioTracks"] = serde_json::to_value(lesson.audio_tracks)?;
+    }
     let lesson = project_source(source.clone())?;
     db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO lesson_revisions(lesson_id,revision,published,public_document,server_document) VALUES($1,$2,true,$3,$4)",[lesson.id.clone().into(),(lesson.revision as i32).into(),serde_json::to_value(lesson)?.into(),source.into()])).await?;
     support::fixture_release(&db).await;
@@ -75,4 +174,18 @@ async fn main() -> Result<()> {
     );
     println!("Disposable browser fixture ready; unreviewed synthetic course, test account only.");
     Ok(())
+}
+async fn recording_import(
+    db: &sea_orm::DatabaseConnection,
+    bundle: brioche_server::recording::AudioBundle,
+    root: &std::path::Path,
+) -> Result<()> {
+    brioche_server::recording::import_bundle(
+        db,
+        bundle,
+        root,
+        &brioche_server::media::media_root(),
+        "browser-protocol-test",
+    )
+    .await
 }

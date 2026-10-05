@@ -9,6 +9,7 @@ import { getCatalog, getLesson } from "../lib/api.server";
 import { StartLearning } from "../components/start-learning";
 import { Player, useLearning } from "../components/learning";
 import { Icon } from "../components/icon";
+import { readingUnits, wordUnit } from "../lib/recording-playback";
 import type { Route } from "./+types/lesson";
 export async function loader({ params }: Route.LoaderArgs) {
   const [lesson, catalog] = await Promise.all([
@@ -41,13 +42,15 @@ export function Sentence({
   lesson,
   onTerm,
   onGrammar,
-  prefix = "",
+  blockId,
+  entryId,
 }: {
   segments: Segment[];
   lesson: PublicLesson;
   onTerm: (v: Vocabulary) => void;
   onGrammar: (v: Grammar) => void;
-  prefix?: string;
+  blockId: string;
+  entryId: string;
 }) {
   const learning = useLearning();
   return (
@@ -63,14 +66,31 @@ export function Sentence({
               key={segment.id + i}
               className={
                 "word" +
-                (segment.vocabularyId || segment.grammarId ? " known" : "")
+                (segment.vocabularyId || segment.grammarId ? " known" : "") +
+                (learning.player.wordId ===
+                wordUnit(
+                  lesson,
+                  blockId,
+                  entryId,
+                  segment.id,
+                  token.segment,
+                  segment.text,
+                  token.index,
+                ).id
+                  ? " is-speaking"
+                  : "")
               }
               onClick={() => {
                 learning.play([
-                  {
-                    id: prefix + "word-" + segment.id + "-" + i,
-                    text: token.segment,
-                  },
+                  wordUnit(
+                    lesson,
+                    blockId,
+                    entryId,
+                    segment.id,
+                    token.segment,
+                    segment.text,
+                    token.index,
+                  ),
                 ]);
                 const term = lesson.knowledge.vocabulary.find(
                   (v) => v.id === segment.vocabularyId,
@@ -139,10 +159,11 @@ function LessonContent({
       : article?.type === "article"
         ? article.paragraphs
         : [];
-  const units = entries.map((e) => ({
-    id: e.id,
-    text: e.segments.map((s) => s.text).join(""),
-  }));
+  const body = mode === "dialogue" ? dialogue : article;
+  const units =
+    body && (body.type === "dialogue" || body.type === "article")
+      ? readingUnits(lesson, body)
+      : [];
   function changeMode(next: "dialogue" | "article") {
     learning.stop();
     setMode(next);
@@ -196,7 +217,7 @@ function LessonContent({
               ))}
             </ul>
           )}
-          {entries.map((entry) => {
+          {entries.map((entry, index) => {
             const speaker =
               "speakerId" in entry && dialogue?.type === "dialogue"
                 ? dialogue.speakers.find((s) => s.id === entry.speakerId)
@@ -206,7 +227,9 @@ function LessonContent({
                 key={entry.id}
                 className={
                   (speaker ? "dialogue-turn" : "article-paragraph") +
-                  (learning.player.id === entry.id ? " is-speaking" : "")
+                  (learning.player.id === units[index]?.id
+                    ? " is-speaking"
+                    : "")
                 }
               >
                 {speaker && (
@@ -215,12 +238,7 @@ function LessonContent({
                     aria-label={speaker.displayName + "：译文与朗读"}
                     onClick={() => {
                       setRevealed((old) => new Set([...old, entry.id]));
-                      learning.play([
-                        {
-                          id: entry.id,
-                          text: entry.segments.map((s) => s.text).join(""),
-                        },
-                      ]);
+                      learning.play([units[index]]);
                     }}
                   >
                     <img
@@ -235,6 +253,8 @@ function LessonContent({
                   <Sentence
                     segments={entry.segments}
                     lesson={lesson}
+                    blockId={body!.id}
+                    entryId={entry.id}
                     onTerm={showTerm}
                     onGrammar={showGrammar}
                   />

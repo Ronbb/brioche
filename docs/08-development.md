@@ -39,7 +39,9 @@ cargo run -p brioche-server -- import lesson.json
 
 `audio-bundle.json` 使用 `schemaVersion: "1.0"` 和非空 `assets` 数组。每项填写 assetId、revision、sha256、mimeType、durationMs、creditZh、相对 file、status、source、license、creator 和 rightsConfirmed；哈希/时长来自 `audio-check`，status 必须 ready，只有确认实际授权后才能设置 rightsConfirmed=true。最多 500 项，路径必须在源目录内。登记记录和审计不可修改，重复 ID/revision 拒绝并回滚整批数据库写入；升级录音使用新 revision。文件按哈希写入 `MEDIA_ROOT`，事务失败可能留下未被登记引用的对象，媒体路由不会公开它们。
 
-课程源文件的 `audioRefs: [{"assetId":"audio-bakery","revision":1}]` 固定录音版本，导入工具覆盖 `audio` 为登记描述，`audioTracks` 仍由作者提供并校验。来源/授权/原文件路径只保存在私有登记信息中。release-stage 和 release-activate 重新比较登记描述、磁盘哈希、大小和解码参数，课程时间轴不可超出真实时长。素材登记与 staging 不公开文件；`GET/HEAD /api/audio/<sha>.mp3|wav` 只提供已发布未撤回课程引用的录音。支持单段 bytes Range、206/416、ETag/If-Range、Accept-Ranges 和 no-store；多个区间拒绝，文件完整哈希验证通过后才返回字节，读文件使用两个 blocking worker 许可。管理员固定版本预览将 URL 改为课程范围内的私有音频路由，逐次检查 operator、撤回与课程引用，返回 private/no-store。前端统一播放器尚未接入录音，当前 UI 的浏览器合成不能证明录音播放已验收。
+课程源文件的 `audioRefs: [{"assetId":"audio-bakery","revision":1}]` 固定录音版本，导入工具覆盖 `audio` 为登记描述，`audioTracks` 仍由作者提供并校验。来源/授权/原文件路径只保存在私有登记信息中。release-stage 和 release-activate 重新比较登记描述、磁盘哈希、大小和解码参数，课程时间轴不可超出真实时长。素材登记与 staging 不公开文件；`GET/HEAD /api/audio/<sha>.mp3|wav` 只提供已发布未撤回课程引用的录音。支持单段 bytes Range、206/416、ETag/If-Range、Accept-Ranges 和 no-store；多个区间拒绝，文件完整哈希验证通过后才返回字节，读文件使用两个 blocking worker 许可。管理员固定版本预览将 URL 改为课程范围内的私有音频路由，逐次检查 operator、撤回与课程引用，返回 private/no-store。
+
+课程浏览页、账号学习和管理员正文共用 recording-playback/播放器：优先录音，点词匹配标注，全文连续读取，媒体时钟驱动进度和可选单词高亮；暂停/调速不重放录音整句，切换/卸载/身份变化清理旧播放。加载中允许暂停；旧 metadata/error/play Promise/帧回调不覆盖新请求。有法语设备声音时才尝试失败回退，无声音则明确错误；Chrome 无声音环境已验证错误与恢复，真实 iPhone 和有声音设备继续验收。测试用浏览器例程仅接受命名的 loopback 数据库 `/brioche_browser_qa`；可通过 `BROWSER_QA_RECORDING` 指定本机合成 WAV（至少覆盖正文时间轴），`MEDIA_ROOT` 指定隔离存储，生成未审校的录音协议课程；禁止作为正式课程发布依据。
 
 要求 Node 24、pnpm 11.11.0、Rust 1.99.0。`rust-toolchain.toml` 会固定工具链并安装 rustfmt/clippy。
 
