@@ -1,0 +1,5 @@
+.toast{position:fixed;z-index:40;top:max(20px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:max-content;max-width:min(480px,calc(100% - 32px));display:flex;gap:12px;align-items:center;padding:10px 10px 10px 16px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 35px #38291f22;color:var(--ink)}
+.toast>.icon,.toast>[data-icon]{flex-shrink:0;color:var(--accent);display:flex;align-items:center}
+#toast-message{font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+.toast-close{display:grid;place-items:center;width:44px;min-width:44px;height:44px;padding:0;border:0;border-radius:11px;background:transparent;color:var(--muted)}.toast-close:hover{background:var(--soft)}
+@media(prefers-reduced-motion:no-preference){.toast:not([hidden]){animation:toast-arrive .28s cubic-bezier(.22,.8,.25,1)}.toast.is-leaving{animation:toast-leave .18s ease-in forwards}@keyframes toast-arrive{from{opacity:0;transform:translate(-50%,-10px) scale(.98)}to{opacity:1;transform:translateX(-50%)}}@keyframes toast-leave{to{opacity:0;transform:translate(-50%,-6px)}}}

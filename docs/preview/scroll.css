@@ -1,0 +1,10 @@
+/* Native scrolling stays intact; the desktop thumb overlays rather than reflows content. */
+html.overlay-scroll,html.overlay-scroll *{scrollbar-width:none;scrollbar-gutter:auto}
+html.overlay-scroll::-webkit-scrollbar,html.overlay-scroll *::-webkit-scrollbar{width:0;height:0}
+.page-scrollbar{position:fixed;z-index:8;right:1px;top:8px;bottom:8px;width:14px;touch-action:none;opacity:0;transition:opacity .2s;cursor:default}
+.page-scrollbar.visible,.page-scrollbar:hover,.page-scrollbar:focus-visible{opacity:1}
+.page-scrollbar:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:8px}
+.page-scrollbar-thumb{position:absolute;right:3px;top:0;width:4px;border-radius:4px;background:#69584266;pointer-events:none}
+.page-scrollbar:hover .page-scrollbar-thumb{width:6px;background:#69584299}
+@media(hover:none){.page-scrollbar{pointer-events:none;width:6px}.page-scrollbar-thumb{right:1px;width:3px}}
+@media(prefers-reduced-motion:reduce){.page-scrollbar{transition:none}}

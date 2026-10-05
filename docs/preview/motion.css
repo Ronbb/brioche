@@ -1,0 +1,68 @@
+/* Motion follows interaction; body text and avatar alignment stay stable. */
+@media (prefers-reduced-motion:no-preference) {
+  :root { --ease-out:cubic-bezier(.22,.8,.25,1); --ease-spring:cubic-bezier(.2,.9,.3,1.12); }
+  .view-enter { animation:surface-enter .2s ease-out; }
+  #view-home.view-enter .intro { animation:content-arrive .42s var(--ease-out) both; }
+  #view-home.view-enter .hero { animation:content-arrive .48s .05s var(--ease-out) both; }
+  #view-home.view-enter .below { animation:content-arrive .48s .12s var(--ease-out) both; }
+  #view-home.view-enter .home-footer { animation:surface-enter .4s .2s ease-out both; }
+  #view-home.view-enter .hero-art img { animation:art-arrive .7s .08s var(--ease-out) both; }
+  .view-enter .lesson-header .crumb { animation:surface-enter .3s ease-out both; }
+  .view-enter .lesson-header .heading-row { animation:content-arrive .38s .03s var(--ease-out) both; }
+  .view-enter .reader-player,.view-enter .step-strip { animation:surface-enter .38s .1s ease-out both; }
+  #view-read.view-enter .reading-tabs,#view-read.view-enter .scene-note,#view-read.view-enter .reading-characters { animation:surface-enter .38s .14s ease-out both; }
+  #view-read.view-enter #reading-body { animation:surface-enter .4s .18s ease-out both; }
+  #reading-body.view-enter { animation:none; }
+  #reading-body.view-enter>.dialogue-turn,#reading-body.view-enter>.article-paragraph { animation:surface-enter .32s var(--ease-out) both; }
+  #reading-body.view-enter>:nth-child(2) { animation-delay:.035s; }
+  #reading-body.view-enter>:nth-child(3) { animation-delay:.07s; }
+  #reading-body.view-enter>:nth-child(4) { animation-delay:.105s; }
+  #reading-body.view-enter>:nth-child(5) { animation-delay:.14s; }
+  #reading-body.view-enter>:nth-child(6) { animation-delay:.175s; }
+  #reading-body.view-enter>:nth-child(7) { animation-delay:.21s; }
+  #reading-body.view-enter>:nth-child(8) { animation-delay:.245s; }
+  #view-settings.view-enter .settings-heading { animation:content-arrive .38s var(--ease-out) both; }
+  #view-settings.view-enter .settings-group { animation:content-arrive .44s .08s var(--ease-out) both; }
+  #view-practice.view-enter .practice-wrap { animation:content-arrive .42s .07s var(--ease-out) both; }
+  .primary,.secondary,.profile-settings,.source-open,.review,.reading-tabs button,.icon-button {
+    position:relative; overflow:hidden;
+    transition:transform .2s var(--ease-spring),background .22s,box-shadow .22s;
+  }
+  .primary:active,.secondary:active,.source-open:active,.profile-settings:active,.review:active,.reading-tabs button:active { transform:scale(.975); }
+  .primary.is-pressed:after,.secondary.is-pressed:after,.profile-settings.is-pressed:after,.source-open.is-pressed:after,.review.is-pressed:after,.reading-tabs button.is-pressed:after,.icon-button.is-pressed:after {
+    content:''; position:absolute; pointer-events:none; width:100px;height:100px;border-radius:50%;
+    left:var(--press-x,50%);top:var(--press-y,50%); background:currentColor; opacity:0;
+    animation:press-wave .55s ease-out; transform-origin:center;
+  }
+  .review { overflow:hidden; }
+  .review-answer:not([hidden]) { animation:answer-arrive .32s var(--ease-out); }
+  .translation:not([hidden]) { animation:answer-arrive .28s var(--ease-out); }
+  .speaker img { transition:transform .2s var(--ease-spring),filter .2s; }
+  .speaker:active img { transform:scale(.93); }
+  .nav button { transition:color .2s,box-shadow .25s var(--ease-out); }
+  .switch-track:after { transition:transform .28s var(--ease-spring); }
+  .switch-track { transition:background .24s; }
+  .play-marker { transition:left .28s var(--ease-out),background .2s,box-shadow .2s; }
+  .play-marker .icon { animation:icon-arrive .22s var(--ease-spring); }
+  .reader-player[data-state=playing] .play-marker { animation:play-halo 1.8s ease-in-out infinite; }
+  .playback-track>#audio-progress { transition:width .28s var(--ease-out); }
+  .feedback:not([hidden]) { animation:feedback-arrive .35s var(--ease-spring); }
+  .rate-dialog[open],.source-dialog[open] { animation:panel-arrive .3s var(--ease-out); }
+  .rate-dialog[open]::backdrop,.source-dialog[open]::backdrop { animation:surface-enter .22s ease-out; }
+  .knowledge.is-open { animation:drawer-enter .34s var(--ease-out); }
+  @media(hover:hover) {
+    .review:hover { transform:translateY(-3px);box-shadow:0 10px 24px #3b572b12,inset 0 0 0 1px #689d4b; }
+    .profile-settings:hover { transform:rotate(5deg); }
+    .hero-art img { transition:transform .5s var(--ease-out); }
+    .hero-art:hover img { transform:scale(1.015) rotate(-.5deg); }
+    .lesson-row:not(:disabled) { transition:background .2s; }
+  }
+  @keyframes content-arrive { from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none} }
+  @keyframes art-arrive { from{opacity:0;transform:translateY(10px) scale(.975)}to{opacity:1;transform:none} }
+  @keyframes answer-arrive { from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none} }
+  @keyframes icon-arrive { from{opacity:.4;transform:scale(.75) rotate(-12deg)}to{opacity:1;transform:none} }
+  @keyframes press-wave { from{opacity:.11;transform:translate(-50%,-50%) scale(.15)}to{opacity:0;transform:translate(-50%,-50%) scale(7)} }
+  @keyframes play-halo { 50%{box-shadow:0 0 0 7px #ffa62f14} }
+  @keyframes feedback-arrive { from{opacity:0;transform:translateY(9px) scale(.985)}to{opacity:1;transform:none} }
+  @keyframes panel-arrive { from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none} }
+}

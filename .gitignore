@@ -1,0 +1,25 @@
+# 本机协作资料与环境秘密
+AGENTS.local.md
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# 依赖与构建产物
+node_modules/
+target/
+build/
+dist/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# 本机运行数据与备份
+.local/
+data/
+backups/
+*.log
+Thumbs.db
+.DS_Store
