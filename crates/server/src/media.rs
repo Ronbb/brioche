@@ -51,14 +51,14 @@ pub struct AssetRef {
     pub asset_id: String,
     pub revision: u32,
 }
-fn valid_id(value: &str) -> bool {
+pub(crate) fn valid_id(value: &str) -> bool {
     !value.is_empty()
         && value.len() <= 100
         && value
             .bytes()
             .all(|b| b.is_ascii_alphanumeric() || b == b'-' || b == b'_')
 }
-fn text(value: &str) -> bool {
+pub(crate) fn text(value: &str) -> bool {
     !value.trim().is_empty() && value.len() <= 2000 && !value.chars().any(char::is_control)
 }
 fn extension(mime: &str) -> Result<&'static str> {
@@ -70,7 +70,7 @@ fn extension(mime: &str) -> Result<&'static str> {
         _ => bail!("unsupported visual MIME type"),
     }
 }
-fn digest(bytes: &[u8]) -> String {
+pub(crate) fn digest(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
 }
 fn read_file(path: &Path) -> Result<Vec<u8>> {
@@ -272,7 +272,7 @@ pub fn media_root() -> PathBuf {
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(".local/media"))
 }
-fn store_file(root: &Path, bytes: &[u8], sha: &str, ext: &str) -> Result<()> {
+pub(crate) fn store_file(root: &Path, bytes: &[u8], sha: &str, ext: &str) -> Result<()> {
     std::fs::create_dir_all(root)?;
     let final_path = root.join(format!("{sha}.{ext}"));
     if final_path.exists() {
@@ -446,12 +446,15 @@ pub async fn import_bundle(
     Ok(())
 }
 pub fn source_asset_refs(source: &serde_json::Value) -> Result<Vec<AssetRef>> {
-    let Some(refs) = source.get("assetRefs") else {
+    source_refs(source, "assetRefs")
+}
+pub(crate) fn source_refs(source: &serde_json::Value, key: &str) -> Result<Vec<AssetRef>> {
+    let Some(refs) = source.get(key) else {
         return Ok(Vec::new());
     };
     let refs: Vec<AssetRef> = serde_path_to_error::deserialize(refs.clone())
-        .context("assetRefs: invalid reference structure")?;
-    ensure!(refs.len() <= 500, "assetRefs: too many asset references");
+        .with_context(|| format!("{key}: invalid reference structure"))?;
+    ensure!(refs.len() <= 500, "{key}: too many asset references");
     let mut ids = BTreeSet::new();
     for (index, reference) in refs.iter().enumerate() {
         ensure!(
@@ -459,7 +462,7 @@ pub fn source_asset_refs(source: &serde_json::Value) -> Result<Vec<AssetRef>> {
                 && reference.revision > 0
                 && reference.revision <= i32::MAX as u32
                 && ids.insert(reference.asset_id.clone()),
-            "assetRefs/{index}: invalid or duplicate asset reference"
+            "{key}/{index}: invalid or duplicate asset reference"
         );
     }
     Ok(refs)
@@ -497,10 +500,8 @@ pub async fn validate_lesson<C: ConnectionTrait>(
     lesson: &PublicLesson,
     root: &Path,
 ) -> Result<(), AppError> {
-    // Audio publication stays closed until registered recordings and file validation are wired.
-    if !lesson.audio.is_empty() || !lesson.audio_tracks.is_empty() {
-        return Err(AppError::InvalidInput);
-    }
+    lesson.validate().map_err(|_| AppError::InvalidInput)?;
+    crate::recording::validate_lesson(db, lesson, root).await?;
     let mut ids = BTreeSet::new();
     for asset in &lesson.media {
         if !ids.insert(&asset.asset_id) || asset.revision == 0 || asset.revision > i32::MAX as u32 {
@@ -559,7 +560,7 @@ pub async fn validate_lesson<C: ConnectionTrait>(
     }
     Ok(())
 }
-fn stored_bytes(root: &Path, sha: &str, ext: &str) -> Result<Vec<u8>> {
+pub(crate) fn stored_bytes(root: &Path, sha: &str, ext: &str) -> Result<Vec<u8>> {
     let root = root.canonicalize()?;
     let path = root.join(format!("{sha}.{ext}")).canonicalize()?;
     ensure!(path.starts_with(&root), "stored object escapes media root");

@@ -55,6 +55,13 @@ fn rejects_bad_grading_references_and_json_before_any_database_work() {
     let output = run("check", &path);
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("assetRefs/1"));
+    source = original.clone();
+    source["audioRefs"] =
+        serde_json::json!([{"assetId":"audio","revision":1},{"assetId":"audio","revision":2}]);
+    std::fs::write(&path, serde_json::to_vec(&source).unwrap()).unwrap();
+    let output = run("check", &path);
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("audioRefs/1"));
     source = original;
     source["revision"] = serde_json::json!("invalid");
     std::fs::write(&path, serde_json::to_vec(&source).unwrap()).unwrap();

@@ -143,9 +143,9 @@ v1 只做线性流程。用户可以回到已访问步骤、预览目录和退�
 
 ### 已接入的录音契约（尚未接通播放）
 
-公共课程可选 `audio` 与 `audioTracks`，为空时不序列化，保留原有不可变课程文档形状。AudioAsset 包含固定 ID/revision、SHA-256、MP3/WAV MIME、durationMs、creditZh 和同源内容哈希 URL；当前限定单文件最长 30 分钟，描述中的时长仍需后续实际解码校验。
+公共课程可选 `audio` 与 `audioTracks`，为空时不序列化，保留原有不可变课程文档形状。AudioAsset 包含固定 ID/revision、SHA-256、MP3/WAV MIME、durationMs、creditZh 和同源内容哈希 URL；当前限定单文件最长 30 分钟，登记与发布时均以实际解码核对时长。
 
 AudioTrack 将一份录音绑定到 dialogue/article block；cues 使用 entryId、可选 segmentId、可选 wordRange 和 startMs/endMs。整篇录音需要覆盖该正文的每个 entry，按正文顺序排列且整句区间不重叠；语块区间位于整句区间内，单词区间必须有对应语块区间且位于其中。wordRange 使用 segment.text 的 **Unicode scalar** 起止偏移（左闭右开），不使用 JavaScript UTF-16 索引；例如 `🥐 Bonjour` 的 Bonjour 是 [2,9)，转换时不能把 emoji 当作一个 UTF-16 code unit。
 
-Rust 校验音频/正文引用、重复目标、时间区间、父子范围和单词边界，Schema/TS 从 DTO 生成。当前尚未实现录音登记、文件解码和发布验证，release-stage 对含录音的课程明确拒绝，不能仅凭作者填写的 durationMs/hash 宣称可以发布或播放。后续接入 MP3/WAV 实际解码、授权、私有预览、公开服务和统一播放器时移除这条临时发布限制。录音解码候选为纯 Rust [Symphonia](https://docs.rs/symphonia/0.6.1/symphonia/)，本轮未加入该依赖。
+Rust 校验音频/正文引用、重复目标、时间区间、父子范围和单词边界，Schema/TS 从 DTO 生成。录音登记使用 `audio-import`：原始来源、授权、创作者和确认状态保存在私有不可变记录中；`audioRefs` 固定素材 ID/revision，由导入工具填充公共 `audio` 描述。`audio-check` 与发布校验使用 [Symphonia 0.6.1](https://docs.rs/symphonia/0.6.1/symphonia/) 完整解码，按实际样本帧核对时长；发布还比较已登记描述与磁盘哈希，拒绝伪造/缺失/损坏录音。公开 `/api/audio` 仅提供已发布且未撤回课程引用的素材，管理员预览使用课程范围内的私有 URL，两者支持有界单段 Range 请求。前端录音播放与时间轴同步仍待接入，浏览器 TTS 尚不能代表录音链路验收。
 

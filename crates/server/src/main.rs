@@ -50,6 +50,8 @@ async fn main() -> Result<()> {
             let source: serde_json::Value = brioche_server::author_json::load(path)?;
             brioche_server::media::source_asset_refs(&source)
                 .with_context(|| format!("{path}: invalid asset references"))?;
+            brioche_server::recording::source_audio_refs(&source)
+                .with_context(|| format!("{path}: invalid recording references"))?;
             let lesson = project_source(source.clone())
                 .with_context(|| format!("{path}: invalid lesson structure or references"))?;
             brioche_server::grading::Grader::from_source(&lesson, &source).map_err(|_| {
@@ -88,6 +90,23 @@ async fn main() -> Result<()> {
         )
     };
     match command.as_str() {
+        "audio-import" => {
+            let args: Vec<String> = std::env::args().skip(2).collect();
+            if args.len() != 3 {
+                bail!("usage: audio-import <bundle.json> <source-directory> <actor>");
+            }
+            let bundle = brioche_server::author_json::load(&args[0])?;
+            brioche_server::recording::import_bundle(
+                db.as_ref().unwrap(),
+                bundle,
+                std::path::Path::new(&args[1]),
+                &brioche_server::media::media_root(),
+                &args[2],
+            )
+            .await?;
+            tracing::info!("immutable recording revisions imported");
+            return Ok(());
+        }
         "assets-import" => {
             let args: Vec<String> = std::env::args().skip(2).collect();
             if args.len() != 3 {
@@ -188,6 +207,8 @@ async fn main() -> Result<()> {
             let source: serde_json::Value = brioche_server::author_json::load(&file)?;
             let source =
                 brioche_server::media::hydrate_source(db.as_ref().unwrap(), source).await?;
+            let source =
+                brioche_server::recording::hydrate_source(db.as_ref().unwrap(), source).await?;
             let publish = std::env::args().any(|arg| arg == "--publish");
             if publish {
                 bail!("use release-stage and release-activate to publish an atomic directory");
@@ -295,6 +316,10 @@ async fn main() -> Result<()> {
         app = app.merge(auth);
     }
     if let Some(db) = media_db {
+        app = app.merge(brioche_server::recording::router(
+            db.clone(),
+            brioche_server::media::media_root(),
+        ));
         app = app.merge(brioche_server::media::router(
             db,
             brioche_server::media::media_root(),

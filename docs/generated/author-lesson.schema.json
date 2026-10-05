@@ -984,6 +984,13 @@
       },
       "type": "array"
     },
+    "audioRefs": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/AssetRef"
+      },
+      "type": "array"
+    },
     "audioTracks": {
       "items": {
         "$ref": "#/$defs/AudioTrack"

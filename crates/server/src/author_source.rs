@@ -28,6 +28,8 @@ pub fn schema() -> serde_json::Value {
         server_only: crate::grading::PrivateRules,
         #[schemars(default)]
         asset_refs: Vec<crate::media::AssetRef>,
+        #[schemars(default)]
+        audio_refs: Vec<crate::media::AssetRef>,
     }
     serde_json::to_value(schemars::schema_for!(AuthorLesson)).expect("schema serialization")
 }
@@ -89,6 +91,8 @@ mod tests {
             assert!(required.contains(&serde_json::json!(field)), "{field}");
         }
         assert!(!required.contains(&serde_json::json!("assetRefs")));
+        assert!(!required.contains(&serde_json::json!("audioRefs")));
+        assert!(schema["properties"]["audioRefs"].is_object());
         assert_eq!(schema["additionalProperties"], false);
         assert_eq!(schema["$defs"]["Editorial"]["additionalProperties"], false);
         assert!(schema.to_string().contains("correctOptionId"));
@@ -101,6 +105,7 @@ mod tests {
             "correctTokenIds",
             "serverOnly",
             "editorial",
+            "audioRefs",
         ] {
             assert!(!public.to_string().contains(private));
         }

@@ -13,6 +13,7 @@ pub mod media;
 pub mod observability;
 pub mod password;
 pub mod preview;
+pub mod recording;
 pub mod reviews;
 pub mod session_store;
 use axum::{
@@ -285,6 +286,7 @@ pub fn project_source(mut source: serde_json::Value) -> anyhow::Result<PublicLes
     object.remove("serverOnly");
     object.remove("editorial");
     object.remove("assetRefs");
+    object.remove("audioRefs");
     let lesson: PublicLesson = serde_path_to_error::deserialize(source)?;
     lesson.validate().map_err(anyhow::Error::msg)?;
     Ok(lesson)

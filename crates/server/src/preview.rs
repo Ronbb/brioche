@@ -34,6 +34,10 @@ pub fn router(root: std::path::PathBuf) -> Router<Backend> {
             "/api/v1/operator/lessons/{id}/revisions/{revision}/media/{name}",
             get(media),
         )
+        .route(
+            "/api/v1/operator/lessons/{id}/revisions/{revision}/audio/{name}",
+            get(audio),
+        )
         .layer(axum::Extension(PreviewMedia {
             root,
             permits: std::sync::Arc::new(tokio::sync::Semaphore::new(2)),
@@ -153,6 +157,16 @@ async fn read(backend: &Backend, id: &str, revision: u32) -> Result<PublicLesson
         }
         asset.url = format!("/api/v1/operator/lessons/{id}/revisions/{revision}/media/{name}");
     }
+    for asset in &mut lesson.audio {
+        let name = asset
+            .url
+            .strip_prefix("/api/audio/")
+            .ok_or(AppError::Unavailable)?;
+        if name.contains('/') || name.contains('?') || name.contains('#') {
+            return Err(AppError::Unavailable);
+        }
+        asset.url = format!("/api/v1/operator/lessons/{id}/revisions/{revision}/audio/{name}");
+    }
     Ok(lesson)
 }
 async fn lesson(
@@ -213,4 +227,21 @@ async fn media(
         .find(|asset| asset.url.rsplit('/').next() == Some(name.as_str()))
         .ok_or(AppError::NotFound)?;
     crate::media::asset_response(config.root, asset, config.permits).await
+}
+
+async fn audio(
+    auth: AuthSession,
+    axum::Extension(config): axum::Extension<PreviewMedia>,
+    State(backend): State<Backend>,
+    Path((id, revision, name)): Path<(String, u32, String)>,
+    headers: axum::http::HeaderMap,
+) -> Result<axum::response::Response, AppError> {
+    require_operator(&auth)?;
+    let lesson = read(&backend, &id, revision).await?;
+    let asset = lesson
+        .audio
+        .into_iter()
+        .find(|asset| asset.url.rsplit('/').next() == Some(name.as_str()))
+        .ok_or(AppError::NotFound)?;
+    crate::recording::asset_response(config.root, asset, config.permits, headers).await
 }
