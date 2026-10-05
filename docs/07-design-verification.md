@@ -277,3 +277,13 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 - agent-browser 独立会话 brioche-identity-qa、命名 loopback PostgreSQL brioche_browser_qa（55439）、API 3003、Web 5175 使用原始合成 WAV 协议课程。测试账号仅在临时数据库设为 operator；未改正式内容的人工审校状态。
 - 两标签真实登录与退出：预览使用课程范围的私有音频 URL；包装原生 Audio 只记录实际 pause 调用，未替换播放或时钟。播放时观察 currentTime=0.103217、paused=false，另一标签退出后记录 currentTime=0.54851、paused=false 时调用原生 pause，随后来源清空/paused=true。原标签私有正文移除，重新加载显示“请先登录”。
 - 第一次退出按钮在屏幕外，点击未生效，不记为通过；滚动到实际按钮后复测成功。一次 CLI URL 等待观察超时，随后读取同一浏览器确认实际已登录，没有据此重启进程。已关闭测试浏览器/3003/5175/55439 服务和专用容器。真实 iPhone、屏幕阅读器、服务器降权的浏览器流程和账号学习录音仍待验收。
+
+## 2026-10-06：账号学习与私有录音版本/权限验收
+
+- agent-browser 会话 brioche-learning-audio-qa，独立命名 PostgreSQL brioche_browser_qa（loopback 55439）、API 3003 与 Web 5175，复用原始合成 WAV。页面登录、开始学习和继续均触发真实 UI 与数据库 API；没有直接请求学习提交接口替代页面。
+- 点 Bonjour 的原生媒体从标注区间播放至 0.612659 秒后暂停；头像整句播放至 1.004249 秒并展开“您好！”；全文至 8.000478 秒停止，三者共用一个实际 Audio 元素。仅包装构造/原生 pause 读取实际时钟，不模拟播放。SQL 此时 learning_sessions.version=2、last_step_id=step-read、只有 step-discover 确认、attempts=0，朗读没有创建虚假确认/答题活动。
+- 阅读全文播放中通过“继续”进入理解表达，原生 pause 在 0.648006 秒时调用，来源随后清空且 paused=true；SQL version=3、last_step_id=step-explore、step-read 被正常确认。390×844 DOM 无横向溢出，查看本机 `.local/audio-browser-qa/account-reading.png`，头像/正文/译文排列正常，词与整句同步高亮可见。
+- 临时数据库把测试账号升为 operator 以打开私有预览，然后另一个标签聚焦期间服务器将其降为 learner；返回预览标签触发实际身份检查。原生 pause 在 0.732537 秒时调用，来源清空；正文不存在，页面显示“仅内容管理员可以预览”。未发送 storage 通知，覆盖服务器侧角色变化路径。
+- 为验证 revision 切换，仅在隔离数据库复制协议课程生成 unpublished revision 2，不伪造课程审校或发布。预览 GET 表单从版本 1 切到 2，旧录音在 0.342283 秒时停止/清来源；新播放 URL 为 `/api/v1/operator/lessons/a1-bakery-buy-breakfast/revisions/2/audio/<sha>.wav`，实际 currentTime=0.11269、paused=false。SQL revision 2 保持 published=false；预览操作没有增加学习步骤/练习记录。
+- 键盘从播放器 Shift+F10 打开速度面板，初始焦点为选中的 1× radio；ArrowDown 移至 1.25×，Enter 确认关闭并将焦点返回 playback-line，新播放实际 playbackRate=1.25。再次 Shift+F10、Escape 关闭并返回焦点。只覆盖此调速流程，不代表完整键盘/屏幕阅读器验收。
+- 已关闭会话、3003/5175 服务及专用 PostgreSQL 容器，未修改用户开发服务。一次点击“继续”在屏幕外未触发，滚动后成功；一次 SQL 查询使用不存在的聚合字段失败，依据真实表结构改查 step_progress 后取得证据，不把失败命令计入通过。真实 iPhone、有法语声音设备回退、完整背景/BFCache 和可访问性继续待验收。
