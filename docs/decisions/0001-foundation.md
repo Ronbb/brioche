@@ -4,7 +4,7 @@
 
 ## 决定
 
-用用户指定的 Vite 8 + TypeScript 7 + Tailwind CSS 4 + React Router 构建响应式 Web，Rust/Axum 提供独立 API，SeaORM + PostgreSQL 存关系状态和 JSONB 课程快照。建议 React Router Framework Mode 管理 Vite SSR。前端 pnpm、后端 Cargo workspace，通过 Rust 类型导出的 Schema/TS/OpenAPI 共用契约。生产本机 Docker Compose + Caddy，Cloudflare 管理 DNS，开发进程本机运行。
+用用户指定的 Vite 8 + TypeScript 7 + Tailwind CSS 4 + React Router 构建响应式 Web，Rust/Axum 提供独立 API，SeaORM + PostgreSQL 存关系状态和 JSONB 课程快照。建议 React Router Framework Mode 管理 Vite SSR。前端 pnpm、后端 Cargo workspace，通过 Rust 类型导出的 Schema/TS/OpenAPI 共用契约。生产本机 Docker Compose + Traefik，HTTP 入口固定 30075，HTTPS 由用户外部处理；Cloudflare 管理 DNS，开发进程本机运行。
 
 课程用 JSON Schema 声明的 block AST 和 step flow，服务端保留判题规则，浏览器只接收公共 DTO。文件是可审查的课程编辑源，发布生成不可变 revision 与整批目录 release。
 
@@ -14,7 +14,7 @@
 
 不使用 Next.js，这是用户明确偏好。Vite 原生支持 SSR，但其底层接口不是一套完整的生产路由/渲染服务器；React Router Framework Mode 负责这些职责，避免手写 SSR 生命周期。也可使用 React Router Data Mode + 自定义 Vite SSR，但当前没有需要承担该维护量的定制要求。
 
-Rust 前端（Leptos/Yew）被允许作为备选，但先采用用户具体指定的 React 技术栈，适配文本学习交互及组件资源更直接。需要 WASM 计算时可局部引入，不以服务端 Rust 推导前端也必须 Rust。若后续完全无需 SSR/公开页面，可关闭 SSR 并将 Web 静态文件交给 Caddy，减少运行进程。
+Rust 前端（Leptos/Yew）被允许作为备选，但先采用用户具体指定的 React 技术栈，适配文本学习交互及组件资源更直接。需要 WASM 计算时可局部引入，不以服务端 Rust 推导前端也必须 Rust。若后续完全无需 SSR/公开页面，可关闭 SSR 并将 Web 静态文件交给独立静态服务，减少运行进程。
 
 用户认可 SeaORM 等 Rust ORM，选择 SeaORM 处理关系数据和事务，保留 SeaQuery/raw SQL 处理复杂查询。ORM Entity 不作为公开 API 模型；生产使用显式迁移，不自动 schema sync。代价是需要理解生成 SQL、避免 N+1 并验证 session store 与 ORM 版本配套。
 

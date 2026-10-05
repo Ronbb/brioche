@@ -1,4 +1,6 @@
-use brioche_course_contract::{ApiError, Catalog, GradeRequest, GradeResult, PublicLesson};
+use brioche_course_contract::{
+    ApiError, Catalog, CsrfToken, GradeRequest, GradeResult, PublicLesson,
+};
 use std::{fs, path::Path};
 use ts_rs::TS;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -10,6 +12,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     ApiError::export_all(&config)?;
     GradeRequest::export_all(&config)?;
     GradeResult::export_all(&config)?;
+    CsrfToken::export_all(&config)?;
     fs::write(
         out.join("public-lesson.schema.json"),
         serde_json::to_string_pretty(&schemars::schema_for!(PublicLesson))?,

@@ -6,20 +6,15 @@
 
 本设计没有修改 DNS、路由器、防火墙，也没有启动生产服务。实际域名、公网地址、生产机器/系统和可映射外网端口仍待部署前补齐。
 
-默认建议：外网 443 → 生产机器 443 → Caddy；Cloudflare 可先 DNS only 验证，再启用代理。若外网 443 不可用，选 Cloudflare 官方支持的 HTTPS 端口（例如 8443），浏览器 URL 必须显式带端口；普通 DNS 记录不会把一个端口改写成另一个。
-
-使用非标准外网端口时，应用 canonical origin、认证跳转及可选 HTTP → HTTPS 重定向都必须保留外网端口，不能把内部 Caddy 的 443 当作浏览器访问端口；实际 Caddy 配置需按外网映射验证。
+2026-10-06 用户确认：入口网关使用 Traefik，Compose 对外仅映射 HTTP `30075`，HTTPS 由用户在外部处理。本项目不配置证书、ACME、HTTPS 端口或 HTTP→HTTPS 跳转。
 
 ```text
-浏览器 https://<domain>[:port]
-  ├─ DNS only：域名解析到公网 IP，浏览器直接连接源站
-  └─ Proxied：浏览器连接 Cloudflare，边缘再连接源站
+浏览器 → 用户管理的外部入口 / HTTPS
        ↓
-路由器 external HTTPS port → 固定 LAN 地址:443
+用户入口 / 路由器 → 生产机器 HTTP :30075
        ↓
-Caddy（Docker 对宿主机只映射所需 HTTPS 端口）
+Traefik（宿主机 30075 → 容器 8080）
   ├─ /api/*   → Rust server:3001（保留路径前缀）
-  ├─ /media/* → 只读 published media 持久卷
   └─ 其他     → React Router SSR web:3000
 
 server → postgres:5432（内部网络）
@@ -51,13 +46,13 @@ server → postgres:5432（内部网络）
 
 | 服务 | 职责 | 持久化/端口 |
 | --- | --- | --- |
-| caddy | TLS、路由、静态媒体 | 证书数据卷、只读媒体卷；宿主映射 HTTPS，必要时 HTTP |
+| traefik | HTTP 同源路由 | 固定 `30075:8080`；只读 file provider 配置 |
 | web | React Router SSR Node 服务 | Vite client/server 构建包含在镜像；内部 3000 |
 | server | Rust Axum 二进制 | 只读媒体/配置；内部 3001，DB 连接 |
 | postgres | 数据库 | named volume；内部 5432 |
 | migrate / content-cli | 一次性维护任务 | 与当前 release 镜像一致；正常运行后退出 |
 
-Caddy/Web/API 共享应用内部网络，API/PostgreSQL 共享数据库网络，Web 不直接连接数据库。仅 Caddy 入口发布宿主端口；不对公网或 LAN 暴露数据库、Docker API、认证 secrets 和 Caddy 管理 API。
+Traefik/Web/API 共享应用内部网络，API/PostgreSQL 共享数据库网络，Web 不直接连接数据库。仅 Traefik 入口发布宿主端口，数据库和业务进程保留在内部网络。Traefik 使用 file provider，不挂 Docker socket；dashboard/API 未启用，健康检查仅监听容器 loopback `8082`。
 
 使用 Linux 容器。如果生产宿主机是 Windows，Docker Desktop/WSL2 的服务自启、网络转发和磁盘权限需要单独验证；不能把 `restart: unless-stopped` 当作 Docker 引擎本身会在开机后启动。媒体卷与 DB 卷路径必须确定，备份目录与 live volume 分开。
 
@@ -67,24 +62,13 @@ Web 使用 React Router 官方 Node 部署方式运行 Vite 生成的 client/ser
 
 域名、session 配置和内部 API 地址是 runtime 配置；不得把生产秘密烘进镜像。VITE_ 变量会进入浏览器 bundle，只能保存公开值，优先同源相对 `/api`，不把内部 API URL 暴露给浏览器。SSR 关闭时可切换静态文件服务模式，但本提案默认保留 Web SSR 进程。
 
-## DNS、Cloudflare 与证书
+## 外部入口与 HTTPS 对接
 
-### DNS only
+Compose 内仅提供 HTTP，入口固定为宿主机 `30075`。用户管理的外部网关把请求转发至 `http://<生产机器>:30075`，并处理 HTTPS、Cloudflare 与路由器接入。本项目不需要 DNS API token 或证书卷。
 
-`A` 指向可访问的公网 IPv4；只有 IPv6 也能实际访问且防火墙就绪时才设置 `AAAA`。Caddy 使用公网可信证书。若能开放外网 80/443，可使用自动 ACME HTTP/TLS 验证；如果只开放自定义 HTTPS 端口，推荐 DNS-01。
+应用的公开 origin 应配置为浏览器实际访问的地址，包含实际协议与外网端口；它与内部 HTTP 端口独立。生产 cookie 的 Secure 标记按外部 HTTPS origin 配置，CSRF 用明确的允许 origin 校验，不用不受信的转发 header 推断。若后续确需使用外部代理 header，仅配置用户实际入口的 trusted IP/CIDR，不全网信任。
 
-### 启用 Cloudflare 代理
-
-仅使用 Cloudflare 支持的端口；TLS 设为 Full (strict)，源站必须有符合要求的证书。默认选公开 ACME 证书，方便 DNS only、局域网和诊断访问；Cloudflare Origin CA 是另一方案，但不被普通浏览器直接信任。
-
-DNS-01 推荐使用 `caddy-dns/cloudflare` provider；这需要**构建包含插件的 Caddy 镜像**，普通官方 Caddy 镜像并不自带该 DNS provider。API token 限定相关 zone 和 DNS 修改权限，配置见 provider 官方要求，不写全局 API key、不进 Git、不输出到日志。
-
-DNS-01 不需要 CA 访问源站 80/443，但浏览器到源站/边缘的实际入口仍然必须可达。TLS-ALPN 验证可能被 Cloudflare 代理终止而无法抵达 Caddy，因此代理模式优先 DNS-01；证书选择由实际入口条件决定。
-
-建议在明确源站模式后建立相应防火墙规则。代理模式可以只接受官方 Cloudflare IP 段，需维护列表并保留本机运维通道；DNS only 模式不能使用同样的限制阻断正常浏览器。Caddy 信任的 forwarded headers 和 API 的 trustProxy 只限实际代理来源，不设全网信任。
-
-Cloudflare 缓存规则：认证/API/个人页面一律绕过，含 session cookie 的个性化 HTML/loader data 不缓存；Vite 内容哈希 `/assets/*` 与内容哈希媒体可长期缓存。公共目录按 release ID 缓存，active 指针短缓存/及时失效。正式使用 CDN 缓存前用两个账号验证没有进度和会话串用。
-
+认证/API/个人页面绕过共享缓存；含 cookie 的个性化 HTML/loader data 不缓存。Vite 内容哈希资源与已发布媒体可长期缓存。正式接入外部入口时用两个账号验证进度和会话隔离。
 ## 发布流程
 
 1. 本机开发完成类型检查、相关测试、生产构建和内容校验。
@@ -121,8 +105,8 @@ Cloudflare 缓存规则：认证/API/个人页面一律绕过，含 session cook
 
 - [Cloudflare 支持的代理端口](https://developers.cloudflare.com/fundamentals/reference/network-ports/)
 - [Cloudflare Full (strict)](https://developers.cloudflare.com/ssl/origin-configuration/ssl-modes/full-strict/)
-- [Caddy 自动 HTTPS 与验证方式](https://caddyserver.com/docs/automatic-https)
-- [Caddy Cloudflare DNS provider](https://github.com/caddy-dns/cloudflare)
+- [Traefik file provider](https://doc.traefik.io/traefik/providers/file/)
+- [Traefik entrypoints](https://doc.traefik.io/traefik/routing/entrypoints/)
 - [Vite SSR](https://vite.dev/guide/ssr)、[React Router 部署](https://reactrouter.com/start/framework/deploying)
 
 ## 手机同步开发预览
@@ -131,7 +115,6 @@ Cloudflare 缓存规则：认证/API/个人页面一律绕过，含 session cook
 
 手机通过 Web 入口和相对 `/api` 请求 API；代理/SSR 的内部连接地址仍可使用 127.0.0.1，它是连接目标，不是对外监听限制。使用手机时 PUBLIC_APP_URL 配置成实际 Web origin；若同时保留 localhost 与 LAN 登录，新增明确的开发允许 origin 列表供 CSRF/重定向检查使用，不能全开放 CORS 或禁用 CSRF。Vite 保留默认 IP 访问支持，不配置 `allowedHosts: true`。
 
-当前设计预览端口 4173 已全接口监听，本机 LAN HTTP 请求通过；手机仍需与电脑同网实测。正式应用构建前暂无可运行的 Vite/Axum 配置。
+当前设计预览端口 4173 已全接口监听，本机 LAN HTTP 请求通过；手机仍需与电脑同网实测。当前正式 Vite/Axum 工程也按同一全接口监听约定运行。
 
 参考：[Vite server.host](https://vite.dev/config/server-options.html#server-host)。
-

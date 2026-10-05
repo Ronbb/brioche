@@ -105,3 +105,11 @@
 - 正文加入结构化教学补充及语法锚点；完整学习步骤与多正文块流程仍在实现清单中，不能宣称课程解释器全部完成。
 - 用户反馈速度面板贴左上角；原因是 CSS reset 覆盖原生 dialog 自动 margin。显式 fixed/inset/auto margin 后，564×884 截图与 320×568、390×844、768×1024、1440×900 几何检查通过，面板中心误差小于 1px。
 - 564×260 横屏检查：面板保持 16px 上下边距，内区可滚动且不占额外宽度；无页面横向溢出。自定义 radio 保留 roving tabIndex，Escape 关闭。真实 iPhone 语音与安全区仍需实机验收。
+
+## 2026-10-06：账号基础与 Traefik 入口
+
+- 新增 browser_sessions 显式迁移与 SeaORM/tower-sessions 适配，实际 PostgreSQL 验证创建/冲突重试/更新/过期/清理/幂等删除；删除后旧 save 返回错误，不恢复会话。库级 cycle_id 更换 ID 且删除旧记录，flush 删除新记录。数据库不含原始 cookie ID。
+- 测试 Router 验证 HttpOnly/Secure/SameSite=Lax/Path=/ cookie、精确 Origin 与会话绑定 CSRF。缺少/错误 Origin、缺少/伪造 token、跨会话 token 均 403；nonce 轮换后旧 token 403、新 token 成功。这里是基础模块测试，不代表生产登录路由已完成。
+- 用户指定入口 Traefik、HTTP 30075、外部自行处理 HTTPS；已移除 Caddy 文件和 Compose 证书卷声明，新增只读 file provider。官方 traefik:v3.7.13 拉取成功并固定 digest。
+- 隔离 brioche-traefik-test Compose 使用已有 Web/API 测试镜像验证新网关，PostgreSQL/migrate/API/Web/Traefik 启动健康，HTTP 30075 的首页 SSR、/health、/api/health、/api/ready、/api/catalog 全部 200。此烟测验证入口替换，未宣称重新构建本轮账号模块镜像。
+- 网关以非 root 运行，无 Docker socket 和公开管理入口；healthcheck 经内部 127.0.0.1:8082/ping 成功，只有 8080 映射到宿主 30075。测试 override 临时限定 loopback，共享 Compose 默认映射全部接口。测试资源随后清理，不修改外部 HTTPS/DNS/路由器。

@@ -14,7 +14,7 @@
 flowchart LR
   Browser[浏览器] --> Edge[Cloudflare DNS / 可选代理]
   Edge --> Router[路由器端口映射]
-  Router --> Proxy[Caddy TLS / 同源入口]
+  Router --> Proxy[Traefik HTTP :30075 / 同源入口]
   Proxy -->|页面与静态文件| Web[Vite / React Router SSR]
   Proxy -->|/api/*| Server[Rust / Axum 模块化单体]
   Proxy -->|/media/*| Media[只读已发布媒体]
@@ -48,7 +48,7 @@ Cloudflare DNS only 时用户连接直接到公网 IP；启用代理时经过 Cl
 | 状态 | React 局部状态 / reducer | 当前步骤、译文开关和抽屉是 UI 状态；首版无需全局状态库 |
 | 日志/接口 | tracing + OpenAPI 3.1 | requestId/错误结构；从 Rust 公共 DTO 导出接口，生成 TS 客户端 |
 | 验证 | cargo test + PostgreSQL 集成测试 + Vitest + Playwright | 重点验证课程校验、判分、权限、跨设备和端到端流程 |
-| 部署 | Docker Compose + Caddy 稳定版 | 本机 Linux 容器、自托管、同源路由和 TLS |
+| 部署 | Docker Compose + Traefik 稳定版 | 本机 Linux 容器、HTTP 30075 同源入口；TLS 由用户外部处理 |
 
 Vite 8 和 TypeScript 7 已有官方稳定发布资料。TS 7.0 的程序化 compiler API 与旧工具存在兼容边界：类型检查采用 TS 7，lint/类型生成若仍依赖 TS 6 API，则隔离相应兼容工具依赖，而不降级应用的 TS 7 类型检查。Vite build 不代替类型检查；React Router typegen 和插件 peer dependencies 在初始化时实际验证。
 
@@ -70,7 +70,7 @@ content/
   lessons/                # 含判题规则的权威课程源，绝不能放进 web/public
   knowledge/              # 词汇、表达、语法的共享编辑源
   media-manifest.json     # 媒体 ID、哈希、尺寸、授权、署名
-infra/                    # Dockerfile、Compose、Caddyfile、备份说明
+infra/                    # Dockerfile、Compose、Traefik 配置、备份说明
 docs/                     # 当前已有设计与示例；应用目录尚未创建
 Cargo.toml / Cargo.lock   # Rust workspace / 可重复构建
 pnpm-workspace.yaml       # 前端 workspace，独立 pnpm-lock.yaml
@@ -117,7 +117,7 @@ SeaORM Entity 对应持久化表，API 公共 DTO 和课程 AST 独立于 ORM；
 
 ## 请求与鉴权
 
-对浏览器始终只有一个 origin：生产 `https://<domain>`，开发 `http://localhost:5173`。Caddy 将 `/api/*` 保留完整前缀转给 Rust server，Web SSR 处理页面。开发由 Vite server.proxy 代理至 `127.0.0.1:3001`，不把跨域问题交给浏览器；strictPort 防止自动切端口后 trusted origin 失配。
+对浏览器始终只有一个 origin：生产为用户配置的外部地址，开发为 `http://localhost:5173`。Traefik HTTP 入口通过宿主机 30075 接收流量，将 `/api/*` 保留完整前缀转给 Rust server，其余页面交由 Web SSR。HTTPS 由用户外部处理。开发由 Vite server.proxy 代理至 `127.0.0.1:3001`；strictPort 防止自动切端口后 trusted origin 失配。
 
 React Router server loader 调用 `INTERNAL_API_URL`。公共目录可以按 release ID 缓存；涉及用户的 SSR 请求显式转发该请求的 session cookie，Rust 重新验证会话；HTML、loader data 和 API 响应 `private, no-store`，不进入共享/Cloudflare 缓存。只转发明确需要的 cookie 和受信 header，不转发浏览器伪造的代理身份。登录/退出/邀请通过浏览器同源 `/api/v1/auth/*`，Set-Cookie 由反向代理透传。
 

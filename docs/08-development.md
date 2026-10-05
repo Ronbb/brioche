@@ -12,7 +12,8 @@
 - SeaORM PostgreSQL Entity、版本化显式迁移、仅插入的课程导入工具、草稿过滤及最新发布 revision 读取。
 - `/practice/:lessonId` 示例练习：选择、填空、排序由 Rust 判分，错误反馈/重试/回顾由页面呈现。私有答案规则在导入时校验，公共契约只包含提交和反馈 DTO。
 - 正文增加结构化解释、文化范围、词汇与语法；点语法锚点可打开解释。校验拒绝坏解释锚点、重复题目选项、未知步骤类型和不可达教学块。
-- Docker Compose：PostgreSQL → 一次性迁移 → API → SSR Web → Caddy。数据库不映射宿主端口，生产关闭示例课程模式。
+- Docker Compose：PostgreSQL → 一次性迁移 → API → SSR Web → Traefik。入口仅 HTTP 30075，HTTPS 由用户外部处理；数据库不映射宿主端口，生产关闭示例课程模式。
+- 账号基础模块：SeaORM PostgreSQL `tower-sessions` 适配、显式会话表迁移、会话绑定 CSRF token 与精确 Origin 策略；已用真实 PostgreSQL 与 HTTP cookie 验证。它们尚未挂到生产认证路由，登录/邀请/退出页面仍待接入。
 
 ## 本机开发
 
@@ -75,13 +76,15 @@ docker compose config --quiet
 docker compose build
 ```
 
-准备好生产参数和已审校课程后，启动方式为 `docker compose up -d`；不要在缺少域名/端口/备份方案时把本机验证当作公网发布。
+准备好生产参数和已审校课程后，启动方式为 `docker compose up -d`。访问 `http://<宿主机地址>:30075`；对外 HTTPS、域名和路由器由用户处理。Compose 内不申请证书，也不开放 HTTPS 端口。
 
-Web 镜像用 `pnpm deploy --prod` 保留生产依赖，使用 React Router Node 服务，API 为 Linux release 二进制。Caddy 2.11.7 使用官方 release 二进制及其 SHA-512 清单构建，因为初始化时对应 Docker Hub 标签尚不可用。版本依据：[Caddy 发布记录](https://github.com/caddyserver/caddy/releases/tag/v2.11.7)、[PostgreSQL 18.6](https://www.postgresql.org/docs/release/18.6/)。
+Web 镜像用 `pnpm deploy --prod` 保留生产依赖，使用 React Router Node 服务，API 为 Linux release 二进制。入口使用官方 `traefik:v3.7.13` 镜像，固定发布 `30075:8080`。配置位于 `infra/traefik`，file provider 保留 API 路径前缀、页面走 SSR；没有 Docker socket、公开 dashboard 或证书卷。版本依据：[Traefik 3.7.13](https://github.com/traefik/traefik/releases/tag/v3.7.13)、[PostgreSQL 18.6](https://www.postgresql.org/docs/release/18.6/)。
 
-当前 Caddy 配置支持常规 ACME 验证；只开放非标准外网端口时的 Cloudflare DNS-01 插件、映射测试、媒体持久卷和备份/恢复尚待部署阶段补齐。TLS/DNS/路由器设置尚未修改。
+媒体持久卷和备份/恢复尚待部署阶段补齐。旧 Caddy 镜像、配置和证书卷声明已移除；用户既有卷不会因修改 Compose 被删除。TLS/DNS/路由器设置尚未修改。
 
 ## 下一阶段
+
+会话基础采用 `axum-login 0.18.0` 配套的 `tower-sessions 0.14.0`，避免与 0.15 创建两套 Session 类型（[官方依赖清单](https://docs.rs/crate/axum-login/0.18.0/source/Cargo.toml)）。只存会话 ID 的 SHA-256，记录用 `timestamptz` 到期；create 不覆盖冲突、save 不插入，撤销后的旧响应不能恢复记录。CSRF 用 [getrandom 0.4.3](https://docs.rs/getrandom/0.4.3/getrandom/fn.fill.html) 的系统随机数、常量时间比较和配置的 origin allowlist，不从代理 header 推断可信 origin。接下来将这些基础接入完整账号模块，同时增加密码/邀请、过期清理任务和会话生命周期配置。
 
 账号邀请/登录、cookie 会话与 CSRF、学习会话固定 revision、幂等提交、进度续学、账号复习排程、个人资料保存尚未实现。现在为访客阅读、示例练习与临时自评，不宣称保存到账号。完整步骤解释器和持久化继续按路线图实施，验收缺口见 [实现清单](09-implementation-tracker.md)。
 

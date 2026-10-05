@@ -1,0 +1,17 @@
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+entryPoints:
+  web:
+    address: ":8080"
+  health:
+    address: "127.0.0.1:8082"
+providers:
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+ping:
+  entryPoint: health
+log:
+  level: INFO
+# No Docker socket, public dashboard, TLS entrypoint or certificate resolver.

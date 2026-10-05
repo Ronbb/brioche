@@ -192,6 +192,7 @@ dto!(GradeResult {
     correct: bool,
     feedback_zh: String
 });
+dto!(CsrfToken { csrf_token: String });
 
 impl PublicLesson {
     pub fn summary(&self) -> LessonSummary {
