@@ -175,7 +175,7 @@ cargo run -p brioche-server -- reset-password learner@example.com .local/reset-l
 
 请求在发出前持久化原 path/method/body/version/idempotencyKey。恢复后必须明确重试同一请求，不能自动创建新的尝试；409 拉取服务器最新进度并保留答案，后续确认使用新版本。成功/明确拒绝清除对应 pending；旧页面的迟到响应只能清理相同幂等键，不能删除新请求。页面尚未恢复存储时禁止写入。完成页也可确认未决的完成请求。
 
-恢复数据视为不可信：限制 JSON 大小、会话路径、允许的变更类型、版本/幂等键及固定题目选项/词块，拒绝其他 endpoint、伪造分数、重复/未知词块。练习草稿带最近一次 attempt ID，服务器已有更新时丢弃过期草稿并显示实际结果。存储不可用会提示；无法持久化 pending 时不发起变更，避免承诺无法提供的刷新恢复。
+恢复数据视为不可信：限制 JSON 大小、会话路径、允许的变更类型、版本/幂等键及固定题目选项/词块，拒绝其他 endpoint、伪造分数、重复/未知词块。练习草稿带最近一次 attempt ID，服务器出现新尝试时保留本地有效草稿并提示冲突，再次确认后才创建新尝试；本次提交明确确认后清理草稿并显示服务器结果。存储不可用会提示；无法持久化 pending 时不发起变更，避免承诺无法提供的刷新恢复。
 
 `pnpm test:web` 使用 Node 24 原生 TypeScript 与 node:test 验证存储隔离、篡改/损坏数据、存储拒绝和迟到响应清理，CI 已接入。完整真实浏览器的刷新、离页、两标签页冲突与响应丢失流程仍待验收；账号复习和收藏的相同能力随后接入，见下节；浏览器端到端验收仍待完成。
 
@@ -188,3 +188,9 @@ cargo run -p brioche-server -- reset-password learner@example.com .local/reset-l
 401/403/429、网络错误和 5xx 保留原提交；登录/CSRF/限流恢复后继续使用原 key。400/404/409/410/422 属于明确拒绝，清理对应请求，冲突返回最新状态；主动退出会清理此账号的标签页草稿。此机制不等于跨标签页草稿同步，服务器乐观锁仍是多端冲突的最终依据。
 
 五项 Web 协议测试、TS 7 检查与 Web/SSR build 通过。覆盖 owner/目标/revision 隔离、请求字段和操作种类拒绝、掉出队列的 pending 发现、登录/CSRF/限流保留；浏览器端到端故障/刷新/两标签页测试尚未完成，继续按验收清单推进。
+
+## 隔离浏览器验收数据
+
+`cargo run -p brioche-server --example browser_fixture` 仅接受 TEST_DATABASE_URL 指向 loopback 的 `/brioche_browser_qa` 数据库，执行迁移并创建合成协议课/测试账号。它绕过正式课程审校与素材发布流程，仅用于一次性浏览器测试，不能替代正式内容发布。该 example 使用与 PostgreSQL 集成测试相同的测试 release helper；拒绝其他数据库或 query 参数。账号为 browser-qa@example.test，固定口令仅用于此隔离测试库，源码内可见，不用于生产。
+
+验收可在独立 PostgreSQL 临时容器（55432）、数据库 API（3003、PUBLIC_APP_URL=http://127.0.0.1:5175）和独立 Web（INTERNAL_API_URL=http://127.0.0.1:3003，react-router dev --port 5175）进行，完成后清理这组资源；不替换用户开发进程或生产服务。测试单选/填空草稿刷新、服务器提交后丢失响应、刷新/SPA 离页后重试和两标签页不同答案冲突，同时核对数据库真实尝试数。

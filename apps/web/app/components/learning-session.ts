@@ -27,6 +27,9 @@ export function useLearningSession(initial: LearningSession, scope: string) {
     [saving, setSaving] = useState(false),
     [error, setError] = useState(""),
     [restored, setRestored] = useState(false),
+    [confirmedAttempts, setConfirmedAttempts] = useState<
+      Record<string, string>
+    >({}),
     [uncertain, setUncertain] = useState(false);
   const latest = useRef(initial.progress),
     busy = useRef(false),
@@ -85,6 +88,16 @@ export function useLearningSession(initial: LearningSession, scope: string) {
       );
       if (!alive.current) return null;
       accept("progress" in result ? result.progress : result);
+      const fields = job.body as Record<string, unknown>;
+      if (
+        typeof fields.exerciseId === "string" &&
+        typeof fields.idempotencyKey === "string"
+      ) {
+        const exerciseId = fields.exerciseId,
+          key = fields.idempotencyKey;
+        saveDraft(scope + ":answer:" + exerciseId, null);
+        setConfirmedAttempts((old) => ({ ...old, [exerciseId]: key }));
+      }
       pending.current = null;
       setUncertain(false);
       job.onSaved?.();
@@ -155,6 +168,7 @@ export function useLearningSession(initial: LearningSession, scope: string) {
   }
   return {
     progress,
+    confirmedAttempts,
     saving,
     error,
     uncertain,

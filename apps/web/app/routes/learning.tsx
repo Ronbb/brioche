@@ -188,6 +188,7 @@ function Session({
                     <ExerciseEditor
                       key={block.id}
                       draftKey={scope + ":answer:" + block.id}
+                      confirmedSubmission={session.confirmedAttempts[block.id]}
                       block={block}
                       latest={session.progress.attempts
                         .filter((attempt) => attempt.exerciseId === block.id)

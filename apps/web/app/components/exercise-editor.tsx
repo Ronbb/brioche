@@ -14,6 +14,7 @@ export function ExerciseEditor({
   submit,
   hint,
   draftKey,
+  confirmedSubmission,
 }: {
   block: Extract<Block, { type: "exercise" }>;
   latest?: AttemptRecord;
@@ -23,6 +24,7 @@ export function ExerciseEditor({
   submit: (answer: ExerciseAnswer, onSaved: () => void) => Promise<unknown>;
   hint: () => void;
   draftKey: string;
+  confirmedSubmission?: string;
 }) {
   const [choice, setChoice] = useState(
       latest?.answer.kind === "choice" ? latest.answer.optionId : "",
@@ -33,31 +35,41 @@ export function ExerciseEditor({
     [order, setOrder] = useState<string[]>(
       latest?.answer.kind === "order" ? latest.answer.tokenIds : [],
     ),
-    [editing, setEditing] = useState(!latest);
+    [editing, setEditing] = useState(!latest),
+    [draftConflict, setDraftConflict] = useState(false);
   const previous = useRef(latest?.id);
+  const previousConfirmation = useRef(confirmedSubmission);
   const audio = useLearning(),
     storageWarning = useRef(false);
   useEffect(() => {
-    if (latest?.id !== previous.current) {
-      previous.current = latest?.id;
+    const changed = latest?.id !== previous.current;
+    previous.current = latest?.id;
+    if (
+      confirmedSubmission &&
+      confirmedSubmission !== previousConfirmation.current
+    ) {
+      previousConfirmation.current = confirmedSubmission;
       saveDraft(draftKey, null);
       setEditing(false);
+      setDraftConflict(false);
       return;
     }
     const draft = readDraft(draftKey) as {
       answer?: unknown;
       baseline?: unknown;
     } | null;
-    if (
-      draft?.baseline === (latest?.id ?? null) &&
-      validAnswer(draft.answer, block)
-    ) {
+    if (draft && validAnswer(draft.answer, block)) {
       if (draft.answer.kind === "choice") setChoice(draft.answer.optionId);
       if (draft.answer.kind === "text") setText(draft.answer.text);
       if (draft.answer.kind === "order") setOrder(draft.answer.tokenIds);
       setEditing(true);
-    } else saveDraft(draftKey, null);
-  }, [draftKey, latest?.id]);
+      setDraftConflict(draft.baseline !== (latest?.id ?? null));
+    } else {
+      saveDraft(draftKey, null);
+      setDraftConflict(false);
+      if (changed) setEditing(false);
+    }
+  }, [draftKey, latest?.id, confirmedSubmission]);
   function keep(answer: ExerciseAnswer) {
     if (
       !saveDraft(draftKey, { answer, baseline: latest?.id ?? null }) &&
@@ -104,6 +116,11 @@ export function ExerciseEditor({
       }}
     >
       <h2>{block.promptZh}</h2>
+      {draftConflict && editing && (
+        <p className="profile-note" role="status">
+          这道题已有新的提交。你的草稿仍保留，确认后会记录一次新尝试。
+        </p>
+      )}
       <fieldset disabled={blocked || !!result || completed}>
         <legend className="sr-only">你的答案</legend>
         {block.exerciseType === "single-choice" && (
