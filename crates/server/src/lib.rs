@@ -1,4 +1,5 @@
 pub mod csrf;
+pub mod dashboard;
 pub mod entity;
 pub mod grading;
 pub mod identity;

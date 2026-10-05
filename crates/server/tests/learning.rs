@@ -158,6 +158,10 @@ async fn learning_revision_ownership_idempotency_and_completion() {
     );
     let mut a = Browser::new(app.clone()).await;
     assert_eq!(
+        a.send("GET", "/api/v1/me/dashboard", None, true).await.0,
+        401
+    );
+    assert_eq!(
         a.send("GET", "/api/v1/me/learning", None, true).await.0,
         401
     );
@@ -175,6 +179,15 @@ async fn learning_revision_ownership_idempotency_and_completion() {
     a.account(&backend, "one@example.test").await;
     let mut b = Browser::new(app.clone()).await;
     b.account(&backend, "two@example.test").await;
+    let (status, dashboard) = a.send("GET", "/api/v1/me/dashboard", None, true).await;
+    assert_eq!(status, 200);
+    assert_eq!(dashboard["days"].as_array().unwrap().len(), 7);
+    assert_eq!(dashboard["activeDays"], 0);
+    assert_eq!(dashboard["completedLessons"], 0);
+    assert_eq!(dashboard["dueReviews"], 0);
+    assert_eq!(dashboard["recommendedLesson"]["id"], lesson_id);
+    assert_eq!(dashboard["allAvailableCompleted"], false);
+    assert!(dashboard["resume"].is_null());
     assert_eq!(
         a.send(
             "POST",
@@ -227,6 +240,12 @@ async fn learning_revision_ownership_idempotency_and_completion() {
         assert!(!text.contains(forbidden));
     }
     let id = opened["progress"]["id"].as_str().unwrap().to_owned();
+    let (_, dashboard) = a.send("GET", "/api/v1/me/dashboard", None, true).await;
+    assert_eq!(dashboard["resume"]["sessionId"], id);
+    assert_eq!(
+        dashboard["activeDays"], 0,
+        "opening a session is not learning activity"
+    );
     assert_eq!(
         a.send(
             "POST",
@@ -714,6 +733,28 @@ async fn learning_revision_ownership_idempotency_and_completion() {
     );
     let latest:i32=db.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT latest_completed_revision FROM lesson_progress WHERE first_completed_at IS NOT NULL")).await.unwrap().unwrap().try_get("","latest_completed_revision").unwrap();
     assert_eq!(latest, 2);
+    let (_, dashboard) = a.send("GET", "/api/v1/me/dashboard", None, true).await;
+    assert_eq!(dashboard["completedLessons"], 1);
+    assert_eq!(dashboard["dueReviews"], 3);
+    assert_eq!(dashboard["allAvailableCompleted"], true);
+    assert!(dashboard["resume"].is_null());
+    assert_eq!(dashboard["activeDays"], 1);
+    let days = dashboard["days"].as_array().unwrap();
+    assert_eq!(
+        days.iter()
+            .map(|day| day["completedLessons"].as_u64().unwrap())
+            .sum::<u64>(),
+        1
+    );
+    assert!(
+        days.iter()
+            .map(|day| day["exerciseAttempts"].as_u64().unwrap())
+            .sum::<u64>()
+            >= 6
+    );
+    let (_, other) = b.send("GET", "/api/v1/me/dashboard", None, true).await;
+    assert_eq!(other["activeDays"], 0, "activity is isolated by account");
+    assert_eq!(other["completedLessons"], 0);
     assert_eq!(
         a.send("GET", "/api/v1/me/learning", None, true).await.1["completedLessons"],
         1
@@ -804,12 +845,18 @@ async fn learning_revision_ownership_idempotency_and_completion() {
     assert_eq!(reviewed["card"]["stage"], 1);
     assert_eq!(reviewed["card"]["version"], 2);
     assert_eq!(reviewed["timeZone"], "Asia/Shanghai");
+    let (_, dashboard_before_retry) = a.send("GET", "/api/v1/me/dashboard", None, true).await;
     assert_eq!(count(&db, "review_attempts").await, 1);
     assert_eq!(
         a.send("POST", &review_path, Some(review_body.clone()), true)
             .await
             .1,
         reviewed
+    );
+    let (_, dashboard_after_retry) = a.send("GET", "/api/v1/me/dashboard", None, true).await;
+    assert_eq!(
+        dashboard_before_retry["days"],
+        dashboard_after_retry["days"]
     );
     assert_eq!(count(&db, "review_attempts").await, 1);
     assert_eq!(
@@ -1016,6 +1063,15 @@ async fn learning_revision_ownership_idempotency_and_completion() {
     db.execute_unprepared("UPDATE lesson_revisions SET published=false")
         .await
         .unwrap();
+    let (_, dashboard) = a.send("GET", "/api/v1/me/dashboard", None, true).await;
+    assert_eq!(
+        dashboard["completedLessons"], 1,
+        "withdrawal preserves historical facts"
+    );
+    assert_eq!(dashboard["courseStates"], json!([]));
+    assert_eq!(dashboard["dueReviews"], 0);
+    assert!(dashboard["resume"].is_null());
+    assert!(dashboard["recommendedLesson"].is_null());
     let withdrawn_saved = a.send("GET", saved_path, None, true).await;
     assert_eq!(withdrawn_saved.0, 200);
     assert_eq!(withdrawn_saved.1["withdrawn"], true);
@@ -1094,6 +1150,9 @@ async fn learning_revision_ownership_idempotency_and_completion() {
             200
         );
     }
+    let (_, dashboard) = a.send("GET", "/api/v1/me/dashboard", None, true).await;
+    assert_eq!(dashboard["courseStates"].as_array().unwrap().len(), 25);
+    assert_eq!(dashboard["allAvailableCompleted"], false);
     let (_, page1) = a.send("GET", "/api/v1/me/learning", None, true).await;
     assert_eq!(page1["items"].as_array().unwrap().len(), 20);
     let cursor = page1["nextCursor"].as_str().unwrap();
@@ -1196,6 +1255,64 @@ async fn learning_revision_ownership_idempotency_and_completion() {
     ] {
         assert_eq!(a.send("GET", path, None, true).await.0, 400);
     }
+    // A UTC event at Kiritimati's Monday boundary is Honolulu's Sunday.
+    let review_total = |dashboard: &Value| {
+        dashboard["days"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|day| day["reviewAttempts"].as_u64().unwrap())
+            .sum::<u64>()
+    };
+    db.execute_unprepared("UPDATE users SET settings=jsonb_set(settings,'{timeZone}','\"Pacific/Honolulu\"') WHERE email='one@example.test'").await.unwrap();
+    let (_, west_before) = a.send("GET", "/api/v1/me/dashboard", None, true).await;
+    db.execute_unprepared("UPDATE users SET settings=jsonb_set(settings,'{timeZone}','\"Pacific/Kiritimati\"') WHERE email='one@example.test'").await.unwrap();
+    let (_, east_before) = a.send("GET", "/api/v1/me/dashboard", None, true).await;
+    let monday: jiff::civil::Date = east_before["weekStart"].as_str().unwrap().parse().unwrap();
+    let boundary_event = monday
+        .at(0, 0, 0, 0)
+        .in_tz("Pacific/Kiritimati")
+        .unwrap()
+        .timestamp()
+        .to_string();
+    let west_date = boundary_event
+        .parse::<jiff::Timestamp>()
+        .unwrap()
+        .in_tz("Pacific/Honolulu")
+        .unwrap()
+        .date()
+        .to_string();
+    // On Sunday/Monday the two zones can currently be in different weeks.
+    let west_increment = u64::from(
+        west_before["days"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|day| day["localDate"] == west_date),
+    );
+    db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,
+        "INSERT INTO review_attempts (id,card_id,user_id,rating,old_stage,new_stage,old_version,new_version,due_at,reviewed_at,time_zone) SELECT md5('dashboard-week-boundary'),id,user_id,'again',0,0,2000,2001,CURRENT_TIMESTAMP,$1::timestamptz,'Pacific/Kiritimati' FROM review_cards WHERE user_id=(SELECT id FROM users WHERE email='one@example.test') LIMIT 1",
+        [boundary_event.into()])).await.unwrap();
+    let (_, east_after) = a.send("GET", "/api/v1/me/dashboard", None, true).await;
+    assert_eq!(review_total(&east_after), review_total(&east_before) + 1);
+    db.execute_unprepared("UPDATE users SET settings=jsonb_set(settings,'{timeZone}','\"Pacific/Honolulu\"') WHERE email='one@example.test'").await.unwrap();
+    let (_, west_after) = a.send("GET", "/api/v1/me/dashboard", None, true).await;
+    assert_eq!(
+        review_total(&west_after),
+        review_total(&west_before) + west_increment
+    );
+    // An unfinished course must remain resumable after more than one overview page.
+    db.execute_unprepared("UPDATE learning_sessions SET completed_at=CURRENT_TIMESTAMP WHERE lesson_id LIKE 'pagination-lesson-%' AND lesson_id <> 'pagination-lesson-0'; UPDATE learning_sessions SET updated_at=CURRENT_TIMESTAMP-interval '40 days' WHERE lesson_id='pagination-lesson-0'").await.unwrap();
+    let (_, overview) = a.send("GET", "/api/v1/me/learning", None, true).await;
+    assert!(
+        !overview["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|row| row["lessonId"] == "pagination-lesson-0")
+    );
+    let (_, dashboard) = a.send("GET", "/api/v1/me/dashboard", None, true).await;
+    assert_eq!(dashboard["resume"]["lessonId"], "pagination-lesson-0");
     brioche_migration::Migrator::down(&db, None).await.unwrap();
     drop(db);
     admin

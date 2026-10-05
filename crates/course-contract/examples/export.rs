@@ -29,6 +29,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     brioche_course_contract::AttemptResult::export_all(&config)?;
     brioche_course_contract::HintResult::export_all(&config)?;
     brioche_course_contract::LearningOverview::export_all(&config)?;
+    brioche_course_contract::StudyDashboard::export_all(&config)?;
     brioche_course_contract::UserProfile::export_all(&config)?;
     brioche_course_contract::UpdateProfileRequest::export_all(&config)?;
     brioche_course_contract::AuthResult::export_all(&config)?;

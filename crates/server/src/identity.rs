@@ -487,6 +487,7 @@ pub fn router(backend: Backend, policy: CsrfPolicy, secure: bool) -> Router {
         .merge(crate::learning::router())
         .merge(crate::reviews::router())
         .merge(crate::library::router())
+        .merge(crate::dashboard::router())
         .layer(axum::middleware::from_fn_with_state(
             Arc::new(policy),
             csrf::protect,

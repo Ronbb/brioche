@@ -291,6 +291,15 @@ dto!(LearningOverviewItem {
     last_step_id: Option<String>, completed_at: Option<String>, first_completed_at: Option<String>, updated_at: String
 });
 dto!(LearningOverview { items: Vec<LearningOverviewItem>, next_cursor: Option<String>, completed_lessons: u32 });
+dto!(StudyDay {
+    local_date: String,
+    confirmed_steps: u32,
+    exercise_attempts: u32,
+    review_attempts: u32,
+    completed_lessons: u32,
+    active: bool
+});
+dto!(StudyDashboard { local_date: String, time_zone: String, week_start: String, days: Vec<StudyDay>, active_days: u8, weekly_goal_days: u8, daily_goal_minutes: u8, due_reviews: u32, next_review_at: Option<String>, completed_lessons: u32, resume: Option<LearningOverviewItem>, recommended_lesson: Option<LessonSummary>, all_available_completed: bool, course_states: Vec<LearningOverviewItem> });
 dto!(UserProfile {
     id: String,
     email: String,

@@ -1458,6 +1458,7 @@ small,
   --accent: #9c4e27;
   --soft: #ffe8c8;
   --leaf: #acd793;
+  --green: #3b572b;
   --line: #e9d9bb;
   --butter: #ffc96f;
   --pistachio: #3b572b;
@@ -3469,3 +3470,25 @@ h2[tabindex="-1"]:focus {
 .settings-title-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
 .settings-page .reader-mode { display: inline-flex; gap: 4px; padding: 4px; background: var(--soft); border-radius: 18px; }
 .library-entry-body .text-button { justify-self: start; text-align: left; }
+.study-overview { margin: 0 0 28px; display: grid; gap: 14px; }
+.study-week { padding: 22px 24px; border: 1px solid var(--line); border-radius: 24px; background: var(--surface); }
+.study-week-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.study-week-heading h2 { font-size: 18px; margin: 0; }
+.study-week-heading .text-button { min-height: 44px; padding: 0; }
+.study-week-days { list-style: none; padding: 0; margin: 18px 0 14px; display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 8px; }
+.study-week-days li { display: grid; justify-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+.study-day-mark { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--paper); color: var(--muted); }
+.study-week-days .is-active .study-day-mark { background: var(--leaf); color: var(--green); }
+.study-week-days .is-today .study-day-mark { outline: 1px solid var(--accent); outline-offset: 3px; }
+.study-week-days .is-future { opacity: .5; }
+.study-week-note { color: var(--muted); font-size: 13px; margin: 0; }
+.study-review-entry { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 22px 24px; border-radius: 22px; background: var(--soft); color: var(--ink); text-decoration: none; }
+.study-review-entry small, .study-review-entry strong, .study-review-entry span > span { display: block; }
+.study-review-entry small { font-size: 12px; color: var(--accent); }
+.study-review-entry strong { font-size: 20px; margin: 4px 0; }
+.study-review-entry span > span { font-size: 13px; color: var(--muted); }
+.study-review-entry > svg { flex-shrink: 0; }
+.hero-without-art { grid-template-columns: 1fr; }
+.course-level + .course-level, .course-unit + .course-unit { margin-top: 30px; }
+@media (min-width: 900px) { .study-overview { grid-template-columns: minmax(0,1.4fr) minmax(0,1fr); } }
+@media (max-width: 360px) { .study-week { padding: 20px 16px; } .study-week-days { gap: 4px; } .study-day-mark { width: 30px; height: 30px; } }
