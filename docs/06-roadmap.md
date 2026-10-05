@@ -8,8 +8,8 @@
 
 | 阶段 | 可交付结果 | 退出条件 |
 | --- | --- | --- |
-| 0 · 设计（当前） | 产品、架构、课程草案、视觉概念、部署约束 | 数据草案可结构校验，关键决定及待定事项有记录 |
-| 1 · 工程基础 | pnpm + Cargo workspace、Vite/React Router、Axum、SeaORM migrations、同源开发 | 本机直接启动，SSR/client 构建、Rust 镜像、health/readiness 可测 |
+| 0 · 设计（已确认 Preview） | 产品、架构、课程草案、视觉概念、部署约束 | 数据草案可结构校验，关键决定及待定事项有记录 |
+| 1 · 工程基础（当前） | pnpm + Cargo workspace、Vite/React Router、Axum、SeaORM migrations、同源开发 | 本机直接启动，SSR/client 构建、Rust 镜像、health/readiness 可测 |
 | 2 · 课程解释器 | catalog、blocks、steps、知识锚点、公共 DTO、发布 CLI | 示例课不需专属页面代码，拒绝错误引用和答案泄漏 |
 | 3 · 学习闭环 | 邀请/登录、会话、三种练习、进度和续学 | 两账号数据隔离，重发幂等，跨设备/多标签不丢进度 |
 | 4 · 首版产品 | 首页、目录、复习、收藏、响应式设计与插图 | A1 三单元内容审校通过，手机/桌面可完成完整学习 |

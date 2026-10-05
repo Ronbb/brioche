@@ -1,0 +1,10 @@
+.git
+.local
+AGENTS.local.md
+.env
+.env.*
+node_modules
+**/node_modules
+target
+**/build
+**/.react-router

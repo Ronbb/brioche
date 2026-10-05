@@ -1,0 +1,15 @@
+{
+  "name": "brioche",
+  "private": true,
+  "packageManager": "pnpm@11.11.0",
+  "scripts": {
+    "dev:web": "pnpm --filter @brioche/web dev",
+    "dev:api": "node scripts/dev-api.mjs",
+    "build": "pnpm --filter @brioche/web build",
+    "typecheck": "pnpm --filter @brioche/web typecheck",
+    "contracts": "cargo run -p brioche-course-contract --example export"
+  },
+  "devDependencies": {
+    "prettier": "3.9.9"
+  }
+}

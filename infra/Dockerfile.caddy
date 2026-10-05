@@ -1,0 +1,19 @@
+# The 2.11.7 release is available upstream before its Docker Hub tag.
+FROM debian:bookworm-slim AS fetch
+ARG TARGETARCH
+WORKDIR /download
+RUN apt-get -o Acquire::Retries=3 update && apt-get -o Acquire::Retries=3 install -y --no-install-recommends ca-certificates curl && rm -rf /var/lib/apt/lists/*
+RUN curl --retry 3 -fsSLO https://github.com/caddyserver/caddy/releases/download/v2.11.7/caddy_2.11.7_linux_${TARGETARCH}.tar.gz \
+ && curl --retry 3 -fsSLO https://github.com/caddyserver/caddy/releases/download/v2.11.7/caddy_2.11.7_checksums.txt \
+ && grep " caddy_2.11.7_linux_${TARGETARCH}.tar.gz$" caddy_2.11.7_checksums.txt | sha512sum -c - \
+ && tar -xzf caddy_2.11.7_linux_${TARGETARCH}.tar.gz caddy
+
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/* \
+ && useradd --uid 10001 --create-home brioche \
+ && mkdir -p /data /config /etc/caddy && chown -R brioche:brioche /data /config
+COPY --from=fetch /download/caddy /usr/bin/caddy
+ENV XDG_CONFIG_HOME=/config XDG_DATA_HOME=/data
+USER brioche
+EXPOSE 80 443
+CMD ["caddy","run","--config","/etc/caddy/Caddyfile","--adapter","caddyfile"]

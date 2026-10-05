@@ -2,7 +2,7 @@
 
 ## 前提与默认拓扑
 
-用户已确定生产运行在本机 Docker，域名由 Cloudflare DNS 管理，路由器做静态端口映射。开发时 Web、API 和数据库在本机直接运行，不要求 Docker。
+用户已确定生产运行在本机 Docker Compose，域名由 Cloudflare DNS 管理，路由器做静态端口映射。开发时 Web、API 和数据库在本机直接运行，不要求 Docker。工程已提供 `compose.yaml` 与 `infra/` 镜像配置；实际命令和当前限制见 [工程说明](08-development.md)。
 
 本设计没有修改 DNS、路由器、防火墙，也没有启动生产服务。实际域名、公网地址、生产机器/系统和可映射外网端口仍待部署前补齐。
 
@@ -45,7 +45,7 @@ server → postgres:5432（内部网络）
 
 `PUBLIC_APP_URL` 作为统一 origin 的项目配置，Rust 的 Origin/CSRF 校验和前端 SSR 据此配置；避免多个配置各写一套域名。变量名称是项目提案，并不假定认证库自动识别。若 cookie store 配置无需独立密钥，移除相应变量，不保留无实际用途的 secrets。
 
-后续计划命令为 `pnpm dev:web`、`cargo run -p brioche-server`，迁移由 sea-orm-migration 的专用 CLI/子命令运行，内容工具计划使用 Rust CLI 的 `content check/publish` 子命令；具体可执行名随工程建立记录。本阶段尚未创建 package.json/Cargo.toml，因此这些命令当前不可运行。
+当前开发命令为 `pnpm dev:api`、`pnpm dev:web`；迁移使用 `cargo run -p brioche-server -- migrate`，课程导入使用 `import <file>` 子命令。完整 `content check/publish` 发布流水线仍属后续目标，详见 [工程说明](08-development.md)。
 
 ## Docker 服务与网络
 

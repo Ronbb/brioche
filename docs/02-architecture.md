@@ -2,6 +2,8 @@
 
 ## 架构选择
 
+2026-10-06 已开始工程开发；本文保留整体目标设计，实际实现边界与可运行命令见 [工程说明](08-development.md)。
+
 采用一个仓库、两套工具链：前端 pnpm workspace（Vite 8 + TypeScript 7 + Tailwind CSS 4 + React Router），后端 Cargo workspace（Rust + Axum）。服务端内部按领域组织，是**模块化单体**；业务一致性集中在一个 PostgreSQL 数据库中。
 
 建议 React Router Framework Mode + Vite SSR：Web 的 Node 进程只处理 React 页面渲染、路由 loader 和浏览器资源，Rust API 是唯一业务后端。Vite 提供 SSR 构建/开发能力，生产仍需运行生成的 JS 服务端 bundle；不能让 Rust 直接执行 React SSR。公开目录/课程首屏可 SSR 或预渲染，练习、知识抽屉和进度交互在客户端处理。

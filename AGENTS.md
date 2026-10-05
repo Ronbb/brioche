@@ -2,7 +2,7 @@
 
 ## 项目阶段与阅读顺序
 
-当前为设计阶段，没有可运行应用或已存在的测试命令。先读 `docs/README.md`，再按任务读对应文档。不要把计划目录、API、命令或设计稿里的进度当成已实现功能。
+当前进入工程开发，已有 React Router SSR Web、Rust 课程读取 API 与 SeaORM 迁移。先读 `docs/README.md` 和 `docs/08-development.md`，再按任务读对应文档。账号、判分、续学及完整内容发布仍未实现，不要把计划或设计稿当成已实现功能。
 
 若存在 `AGENTS.local.md`，也读取它；它是本机补充资料，应被显式读取，不假定工具自动加载。用户当次指令和已确认偏好优先于这里的约定。
 
@@ -10,7 +10,7 @@
 
 - 中文母语自学者，A1–A2，多用户。
 - 等级 → 单元 → 课程，正文以文章/对话为主体，解释/词汇/语法为结构数据。
-- Web only + server；开发本机直接运行，生产本机 Docker、Cloudflare DNS 与路由器端口映射。
+- Web only + server；开发本机直接运行，生产本机 Docker Compose、Cloudflare DNS 与路由器端口映射。
 - 界面美观且有情境插图；前台不暴露数据 Schema、部署方式等实现术语。
 - 服务端优先 Rust；前端 Vite 8 + TypeScript 7 + Tailwind CSS 4 + React Router，不使用 Next.js。
 - 持久化采用 SeaORM + PostgreSQL；Entity 与公共 DTO 分开，复杂查询可显式 SQL，事务和用户权限不能交给 ORM 自动推断。
@@ -40,5 +40,5 @@
 - 改关键设计同步更新 docs 与决策记录，标明事实、建议、待验证项。
 - 课程先结构/语义校验，再预览与人工审校；结构通过不表示教学内容正确。
 - 权限、判分、事务、幂等、版本与恢复做风险对应的验证；文档/低风险样式不添加无意义测试。
-- 应用脚本建立后记录实际可用命令；当前没有 `pnpm test` 等可执行约定。Rust 实现后按变更执行 cargo fmt/check/clippy/test，TS 7 类型检查不能用 Vite build 代替。
+- 实际命令：`pnpm dev:api`、`pnpm dev:web`、`pnpm contracts`、`pnpm typecheck`、`pnpm build`；Rust 使用 cargo fmt/check/clippy/test。PostgreSQL 集成测试显式设置专用 `TEST_DATABASE_URL` 后运行，禁止指向生产。TS 7 类型检查不能用 Vite build 代替。
 - 不自行修改用户 DNS/路由器或执行生产上线；按相应任务的授权范围工作。

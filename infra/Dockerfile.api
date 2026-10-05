@@ -1,0 +1,14 @@
+FROM rust:1.99.0-bookworm AS build
+WORKDIR /src
+COPY Cargo.toml Cargo.lock ./
+COPY crates ./crates
+COPY docs/examples ./docs/examples
+RUN cargo build --locked --release -p brioche-server
+
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl && rm -rf /var/lib/apt/lists/* && useradd --uid 10001 --create-home brioche
+COPY --from=build /src/target/release/brioche-server /usr/local/bin/brioche-server
+USER brioche
+EXPOSE 3001
+ENTRYPOINT ["brioche-server"]
+CMD ["serve"]

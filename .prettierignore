@@ -1,0 +1,7 @@
+packages/contracts/src/generated
+docs
+pnpm-lock.yaml
+Cargo.lock
+.local
+**/build
+**/.react-router
