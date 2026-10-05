@@ -3,7 +3,11 @@ import type { LearningSession } from "@brioche/contracts/LearningSession";
 import type { LearningState } from "@brioche/contracts/LearningState";
 import type { AttemptResult } from "@brioche/contracts/AttemptResult";
 import type { HintResult } from "@brioche/contracts/HintResult";
-import { ApiRequestError, privateRequest } from "../lib/api.client";
+import {
+  ApiRequestError,
+  definitiveWriteFailure,
+  privateRequest,
+} from "../lib/api.client";
 import { operationKey } from "../lib/operation-key";
 import {
   clearPending,
@@ -87,7 +91,10 @@ export function useLearningSession(initial: LearningSession, scope: string) {
       return result;
     } catch (failure) {
       if (!alive.current) return null;
-      if (failure instanceof ApiRequestError && failure.status < 500) {
+      if (
+        failure instanceof ApiRequestError &&
+        definitiveWriteFailure(failure.status)
+      ) {
         clearPending(
           scope + ":pending",
           (job.body as Record<string, unknown>).idempotencyKey,

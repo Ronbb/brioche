@@ -164,6 +164,11 @@ export default function Profile() {
           </button>
         </div>
       </div>
+      {profile && (
+        <Link className="text-button practice-back" to="/pending-saves">
+          未确认的收藏与复习保存 <Icon name="chevron" />
+        </Link>
+      )}
       <p className="profile-note" role="status">
         {profile
           ? learning.saveStatus === "saving"

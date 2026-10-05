@@ -1,13 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, redirect } from "react-router";
 import type { ReviewQueue } from "@brioche/contracts/ReviewQueue";
-import type { ReviewCard } from "@brioche/contracts/ReviewCard";
 import type { ReviewRating } from "@brioche/contracts/ReviewRating";
 import type { ReviewAttemptRequest } from "@brioche/contracts/ReviewAttemptRequest";
 import type { ReviewAttemptResult } from "@brioche/contracts/ReviewAttemptResult";
 import { getPrivate } from "../lib/api.server";
-import { privateRequest, ApiRequestError } from "../lib/api.client";
+import {
+  privateRequest,
+  ApiRequestError,
+  definitiveWriteFailure,
+} from "../lib/api.client";
 import { operationKey } from "../lib/operation-key";
+import {
+  clearPending,
+  draftScope,
+  readDraft,
+  saveDraft,
+} from "../lib/learning-draft";
+import { validOwnedPending } from "../lib/owned-draft";
 import { useLearning } from "../components/learning";
 import { Icon } from "../components/icon";
 import type { Route } from "./+types/reviews";
@@ -30,27 +40,61 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
     [index, setIndex] = useState(0),
     [revealed, setRevealed] = useState(false),
     [saving, setSaving] = useState(false),
+    [ready, setReady] = useState(false),
     [uncertain, setUncertain] = useState(false),
     [error, setError] = useState(""),
     [results, setResults] = useState<ReviewAttemptResult[]>([]);
   const pending = useRef<{
-      card: ReviewCard;
+      cardId: string;
       body: ReviewAttemptRequest;
+      restored?: boolean;
     } | null>(null),
     busy = useRef(false),
+    generation = useRef(0),
     alive = useRef(true),
     cardButton = useRef<HTMLButtonElement>(null),
     heading = useRef<HTMLHeadingElement>(null),
     animation = useRef<Animation | null>(null);
   const audio = useLearning(),
     term = queue.items[index];
+  const storageKey = audio.profile
+    ? draftScope(audio.profile.id, "reviews", 1) + ":pending"
+    : "";
   useEffect(() => {
+    generation.current++;
     alive.current = true;
+    pending.current = null;
+    busy.current = false;
+    setUncertain(false);
+    setSaving(false);
+    const stored = storageKey ? readDraft(storageKey) : null;
+    if (stored && typeof stored === "object") {
+      const path = (stored as { path?: unknown }).path;
+      const match =
+        typeof path === "string"
+          ? /^\/api\/v1\/me\/reviews\/([A-Za-z0-9_-]{1,100})\/attempts$/.exec(
+              path,
+            )
+          : null;
+      if (
+        match &&
+        validOwnedPending(stored, { kind: "rating", cardId: match[1] })
+      ) {
+        pending.current = {
+          cardId: match[1],
+          body: stored.body as unknown as ReviewAttemptRequest,
+          restored: true,
+        };
+        setUncertain(true);
+        setError("上次复习保存尚未确认，请重试原提交。");
+      } else saveDraft(storageKey, null);
+    }
+    setReady(!!storageKey);
     return () => {
       alive.current = false;
       animation.current?.cancel();
     };
-  }, []);
+  }, [storageKey]);
   useEffect(() => {
     if (!saving && !uncertain) return;
     const warn = (event: BeforeUnloadEvent) => {
@@ -62,21 +106,53 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
   }, [saving, uncertain]);
   async function submit(job: NonNullable<typeof pending.current>) {
     if (busy.current) return;
+    const gen = generation.current;
+    const stored = {
+      path: "/api/v1/me/reviews/" + job.cardId + "/attempts",
+      method: "POST",
+      body: job.body,
+    };
+    if (
+      !storageKey ||
+      !validOwnedPending(stored, { kind: "rating", cardId: job.cardId }) ||
+      !saveDraft(storageKey, stored)
+    ) {
+      setError("浏览器无法保留这次提交，请允许本地存储后重试。");
+      return;
+    }
     busy.current = true;
     pending.current = job;
     setSaving(true);
     setError("");
     try {
       const saved = await privateRequest<ReviewAttemptResult>(
-        "/api/v1/me/reviews/" + job.card.id + "/attempts",
+        stored.path,
         "POST",
         job.body,
       );
-      if (!alive.current) return;
+      clearPending(storageKey, job.body.idempotencyKey);
+      if (!alive.current || gen !== generation.current) return;
       pending.current = null;
       setUncertain(false);
       setResults((old) => [...old, saved]);
-      setIndex((old) => old + 1);
+      if (job.restored) {
+        try {
+          const fresh = await privateRequest<ReviewQueue>(
+            "/api/v1/me/reviews",
+            "GET",
+          );
+          if (!alive.current || gen !== generation.current) return;
+          setQueue(fresh);
+        } catch {
+          if (!alive.current || gen !== generation.current) return;
+          setQueue((old) => ({
+            ...old,
+            items: old.items.filter((card) => card.id !== job.cardId),
+          }));
+          setError("复习已保存，最新队列暂时无法读取，请稍后重新进入。");
+        }
+        setIndex(0);
+      } else setIndex((old) => old + 1);
       setRevealed(false);
       audio.stop();
       requestAnimationFrame(() => {
@@ -87,8 +163,12 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
         });
       });
     } catch (failure) {
-      if (!alive.current) return;
-      if (failure instanceof ApiRequestError && failure.status < 500) {
+      if (!alive.current || gen !== generation.current) return;
+      if (
+        failure instanceof ApiRequestError &&
+        definitiveWriteFailure(failure.status)
+      ) {
+        clearPending(storageKey, job.body.idempotencyKey);
         pending.current = null;
         setUncertain(false);
         if (
@@ -116,12 +196,14 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
         setError("这次保存尚未确认，请重试确认原提交。");
       }
     } finally {
-      busy.current = false;
-      if (alive.current) setSaving(false);
+      if (gen === generation.current) {
+        busy.current = false;
+        if (alive.current) setSaving(false);
+      }
     }
   }
   async function nextBatch() {
-    if (busy.current) return;
+    if (busy.current || uncertain || !ready) return;
     busy.current = true;
     setSaving(true);
     setError("");
@@ -210,7 +292,12 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
           }}
         />
       </div>
-      {term ? (
+      {uncertain ? (
+        <div className="empty-state">
+          <h2>确认上次复习</h2>
+          <p>确认原提交后，再继续今天的表达。</p>
+        </div>
+      ) : term ? (
         <>
           <div className="review-context">
             <Link to={"/lessons/" + term.sourceLessonId}>
@@ -222,7 +309,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
             ref={cardButton}
             className="review-flashcard"
             aria-expanded={revealed}
-            disabled={saving || uncertain}
+            disabled={saving || uncertain || !ready}
             onClick={reveal}
           >
             <span className="review-kind">
@@ -259,10 +346,10 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
                 <button
                   key={rating.value}
                   data-grade={grade}
-                  disabled={saving}
+                  disabled={saving || !ready}
                   onClick={() =>
                     void submit({
-                      card: term,
+                      cardId: term.id,
                       body: {
                         cardVersion: term.version,
                         idempotencyKey: operationKey(),

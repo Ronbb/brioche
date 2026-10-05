@@ -44,7 +44,14 @@ export function Bookmark({
       }
     }
   }
-  const write = useOwnedWrite<SavedItem>(refresh);
+  const write = useOwnedWrite<SavedItem>(refresh, {
+    userId: audio.profile?.id,
+    target: { kind: "bookmark", knowledgeId, lessonId, revision },
+    accept: (saved) => {
+      setItem(saved);
+      onChange?.(saved);
+    },
+  });
   useEffect(() => {
     mounted.current = true;
     if (audio.profile && !initial) void refresh();

@@ -202,10 +202,19 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
   const [card, setCard] = useState(initial),
     [open, setOpen] = useState(false),
     audio = useLearning();
-  const write = useOwnedWrite<ReviewCard>(async () =>
-    setCard(
-      await privateRequest<ReviewCard>("/api/v1/me/reviews/" + card.id, "GET"),
-    ),
+  const write = useOwnedWrite<ReviewCard>(
+    async () =>
+      setCard(
+        await privateRequest<ReviewCard>(
+          "/api/v1/me/reviews/" + card.id,
+          "GET",
+        ),
+      ),
+    {
+      userId: audio.profile?.id,
+      target: { kind: "preference", cardId: initial.id },
+      accept: setCard,
+    },
   );
   return (
     <article className="library-entry">

@@ -14,7 +14,11 @@ export function Enroll({
 }) {
   const learning = useLearning(),
     [card, setCard] = useState<ReviewCard | null>(null),
-    write = useOwnedWrite<ReviewCard>();
+    write = useOwnedWrite<ReviewCard>(undefined, {
+      userId: learning.profile?.id,
+      target: { kind: "enroll", knowledgeId, lessonId, revision },
+      accept: setCard,
+    });
   if (!learning.profile) return null;
   return (
     <div className="knowledge-actions">

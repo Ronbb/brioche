@@ -1,12 +1,13 @@
 import type { CsrfToken } from "@brioche/contracts/CsrfToken";
 export class ApiRequestError extends Error {
-  constructor(
-    public status: number,
-    message: string,
-  ) {
+  status: number;
+  constructor(status: number, message: string) {
     super(message);
+    this.status = status;
   }
 }
+export const definitiveWriteFailure = (status: number) =>
+  [400, 404, 409, 410, 422].includes(status);
 export async function privateRequest<T>(
   path: string,
   method: "GET" | "PATCH" | "POST" | "PUT",

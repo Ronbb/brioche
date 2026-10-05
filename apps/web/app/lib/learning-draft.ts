@@ -24,6 +24,13 @@ export function readDraft(key: string): unknown {
     return null;
   }
 }
+export function storedKeys() {
+  try {
+    return Object.keys(sessionStorage);
+  } catch {
+    return [];
+  }
+}
 export function saveDraft(key: string, value: unknown): boolean {
   try {
     if (value === null) sessionStorage.removeItem(key);
