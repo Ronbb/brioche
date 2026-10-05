@@ -2,6 +2,7 @@ pub mod csrf;
 pub mod entity;
 pub mod grading;
 pub mod identity;
+pub mod learning;
 pub mod password;
 pub mod session_store;
 use axum::{
@@ -57,6 +58,7 @@ pub enum AppError {
     InvalidAnswer,
     Forbidden,
     Conflict,
+    Gone,
 }
 impl std::fmt::Display for AppError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -67,6 +69,11 @@ impl std::error::Error for AppError {}
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, code, message) = match self {
+            Self::Gone => (
+                StatusCode::GONE,
+                "content_withdrawn",
+                "课程已撤回，暂时无法继续学习",
+            ),
             Self::InvalidInput => (StatusCode::BAD_REQUEST, "invalid_input", "请检查填写的信息"),
             Self::Unauthorized => (
                 StatusCode::UNAUTHORIZED,
@@ -166,7 +173,7 @@ async fn demo_grade(
 }
 async fn ready(State(state): State<Arc<AppState>>) -> Result<Json<serde_json::Value>, AppError> {
     if let Some(db) = &state.db {
-        db.execute_unprepared("SELECT users.profile_version FROM lesson_revisions, users, browser_sessions, identity_tokens, auth_throttle LIMIT 0")
+        db.execute_unprepared("SELECT users.profile_version FROM lesson_revisions, users, browser_sessions, identity_tokens, auth_throttle, learning_sessions, review_cards LIMIT 0")
             .await
             .map_err(|_| AppError::Unavailable)?;
     } else if state.fixture.is_none() {

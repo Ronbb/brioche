@@ -1,0 +1,248 @@
+import { useRef, useState } from "react";
+import { Link, redirect } from "react-router";
+import type { LearningSession } from "@brioche/contracts/LearningSession";
+import type { LearningState } from "@brioche/contracts/LearningState";
+import type { AttemptResult } from "@brioche/contracts/AttemptResult";
+import type { HintResult } from "@brioche/contracts/HintResult";
+import { getPrivate } from "../lib/api.server";
+import { useLearningSession } from "../components/learning-session";
+import { ReadingBlock } from "../components/reading-block";
+import { TeachingBlock } from "../components/teaching-block";
+import { ExerciseEditor } from "../components/exercise-editor";
+import { useLearning } from "../components/learning";
+import { Icon } from "../components/icon";
+import type { Route } from "./+types/learning";
+export async function loader({ request, params }: Route.LoaderArgs) {
+  try {
+    return await getPrivate<LearningSession>(
+      request,
+      "/api/v1/learning-sessions/" + encodeURIComponent(params.sessionId),
+    );
+  } catch (error) {
+    if (error instanceof Response && error.status === 401)
+      throw redirect(
+        "/login?next=" + encodeURIComponent(new URL(request.url).pathname),
+      );
+    throw error;
+  }
+}
+export default function Learning({ loaderData }: Route.ComponentProps) {
+  return <Session key={loaderData.progress.id} initial={loaderData} />;
+}
+function Session({ initial }: { initial: LearningSession }) {
+  const session = useLearningSession(initial),
+    audio = useLearning(),
+    lesson = initial.lesson;
+  const [index, setIndex] = useState(
+    Math.max(
+      0,
+      lesson.steps.findIndex((step) => step.id === initial.progress.lastStepId),
+    ),
+  );
+  const heading = useRef<HTMLHeadingElement>(null),
+    step = lesson.steps[index];
+  function move(next: number) {
+    audio.stop();
+    setIndex(next);
+    requestAnimationFrame(() => {
+      heading.current?.focus();
+      heading.current?.scrollIntoView({ block: "start", behavior: "instant" });
+    });
+  }
+  const requiredInStep = lesson.completion.requiredExerciseIds.filter((id) =>
+    step.blockIds.includes(id),
+  );
+  const canContinue = requiredInStep.every((id) =>
+    session.progress.attempts.some((attempt) => attempt.exerciseId === id),
+  );
+  function advance() {
+    if (session.blocked) return;
+    void session.write<LearningState>(
+      "/steps/" + encodeURIComponent(step.id),
+      "PUT",
+      {},
+      () => {
+        if (index + 1 < lesson.steps.length) move(index + 1);
+      },
+    );
+  }
+  const allRequired =
+    lesson.completion.requiredStepIds.every((id) =>
+      session.progress.confirmedStepIds.includes(id),
+    ) &&
+    lesson.completion.requiredExerciseIds.every((id) =>
+      session.progress.attempts.some((attempt) => attempt.exerciseId === id),
+    );
+  return (
+    <section className="page-arrive learning-page">
+      <div className="lesson-header">
+        <div className="crumb">
+          {lesson.levelId.toUpperCase()} / {lesson.title.zh}
+        </div>
+        <h1 lang="fr">{lesson.title.fr}</h1>
+      </div>
+      <div className="learning-stage">
+        {session.progress.completedAt ? (
+          <>
+            <h2 ref={heading} tabIndex={-1}>
+              本课已完成
+            </h2>
+            <p className="practice-intro">
+              阅读和练习记录已保存，表达已加入复习。
+            </p>
+            <ul className="practice-recap">
+              {lesson.objectivesZh.map((objective) => (
+                <li key={objective}>{objective}</li>
+              ))}
+            </ul>
+            <Link className="primary" to={"/review/" + lesson.id}>
+              复习表达
+              <Icon name="arrow" />
+            </Link>
+            <Link className="text-button practice-back" to="/">
+              回到今天
+            </Link>
+          </>
+        ) : (
+          <>
+            <div className="learning-step-heading">
+              <h2 ref={heading} tabIndex={-1}>
+                {step.titleZh}
+              </h2>
+              <span>
+                {index + 1} / {lesson.steps.length}
+              </span>
+            </div>
+            <div
+              className="review-progress"
+              role="progressbar"
+              aria-label="本课步骤"
+              aria-valuemin={0}
+              aria-valuemax={lesson.steps.length}
+              aria-valuenow={session.progress.confirmedStepIds.length}
+            >
+              <span
+                style={{
+                  width:
+                    (session.progress.confirmedStepIds.length /
+                      lesson.steps.length) *
+                      100 +
+                    "%",
+                }}
+              />
+            </div>
+            <div className="learning-blocks" key={step.id}>
+              {step.blockIds.map((id) => {
+                const block = lesson.blocks.find((block) => block.id === id);
+                if (!block) throw Error("Missing lesson block");
+                if (block.type === "dialogue" || block.type === "article")
+                  return (
+                    <ReadingBlock
+                      key={block.id}
+                      block={block}
+                      lesson={lesson}
+                    />
+                  );
+                if (block.type === "exercise")
+                  return (
+                    <ExerciseEditor
+                      key={block.id}
+                      block={block}
+                      latest={session.progress.attempts
+                        .filter((attempt) => attempt.exerciseId === block.id)
+                        .at(-1)}
+                      hinted={session.progress.hintedExerciseIds.includes(
+                        block.id,
+                      )}
+                      blocked={session.blocked}
+                      completed={!!session.progress.completedAt}
+                      submit={(answer, onSaved) =>
+                        session.write<AttemptResult>(
+                          "/attempts",
+                          "POST",
+                          {
+                            exerciseId: block.id,
+                            answer,
+                          },
+                          onSaved,
+                        )
+                      }
+                      hint={() =>
+                        void session.write<HintResult>(
+                          "/hints/" + encodeURIComponent(block.id),
+                          "POST",
+                        )
+                      }
+                    />
+                  );
+                return (
+                  <TeachingBlock key={block.id} block={block} lesson={lesson} />
+                );
+              })}
+            </div>
+            <div className="learning-actions">
+              {session.error && (
+                <p className="error-message" role="alert">
+                  {session.error}
+                </p>
+              )}
+              {session.uncertain ? (
+                <button
+                  className="primary"
+                  disabled={session.saving}
+                  onClick={session.retry}
+                >
+                  {session.saving ? "正在确认" : "重试保存"}
+                  <Icon name="check" />
+                </button>
+              ) : index === lesson.steps.length - 1 &&
+                session.progress.confirmedStepIds.includes(step.id) ? (
+                <button
+                  className="primary"
+                  disabled={session.blocked || !allRequired}
+                  onClick={() =>
+                    void session.write<LearningState>("/complete", "POST")
+                  }
+                >
+                  {session.saving ? "正在保存" : "完成本课"}
+                  <Icon name="check" />
+                </button>
+              ) : (
+                <button
+                  className="primary"
+                  disabled={session.blocked || !canContinue}
+                  onClick={advance}
+                >
+                  {session.saving
+                    ? "正在保存"
+                    : index === lesson.steps.length - 1
+                      ? "确认回顾"
+                      : "继续"}
+                  <Icon name="arrow" />
+                </button>
+              )}
+              {index > 0 && (
+                <button
+                  className="text-button"
+                  disabled={session.blocked}
+                  onClick={() => move(index - 1)}
+                >
+                  回看上一步
+                </button>
+              )}
+              <p className="profile-note" role="status">
+                {session.saving
+                  ? "正在保存"
+                  : session.uncertain
+                    ? "这次提交尚未确认保存。"
+                    : session.error
+                      ? "请检查当前学习记录后重试。"
+                      : "学习记录已保存到账号。"}
+              </p>
+            </div>
+          </>
+        )}
+      </div>
+    </section>
+  );
+}

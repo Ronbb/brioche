@@ -193,6 +193,51 @@ dto!(GradeResult {
     feedback_zh: String
 });
 dto!(CsrfToken { csrf_token: String });
+dto!(StartLearningRequest {
+    lesson_id: String,
+    schema_version: String,
+    idempotency_key: String
+});
+dto!(LearningWriteRequest {
+    version: u32,
+    idempotency_key: String
+});
+dto!(SubmitAttemptRequest {
+    version: u32,
+    idempotency_key: String,
+    exercise_id: String,
+    answer: ExerciseAnswer
+});
+dto!(AttemptRecord {
+    id: String,
+    exercise_id: String,
+    attempt_index: u32,
+    answer: ExerciseAnswer,
+    result: GradeResult,
+    hint_used: bool
+});
+dto!(LearningState {
+    id: String, lesson_id: String, revision: u32, version: u32, last_step_id: Option<String>,
+    confirmed_step_ids: Vec<String>, hinted_exercise_ids: Vec<String>, attempts: Vec<AttemptRecord>,
+    completed_at: Option<String>, first_completed_at: Option<String>
+});
+dto!(LearningSession {
+    lesson: PublicLesson,
+    progress: LearningState
+});
+dto!(AttemptResult {
+    result: GradeResult,
+    progress: LearningState
+});
+dto!(HintResult {
+    hint_zh: String,
+    progress: LearningState
+});
+dto!(LearningOverviewItem {
+    session_id: String, lesson_id: String, revision: u32, title: Title,
+    last_step_id: Option<String>, completed_at: Option<String>, first_completed_at: Option<String>, updated_at: String
+});
+dto!(LearningOverview { items: Vec<LearningOverviewItem>, next_cursor: Option<String>, completed_lessons: u32 });
 dto!(UserProfile {
     id: String,
     email: String,

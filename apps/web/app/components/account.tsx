@@ -63,7 +63,17 @@ export function Account({
       if (mode === "reset-password") {
         setDone(true);
         setToken("");
-      } else window.location.assign("/profile");
+      } else {
+        const next =
+          mode === "login"
+            ? new URLSearchParams(window.location.search).get("next")
+            : null;
+        window.location.assign(
+          next && /^\/(?:learning|lessons)\/[a-zA-Z0-9_-]+$/.test(next)
+            ? next
+            : "/profile",
+        );
+      }
     } catch (e) {
       setError(
         e instanceof Error && !["TypeError", "TimeoutError"].includes(e.name)

@@ -5,14 +5,19 @@ import type { PublicLesson } from "@brioche/contracts/PublicLesson";
 import type { Vocabulary } from "@brioche/contracts/Vocabulary";
 import type { Grammar } from "@brioche/contracts/Grammar";
 import { TeachingBlock } from "../components/teaching-block";
-import { getLesson } from "../lib/api.server";
+import { getCatalog, getLesson } from "../lib/api.server";
+import { StartLearning } from "../components/start-learning";
 import { Player, useLearning } from "../components/learning";
 import { Icon } from "../components/icon";
 import type { Route } from "./+types/lesson";
 export async function loader({ params }: Route.LoaderArgs) {
-  return { lesson: await getLesson(params.lessonId) };
+  const [lesson, catalog] = await Promise.all([
+    getLesson(params.lessonId),
+    getCatalog(),
+  ]);
+  return { lesson, demo: catalog.developmentFixture };
 }
-const avatar = (id: string) =>
+export const avatar = (id: string) =>
   "/assets/avatars/" +
   ({
     "avatar-camille-v1": "camille",
@@ -25,11 +30,13 @@ export function Sentence({
   lesson,
   onTerm,
   onGrammar,
+  prefix = "",
 }: {
   segments: Segment[];
   lesson: PublicLesson;
   onTerm: (v: Vocabulary) => void;
   onGrammar: (v: Grammar) => void;
+  prefix?: string;
 }) {
   const learning = useLearning();
   return (
@@ -49,7 +56,10 @@ export function Sentence({
               }
               onClick={() => {
                 learning.play([
-                  { id: "word-" + segment.id + "-" + i, text: token.segment },
+                  {
+                    id: prefix + "word-" + segment.id + "-" + i,
+                    text: token.segment,
+                  },
                 ]);
                 const term = lesson.knowledge.vocabulary.find(
                   (v) => v.id === segment.vocabularyId,
@@ -74,13 +84,23 @@ export function Sentence({
   );
 }
 export default function Lesson({
-  loaderData: { lesson },
+  loaderData: { lesson, demo },
 }: Route.ComponentProps) {
   return (
-    <LessonContent key={lesson.id + ":" + lesson.revision} lesson={lesson} />
+    <LessonContent
+      key={lesson.id + ":" + lesson.revision}
+      lesson={lesson}
+      demo={demo}
+    />
   );
 }
-function LessonContent({ lesson }: { lesson: PublicLesson }) {
+function LessonContent({
+  lesson,
+  demo,
+}: {
+  lesson: PublicLesson;
+  demo: boolean;
+}) {
   const learning = useLearning(),
     [mode, setMode] = useState<"dialogue" | "article">(
       lesson.blocks.some((b) => b.type === "dialogue") ? "dialogue" : "article",
@@ -216,10 +236,22 @@ function LessonContent({ lesson }: { lesson: PublicLesson }) {
               })}
           </div>
           <div className="reading-footer">
-            <Link className="primary" to={"/practice/" + lesson.id}>
-              练习
-              <Icon name="arrow" />
-            </Link>
+            {learning.profile ? (
+              <StartLearning lessonId={lesson.id}>开始或继续学习</StartLearning>
+            ) : (
+              <Link
+                className="primary"
+                to={
+                  demo
+                    ? "/practice/" + lesson.id
+                    : "/login?next=" +
+                      encodeURIComponent("/lessons/" + lesson.id)
+                }
+              >
+                {demo ? "练习" : "登录后开始学习"}
+                <Icon name="arrow" />
+              </Link>
+            )}
           </div>
         </div>
         <aside

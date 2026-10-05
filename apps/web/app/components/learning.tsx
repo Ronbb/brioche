@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { useLocation } from "react-router";
+import { createPortal } from "react-dom";
 import { Icon } from "./icon";
 import type { UserProfile } from "@brioche/contracts/UserProfile";
 import type { UpdateProfileRequest } from "@brioche/contracts/UpdateProfileRequest";
@@ -59,7 +60,13 @@ export function LearningProvider({
       id: null,
       progress: 0,
     }),
-    [message, setMessage] = useState("");
+    [message, setMessage] = useState(""),
+    [messageSequence, setMessageSequence] = useState(0),
+    [toastHost, setToastHost] = useState<HTMLDialogElement | null>(null);
+  function notify(value: string) {
+    setMessage(value);
+    setMessageSequence((sequence) => sequence + 1);
+  }
   const savedProfile = useRef(user),
     pendingChanges = useRef(new Map<symbol, ProfileChanges>()),
     saves = useRef<Promise<boolean>>(Promise.resolve(true)),
@@ -139,7 +146,7 @@ export function LearningProvider({
             ? error.message
             : "保存未确认，请检查当前设置后重试。";
         setSaveError(message);
-        setMessage(message);
+        notify(message);
         return false;
       }
     });
@@ -179,7 +186,7 @@ export function LearningProvider({
         voices.find((v) => v.lang.startsWith("fr"));
     if (!voice) {
       stop();
-      setMessage("当前浏览器没有可用的法语语音");
+      notify("当前浏览器没有可用的法语语音");
       return;
     }
     const utterance = new SpeechSynthesisUtterance(unit.text);
@@ -217,7 +224,7 @@ export function LearningProvider({
         event.error !== "interrupted"
       ) {
         stop();
-        setMessage("朗读暂时无法播放，请重试。");
+        notify("朗读暂时无法播放，请重试。");
       }
     };
     window.speechSynthesis.speak(utterance);
@@ -225,7 +232,7 @@ export function LearningProvider({
   function play(units: SpeechUnit[]) {
     stop();
     if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
-      setMessage("当前浏览器不支持语音朗读");
+      notify("当前浏览器不支持语音朗读");
       return;
     }
     queue.current = units;
@@ -233,6 +240,13 @@ export function LearningProvider({
     speakCurrent();
   }
   function toggle(units: SpeechUnit[]) {
+    if (
+      state.current.id &&
+      !units.some((unit) => unit.id === state.current.id)
+    ) {
+      play(units);
+      return;
+    }
     if (state.current.status === "playing") {
       window.speechSynthesis.pause();
       update({ ...state.current, status: "paused" });
@@ -267,6 +281,8 @@ export function LearningProvider({
   useEffect(() => {
     stop();
     dialog.current?.close();
+    setMessage("");
+    setToastHost(null);
   }, [location.pathname]);
   useEffect(
     () => () => {
@@ -276,10 +292,43 @@ export function LearningProvider({
     [],
   );
   useEffect(() => {
-    if (!message) return;
+    if (!message) {
+      setToastHost(null);
+      return;
+    }
+    const updateHost = () =>
+      setToastHost(
+        Array.from(
+          document.querySelectorAll<HTMLDialogElement>("dialog[open]"),
+        ).at(-1) ?? null,
+      );
+    updateHost();
+    const observer = new MutationObserver(updateHost);
+    observer.observe(document.body, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["open"],
+    });
     const timer = setTimeout(() => setMessage(""), 5500);
-    return () => clearTimeout(timer);
-  }, [message]);
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [message, messageSequence]);
+  const toast = (
+    <div className="toast" hidden={!message}>
+      <span role="status" aria-live="polite">
+        {message}
+      </span>
+      <button
+        className="toast-close"
+        aria-label="关闭提示"
+        onClick={() => setMessage("")}
+      >
+        <Icon name="close" />
+      </button>
+    </div>
+  );
   return (
     <Context.Provider
       value={{
@@ -301,7 +350,7 @@ export function LearningProvider({
         toggle,
         stop,
         player,
-        toast: setMessage,
+        toast: notify,
       }}
     >
       {children}
@@ -373,18 +422,7 @@ export function LearningProvider({
           ))}
         </div>
       </dialog>
-      <div className="toast" hidden={!message}>
-        <span role="status" aria-live="polite">
-          {message}
-        </span>
-        <button
-          className="toast-close"
-          aria-label="关闭提示"
-          onClick={() => setMessage("")}
-        >
-          <Icon name="close" />
-        </button>
-      </div>
+      {toastHost ? createPortal(toast, toastHost) : toast}
     </Context.Provider>
   );
 }
@@ -393,6 +431,9 @@ export function Player({ units }: { units: SpeechUnit[] }) {
     hold = useRef<ReturnType<typeof setTimeout> | null>(null),
     long = useRef(false),
     start = useRef({ x: 0, y: 0 });
+  const ownsPlayback = units.some((unit) => unit.id === learning.player.id);
+  const progress = ownsPlayback ? learning.player.progress : 0;
+  const playing = ownsPlayback && learning.player.status === "playing";
   const cancel = () => {
     if (hold.current) clearTimeout(hold.current);
     hold.current = null;
@@ -402,9 +443,7 @@ export function Player({ units }: { units: SpeechUnit[] }) {
     <div className="reader-player">
       <button
         className="playback-line"
-        aria-label={
-          learning.player.status === "playing" ? "暂停朗读" : "播放全文"
-        }
+        aria-label={playing ? "暂停朗读" : "播放全文"}
         onPointerDown={(e) => {
           long.current = false;
           start.current = { x: e.clientX, y: e.clientY };
@@ -453,18 +492,16 @@ export function Player({ units }: { units: SpeechUnit[] }) {
               display: "block",
               height: 2,
               background: "var(--accent)",
-              width: learning.player.progress * 100 + "%",
+              width: progress * 100 + "%",
             }}
           />
           <span
             className="play-marker"
             style={{
-              left: `${Math.max(2, Math.min(98, learning.player.progress ? learning.player.progress * 100 : 50))}%`,
+              left: `${Math.max(2, Math.min(98, progress ? progress * 100 : 50))}%`,
             }}
           >
-            <Icon
-              name={learning.player.status === "playing" ? "pause" : "play"}
-            />
+            <Icon name={playing ? "pause" : "play"} />
           </span>
         </span>
       </button>

@@ -76,18 +76,41 @@ pub async fn protect(
     session: Session,
     request: Request,
     next: Next,
-) -> Result<Response, AppError> {
-    if !matches!(request.method().as_str(), "GET" | "HEAD" | "OPTIONS") {
-        let origin = request
-            .headers()
+) -> Response {
+    let validation = validate_write(
+        &policy,
+        &session,
+        request.headers(),
+        !matches!(request.method().as_str(), "GET" | "HEAD" | "OPTIONS"),
+    )
+    .await;
+    let mut response = match validation {
+        Ok(()) => next.run(request).await,
+        Err(error) => error.into_response(),
+    };
+    response
+        .headers_mut()
+        .insert("cache-control", "private, no-store".parse().unwrap());
+    response
+        .headers_mut()
+        .append("vary", "Cookie".parse().unwrap());
+    response
+}
+async fn validate_write(
+    policy: &CsrfPolicy,
+    session: &Session,
+    headers: &axum::http::HeaderMap,
+    writing: bool,
+) -> Result<(), AppError> {
+    if writing {
+        let origin = headers
             .get("origin")
             .and_then(|v| v.to_str().ok())
             .ok_or(AppError::Forbidden)?;
         if !policy.allows(origin) {
             return Err(AppError::Forbidden);
         }
-        let actual = request
-            .headers()
+        let actual = headers
             .get("x-csrf-token")
             .and_then(|v| v.to_str().ok())
             .ok_or(AppError::Forbidden)?;
@@ -100,14 +123,7 @@ pub async fn protect(
             return Err(AppError::Forbidden);
         }
     }
-    let mut response = next.run(request).await;
-    response
-        .headers_mut()
-        .insert("cache-control", "private, no-store".parse().unwrap());
-    response
-        .headers_mut()
-        .append("vary", "Cookie".parse().unwrap());
-    Ok(response)
+    Ok(())
 }
 
 #[cfg(test)]

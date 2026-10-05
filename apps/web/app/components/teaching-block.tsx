@@ -16,6 +16,15 @@ export function TeachingBlock({
     case "scene":
       return (
         <div className="lesson-scene">
+          {block.illustrationId === "art-bakery-morning" && (
+            <img
+              className="scene-illustration"
+              src="/assets/bakery.svg"
+              alt="社区面包店的清晨"
+              width="640"
+              height="470"
+            />
+          )}
           <p className="knowledge-label">{block.placeZh}</p>
           <p>{block.situationZh}</p>
         </div>

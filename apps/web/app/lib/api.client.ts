@@ -9,7 +9,7 @@ export class ApiRequestError extends Error {
 }
 export async function privateRequest<T>(
   path: string,
-  method: "GET" | "PATCH" | "POST",
+  method: "GET" | "PATCH" | "POST" | "PUT",
   body?: object,
 ): Promise<T> {
   const headers: Record<string, string> = {};

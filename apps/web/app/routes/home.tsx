@@ -1,20 +1,51 @@
 import { Link } from "react-router";
 import { useState, useRef } from "react";
-import { getCatalog, getLesson } from "../lib/api.server";
+import {
+  getCatalog,
+  getIdentity,
+  getLesson,
+  getPrivate,
+} from "../lib/api.server";
+import type { LearningOverview } from "@brioche/contracts/LearningOverview";
+import { StartLearning } from "../components/start-learning";
+import { useLearning } from "../components/learning";
 import { Icon } from "../components/icon";
 import type { Route } from "./+types/home";
-export async function loader() {
-  const catalog = await getCatalog();
+export async function loader({ request }: Route.LoaderArgs) {
+  const [catalog, identity] = await Promise.all([
+    getCatalog(),
+    getIdentity(request),
+  ]);
+  let learning: LearningOverview | null = null;
+  if (identity.user) {
+    try {
+      learning = await getPrivate<LearningOverview>(
+        request,
+        "/api/v1/me/learning",
+      );
+    } catch (error) {
+      if (!(error instanceof Response && error.status === 401)) throw error;
+    }
+  }
   const first = catalog.levels.flatMap((l) =>
     l.units.flatMap((u) => u.lessons),
   )[0];
-  return { catalog, lesson: first ? await getLesson(first.id) : null };
+  return {
+    catalog,
+    lesson: first ? await getLesson(first.id) : null,
+    learning,
+  };
 }
 export default function Home({
-  loaderData: { catalog, lesson },
+  loaderData: { catalog, lesson, learning },
 }: Route.ComponentProps) {
   const [open, setOpen] = useState(false),
     card = useRef<HTMLButtonElement>(null);
+  const context = useLearning();
+  const resume = learning?.items.find((item) => !item.completedAt);
+  const expression = lesson?.knowledge.vocabulary.find((entry) =>
+    lesson.reviewItemIds.includes(entry.id),
+  );
   return (
     <section className="home page-arrive">
       <div className="intro">
@@ -23,6 +54,15 @@ export default function Home({
           <p>一点法语，一点生活。</p>
         </div>
       </div>
+      {resume && (
+        <Link className="resume-learning" to={"/learning/" + resume.sessionId}>
+          <span>
+            <small>接着上次</small>
+            <strong>{resume.title.zh}</strong>
+          </span>
+          <Icon name="arrow" />
+        </Link>
+      )}
       {!lesson ? (
         <div className="empty-state">
           <h1>课程正在准备中</h1>
@@ -41,10 +81,16 @@ export default function Home({
                 <br />
                 放进每一天。
               </h1>
-              <p>走进街角的面包店。用一句礼貌的请求，为自己买一份早餐。</p>
-              <Link className="primary" to={"/lessons/" + lesson.id}>
-                走进面包店
-              </Link>
+              <p>{lesson.summaryZh}</p>
+              {context.profile ? (
+                <StartLearning key={lesson.id} lessonId={lesson.id}>
+                  开始今天的课程
+                </StartLearning>
+              ) : (
+                <Link className="primary" to={"/lessons/" + lesson.id}>
+                  开始今天的课程
+                </Link>
+              )}
               <div className="meta">
                 约 {lesson.estimatedMinutes} 分钟 · 对话、表达与生活练习
               </div>
@@ -70,7 +116,18 @@ export default function Home({
                   <Link
                     key={entry.id}
                     className="lesson-row current"
-                    to={"/lessons/" + entry.id}
+                    to={
+                      learning?.items.find(
+                        (item) =>
+                          item.lessonId === entry.id && !item.completedAt,
+                      )
+                        ? "/learning/" +
+                          learning.items.find(
+                            (item) =>
+                              item.lessonId === entry.id && !item.completedAt,
+                          )!.sessionId
+                        : "/lessons/" + entry.id
+                    }
                   >
                     <span className="lesson-number">
                       {String(i + 1).padStart(2, "0")}
@@ -79,7 +136,17 @@ export default function Home({
                       <b>{entry.title.zh}</b>
                       <small lang="fr">{entry.title.fr}</small>
                     </span>
-                    <span className="row-state">开始</span>
+                    <span className="row-state">
+                      {learning?.items.find(
+                        (item) => item.lessonId === entry.id,
+                      )?.firstCompletedAt
+                        ? "已学过"
+                        : learning?.items.some(
+                              (item) => item.lessonId === entry.id,
+                            )
+                          ? "继续"
+                          : "开始"}
+                    </span>
                   </Link>
                 ))}
             </section>
@@ -113,15 +180,13 @@ export default function Home({
               >
                 <span className="eyebrow">记住一句日常表达</span>
                 <span className="fr" lang="fr">
-                  Je voudrais…
+                  {expression?.lemma}
                 </span>
-                <span className="review-description">
-                  买早餐、点饮品时，都可以试着用它开口。
-                </span>
+                <span className="review-description">{lesson.summaryZh}</span>
                 {open && (
                   <span className="review-answer">
-                    <strong>我想要……</strong>
-                    <span className="review-line">礼貌地提出请求。</span>
+                    <strong>{expression?.meaningZh}</strong>
+                    <span className="review-line">{expression?.noteZh}</span>
                   </span>
                 )}
               </button>

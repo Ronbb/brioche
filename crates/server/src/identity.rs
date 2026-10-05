@@ -62,7 +62,7 @@ impl AuthUser for User {
 }
 #[derive(Clone)]
 pub struct Backend {
-    db: DatabaseConnection,
+    pub(crate) db: DatabaseConnection,
     passwords: PasswordService,
     dummy_hash: String,
 }
@@ -484,6 +484,7 @@ pub fn router(backend: Backend, policy: CsrfPolicy, secure: bool) -> Router {
         .route("/api/v1/auth/reset-password", post(reset))
         .route("/api/v1/me", get(me))
         .route("/api/v1/me/settings", axum::routing::patch(update_profile))
+        .merge(crate::learning::router())
         .layer(axum::middleware::from_fn_with_state(
             Arc::new(policy),
             csrf::protect,
