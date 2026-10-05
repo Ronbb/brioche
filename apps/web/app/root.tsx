@@ -11,6 +11,7 @@ import {
   useRouteLoaderData,
 } from "react-router";
 import { LearningProvider } from "./components/learning";
+import { IdentitySync } from "./components/identity-sync";
 import "./styles/app.css";
 import { Scrollbar } from "./components/scrollbar";
 import { getIdentity } from "./lib/api.server";
@@ -40,6 +41,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <LearningProvider user={identity?.user ?? null}>
+          <IdentitySync
+            user={identity?.user ?? null}
+            enabled={identity?.enabled ?? false}
+          />
           <div className="app">
             <header className="topbar">
               <Link className="brand" to="/" aria-label="Brioche 首页">

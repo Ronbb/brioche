@@ -1,4 +1,5 @@
 import type { CsrfToken } from "@brioche/contracts/CsrfToken";
+import { announceIdentityChange } from "./identity-sync";
 export async function authRequest<T>(path: string, body?: object): Promise<T> {
   const bootstrap = await fetch("/api/v1/auth/csrf", {
     cache: "no-store",
@@ -22,6 +23,9 @@ export async function authRequest<T>(path: string, body?: object): Promise<T> {
     throw Error(
       messages[response.status] ?? "账号服务暂时不可用，请稍后重试。",
     );
+  }
+  if (["login", "logout", "accept-invite", "reset-password"].includes(path)) {
+    announceIdentityChange();
   }
   return response.json() as Promise<T>;
 }
