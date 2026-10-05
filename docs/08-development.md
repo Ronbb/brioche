@@ -42,7 +42,16 @@ pnpm dev:web
 
 ## 数据库与课程导入
 
-在本机 PostgreSQL 中建立专用数据库并设置 `DATABASE_URL`。使用 CLI 执行迁移，服务启动不会自动同步表结构。
+作者可先运行无需数据库的检查命令：
+
+```sh
+cargo run -p brioche-server -- check docs/examples/a1-bakery.lesson.json
+cargo run -p brioche-server -- check-release docs/examples/catalog.release.json
+```
+
+`check` 使用实际公共 DTO、课程引用/步骤校验及服务端私有判分校验，另检查素材引用 ID、revision 和重复引用；`check-release` 校验目录清单结构及 ID、revision、重复引用。两者不连接数据库、不写入内容，也不验证数据库中的素材是否存在或已授权、目录引用的课程是否存在及人工审校是否完成。成功明确提示后续仍需媒体登记、审校和 release-stage；CI 运行两份示例的检查。公共投影类型错误显示字段路径，尚不提供源文件行列；私有判分错误保持通用提示，不输出答案。
+
+导入时，在本机 PostgreSQL 中建立专用数据库并设置 `DATABASE_URL`。使用 CLI 执行迁移，服务启动不会自动同步表结构。
 
 ```sh
 cargo run -p brioche-server -- migrate
@@ -51,7 +60,7 @@ cargo run -p brioche-server -- import docs/examples/a1-bakery.lesson.json
 
 导入始终创建不可见 revision；旧的 `--publish` 参数被明确拒绝，改用目录 release 原子发布。本示例未审校，禁止为测试上线而直接改状态。相同 `(lesson_id, revision)` 重复导入失败，数据库触发器也拒绝改写或删除已有正文/私有答案；审校后重新导入需要新 revision。
 
-`import`、`assets-import` 与 `release-stage` 共用严格 JSON 文件读取：实际读取最多 2 MiB + 1 字节，超过 2 MiB 拒绝；所有层级的重复字段、尾随第二个文档、无效 UTF-8 和过深嵌套均拒绝。错误链包含输入文件名及 JSON 行列；重复字段显示 JSON Pointer（例如 `/steps/0/id`），素材/发布清单类型错误显示字段路径。类型定位使用 [serde_path_to_error](https://docs.rs/serde_path_to_error/0.1.20/serde_path_to_error/)。课程的公开投影、私有判分与发布语义校验仍在后续阶段执行，尚未统一提供原文件行列定位；CLI 当前仍需先连接数据库。
+`check`、`check-release`、`import`、`assets-import` 与 `release-stage` 共用严格 JSON 文件读取：实际读取最多 2 MiB + 1 字节，超过 2 MiB 拒绝；所有层级的重复字段、尾随第二个文档、无效 UTF-8 和过深嵌套均拒绝。错误链包含输入文件名及 JSON 行列；重复字段显示 JSON Pointer（例如 `/steps/0/id`），素材/发布清单类型错误显示字段路径。类型定位使用 [serde_path_to_error](https://docs.rs/serde_path_to_error/0.1.20/serde_path_to_error/)。课程的公开投影、私有判分与发布语义校验尚未统一提供原文件行列定位；导入与发布 CLI 仍需先连接数据库。
 
 ### 目录 release 操作
 

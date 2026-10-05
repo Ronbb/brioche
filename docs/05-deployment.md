@@ -40,7 +40,7 @@ server → postgres:5432（内部网络）
 
 `PUBLIC_APP_URL` 作为统一 origin 的项目配置，Rust 的 Origin/CSRF 校验和前端 SSR 据此配置；避免多个配置各写一套域名。变量名称是项目提案，并不假定认证库自动识别。若 cookie store 配置无需独立密钥，移除相应变量，不保留无实际用途的 secrets。
 
-当前开发命令为 `pnpm dev:api`、`pnpm dev:web`；迁移使用 `cargo run -p brioche-server -- migrate`，课程导入使用 `import <file>` 子命令。完整 `content check/publish` 发布流水线仍属后续目标，详见 [工程说明](08-development.md)。
+当前开发命令为 `pnpm dev:api`、`pnpm dev:web`；迁移使用 `cargo run -p brioche-server -- migrate`，课程导入使用 `import <file>` 子命令。离线 `check <lesson.json>` 与 `check-release <manifest.json>` 已实现；完整内容 Schema、staging 预览与媒体发布流程仍需补齐，详见 [工程说明](08-development.md)。
 
 ## Docker 服务与网络
 

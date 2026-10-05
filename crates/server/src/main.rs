@@ -13,6 +13,32 @@ async fn main() -> Result<()> {
         )
         .init();
     let command = std::env::args().nth(1).unwrap_or_else(|| "serve".into());
+    if matches!(command.as_str(), "check" | "check-release") {
+        let args: Vec<String> = std::env::args().skip(2).collect();
+        if args.len() != 1 {
+            bail!("usage: brioche-server {command} <file.json>");
+        }
+        let path = &args[0];
+        if command == "check-release" {
+            let manifest = brioche_server::content::ReleaseManifest::deserialize_file(path)?;
+            manifest.validate().map_err(|_| anyhow::anyhow!("{path}: invalid directory IDs, revisions, schema version or duplicate references"))?;
+        } else {
+            let source: serde_json::Value = brioche_server::author_json::load(path)?;
+            brioche_server::media::source_asset_refs(&source)
+                .with_context(|| format!("{path}: invalid asset references"))?;
+            let lesson = project_source(source.clone())
+                .with_context(|| format!("{path}: invalid lesson structure or references"))?;
+            brioche_server::grading::Grader::from_source(&lesson, &source).map_err(|_| {
+                anyhow::anyhow!(
+                    "{path}: serverOnly.grading: invalid or inconsistent private grading rules"
+                )
+            })?;
+        }
+        println!(
+            "Structural checks passed. Publication still requires registered media, editorial review and release-stage validation."
+        );
+        return Ok(());
+    }
     let fixture = std::env::var("CONTENT_MODE").unwrap_or_else(|_| "database".into()) == "fixture";
     let production =
         std::env::var("APP_ENV").unwrap_or_else(|_| "production".into()) != "development";

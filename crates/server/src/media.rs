@@ -445,24 +445,36 @@ pub async fn import_bundle(
     tx.commit().await?;
     Ok(())
 }
+pub fn source_asset_refs(source: &serde_json::Value) -> Result<Vec<AssetRef>> {
+    let Some(refs) = source.get("assetRefs") else {
+        return Ok(Vec::new());
+    };
+    let refs: Vec<AssetRef> = serde_path_to_error::deserialize(refs.clone())
+        .context("assetRefs: invalid reference structure")?;
+    ensure!(refs.len() <= 500, "assetRefs: too many asset references");
+    let mut ids = BTreeSet::new();
+    for (index, reference) in refs.iter().enumerate() {
+        ensure!(
+            valid_id(&reference.asset_id)
+                && reference.revision > 0
+                && reference.revision <= i32::MAX as u32
+                && ids.insert(reference.asset_id.clone()),
+            "assetRefs/{index}: invalid or duplicate asset reference"
+        );
+    }
+    Ok(refs)
+}
+
 pub async fn hydrate_source<C: ConnectionTrait>(
     db: &C,
     mut source: serde_json::Value,
 ) -> Result<serde_json::Value> {
-    let Some(refs) = source.get("assetRefs") else {
+    if source.get("assetRefs").is_none() {
         return Ok(source);
-    };
-    let refs: Vec<AssetRef> = serde_json::from_value(refs.clone())?;
-    ensure!(refs.len() <= 500, "too many asset references");
+    }
+    let refs = source_asset_refs(&source)?;
     let mut descriptors = Vec::new();
-    let mut ids = BTreeSet::new();
     for reference in refs {
-        ensure!(
-            reference.revision > 0
-                && reference.revision <= i32::MAX as u32
-                && ids.insert(reference.asset_id.clone()),
-            "invalid or duplicate asset reference"
-        );
         let row = one(
             db,
             "SELECT descriptor FROM media_assets WHERE asset_id=$1 AND revision=$2",

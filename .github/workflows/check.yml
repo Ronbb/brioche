@@ -27,6 +27,8 @@ jobs:
       - run: cargo fmt --all --check
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - run: cargo test --workspace --locked
+      - run: cargo run -p brioche-server --locked -- check docs/examples/a1-bakery.lesson.json
+      - run: cargo run -p brioche-server --locked -- check-release docs/examples/catalog.release.json
       - run: cargo test -p brioche-server --test postgres --locked -- --ignored
         env:
           TEST_DATABASE_URL: postgres://postgres@localhost:5432/brioche_test
