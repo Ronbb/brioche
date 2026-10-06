@@ -63,6 +63,19 @@ function Session({
   );
   const heading = useRef<HTMLHeadingElement>(null),
     step = lesson.steps[index];
+  const completionConfirmed =
+      !!session.progress.completedAt && !session.uncertain,
+    previouslyCompleted = useRef(!!initial.progress.completedAt);
+  useEffect(() => {
+    if (previouslyCompleted.current === completionConfirmed) return;
+    previouslyCompleted.current = completionConfirmed;
+    if (!completionConfirmed) return;
+    const frame = requestAnimationFrame(() => {
+      heading.current?.focus();
+      heading.current?.scrollIntoView({ block: "start", behavior: "instant" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [completionConfirmed]);
   useEffect(() => {
     const stored = readDraft(scope + ":step");
     const restored = lesson.steps.findIndex((step) => step.id === stored);

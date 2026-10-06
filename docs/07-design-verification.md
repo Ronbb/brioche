@@ -489,3 +489,12 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 - 四课原创文本/中文译文/解释和练习，正文 140/164/189/171 个空白分隔词。两篇 article 保持纯段落，两个 dialogue 保持 8 轮、固定角色和独立情境身份；三类题各一题。官方语言参考在 A2 README 记录，仅核对结构，不等于人工审校或转载第三方例句。
 - `check` 四份源文件和 `check-release` 联合目录通过。六项 curriculum 测试通过：新联合目录两级七单元 28 课、84 题正确/合法错误判分；A1/A2 共用词条和角色 revision 快照一致；DTO 投影剥离私有字段；A2 draft/正文形式/120–250 词检查。A1 四个既有目录与素材库存仍检查通过。
 - 本轮没有登记、导入或激活课程，没有浏览器 operator 预览，也没有录音/真实 iPhone 证据。插图复用原 A1 城市 SVG 和清单；素材仍 planned/rightsConfirmed=false，没有重复登记素材或修改正式 revision。说明四课为独立练习场景，日期/报价/班次不是真实运营信息。人工法语/译文/难度/语法支持说明与插图适配仍须审校，A2 其他五个单元待制作。
+
+
+### 2026-10-06：学习双标签 CAS、完成与焦点恢复
+
+- 新建隔离 `brioche-learning-tabs-qa` PostgreSQL（本机 55439）、API 3002、React Router 5177；只使用合成协议账号/已登记测试素材与测试课程。同一 Chromium 的两个独立标签加载同一实际学习会话 version 4，不共享 sessionStorage 草稿。A 正确选项保存为 version 5、1 次尝试；B 原选项和填空 une 草稿继续保留。B 提交 version 4 得到实际 409，仅最新 GET 注入传输失败；重新读取再失败后数据库仍 version 5、1 次尝试、0 提示。选择/填空/排序、确认、提示、步骤切换被禁用。
+- 恢复 GET 后读到 version 5，展示题目已有新提交但草稿保留；B 使用 version 5 保存原选择，数据库 version 6、2 次尝试。A 的提示 version 5 得到真实 409→实际 GET 200，填空草稿 une 保留且没有新增提示。明确再确认提示后写 version 6→7，再提交填空 version 7→8，数据库 hint_used=true、判分正确；选择题保留第一正答与第二错误尝试。排序实际键盘组句/提交→version 9、4 次尝试，继续实际步骤 practice/apply/recap→12，complete→13，自动复习卡保持 3。这里验证“完成与掌握分开”，未把最新错误尝试强行改成正答。
+- B 旧 version 6 提交后真实 409→GET 完成状态，页面不再显示学习写按钮，数据库仍 version 13、4 次尝试、1 提示、3 张复习卡。发现正常完成和旧标签同步完成会让焦点落 BODY，新增完成确认状态 effect；新 repeat 会话两个标签同读 version 10，一处完成到 11，另一处 complete version 10→409→GET，双方焦点均为 H2“本课已完成”，没有额外尝试/复习卡。repeat 准备脚本首次未确认前置步骤就提交被 409 正确拒绝，修正为正式前置步骤顺序后继续；未绕过门禁。
+- 第三个会话实际 complete 已提交 version 10→11 后注入响应丢失；刷新后 SSR 已完成但客户端恢复“确认上次保存”。重试前后比较原 path/method/完整 JSON body（包含相同幂等键，但不输出键），匹配=true、实际 replay 200、pending 清除、焦点 H2；数据库 version 11、3 次尝试、复习卡总数 3 不变。该项测试有意移除当前任务捕获的 beforeunload listener，仅排除原生弹窗，未宣称原生确认或 iPhone 行为；旧的桌面原生确认已有独立记录。
+- 390px 完成页截图已查看，320/390px 无横向溢出；`pnpm typecheck`、17 项 `pnpm test:web`、`pnpm build` 通过。专用两标签浏览器关闭，QA API/Web 监听进程按已验证路径/参数停止，临时 PostgreSQL 含匿名卷删除，开发 API health=ok；未修改生产数据、用户入口或正式课程。完整屏幕阅读器、iPhone、所有学习故障组合仍待验收。
