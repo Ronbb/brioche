@@ -48,6 +48,38 @@
       "license": "待确认素材分发授权",
       "creator": "Brioche 项目（Codex 绘制 SVG）",
       "rightsConfirmed": false
+    },
+    {
+      "assetId": "art-fruit-market",
+      "revision": 1,
+      "sha256": "8948dc51a65a86e0f3eaab609c897be0ee32dd07614aa75f7454daedf0e02141",
+      "mimeType": "image/svg+xml",
+      "width": 640,
+      "height": 470,
+      "altZh": "虚构水果摊的苹果、香蕉和秤，旁边摆着购物篮",
+      "creditZh": "Brioche · 场景插图草稿",
+      "file": "fruit-market.svg",
+      "status": "planned",
+      "source": "Brioche 项目内以 SVG 独立绘制，2026-10-06；未使用外部位图或字体",
+      "license": "待确认素材分发授权",
+      "creator": "Brioche 项目（Codex 绘制 SVG）",
+      "rightsConfirmed": false
+    },
+    {
+      "assetId": "art-cafe-lunch",
+      "revision": 1,
+      "sha256": "374a0e0606bc2048aadba21775822d182d58754834e0b7c4fb3d98d932292dd5",
+      "mimeType": "image/svg+xml",
+      "width": 640,
+      "height": 470,
+      "altZh": "虚构餐馆桌上的沙拉、汤、水杯和菜单",
+      "creditZh": "Brioche · 场景插图草稿",
+      "file": "cafe-lunch.svg",
+      "status": "planned",
+      "source": "Brioche 项目内以 SVG 独立绘制，2026-10-06；未使用外部位图或字体",
+      "license": "待确认素材分发授权",
+      "creator": "Brioche 项目（Codex 绘制 SVG）",
+      "rightsConfirmed": false
     }
   ],
   "characters": []

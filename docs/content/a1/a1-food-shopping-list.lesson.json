@@ -1,0 +1,538 @@
+{
+  "schemaVersion": "1.0",
+  "id": "a1-food-shopping-list",
+  "revision": 1,
+  "levelId": "a1",
+  "unitId": "a1-food-shopping",
+  "title": {
+    "fr": "Une liste pour le déjeuner",
+    "zh": "读懂一张购物清单"
+  },
+  "summaryZh": "从购物短文中辨认食材、数量表达和个人喜好。",
+  "estimatedMinutes": 12,
+  "objectivesZh": [
+    "读懂购物清单中的食材",
+    "区分 du riz 和 des tomates",
+    "用 aimer 说食物喜好"
+  ],
+  "knowledge": {
+    "vocabulary": [
+      {
+        "id": "word-riz",
+        "lemma": "riz",
+        "partOfSpeech": "noun",
+        "meaningZh": "米；米饭",
+        "noteZh": "本课 du riz 指购买一些米，数量未具体说明。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-tomate",
+        "lemma": "tomate",
+        "partOfSpeech": "noun",
+        "meaningZh": "西红柿",
+        "noteZh": "une tomate；复数 tomates。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-eau",
+        "lemma": "eau",
+        "partOfSpeech": "noun",
+        "meaningZh": "水",
+        "noteZh": "l’eau；une bouteille d’eau 表示一瓶水。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-bouteille",
+        "lemma": "bouteille",
+        "partOfSpeech": "noun",
+        "meaningZh": "瓶子",
+        "noteZh": "une bouteille d’eau 表示一瓶水。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-fromage",
+        "lemma": "fromage",
+        "partOfSpeech": "noun",
+        "meaningZh": "奶酪",
+        "noteZh": "le fromage 可泛指奶酪；sans fromage 表示不加奶酪。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-liste",
+        "lemma": "liste",
+        "partOfSpeech": "noun",
+        "meaningZh": "清单",
+        "noteZh": "liste 的单数形式；搭配冠词学习。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-supermarche",
+        "lemma": "supermarché",
+        "partOfSpeech": "noun",
+        "meaningZh": "超市",
+        "noteZh": "supermarché 的单数形式；搭配冠词学习。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-aimer",
+        "lemma": "aimer",
+        "partOfSpeech": "verb",
+        "meaningZh": "喜欢；爱",
+        "noteZh": "本单元表示对食物的喜好：j’aime、elle aime。"
+      }
+    ],
+    "grammar": [
+      {
+        "id": "grammar-food-partitive",
+        "titleZh": "du riz / des tomates：不指定精确数量",
+        "bodyZh": "du riz 中 du 是部分冠词，表示一些米，不指定精确数量；des tomates 中 des 是复数不定冠词，表示若干西红柿。表达明确数量时用 un kilo de… 或 une bouteille de…。",
+        "examples": [
+          {
+            "fr": "Elle achète du riz et des tomates.",
+            "zh": "她买一些米和西红柿。"
+          }
+        ]
+      },
+      {
+        "id": "grammar-aimer-food",
+        "titleZh": "aimer + 定冠词：表达食物喜好",
+        "bodyZh": "泛指喜欢某种食物时，本课使用定冠词：J’aime les légumes、elle aime les tomates。je 在元音前省音为 j’，写 j’aime；否定时写 je n’aime pas，保留后面的定冠词。",
+        "examples": [
+          {
+            "fr": "J’aime les légumes.",
+            "zh": "我喜欢蔬菜。"
+          }
+        ]
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "id": "scene-main",
+      "type": "scene",
+      "placeZh": "Camille 按清单购买午餐食材",
+      "situationZh": "从购物短文中辨认食材、数量表达和个人喜好。",
+      "illustrationId": "art-fruit-market"
+    },
+    {
+      "id": "article-main",
+      "type": "article",
+      "titleZh": "读懂一张购物清单",
+      "narratorId": "character-camille",
+      "paragraphs": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Camille va au "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "supermarché",
+              "vocabularyId": "word-supermarche"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " pour préparer le déjeuner."
+            }
+          ],
+          "translationZh": "Camille 去超市购买食材，准备午餐。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Dans son sac, elle a une "
+            },
+            {
+              "id": "segment-2-2",
+              "text": "liste",
+              "vocabularyId": "word-liste"
+            },
+            {
+              "id": "segment-2-3",
+              "text": " et un petit carnet."
+            }
+          ],
+          "translationZh": "她的包里有一张清单和一个小本子。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Elle achète "
+            },
+            {
+              "id": "segment-3-2",
+              "text": "du",
+              "grammarId": "grammar-food-partitive"
+            },
+            {
+              "id": "segment-3-3",
+              "text": " "
+            },
+            {
+              "id": "segment-3-4",
+              "text": "riz",
+              "vocabularyId": "word-riz"
+            },
+            {
+              "id": "segment-3-5",
+              "text": ", "
+            },
+            {
+              "id": "segment-3-6",
+              "text": "des",
+              "grammarId": "grammar-food-partitive"
+            },
+            {
+              "id": "segment-3-7",
+              "text": " "
+            },
+            {
+              "id": "segment-3-8",
+              "text": "tomates",
+              "vocabularyId": "word-tomate"
+            },
+            {
+              "id": "segment-3-9",
+              "text": " et une "
+            },
+            {
+              "id": "segment-3-10",
+              "text": "bouteille",
+              "vocabularyId": "word-bouteille"
+            },
+            {
+              "id": "segment-3-11",
+              "text": " d’"
+            },
+            {
+              "id": "segment-3-12",
+              "text": "eau",
+              "vocabularyId": "word-eau"
+            },
+            {
+              "id": "segment-3-13",
+              "text": "."
+            }
+          ],
+          "translationZh": "她买一些米、西红柿和一瓶水。"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Elle "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "aime",
+              "vocabularyId": "word-aimer",
+              "grammarId": "grammar-aimer-food"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " les "
+            },
+            {
+              "id": "segment-4-4",
+              "text": "tomates",
+              "vocabularyId": "word-tomate"
+            },
+            {
+              "id": "segment-4-5",
+              "text": ", mais elle "
+            },
+            {
+              "id": "segment-4-6",
+              "text": "n’aime pas",
+              "vocabularyId": "word-aimer",
+              "grammarId": "grammar-aimer-food"
+            },
+            {
+              "id": "segment-4-7",
+              "text": " le "
+            },
+            {
+              "id": "segment-4-8",
+              "text": "fromage",
+              "vocabularyId": "word-fromage"
+            },
+            {
+              "id": "segment-4-9",
+              "text": "."
+            }
+          ],
+          "translationZh": "她喜欢西红柿，但不喜欢奶酪。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Elle regarde les prix avant de choisir les produits."
+            }
+          ],
+          "translationZh": "她挑选商品前先看看价格。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "À la caisse, elle pose les courses sur le tapis."
+            }
+          ],
+          "translationZh": "在收银处，她把购买的东西放到传送带上。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Elle paie par carte, puis elle rentre à la maison."
+            }
+          ],
+          "translationZh": "她用银行卡付款，然后回家。"
+        }
+      ]
+    },
+    {
+      "id": "explanation-main",
+      "type": "explanation",
+      "titleZh": "这句话如何使用",
+      "bodyZh": "du riz 表示不指定精确数量的米；des tomates 表示若干西红柿。une bouteille d’eau 已有瓶数，所以用 d’eau。泛指喜欢食物用定冠词，elle aime les tomates；否定写 elle n’aime pas le fromage。la caisse 是收银处，le tapis 在这里是收银传送带。",
+      "targets": [
+        {
+          "blockId": "article-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2"
+        },
+        {
+          "blockId": "article-main",
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2"
+        }
+      ]
+    },
+    {
+      "id": "culture-context",
+      "type": "culture",
+      "titleZh": "场景中的细节",
+      "bodyZh": "清单与食物喜好属于虚构角色，不代表统一的法国家庭菜单、饮食或购物方式。",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。"
+    },
+    {
+      "id": "vocabulary-targets",
+      "type": "vocabulary",
+      "entryIds": [
+        "word-riz",
+        "word-tomate",
+        "word-eau",
+        "word-bouteille",
+        "word-fromage",
+        "word-liste",
+        "word-supermarche",
+        "word-aimer"
+      ]
+    },
+    {
+      "id": "grammar-targets",
+      "type": "grammar",
+      "entryIds": [
+        "grammar-food-partitive",
+        "grammar-aimer-food"
+      ]
+    },
+    {
+      "id": "exercise-comprehension",
+      "type": "exercise",
+      "exerciseType": "single-choice",
+      "promptZh": "Camille 不喜欢哪种食物？",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "西红柿"
+        },
+        {
+          "id": "correct",
+          "text": "奶酪"
+        },
+        {
+          "id": "distractor-b",
+          "text": "米饭"
+        }
+      ]
+    },
+    {
+      "id": "exercise-fill",
+      "type": "exercise",
+      "exerciseType": "fill-blank",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Elle achète ___ riz.",
+      "hintZh": "这里的 riz 是阳性食物名词，不指定精确数量，用部分冠词 du。"
+    },
+    {
+      "id": "exercise-order",
+      "type": "exercise",
+      "exerciseType": "order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "et le riz."
+        },
+        {
+          "id": "token-1",
+          "text": "J’aime"
+        },
+        {
+          "id": "token-2",
+          "text": "les tomates"
+        }
+      ]
+    },
+    {
+      "id": "habit-main",
+      "type": "habit",
+      "taskZh": "用 J’aime… 说一种喜欢的食物，也可以替虚构角色写一句。",
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。"
+    },
+    {
+      "id": "summary-main",
+      "type": "summary",
+      "takeawaysZh": [
+        "我能读懂购物清单中的食材。",
+        "我能区分 du riz 和 des tomates。",
+        "我能用 aimer 说食物喜好。"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景",
+      "blockIds": [
+        "scene-main"
+      ]
+    },
+    {
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段短文",
+      "blockIds": [
+        "article-main"
+      ]
+    },
+    {
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达",
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ]
+    },
+    {
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用",
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ]
+    },
+    {
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常",
+      "blockIds": [
+        "habit-main"
+      ]
+    },
+    {
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课",
+      "blockIds": [
+        "summary-main"
+      ]
+    }
+  ],
+  "completion": {
+    "strategy": "attempt-all",
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ]
+  },
+  "reviewItemIds": [
+    "word-riz",
+    "word-tomate",
+    "word-aimer"
+  ],
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "kind": "choice",
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：奶酪。"
+      },
+      "exercise-fill": {
+        "kind": "text",
+        "accepted": [
+          "du"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "这里的 riz 是阳性食物名词，不指定精确数量，用部分冠词 du。"
+      },
+      "exercise-order": {
+        "kind": "order",
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "J’aime les tomates et le riz."
+      }
+    }
+  },
+  "editorial": {
+    "status": "draft",
+    "note": "项目原创课程草稿，未完成人工法语、译文和教学审校。商品、菜品、金额与服务过程为虚构设定。素材待来源授权确认及登记；无正式录音。审校记录见 docs/content/a1/README.md，禁止直接作为已审校课程发布。"
+  },
+  "assetRefs": [
+    {
+      "assetId": "art-fruit-market",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    }
+  ],
+  "cast": [
+    {
+      "characterId": "character-camille",
+      "revision": 1,
+      "displayName": "Camille",
+      "avatarId": "avatar-camille-v1",
+      "speechLocale": "fr-FR"
+    }
+  ]
+}

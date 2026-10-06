@@ -11,7 +11,7 @@ fn scene_inventory_matches_actual_svg_sources() {
     let bundle: brioche_server::media::AssetBundle =
         serde_json::from_value(document.value).unwrap();
     assert_eq!(bundle.schema_version, "1.0");
-    assert_eq!(bundle.assets.len(), 3);
+    assert_eq!(bundle.assets.len(), 5);
     for asset in bundle.assets {
         let info = brioche_server::media::inspect_file(
             &root.join("assets").join(&asset.file),
@@ -52,6 +52,20 @@ fn extended_sources_match_catalog_and_shared_knowledge_and_grade_all_exercises()
     );
 }
 
+#[test]
+fn five_unit_sources_match_catalog_and_shared_knowledge_and_grade_all_exercises() {
+    check_catalog(
+        "catalog.five-units.release.json",
+        &[
+            "a1-first-conversations",
+            "a1-breakfast-bakery",
+            "a1-city-travel",
+            "a1-home-routine",
+            "a1-food-shopping",
+        ],
+    );
+}
+
 fn check_catalog(file: &str, expected_units: &[&str]) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs");
     let document = Document::load(root.join("content/a1").join(file)).unwrap();
@@ -66,6 +80,7 @@ fn check_catalog(file: &str, expected_units: &[&str]) {
         expected_units
     );
     let mut knowledge = BTreeMap::<String, Value>::new();
+    let mut characters = BTreeMap::<(String, u64), Value>::new();
     let mut checked = 0;
     for unit in units {
         let lessons = unit["lessons"].as_array().unwrap();
@@ -88,6 +103,18 @@ fn check_catalog(file: &str, expected_units: &[&str]) {
             let lesson = brioche_server::project_source(source.clone()).unwrap();
             let grader = Grader::from_author_source(&lesson, &source).unwrap();
             let public = serde_json::to_value(&lesson).unwrap();
+            for character in source["cast"].as_array().unwrap() {
+                let key = (
+                    character["characterId"].as_str().unwrap().to_owned(),
+                    character["revision"].as_u64().unwrap(),
+                );
+                if let Some(previous) = characters.insert(key.clone(), character.clone()) {
+                    assert_eq!(
+                        previous, *character,
+                        "conflicting character snapshot {key:?} in {id}"
+                    );
+                }
+            }
             for private_field in ["serverOnly", "editorial", "assetRefs", "audioRefs"] {
                 assert!(public.get(private_field).is_none());
             }
