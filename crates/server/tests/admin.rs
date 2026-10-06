@@ -3175,6 +3175,10 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
         false,
         root.clone(),
     );
+    let qwen = std::sync::Arc::new(MockQwen::default());
+    let app = app.layer(axum::Extension(
+        brioche_server::qwen::Service::new(qwen.clone(), "https://example.test").unwrap(),
+    ));
     let mut visitor = Browser::new(app.clone()).await;
     let mut learner = Browser::new(app.clone()).await;
     learner
@@ -3303,11 +3307,6 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
             .await
             .is_err()
     );
-    assert!(
-        brioche_migration::Migrator::down(&db, Some(1))
-            .await
-            .is_err()
-    );
     let row = db
         .query_one_raw(Statement::from_string(
             DbBackend::Postgres,
@@ -3324,6 +3323,255 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
         row.try_get::<String>("", "hash").unwrap(),
         preview.1["planHash"].as_str().unwrap()
     );
+    // Course clip attempts charge once, preserve exact retry identity and reuse validated bytes.
+    let clips = "/api/v1/operator/speech-clips";
+    let key = saved.1["targets"][0]["generationKey"].clone();
+    let first_id = "ccccccccccccccccccccccccccccccc1";
+    let clip_request = json!({"id":first_id,"planId":id,"generationKey":key,"expectedPlanHash":saved.1["planHash"],"expectedPreviousId":null,"costConfirmed":true,"retryUnknownConfirmed":false,"reason":"Synthetic paid course task"});
+    assert_eq!(
+        visitor
+            .send("POST", clips, Some(clip_request.clone()), true)
+            .await
+            .0,
+        401
+    );
+    assert_eq!(
+        learner
+            .send("POST", clips, Some(clip_request.clone()), true)
+            .await
+            .0,
+        403
+    );
+    let started = operator
+        .send("POST", clips, Some(clip_request.clone()), true)
+        .await;
+    assert_eq!(started.0, 200, "{:?}", started.1);
+    assert_eq!(started.1["status"], "submitted");
+    let mut contender = clip_request.clone();
+    contender["id"] = json!("ccccccccccccccccccccccccccccccc2");
+    assert_eq!(
+        second
+            .send("POST", clips, Some(contender.clone()), true)
+            .await
+            .0,
+        409
+    );
+    let clip_path = format!("{clips}/{first_id}");
+    let ready = settled(&mut operator, &clip_path).await;
+    assert_eq!(ready["status"], "ready");
+    assert_eq!(
+        visitor
+            .send("GET", &format!("{clip_path}/file"), None, true)
+            .await
+            .0,
+        401
+    );
+    assert_eq!(
+        learner
+            .send("GET", &format!("{clip_path}/file"), None, true)
+            .await
+            .0,
+        403
+    );
+    let file_response = operator
+        .app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri(format!("{clip_path}/file"))
+                .header("cookie", &operator.cookie)
+                .header("range", "bytes=0-15")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(file_response.status().as_u16(), 206);
+    assert_eq!(
+        file_response.headers()["cache-control"],
+        "private, no-store"
+    );
+    assert_eq!(file_response.headers()["content-type"], "audio/wav");
+    let bytes = file_response
+        .into_body()
+        .collect()
+        .await
+        .unwrap()
+        .to_bytes();
+    assert_eq!(bytes.len(), 16);
+    assert_eq!(&bytes[..4], b"RIFF");
+    assert_eq!(qwen.calls.lock().unwrap().len(), 1);
+    assert_eq!(
+        operator
+            .send("POST", clips, Some(clip_request.clone()), true)
+            .await
+            .1,
+        ready
+    );
+    assert_eq!(
+        second
+            .send("POST", clips, Some(clip_request.clone()), true)
+            .await
+            .0,
+        409
+    );
+    let mut changed = clip_request.clone();
+    changed["reason"] = json!("Different bill");
+    assert_eq!(
+        operator.send("POST", clips, Some(changed), true).await.0,
+        409
+    );
+    contender["expectedPreviousId"] = json!(first_id);
+    contender["costConfirmed"] = json!(false);
+    let reused = operator
+        .send("POST", clips, Some(contender.clone()), true)
+        .await;
+    assert_eq!(reused.0, 200, "{:?}", reused.1);
+    assert_eq!(reused.1["status"], "ready");
+    assert_eq!(reused.1["reusedFrom"], first_id);
+    assert_eq!(qwen.calls.lock().unwrap().len(), 1);
+    assert_eq!(
+        operator
+            .send("POST", clips, Some(contender.clone()), true)
+            .await
+            .1,
+        reused.1
+    );
+    let review_path = format!("{clips}/ccccccccccccccccccccccccccccccc2/review");
+    let review = json!({"heard":true,"accepted":false,"reason":"Synthetic rejection, no real sound approval"});
+    let mut unheard = review.clone();
+    unheard["heard"] = json!(false);
+    assert_eq!(
+        operator
+            .send("POST", &review_path, Some(unheard), true)
+            .await
+            .0,
+        400
+    );
+    assert_eq!(
+        operator
+            .send("POST", &review_path, Some(review.clone()), true)
+            .await
+            .0,
+        200
+    );
+    assert_eq!(
+        operator
+            .send("POST", &review_path, Some(review), true)
+            .await
+            .0,
+        200
+    );
+    let mut retry = clip_request.clone();
+    retry["id"] = json!("ccccccccccccccccccccccccccccccc3");
+    retry["expectedPreviousId"] = contender["id"].clone();
+    qwen.unknown
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    assert_eq!(
+        operator
+            .send("POST", clips, Some(retry.clone()), true)
+            .await
+            .0,
+        200
+    );
+    let unknown = settled(
+        &mut operator,
+        &format!("{clips}/ccccccccccccccccccccccccccccccc3"),
+    )
+    .await;
+    assert_eq!(unknown["status"], "unknown");
+    assert_eq!(
+        operator
+            .send("POST", clips, Some(retry.clone()), true)
+            .await
+            .1,
+        unknown
+    );
+    assert_eq!(qwen.calls.lock().unwrap().len(), 2);
+    let mut new_retry = retry.clone();
+    new_retry["id"] = json!("ccccccccccccccccccccccccccccccc4");
+    new_retry["expectedPreviousId"] = retry["id"].clone();
+    assert_eq!(
+        operator
+            .send("POST", clips, Some(new_retry.clone()), true)
+            .await
+            .0,
+        409
+    );
+    new_retry["retryUnknownConfirmed"] = json!(true);
+    qwen.unknown
+        .store(false, std::sync::atomic::Ordering::SeqCst);
+    assert_eq!(
+        operator.send("POST", clips, Some(new_retry), true).await.0,
+        200
+    );
+    assert_eq!(
+        settled(
+            &mut operator,
+            &format!("{clips}/ccccccccccccccccccccccccccccccc4")
+        )
+        .await["status"],
+        "ready"
+    );
+    assert_eq!(qwen.calls.lock().unwrap().len(), 3);
+    let latest = operator
+        .send("GET", &format!("{path}/{id}/clips"), None, true)
+        .await;
+    assert_eq!(latest.0, 200, "{:?}", latest.1);
+    assert_eq!(latest.1["items"].as_array().unwrap().len(), 1);
+    assert_eq!(
+        latest.1["items"][0]["id"],
+        "ccccccccccccccccccccccccccccccc4"
+    );
+    assert!(
+        db.execute_unprepared("DELETE FROM course_speech_clips")
+            .await
+            .is_err()
+    );
+    assert!(
+        brioche_migration::Migrator::down(&db, Some(1))
+            .await
+            .is_err()
+    );
+    // Competing administrators cannot both charge the same fresh generation key.
+    let mut parallel_a = clip_request.clone();
+    parallel_a["id"] = json!("ccccccccccccccccccccccccccccccc5");
+    parallel_a["generationKey"] = saved.1["targets"][1]["generationKey"].clone();
+    let mut parallel_b = parallel_a.clone();
+    parallel_b["id"] = json!("ccccccccccccccccccccccccccccccc6");
+    let (a, b) = tokio::join!(
+        operator.send("POST", clips, Some(parallel_a), true),
+        second.send("POST", clips, Some(parallel_b), true)
+    );
+    let mut statuses = [a.0, b.0];
+    statuses.sort();
+    assert_eq!(statuses, [200, 409]);
+    let winner = if a.0 == 200 { a.1 } else { b.1 };
+    assert_eq!(
+        settled(
+            &mut operator,
+            &format!("{clips}/{}", winner["id"].as_str().unwrap())
+        )
+        .await["status"],
+        "ready"
+    );
+    assert_eq!(qwen.calls.lock().unwrap().len(), 4);
+    // A corrupt cached object fails closed rather than silently issuing another paid call.
+    let raw=db.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT result->>'sha256' AS hash FROM course_speech_clip_events WHERE status='ready' LIMIT 1")).await.unwrap().unwrap();
+    let hash = raw.try_get::<String>("", "hash").unwrap();
+    assert!(hash.bytes().all(|b| b.is_ascii_hexdigit()) && hash.len() == 64);
+    std::fs::write(root.join(format!("{hash}.wav")), b"corrupt").unwrap();
+    let mut corrupt_retry = clip_request.clone();
+    corrupt_retry["id"] = json!("ccccccccccccccccccccccccccccccc7");
+    corrupt_retry["expectedPreviousId"] = json!("ccccccccccccccccccccccccccccccc4");
+    assert_eq!(
+        operator
+            .send("POST", clips, Some(corrupt_retry), true)
+            .await
+            .0,
+        503
+    );
+    assert_eq!(qwen.calls.lock().unwrap().len(), 4);
     // Real withdrawal hides existing plan text and prevents further preview/creation.
     db.execute_raw(Statement::from_sql_and_values(
         DbBackend::Postgres,
@@ -3347,6 +3595,14 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
                 Some(preview_request),
                 true
             )
+            .await
+            .0,
+        404
+    );
+    assert_eq!(operator.send("GET", &clip_path, None, true).await.0, 404);
+    assert_eq!(
+        operator
+            .send("POST", clips, Some(clip_request), true)
             .await
             .0,
         404

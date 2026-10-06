@@ -298,6 +298,14 @@ export default function SpeechPlans({
             <p role="status">设置已修改，请重新核对配音计划。</p>
           )}
           <h2>{current.id ? "已保存的计划" : "配音计划预览"}</h2>
+          {current.id && (
+            <Link
+              className="text-button"
+              to={`/admin/speech-clips?planId=${current.id}`}
+            >
+              生成与审听音频
+            </Link>
+          )}
           <p>
             {current.targets.length} 个内容片段 · {current.requestCount}{" "}
             次独立生成 · {current.totalRequestCharacters} 个法语字符

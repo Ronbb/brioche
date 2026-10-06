@@ -531,3 +531,42 @@ pub struct AdminAuditions {
     pub next: Option<String>,
     pub configured: bool,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSpeechClipRequest {
+    pub id: String,
+    pub plan_id: String,
+    pub generation_key: String,
+    pub expected_plan_hash: String,
+    pub expected_previous_id: Option<String>,
+    pub cost_confirmed: bool,
+    pub retry_unknown_confirmed: bool,
+    pub reason: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSpeechClip {
+    pub id: String,
+    pub plan_id: String,
+    pub generation_key: String,
+    pub reused_from: Option<String>,
+    pub status: String,
+    pub duration_ms: Option<u32>,
+    pub request_id: Option<String>,
+    pub accepted: Option<bool>,
+    pub created_at: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSpeechClips {
+    pub items: Vec<AdminSpeechClip>,
+    pub configured: bool,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSpeechClipReview {
+    pub heard: bool,
+    pub accepted: bool,
+    pub reason: String,
+}

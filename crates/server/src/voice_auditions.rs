@@ -256,7 +256,11 @@ async fn create(
         .await
         .unwrap_or(Err(ProviderError::Unknown));
         let (status, result) = match response {
-            Ok(s) => match tokio::task::spawn_blocking(move || store(&root, s, cloned)).await {
+            Ok(s) => match tokio::task::spawn_blocking(move || {
+                crate::speech_media::store(&root, s, cloned)
+            })
+            .await
+            {
                 Ok(Ok(r)) => ("ready", Some(r)),
                 _ => ("unknown", None),
             },
@@ -268,39 +272,6 @@ async fn create(
         }
     });
     Ok(Json(result))
-}
-fn store(root: &std::path::Path, s: crate::qwen::Speech, cloned: bool) -> Result<Value, AppError> {
-    let info = crate::audio::inspect(&s.wav, "audio/wav").map_err(|_| AppError::Unavailable)?;
-    if s.provider_wav.len() < 44
-        || !s.provider_wav.starts_with(b"RIFF")
-        || &s.provider_wav[8..12] != b"WAVE"
-        || s.provider_wav.len() > 16 * 1024 * 1024
-        || s.wav.len() > 16 * 1024 * 1024
-        || info.sample_rate != 24000
-        || info.channels != 1
-        || info.duration_ms > 180000
-        || info != s.info
-        || !crate::qwen::valid_id(&s.request_id)
-        || s.verification.is_some() != cloned
-        || s.verification.as_ref().is_some_and(|v| {
-            v.model != crate::qwen::MODEL
-                || v.status != "OK"
-                || !crate::qwen::valid_id(&v.request_id)
-        })
-    {
-        return Err(AppError::Unavailable);
-    }
-    let sha = crate::media::digest(&s.wav);
-    let provider_sha = crate::media::digest(&s.provider_wav);
-    crate::media::store_file(root, &s.provider_wav, &provider_sha, "wav")
-        .map_err(|_| AppError::Unavailable)?;
-    crate::media::store_file(root, &s.wav, &sha, "wav").map_err(|_| AppError::Unavailable)?;
-    let verification = s
-        .verification
-        .map(|v| json!({"model":v.model,"status":v.status,"requestId":v.request_id}));
-    Ok(
-        json!({"sha256":sha,"providerSha256":provider_sha,"byteLength":s.wav.len(),"durationMs":info.duration_ms,"requestId":s.request_id,"inputTokens":s.input_tokens,"outputTokens":s.output_tokens,"verification":verification,"postprocessing":"qwen-riff-length-v1-metadata-preserved"}),
-    )
 }
 async fn finish(
     db: &impl ConnectionTrait,
@@ -330,33 +301,13 @@ async fn file(
         return Err(AppError::NotFound);
     }
     let result: Value = field::<Option<Value>>(&row, "result")?.ok_or(AppError::NotFound)?;
-    let sha = result["sha256"]
-        .as_str()
-        .filter(|s| hex(s, 64))
-        .ok_or(AppError::Unavailable)?
-        .to_owned();
-    let duration = result["durationMs"].as_u64().ok_or(AppError::Unavailable)?;
-    let length = result["byteLength"].as_u64().ok_or(AppError::Unavailable)?;
     let _permit = permits
         .try_acquire_owned()
         .map_err(|_| AppError::RateLimited)?;
-    let hash = sha.clone();
-    let bytes = tokio::task::spawn_blocking(move || {
-        let bytes =
-            crate::media::stored_bytes(&root, &hash, "wav").map_err(|_| AppError::Unavailable)?;
-        let info = crate::audio::inspect(&bytes, "audio/wav").map_err(|_| AppError::Unavailable)?;
-        if crate::media::digest(&bytes) != hash
-            || bytes.len() as u64 != length
-            || info.duration_ms as u64 != duration
-            || info.channels != 1
-            || info.sample_rate != 24000
-        {
-            return Err(AppError::Unavailable);
-        }
-        Ok(bytes)
-    })
-    .await
-    .map_err(|_| AppError::Unavailable)??;
+    let (sha, bytes) =
+        tokio::task::spawn_blocking(move || crate::speech_media::read(&root, &result))
+            .await
+            .map_err(|_| AppError::Unavailable)??;
     crate::recording::bytes_response("audio/wav".into(), format!("\"{sha}\""), bytes, headers)
 }
 async fn review(

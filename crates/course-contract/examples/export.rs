@@ -57,6 +57,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     brioche_course_contract::AdminAuditions::export_all(&config)?;
     brioche_course_contract::AdminSpeechPlanRequest::export_all(&config)?;
     brioche_course_contract::AdminSpeechPlans::export_all(&config)?;
+    brioche_course_contract::AdminSpeechClipRequest::export_all(&config)?;
+    brioche_course_contract::AdminSpeechClips::export_all(&config)?;
+    brioche_course_contract::AdminSpeechClipReview::export_all(&config)?;
     brioche_course_contract::AdminSpeechOptions::export_all(&config)?;
     brioche_course_contract::AdminRevokeTokenRequest::export_all(&config)?;
     brioche_course_contract::PreviewRelease::export_all(&config)?;

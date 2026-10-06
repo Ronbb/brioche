@@ -95,6 +95,8 @@ let voiceAuditions = [],
   auditionSynthCalls = 0,
   auditionLostReply = false;
 let lessonStatus = 200;
+let speechClips = [],
+  clipLostReply = false;
 let speechPlans = [],
   speechLostReply = false;
 const speechVoices = lesson.cast.map((character) => ({
@@ -120,6 +122,45 @@ const profile = (id) => ({
 });
 const api = createServer((request, response) => {
   response.setHeader("Content-Type", "application/json");
+  if (request.url.match(/speech-plans\/[a-f0-9]{32}\/clips$/)) {
+    response.end(JSON.stringify({ items: speechClips, configured: true }));
+    return;
+  }
+  if (request.url.startsWith("/api/v1/operator/speech-clips")) {
+    if (request.method === "POST") {
+      let body = "";
+      request.on("data", (chunk) => (body += chunk));
+      request.on("end", () => {
+        const payload = JSON.parse(body);
+        adminWrites.push({ operation: request.url, ...payload });
+        let clip = speechClips.find((c) => c.id === payload.id);
+        if (!clip) {
+          clip = {
+            id: payload.id,
+            planId: payload.planId,
+            generationKey: payload.generationKey,
+            reusedFrom: null,
+            status: "ready",
+            durationMs: 100,
+            requestId: "controlled-request",
+            accepted: null,
+            createdAt: "2026-10-07T00:00:00.000000Z",
+          };
+          speechClips.push(clip);
+        }
+        if (clipLostReply) {
+          clipLostReply = false;
+          response.writeHead(503).end("{}");
+          return;
+        }
+        response.end(JSON.stringify(clip));
+      });
+      return;
+    }
+    const id = request.url.match(/speech-clips\/([a-f0-9]{32})$/)?.[1];
+    response.end(JSON.stringify(speechClips.find((c) => c.id === id)));
+    return;
+  }
   if (request.url.endsWith("/speech-options")) {
     response.end(JSON.stringify({ lesson, voices: speechVoices }));
     return;
@@ -2813,5 +2854,128 @@ test("operator previews and saves a fixed course speech plan with emotion editin
     await browser("cookies", "clear");
     speechPlans = [];
     speechLostReply = false;
+  }
+});
+
+test("course clip batch stops on lost receipt and retries only the same immutable attempt", async () => {
+  accounts = true;
+  operatorAccount = true;
+  adminWrites = [];
+  speechClips = [];
+  clipLostReply = true;
+  const id = "f".repeat(32),
+    voice = {
+      characterId: lesson.cast[0].characterId,
+      characterRevision: 1,
+      voiceRevision: 1,
+    };
+  speechPlans = [
+    {
+      id,
+      lessonId: lesson.id,
+      lessonRevision: 1,
+      sourceHash: "b".repeat(64),
+      planHash: "a".repeat(64),
+      requestCount: 2,
+      totalRequestCharacters: 20,
+      selection: { voices: [voice], knowledgeNarrator: voice, emotions: {} },
+      voices: speechVoices,
+      createdAt: "2026-10-07T00:00:00Z",
+      targets: [
+        {
+          pointer: "/blocks/1/turns/0",
+          entryId: "qa0",
+          text: "Bonjour !",
+          voice,
+          emotion: "Calm",
+          generationKey: "c".repeat(64),
+          wordCount: 1,
+        },
+        {
+          pointer: "/knowledge/vocabulary/0/lemma",
+          entryId: "qa1",
+          text: "une baguette",
+          voice,
+          emotion: "Calm",
+          generationKey: "d".repeat(64),
+          wordCount: 0,
+        },
+      ],
+    },
+  ];
+  async function act(role, name, action = "click", value) {
+    const snap = await browser("snapshot", "-i"),
+      ref = Object.entries(snap.refs).find(
+        ([, r]) => r.role === role && r.name === name,
+      )?.[0];
+    assert.ok(ref, name);
+    await browser(action, "@" + ref, ...(value === undefined ? [] : [value]));
+  }
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("set", "viewport", "390", "844");
+    await browser("open", origin + "/admin/speech-clips?planId=" + id);
+    await browser("wait", "--text", "生成未完成片段（2）");
+    assert.equal(adminWrites.length, 0);
+    await act("button", "生成未完成片段（2）", "focus");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "确认生成");
+    await act("textbox", "操作理由", "fill", "Controlled generation");
+    await act("checkbox", "我确认本次合成可能收费", "check");
+    await act("button", "确认");
+    await browser("wait", "--text", "核对同一请求");
+    assert.equal(speechClips.length, 1);
+    assert.equal(adminWrites.length, 1);
+    assert.equal(
+      await evaluate("document.querySelector('dialog fieldset').disabled"),
+      true,
+    );
+    await act("button", "核对同一请求");
+    await browser("wait", "--text", "本次片段已生成");
+    assert.equal(adminWrites.length, 2);
+    assert.deepEqual(adminWrites[0], adminWrites[1]);
+    assert.equal(speechClips.length, 1);
+    await act("button", "生成未完成片段（1）");
+    await act("textbox", "操作理由", "fill", "Controlled remaining clip");
+    await act("checkbox", "我确认本次合成可能收费", "check");
+    await act("button", "确认");
+    await browser("wait", "--text", "生成未完成片段（0）");
+    assert.equal(speechClips.length, 2);
+    assert.equal(adminWrites.length, 3);
+    speechClips[0].status = "unknown";
+    await browser("reload");
+    await browser("wait", "--text", "结果未确认");
+    await act("button", "核对后重新生成");
+    await act("textbox", "操作理由", "fill", "Controlled unknown risk");
+    await act("checkbox", "我确认本次合成可能收费", "check");
+    await act("button", "确认");
+    await browser(
+      "wait",
+      "--text",
+      "请先核对原任务，并确认再次合成可能重复收费。",
+    );
+    assert.equal(adminWrites.length, 3);
+    assert.equal(
+      await evaluate("document.querySelector('dialog fieldset').disabled"),
+      false,
+    );
+    await act("button", "关闭并核对任务");
+    for (const width of [320, 390, 678]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+        true,
+      );
+    }
+    assert.equal(serverErrors.length, 0);
+    assert.deepEqual((await browser("errors")).errors, []);
+  } finally {
+    accounts = false;
+    operatorAccount = false;
+    speechPlans = [];
+    speechClips = [];
+    clipLostReply = false;
+    await browser("cookies", "clear");
   }
 });

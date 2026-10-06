@@ -2,6 +2,7 @@
 use serde_json::{Value, json};
 use std::{sync::Arc, time::Duration};
 mod speech;
+pub(crate) use speech::normalize_wave;
 pub use speech::{Speech, SpeechRequest};
 pub const MODEL: &str = "qwen-audio-3.1-tts-flash";
 #[derive(Clone, Copy, Debug)]

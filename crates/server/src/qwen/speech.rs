@@ -173,7 +173,7 @@ fn number(bytes: &[u8], offset: usize) -> u32 {
     u32::from_le_bytes(bytes[offset..offset + 4].try_into().unwrap())
 }
 /// Repair only the documented-in-project Qwen stream lengths, preserving AIGC and PCM.
-fn normalize_wave(source: &[u8]) -> Result<Vec<u8>, ProviderError> {
+pub(crate) fn normalize_wave(source: &[u8]) -> Result<Vec<u8>, ProviderError> {
     if source.len() < 44
         || source.len() > MAX_BYTES
         || &source[..4] != b"RIFF"

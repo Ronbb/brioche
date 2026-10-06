@@ -23,6 +23,8 @@ pub mod qwen;
 pub mod recording;
 pub mod reviews;
 pub mod session_store;
+mod speech_clips;
+mod speech_media;
 pub mod speech_plan;
 mod voice_auditions;
 mod voice_jobs;
