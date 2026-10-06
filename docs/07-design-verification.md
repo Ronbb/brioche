@@ -447,3 +447,11 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 - Chromium 会话 brioche-order-focus 在真实开发页 /practice/a1-bakery-buy-breakfast，用真实 demo 判分走到排序题。Tab 到词库末尾 Je voudrais 后 Enter，焦点回到 s’il vous plaît.；再 Enter 到下一可选 une baguette,，全部选完聚焦句子末项。连续 Enter/Shift+Tab 移回三个语块，各自聚焦对应词库项，句子清空后焦点仍在 Je voudrais。
 - 随后仅用键盘拼出 Je voudrais une baguette, s’il vous plaît.，Tab/Enter 确认，经实际 Rust demo API 返回答对了，全部排序按钮 disabled。320px 无横向溢出，两组可访问名称和法语 status 文本已核对；这不是屏幕阅读器播报或真实 iPhone 验收。账号页面的复用接入通过类型与构建检查，账号故障/保存恢复仍按原验收清单继续验证。
 - TS 7、17 项 Web 测试、client/SSR build、diff check 通过。专用浏览器已关闭，开发服务保留。
+
+### Compose 运行巡检（2026-10-06）
+
+- 新增 scripts/health-check.mjs / pnpm health:check：按明确 project label 发现容器，只读取 Compose 服务/项目/oneoff 和状态、health、exit、OOM、restart 字段；Docker 命令无 shell、限制输出及超时，stderr 不打印。五个必需服务检查区分一次性 migrate 和长驻健康容器，遗漏/重复/非就绪/OOM 均失败，排除 oneoff=True。
+- 入口并行 GET /api/health、/api/ready、/health、首页，核对 200 与有限 JSON status/HTML；不跟随重定向，请求及正文读取有超时，正文最多 512 KiB。不输出地址凭据、HTTP 正文、容器环境变量或健康日志。可选 statfs 检查指定宿主文件系统可用字节；未指定时 disk=null，不能据此声称 Docker 虚拟盘或备份目的地正常。
+- pnpm test:ops 共 9 项：8 项通过，原 Docker 备份测试因未显式开启而跳过。新增测试包含参数/凭据拒绝与 CLI exit=2、缺失/重复/不健康/OOM/迁移失败/跨项目、磁盘不足与秘密隔离；真实 Node HTTP 覆盖重定向、错误 JSON/status、超大响应、无响应头与头后停滞正文超时。未把跳过的备份演练计为本轮通过。
+- 独立 brioche-health-qa Compose 使用已有测试 API/Web 镜像、新临时 PostgreSQL/媒体卷和 QA HTTP 30076；未更改正式 Compose HTTP 30075。首次巡检 5 服务+4 HTTP+宿主文件系统均 healthy，CLI exit=0；确认项目/服务标签后仅停止该项目 Web，巡检 Web not-ready、/health 和首页 502，exit=1，API health/ready 仍正常；恢复健康后再次 exit=0。该证据仅覆盖运行探测，不是生产数据/业务全链路/正式域名验收。
+- 首次组合停止/恢复命令被自动审查拦截且未执行；随后核对实际项目标签，通过明确 Compose project 的 stop/up 完成同一个隔离故障演练。结束以该项目 down --volumes 清理，实际查询容器和项目卷均为空；开发 5173/3001 保留。没有安装定时任务、接入外部告警或发送任何通知。

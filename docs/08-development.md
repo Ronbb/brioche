@@ -287,3 +287,7 @@ API 在公共课程、身份/学习、媒体路由合并后统一添加观测层
 耗时度量从进入路由中间件到产生响应头，包含处理与数据库等待，不代表网络下载结束。日志暂用于排查单次请求，指标采集、告警及性能基线仍待建立。日志由 RUST_LOG 控制；默认 brioche_server=info。此前只包围公共路由的通用 TraceLayer 已移除，避免高日志级别意外记录原始 URI。
 
 Compose 所有五个服务使用 Docker local 日志驱动，配置 max-size=10m、max-file=3，限制单个容器的保留日志。宿主 Docker local 驱动已确认可用，Compose 解析验证每个服务均应用该配置；本轮没有执行生产容器重建或声称实际磁盘轮换演练完成。仍可使用 docker compose logs 查看日志。
+
+## 部署运行巡检
+
+`pnpm health:check --project <Compose 项目名>` 检查指定项目的五个服务与 HTTP 入口，默认访问 `http://127.0.0.1:30075`。`--origin` 可指定实际入口，`--disk-path` 和 `--minimum-free-gib` 可检查指定宿主文件系统空间。Node CLI 的退出码为 0（健康）、1（检出故障）、2（参数/脚本失败），stdout 为一行 JSON；不读取环境秘密到报告，不发送通知或自动修复。完整参数、范围与定时执行边界见 [部署巡检说明](05-deployment.md#运行巡检)。`pnpm test:ops` 会执行巡检单元和真实 HTTP 协议测试，已有 CI 命令自动包含它们；Docker 生产演练与外部告警另行验收。

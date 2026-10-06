@@ -111,6 +111,25 @@ Compose 内仅提供 HTTP，入口固定为宿主机 `30075`。用户管理的�
 
 本机生产需要关闭自动休眠、确认断电/重启后 Docker 和服务启动、验证公网 IP 更新及证书续期，并管理磁盘剩余空间。没有外部探测时机器断电无法自己告警；可后续配置一个外部 uptime 检查，但本次不创建自动化或外部服务。
 
+## 运行巡检
+
+部署后可运行一次性巡检；项目名必须是实际 Compose project name，入口默认为本机 HTTP 30075：
+
+```sh
+pnpm health:check --project brioche
+node scripts/health-check.mjs --project brioche --origin http://127.0.0.1:30075 --disk-path /your/data/filesystem --minimum-free-gib 5
+```
+
+`--disk-path` 应指向要检查的宿主机存储盘；Windows 可传实际磁盘路径。此项测量该路径所在文件系统的可用空间，不能自动证明 Docker Desktop 虚拟磁盘内部、远端备份或每个 volume 的剩余空间。未指定路径时，输出 `disk: null`，不假装磁盘检查通过。
+
+脚本只读指定项目的容器状态，不执行 compose config，不读取容器环境变量、健康日志或 HTTP 正文到报告。期望 postgres/server/web/traefik 各有一个 running/healthy 容器，migrate 有一个退出码为 0 的完成容器；不要在巡检前删除迁移容器。OOM、缺失/重复服务、非就绪状态均失败；one-off compose run 容器排除。restart count 仅报告累计值，没有把它冒充某段时间内的重启频率。
+
+入口检查 `/api/health`、`/api/ready`、`/health` 和首页 HTML；不跟随重定向。默认每次 Docker 命令和每个 HTTP 请求最多 5 秒（`--timeout-ms` 可设 100–30000），返回正文限 512 KiB；超时、格式错误或状态错误均失败。起动过程中 starting 也会失败，定时巡检应避开明确的维护窗口。HTTP 200 与 ready 只证明基础链路和当前数据库结构可用，不验证全部业务或正式课程质量。
+
+每次输出一行版本化 JSON：`status: healthy` 退出 0，检测故障退出 1，参数或脚本级失败退出 2。报告包含检查时间、服务/路径、有限原因、耗时和可选磁盘字节数，可由用户现有的任务计划程序、cron 或监控系统定时执行、保留最近记录，并根据连续失败触发告警。该脚本不发送通知、不自动重启或删除容器；此轮未安装定时任务或配置外部告警收件人。机器断电、Docker/Node 无法运行时还需要外部探测，不能以本机脚本替代。
+
+当前已用独立 Compose 项目验证健康→停止 Web→恢复的实际退出码 0→1→0；检查使用测试镜像与临时数据，不表示正式域名或生产容量验收。实现依据：[Docker inspect](https://docs.docker.com/reference/cli/docker/inspect/)、[Docker labels](https://docs.docker.com/engine/manage-resources/labels/)；具体证据见 [验证记录](07-design-verification.md)。
+
 ## 部署前待补信息
 
 - 实际域名，Cloudflare DNS only 或代理模式，可用外网端口。
