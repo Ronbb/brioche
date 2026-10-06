@@ -191,6 +191,7 @@ type Clock = {
 export class RecordingPlayer {
   private media: Media | null = null;
   private generation = 0;
+  private playAttempt = 0;
   private detach = () => {};
   private frame: number | null = null;
   private paused = false;
@@ -218,6 +219,7 @@ export class RecordingPlayer {
     return this.active;
   }
   stop(clearSource = true) {
+    this.playAttempt++;
     this.generation++;
     this.active = false;
     this.resumePlay = null;
@@ -343,6 +345,7 @@ export class RecordingPlayer {
     const onError = () => fail();
     const onPause = () => {
       if (!current() || this.paused || !media.paused) return;
+      this.playAttempt++;
       this.paused = true;
       this.clearBoundary();
       if (this.frame !== null) this.clock.cancel(this.frame);
@@ -382,12 +385,14 @@ export class RecordingPlayer {
     }
     const start = () => {
       if (!current()) return;
+      const attempt = ++this.playAttempt;
+      const latestAttempt = () => current() && attempt === this.playAttempt;
       callbacks.status("loading");
       try {
         void media
           .play()
           .then(() => {
-            if (!current()) return;
+            if (!latestAttempt()) return;
             if (this.paused) {
               media.pause();
               return;
@@ -395,7 +400,7 @@ export class RecordingPlayer {
             onPlaying();
           })
           .catch((error: unknown) => {
-            if (!current() || this.paused) return;
+            if (!latestAttempt() || this.paused) return;
             fail(error instanceof Error && error.name === "NotAllowedError");
           });
       } catch {
@@ -408,6 +413,7 @@ export class RecordingPlayer {
   }
   pause() {
     if (!this.active) return;
+    this.playAttempt++;
     this.paused = true;
     this.clearBoundary();
     this.media?.pause();

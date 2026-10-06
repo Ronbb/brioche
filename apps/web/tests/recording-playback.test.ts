@@ -185,6 +185,38 @@ test("pending play remains paused and blocked playback does not masquerade as su
   s.media.emit("error");
   assert.deepEqual(s.errors, [true, false]);
 });
+test("pause and resume ignore settlement of the superseded play attempt in the same clip", async () => {
+  const s = setup();
+  s.player.play(clip, 1, s.callbacks);
+  s.player.pause();
+  s.player.resume();
+  const interrupted = new Error("the earlier play was interrupted by pause");
+  interrupted.name = "AbortError";
+  s.media.pending[0].reject(interrupted);
+  await Promise.resolve();
+  await Promise.resolve();
+  assert.deepEqual(s.errors, []);
+  assert.equal(s.player.isActive, true);
+  assert.equal(s.statuses.at(-1), "loading");
+  s.media.pending[1].resolve();
+  await Promise.resolve();
+  assert.equal(s.statuses.at(-1), "playing");
+  assert.equal(s.media.currentTime, 1);
+  s.player.stop();
+
+  const other = setup();
+  other.player.play(clip, 1, other.callbacks);
+  other.player.pause();
+  other.player.resume();
+  other.media.pending[0].resolve();
+  await Promise.resolve();
+  assert.equal(other.statuses.at(-1), "loading");
+  assert.equal(other.frames.size, 0);
+  other.media.pending[1].resolve();
+  await Promise.resolve();
+  assert.equal(other.statuses.at(-1), "playing");
+  other.player.stop();
+});
 test("late metadata seeks correctly; short media and early EOF fail; external pause is tracked", async () => {
   const s = setup();
   s.media.readyState = 0;
