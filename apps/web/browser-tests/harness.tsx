@@ -36,6 +36,8 @@ const qa = {
   reviewWrites: [] as Record<string, unknown>[],
   reviewRelease: [] as ((value: ReviewAttemptResult | number) => void)[],
   queueReads: [] as ((value: ReviewQueue | number) => void)[],
+  reviewFixture: null as ReviewQueue | null,
+  cancellations: 0,
 };
 Object.assign(window, { qa });
 class ControlledUtterance extends EventTarget {
@@ -59,7 +61,9 @@ Object.defineProperty(window, "speechSynthesis", {
       qa.lastUtterance = utterance;
       utterance.onstart?.();
     },
-    cancel() {},
+    cancel() {
+      qa.cancellations++;
+    },
     pause() {},
     resume() {},
     addEventListener() {},
@@ -316,6 +320,7 @@ const reviewQueue: ReviewQueue = {
   localDate: "2026-10-06",
   timeZone: "Asia/Shanghai",
 };
+qa.reviewFixture = reviewQueue;
 const reviewUser: UserProfile = {
   id: "qa-account",
   email: "qa@example.test",

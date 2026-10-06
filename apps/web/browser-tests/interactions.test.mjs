@@ -837,3 +837,74 @@ test("review navigation preserves the original rating and does not treat queue r
   );
   assert.equal(await evaluate("qa.route"), "/login");
 });
+
+test("revoked reviews close the leave prompt, focus recovery, and never revive an unavailable card", async () => {
+  await open("reviews");
+  await browser("focus", ".review-flashcard");
+  await press("Enter");
+  const cancellations = await evaluate("qa.cancellations");
+  await browser("focus", '.review-ratings button[data-grade="0"]');
+  await press("Enter");
+  await browser("wait", "--fn", "qa.reviewWrites.length===1");
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", ".pending-navigation[open]");
+  await evaluate("qa.reviewRelease[0](410)");
+  await browser(
+    "wait",
+    "--fn",
+    "qa.queueReads.length===1 && !document.querySelector('.pending-navigation[open]')",
+  );
+  assert.equal(await evaluate("qa.route"), "/");
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('.review-flashcard,.review-context,.review-ratings').length",
+    ),
+    0,
+  );
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "需要确认复习队列",
+  );
+  assert.equal(await evaluate("qa.cancellations>" + cancellations), true);
+  assert.equal(
+    await evaluate(
+      "sessionStorage.getItem('brioche.learning.v1:qa-account:reviews:1:pending')",
+    ),
+    null,
+  );
+  await evaluate("qa.queueReads[0](503)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('.review-page > button.text-button')?.getAttribute('aria-busy')==='false'",
+  );
+  await browser("focus", ".review-page > button.text-button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.queueReads.length===2");
+  await evaluate("qa.queueReads[1](qa.reviewFixture)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('.review-page > button.text-button')?.getAttribute('aria-busy')==='false'",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('.review-flashcard,.review-context,.review-ratings').length",
+    ),
+    0,
+  );
+  await browser("focus", ".review-page > button.text-button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.queueReads.length===3");
+  await evaluate(
+    "qa.queueReads[2]({items:[],dueCount:0,nextDueAt:null,localDate:'2026-10-06',timeZone:'Asia/Shanghai'})",
+  );
+  await browser("wait", "--fn", "!!document.querySelector('.review-summary')");
+  assert.equal(
+    await evaluate(
+      "document.activeElement.matches('.review-session-header h1')",
+    ),
+    true,
+  );
+  assert.equal(await evaluate("qa.reviewWrites.length"), 1);
+});

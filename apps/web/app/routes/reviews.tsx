@@ -313,7 +313,16 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
     <section className="review-page page-arrive">
       <PendingNavigation
         active={hasPendingWrite}
-        onStay={() => heading.current?.focus({ preventScroll: true })}
+        onStay={() => {
+          const target = queueStale
+            ? staleHeading.current
+            : uncertain
+              ? uncertainHeading.current
+              : error
+                ? saveFailure.current
+                : heading.current;
+          target?.focus({ preventScroll: true });
+        }}
       />
       <div className="review-session-header">
         <div>
