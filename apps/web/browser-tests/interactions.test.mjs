@@ -44,7 +44,36 @@ before(async () => {
   server = await createServer({
     configFile: false,
     root: fileURLToPath(new URL(".", import.meta.url)),
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+      {
+        name: "qa-recording",
+        configureServer(server) {
+          // Real decoded PCM audio, deliberately silent and never a pronunciation fixture.
+          const samples = 24000 * 30;
+          const wav = Buffer.alloc(44 + samples * 2);
+          wav.write("RIFF", 0);
+          wav.writeUInt32LE(wav.length - 8, 4);
+          wav.write("WAVEfmt ", 8);
+          wav.writeUInt32LE(16, 16);
+          wav.writeUInt16LE(1, 20);
+          wav.writeUInt16LE(1, 22);
+          wav.writeUInt32LE(24000, 24);
+          wav.writeUInt32LE(48000, 28);
+          wav.writeUInt16LE(2, 32);
+          wav.writeUInt16LE(16, 34);
+          wav.write("data", 36);
+          wav.writeUInt32LE(samples * 2, 40);
+          server.middlewares.use((request, response, next) => {
+            if (!/^\/api\/audio\/[123]{64}\.wav$/.test(request.url ?? ""))
+              return next();
+            response.setHeader("Content-Type", "audio/wav");
+            response.setHeader("Content-Length", wav.length);
+            response.end(wav);
+          });
+        },
+      },
+    ],
     logLevel: "error",
     server: { host: "127.0.0.1", port: 0 },
   });
@@ -145,9 +174,9 @@ test("multiple reading bodies support keyboard scrolling, independent translatio
   await browser("wait", "--fn", "qa.playback==='playing'");
   assert.deepEqual(
     await evaluate(
-      "({translation:document.querySelector('.translation')?.textContent ?? null,selected:document.querySelector('[aria-selected=true]').textContent.trim(),spoken:qa.spoken.at(-1)})",
+      "({translation:document.querySelector('.translation')?.textContent ?? null,selected:document.querySelector('[aria-selected=true]').textContent.trim(),recording:qa.mediaPlays.at(-1)?.url.endsWith('/api/audio/'+'1'.repeat(64)+'.wav')})",
     ),
-    { translation: "早上好！", selected: "早晨的问候", spoken: "Bonjour !" },
+    { translation: "早上好！", selected: "早晨的问候", recording: true },
   );
   await browser("focus", "[role=tab]");
   await press("End");
@@ -160,7 +189,13 @@ test("multiple reading bodies support keyboard scrolling, independent translatio
   await browser("focus", ".speaker");
   await press("Enter");
   await browser("wait", "--fn", "qa.playback==='playing'");
-  assert.equal(await evaluate("qa.spoken.at(-1)"), "Bonsoir !");
+  assert.equal(
+    await evaluate(
+      "qa.mediaPlays.at(-1).url.endsWith('/api/audio/'+'3'.repeat(64)+'.wav')",
+    ),
+    true,
+  );
+  assert.deepEqual(await evaluate("qa.spoken"), []);
   await browser("focus", "[aria-selected=true]");
   await press("ArrowLeft");
   assert.deepEqual(
@@ -187,12 +222,12 @@ test("multiple reading bodies support keyboard scrolling, independent translatio
   }
 });
 
-test("late speech callbacks cannot interrupt newer playback, while current failures stop and allow retry", async () => {
+test("late recording callbacks cannot interrupt newer playback; failures stop without browser speech and allow explicit retry", async () => {
   await open("reading");
   await browser("focus", ".speaker");
   await press("Enter");
   await browser("wait", "--fn", "qa.playback==='playing'");
-  await evaluate("qa.oldUtterance=qa.lastUtterance");
+  await evaluate("qa.staleEvents=qa.mediaEvents.slice()");
   await browser("focus", "[role=tab]");
   await press("End");
   await browser("focus", ".speaker");
@@ -200,30 +235,94 @@ test("late speech callbacks cannot interrupt newer playback, while current failu
   await browser("wait", "--fn", "qa.playback==='playing'");
   const currentId = await evaluate("qa.playbackId");
   await evaluate(
-    "qa.oldUtterance.onstart();qa.oldUtterance.onerror({error:'canceled'});qa.oldUtterance.onend()",
+    "qa.staleEvents.filter(e=>['playing','error','ended'].includes(e.name)).forEach(e=>e.callback(new Event(e.name)))",
   );
   assert.deepEqual(
     await evaluate(
-      "({status:qa.playback,id:qa.playbackId,count:qa.spoken.length,toast:document.querySelector('.toast [role=status]').textContent})",
+      "({status:qa.playback,id:qa.playbackId,count:qa.mediaPlays.length,spoken:qa.spoken})",
     ),
-    { status: "playing", id: currentId, count: 2, toast: "" },
+    { status: "playing", id: currentId, count: 2, spoken: [] },
   );
-  await evaluate("qa.lastUtterance.onerror({error:'interrupted'})");
+  await evaluate("qa.media[0].dispatchEvent(new Event('error'))");
   await browser("wait", "--fn", "qa.playback==='idle'");
   assert.equal(
     await evaluate(
       "document.querySelector('.toast [role=status]').textContent",
     ),
-    "朗读已中断，请再次点击播放。",
+    "录音暂时无法播放，请重试。",
   );
+  assert.deepEqual(await evaluate("qa.spoken"), []);
   await press("Enter");
   await browser("wait", "--fn", "qa.playback==='playing'");
+  assert.equal(await evaluate("qa.mediaPlays.length"), 3);
+  assert.equal(await evaluate("qa.playbackId"), currentId);
+  await evaluate("window.dispatchEvent(new Event('pagehide'))");
+  await browser("wait", "--fn", "qa.playback==='idle'");
+  assert.equal(
+    await evaluate("qa.media.every(m=>m.paused&&!m.getAttribute('src'))"),
+    true,
+  );
+});
+
+test("missing sentence and word recordings show a toast without invoking browser speech or downloading audio", async () => {
+  await open("reading&missing-recording=1");
+  await browser("focus", ".speaker");
+  await press("Enter");
+  await browser("wait", "--fn", "!!document.querySelector('.translation')");
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.toast [role=status]').textContent",
+    ),
+    "这段录音还在准备中。",
+  );
+  await browser("focus", ".sentence .word");
+  await press("Enter");
   assert.deepEqual(
     await evaluate(
-      "({id:qa.playbackId,last:qa.spoken.at(-1),count:qa.spoken.length})",
+      "({status:qa.playback,media:qa.media.length,spoken:qa.spoken})",
     ),
-    { id: currentId, last: "Bonsoir !", count: 3 },
+    { status: "idle", media: 0, spoken: [] },
   );
+});
+
+test("a partially recorded reading sequence does not begin a misleading incomplete playback", async () => {
+  await open("reading&partial-recording=1");
+  await browser("focus", ".playback-line");
+  await press("Enter");
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.toast [role=status]').textContent",
+    ),
+    "这段录音还在准备中。",
+  );
+  assert.deepEqual(
+    await evaluate(
+      "({status:qa.playback,media:qa.media.length,spoken:qa.spoken})",
+    ),
+    { status: "idle", media: 0, spoken: [] },
+  );
+});
+
+test("recording pause and speed changes preserve the same audio position and explicit resume", async () => {
+  await open("reading");
+  await browser("focus", ".playback-line");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.playback==='playing'");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.playback==='paused'");
+  const position = await evaluate("qa.media[0].currentTime");
+  await press("Shift+F10");
+  await browser("wait", "dialog[open]");
+  await press("End");
+  await press("Enter");
+  assert.equal(await evaluate("qa.media[0].playbackRate"), 1.5);
+  assert.equal(await evaluate("qa.media[0].currentTime"), position);
+  assert.equal(await evaluate("qa.playback"), "paused");
+  await browser("focus", ".playback-line");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.playback==='playing'");
+  assert.equal(await evaluate("qa.media.length"), 1);
+  assert.deepEqual(await evaluate("qa.spoken"), []);
 });
 
 test("custom settings dialogs remain in the viewport and restore keyboard focus and search", async () => {
@@ -1136,7 +1235,6 @@ test("revoked reviews close the leave prompt, focus recovery, and never revive a
   await open("reviews");
   await browser("focus", ".review-flashcard");
   await press("Enter");
-  const cancellations = await evaluate("qa.cancellations");
   await browser("focus", '.review-ratings button[data-grade="0"]');
   await press("Enter");
   await browser("wait", "--fn", "qa.reviewWrites.length===1");
@@ -1159,7 +1257,8 @@ test("revoked reviews close the leave prompt, focus recovery, and never revive a
     await evaluate("document.activeElement.textContent"),
     "需要确认复习队列",
   );
-  assert.equal(await evaluate("qa.cancellations>" + cancellations), true);
+  assert.equal(await evaluate("qa.media.every(m=>m.paused)"), true);
+  assert.deepEqual(await evaluate("qa.spoken"), []);
   assert.equal(
     await evaluate(
       "sessionStorage.getItem('brioche.learning.v1:qa-account:reviews:1:pending')",
@@ -1635,18 +1734,22 @@ test("responsive content keeps long words and controls inside the viewport", asy
       await press("Enter");
       await browser("wait", "--fn", "qa.playback==='playing'");
       assert.equal(
-        await evaluate("qa.spoken.at(-1)"),
-        "anticonstitutionnellement",
+        await evaluate(
+          "qa.mediaPlays.at(-1).url.endsWith('/api/audio/'+'1'.repeat(64)+'.wav')",
+        ),
+        true,
       );
     }
     if (kind === "library") {
       await browser("focus", ".library-entry-heading");
       await press("Enter");
       await browser("wait", ".library-entry-body");
-      await browser("wait", "--fn", "qa.spoken.length>0");
+      assert.deepEqual(await evaluate("qa.spoken"), []);
       assert.equal(
-        await evaluate("qa.spoken.at(-1)"),
-        "anticonstitutionnellement",
+        await evaluate(
+          "document.querySelector('.toast [role=status]').textContent",
+        ),
+        "这段录音还在准备中。",
       );
       assert.equal(
         await evaluate("document.activeElement.className"),

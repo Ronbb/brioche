@@ -93,8 +93,9 @@ const qa = {
   writes: [] as { lessonId: string; idempotencyKey: string }[],
   release: [] as ((status: number) => void)[],
   spoken: [] as string[],
-  lastUtterance: null as ControlledUtterance | null,
-  oldUtterance: null as ControlledUtterance | null,
+  media: [] as HTMLAudioElement[],
+  mediaEvents: [] as { name: string; callback: EventListener }[],
+  mediaPlays: [] as { url: string; time: number }[],
   playback: "idle",
   playbackId: null as string | null,
   route: "/",
@@ -113,7 +114,6 @@ const qa = {
   reviewRelease: [] as ((value: ReviewAttemptResult | number) => void)[],
   queueReads: [] as ((value: ReviewQueue | number) => void)[],
   reviewFixture: null as ReviewQueue | null,
-  cancellations: 0,
   ownedWrites: [] as { path: string; body: Record<string, unknown> }[],
   ownedRelease: [] as ((value: SavedItem | ReviewCard | number) => void)[],
   savedFixture: null as SavedItem | null,
@@ -125,36 +125,108 @@ const qa = {
   catalogFixture: null as Catalog | null,
 };
 Object.assign(window, { qa });
-class ControlledUtterance extends EventTarget {
-  onstart: (() => void) | null = null;
-  onend: (() => void) | null = null;
-  onerror: ((event: { error: string }) => void) | null = null;
-  constructor(public text: string) {
-    super();
-  }
-}
-Object.defineProperty(window, "SpeechSynthesisUtterance", {
-  configurable: true,
-  value: ControlledUtterance,
-});
+// A browser speech spy remains available: recording failures must never invoke it.
 Object.defineProperty(window, "speechSynthesis", {
   configurable: true,
   value: {
-    getVoices: () => [{ lang: "fr-FR", name: "controlled" }],
-    speak: (utterance: ControlledUtterance) => {
-      qa.spoken.push(utterance.text);
-      qa.lastUtterance = utterance;
-      utterance.onstart?.();
-    },
-    cancel() {
-      qa.cancellations++;
-    },
+    speak: (utterance: { text: string }) => qa.spoken.push(utterance.text),
+    getVoices: () => [{ lang: "fr-FR", name: "must-not-be-used" }],
+    cancel() {},
     pause() {},
     resume() {},
     addEventListener() {},
     removeEventListener() {},
   },
 });
+const NativeAudio = window.Audio;
+Object.defineProperty(window, "Audio", {
+  configurable: true,
+  value: function () {
+    const media = new NativeAudio();
+    qa.media.push(media);
+    const listen = media.addEventListener.bind(media);
+    media.addEventListener = ((
+      name: string,
+      callback: EventListener,
+      options?: boolean | AddEventListenerOptions,
+    ) => {
+      qa.mediaEvents.push({ name, callback });
+      listen(name, callback, options);
+    }) as typeof media.addEventListener;
+    const play = media.play.bind(media);
+    media.play = () => {
+      qa.mediaPlays.push({ url: media.src, time: media.currentTime });
+      return play();
+    };
+    return media;
+  },
+});
+if (!new URL(location.href).searchParams.has("missing-recording")) {
+  for (const [index, block] of lesson.blocks.entries()) {
+    if (block.type !== "dialogue" && block.type !== "article") continue;
+    const sha = String(index + 1).repeat(64);
+    const assetId = "qa-audio-" + block.id;
+    lesson.audio!.push({
+      assetId,
+      revision: 1,
+      sha256: sha,
+      mimeType: "audio/wav",
+      durationMs: 30000,
+      creditZh: "Synthetic protocol fixture",
+      url: `/api/audio/${sha}.wav`,
+    });
+    const entries = block.type === "dialogue" ? block.turns : block.paragraphs;
+    lesson.audioTracks!.push({
+      blockId: block.id,
+      assetId,
+      cues: entries.flatMap((entry) => [
+        {
+          entryId: entry.id,
+          segmentId: null,
+          wordRange: null,
+          startMs: 0,
+          endMs: 30000,
+        },
+        ...entry.segments.flatMap((segment) => [
+          {
+            entryId: entry.id,
+            segmentId: segment.id,
+            wordRange: null,
+            startMs: 0,
+            endMs: 30000,
+          },
+          ...[
+            ...new Intl.Segmenter("fr", { granularity: "word" }).segment(
+              segment.text,
+            ),
+          ]
+            .filter((token) => token.isWordLike)
+            .map((token) => ({
+              entryId: entry.id,
+              segmentId: segment.id,
+              wordRange: {
+                start: Array.from(segment.text.slice(0, token.index)).length,
+                end:
+                  Array.from(segment.text.slice(0, token.index)).length +
+                  Array.from(token.segment).length,
+              },
+              startMs: 0,
+              endMs: 30000,
+            })),
+        ]),
+      ]),
+    });
+  }
+}
+if (new URL(location.href).searchParams.has("partial-recording")) {
+  const block = lesson.blocks.find((block) => block.type === "dialogue");
+  if (block?.type === "dialogue")
+    block.turns.push({
+      ...block.turns[0],
+      id: "missing-line",
+      segments: [{ ...block.turns[0].segments[0], id: "missing-segment" }],
+    });
+}
 const originalFetch = window.fetch;
 function controlledAuth(
   signal: AbortSignal | null | undefined,
