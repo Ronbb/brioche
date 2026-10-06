@@ -1,7 +1,8 @@
-import { Link, redirect } from "react-router";
+import { Link, redirect, useLocation } from "react-router";
 import type { ReviewHistoryPage } from "@brioche/contracts/ReviewHistoryPage";
 import { getPrivate } from "../lib/api.server";
 import { Icon } from "../components/icon";
+import { usePageCursorFocus } from "../components/page-cursor-focus";
 import type { Route } from "./+types/review-history";
 export async function loader({ request }: Route.LoaderArgs) {
   const cursor = new URL(request.url).searchParams.get("cursor");
@@ -18,11 +19,17 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 }
 export default function History({ loaderData }: Route.ComponentProps) {
+  const location = useLocation();
+  const heading = usePageCursorFocus(
+    new URLSearchParams(location.search).get("cursor"),
+  );
   const labels = { again: "还不熟", remembered: "有印象", familiar: "记住了" };
   return (
     <section className="settings-page page-arrive">
       <div className="settings-title-row">
-        <h1>复习记录</h1>
+        <h1 ref={heading} tabIndex={-1}>
+          复习记录
+        </h1>
         <Link className="text-button" to="/library?view=reviews">
           我的表达
         </Link>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { Link, redirect } from "react-router";
 import type { SavedItem } from "@brioche/contracts/SavedItem";
 import type { SavedPage } from "@brioche/contracts/SavedPage";
@@ -11,6 +11,7 @@ import { useLearning } from "../components/learning";
 import { Bookmark } from "../components/bookmark";
 import { Enroll } from "../components/enroll";
 import { Icon } from "../components/icon";
+import { usePageCursorFocus } from "../components/page-cursor-focus";
 import type { Route } from "./+types/library";
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url),
@@ -42,10 +43,13 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 }
 export default function Library({ loaderData }: Route.ComponentProps) {
+  const heading = usePageCursorFocus(loaderData.cursor);
   return (
     <section className="settings-page page-arrive">
       <div className="settings-title-row">
-        <h1>我的表达</h1>
+        <h1 ref={heading} tabIndex={-1}>
+          我的表达
+        </h1>
         <Link className="text-button" to="/profile">
           我的
         </Link>
@@ -86,19 +90,41 @@ export default function Library({ loaderData }: Route.ComponentProps) {
 }
 function SavedList({ page }: { page: SavedPage }) {
   const [items, setItems] = useState(page.items);
+  const headings = useRef(new Map<string, HTMLButtonElement>()),
+    pendingFocus = useRef<string | null | undefined>(undefined),
+    empty = useRef<HTMLParagraphElement>(null);
+  useLayoutEffect(() => {
+    if (pendingFocus.current === undefined) return;
+    const next = pendingFocus.current;
+    pendingFocus.current = undefined;
+    const target =
+      (next && headings.current.get(next)) ||
+      headings.current.values().next().value ||
+      empty.current;
+    target?.focus();
+  }, [items]);
+  function remove(id: string) {
+    const index = items.findIndex((item) => item.id === id);
+    pendingFocus.current = items[index + 1]?.id ?? items[index - 1]?.id ?? null;
+    setItems((old) => old.filter((row) => row.id !== id));
+  }
   return (
     <>
       {!items.length && (
-        <p className="profile-note">阅读时收藏的表达会放在这里。</p>
+        <p ref={empty} tabIndex={-1} role="status" className="profile-note">
+          阅读时收藏的表达会放在这里。
+        </p>
       )}
       <div className="library-list">
         {items.map((item) => (
           <SavedRow
             key={item.id}
             item={item}
-            remove={() =>
-              setItems((old) => old.filter((row) => row.id !== item.id))
-            }
+            remove={() => remove(item.id)}
+            headingRef={(element) => {
+              if (element) headings.current.set(item.id, element);
+              else headings.current.delete(item.id);
+            }}
           />
         ))}
       </div>
@@ -114,14 +140,25 @@ function SavedList({ page }: { page: SavedPage }) {
     </>
   );
 }
-function SavedRow({ item, remove }: { item: SavedItem; remove: () => void }) {
+function SavedRow({
+  item,
+  remove,
+  headingRef,
+}: {
+  item: SavedItem;
+  remove: () => void;
+  headingRef: (element: HTMLButtonElement | null) => void;
+}) {
   const [open, setOpen] = useState(false),
-    audio = useLearning();
+    audio = useLearning(),
+    panelId = useId();
   return (
     <article className="library-entry">
       <button
+        ref={headingRef}
         className="library-entry-heading"
         aria-expanded={open}
+        aria-controls={open ? panelId : undefined}
         onClick={() => {
           setOpen(!open);
           if (!open && item.vocabulary)
@@ -139,7 +176,7 @@ function SavedRow({ item, remove }: { item: SavedItem; remove: () => void }) {
         <Icon name="chevron" />
       </button>
       {open && (
-        <div className="library-entry-body">
+        <div id={panelId} className="library-entry-body">
           <p>{item.vocabulary?.noteZh}</p>
           {!item.withdrawn && (
             <Link
@@ -209,7 +246,8 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
     [open, setOpen] = useState(false),
     [readFailed, setReadFailed] = useState(false),
     [refreshing, setRefreshing] = useState(false),
-    audio = useLearning();
+    audio = useLearning(),
+    panelId = useId();
   const mounted = useRef(true);
   useEffect(() => {
     mounted.current = true;
@@ -245,6 +283,7 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
       <button
         className="library-entry-heading"
         aria-expanded={open}
+        aria-controls={open ? panelId : undefined}
         onClick={() => {
           setOpen(!open);
           if (!open)
@@ -260,7 +299,7 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
         <Icon name="chevron" />
       </button>
       {open && (
-        <div className="library-entry-body">
+        <div id={panelId} className="library-entry-body">
           <p>{card.vocabulary.noteZh}</p>
           <button
             className="text-button"
