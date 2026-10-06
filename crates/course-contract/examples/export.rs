@@ -33,6 +33,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     brioche_course_contract::AdminRevokeSessionResult::export_all(&config)?;
     brioche_course_contract::AdminCharacterVoices::export_all(&config)?;
     brioche_course_contract::AdminCharacterVoiceRequest::export_all(&config)?;
+    brioche_course_contract::AdminPendingTokens::export_all(&config)?;
+    brioche_course_contract::AdminRevokeTokenRequest::export_all(&config)?;
     brioche_course_contract::PreviewRelease::export_all(&config)?;
     ApiError::export_all(&config)?;
     GradeRequest::export_all(&config)?;

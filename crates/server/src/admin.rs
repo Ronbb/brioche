@@ -23,6 +23,14 @@ pub fn router(root: std::path::PathBuf) -> Router<Backend> {
         .route("/api/v1/operator/history", get(history))
         .route("/api/v1/operator/accounts", get(accounts))
         .route("/api/v1/operator/accounts/token", post(account_token))
+        .route(
+            "/api/v1/operator/accounts/pending-tokens",
+            get(pending_tokens),
+        )
+        .route(
+            "/api/v1/operator/accounts/pending-tokens/{id}/revoke",
+            post(revoke_token),
+        )
         .route("/api/v1/operator/accounts/{id}/role", post(account_role))
         .route(
             "/api/v1/operator/accounts/{id}/sessions",
@@ -70,6 +78,110 @@ struct AccountQuery {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct SessionQuery {
     after_id: Option<String>,
+}
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct TokenQuery {
+    after_id: Option<String>,
+    kind: Option<brioche_course_contract::AdminTokenKind>,
+}
+async fn pending_tokens(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    Query(query): Query<TokenQuery>,
+) -> Result<Json<brioche_course_contract::AdminPendingTokens>, AppError> {
+    use brioche_course_contract::{
+        AdminAccountRole, AdminPendingToken, AdminPendingTokens, AdminTokenKind,
+    };
+    require_operator(&auth)?;
+    let after = query.after_id.unwrap_or_default();
+    if !after.is_empty() {
+        session_key(&after)?;
+    }
+    let kind = query.kind.map(|kind| match kind {
+        AdminTokenKind::Invite => "invite",
+        AdminTokenKind::Reset => "reset",
+    });
+    let rows=backend.db.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,r#"WITH pending AS (SELECT encode(sha256(convert_to(token_hash,'UTF8')),'hex') AS id,email,kind,role,expires_at FROM identity_tokens WHERE consumed_at IS NULL AND expires_at>CURRENT_TIMESTAMP AND ($1::text IS NULL OR kind=$1)) SELECT id,email,kind,role,to_char(expires_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS expires_at FROM pending WHERE id>$2 ORDER BY id LIMIT 21"#,vec![kind.into(),after.into()])).await.map_err(|_|AppError::Unavailable)?;
+    let more = rows.len() > 20;
+    let items: Vec<AdminPendingToken> = rows
+        .into_iter()
+        .take(20)
+        .map(|row| {
+            Ok(AdminPendingToken {
+                id: field(&row, "id")?,
+                email: field(&row, "email")?,
+                kind: match field::<String>(&row, "kind")?.as_str() {
+                    "invite" => AdminTokenKind::Invite,
+                    "reset" => AdminTokenKind::Reset,
+                    _ => return Err(AppError::Unavailable),
+                },
+                role: match field::<String>(&row, "role")?.as_str() {
+                    "operator" => AdminAccountRole::Operator,
+                    "learner" => AdminAccountRole::Learner,
+                    _ => return Err(AppError::Unavailable),
+                },
+                expires_at: field(&row, "expires_at")?,
+            })
+        })
+        .collect::<Result<_, AppError>>()?;
+    let next_id = if more {
+        items.last().map(|item| item.id.clone())
+    } else {
+        None
+    };
+    Ok(Json(AdminPendingTokens { items, next_id }))
+}
+async fn revoke_token(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    Path(id): Path<String>,
+    Json(request): Json<brioche_course_contract::AdminRevokeTokenRequest>,
+) -> Result<Json<bool>, AppError> {
+    require_operator(&auth)?;
+    session_key(&id)?;
+    reason(&request.reason)?;
+    let actor = owner(&auth)?;
+    let tx = backend
+        .db
+        .begin()
+        .await
+        .map_err(|_| AppError::Unavailable)?;
+    exec(
+        &tx,
+        "SELECT pg_advisory_xact_lock(hashtextextended('account-admin',0))",
+        vec![],
+    )
+    .await?;
+    let operator = one(
+        &tx,
+        "SELECT role FROM users WHERE id=$1",
+        vec![actor.into()],
+    )
+    .await?
+    .ok_or(AppError::Forbidden)?;
+    if field::<String>(&operator, "role")? != "operator" {
+        return Err(AppError::Forbidden);
+    }
+    let row=one(&tx,"SELECT email FROM identity_tokens WHERE encode(sha256(convert_to(token_hash,'UTF8')),'hex')=$1 AND consumed_at IS NULL AND expires_at>CURRENT_TIMESTAMP",vec![id.clone().into()]).await?.ok_or(AppError::NotFound)?;
+    let email: String = field(&row, "email")?;
+    // Same mailbox lock as issue/accept/reset: revocation and consumption have one winner.
+    exec(
+        &tx,
+        "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
+        vec![email.clone().into()],
+    )
+    .await?;
+    let revoked=one(&tx,"UPDATE identity_tokens SET consumed_at=CURRENT_TIMESTAMP WHERE encode(sha256(convert_to(token_hash,'UTF8')),'hex')=$1 AND consumed_at IS NULL AND expires_at>CURRENT_TIMESTAMP RETURNING kind",vec![id.clone().into()]).await?.ok_or(AppError::NotFound)?;
+    let kind: String = field(&revoked, "kind")?;
+    let action = match kind.as_str() {
+        "invite" => "revokeInvite",
+        "reset" => "revokeReset",
+        _ => return Err(AppError::Unavailable),
+    };
+    exec(&tx,"INSERT INTO account_admin_audit(action,actor_id,target_email,details,reason) VALUES($1,$2,$3,$4,$5)",vec![action.into(),actor.into(),email.into(),serde_json::json!({"recordId":id,"kind":kind}).into(),request.reason.into()]).await?;
+    tx.commit().await.map_err(|_| AppError::Unavailable)?;
+    Ok(Json(true))
 }
 fn session_key(value: &str) -> Result<(), AppError> {
     if value.len() != 64

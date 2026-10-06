@@ -211,3 +211,25 @@ pub struct AdminCharacterVoiceRequest {
     pub profile: CharacterVoiceProfile,
     pub reason: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminPendingTokens {
+    pub items: Vec<AdminPendingToken>,
+    pub next_id: Option<String>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminPendingToken {
+    // An opaque management identifier, neither a token nor its authentication hash.
+    pub id: String,
+    pub email: String,
+    pub kind: AdminTokenKind,
+    pub role: AdminAccountRole,
+    pub expires_at: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminRevokeTokenRequest {
+    pub reason: String,
+}

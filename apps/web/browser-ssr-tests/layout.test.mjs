@@ -76,6 +76,7 @@ let accounts = false;
 let operatorAccount = false;
 let managedRole = "learner";
 let managedSessionRevoked = false;
+let pendingTokenRevoked = false;
 const voiceSeed = JSON.parse(
   await readFile(
     new URL("../../../docs/characters/voices.json", import.meta.url),
@@ -145,6 +146,44 @@ const api = createServer((request, response) => {
   ) {
     response.setHeader("content-type", "image/svg+xml");
     response.end(characterAvatar);
+    return;
+  }
+  if (
+    request.url.startsWith("/api/v1/operator/accounts/pending-tokens") &&
+    request.method === "GET"
+  ) {
+    response.end(
+      JSON.stringify({
+        items: pendingTokenRevoked
+          ? []
+          : [
+              {
+                id: "b".repeat(64),
+                email: "pending@example.test",
+                kind: "invite",
+                role: "learner",
+                expiresAt: "2027-01-01T00:00:00Z",
+              },
+            ],
+        nextId: null,
+      }),
+    );
+    return;
+  }
+  if (
+    request.url ===
+      `/api/v1/operator/accounts/pending-tokens/${"b".repeat(64)}/revoke` &&
+    request.method === "POST"
+  ) {
+    let body = "";
+    request.on("data", (chunk) => {
+      body += chunk;
+    });
+    request.on("end", () => {
+      adminWrites.push({ operation: request.url, ...JSON.parse(body) });
+      pendingTokenRevoked = true;
+      response.end("true");
+    });
     return;
   }
   if (request.url === "/api/v1/operator/overview") {
@@ -456,6 +495,40 @@ const web = createServer(async (request, response) => {
     serverErrors.push(String(error));
     if (!response.headersSent) response.writeHead(500);
     response.end();
+  }
+});
+
+test("operator revokes a pending invitation using the mobile admin page", async () => {
+  accounts = true;
+  operatorAccount = true;
+  pendingTokenRevoked = false;
+  adminWrites = [];
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("set", "viewport", "390", "844");
+    await browser("open", origin + "/admin/tokens");
+    await browser("wait", ".admin-card");
+    await browser("click", ".admin-card button");
+    await browser("wait", ".admin-dialog[open]");
+    await browser("fill", "#token-reason", "隔离邀请撤销测试");
+    await browser("press", "Tab");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "链接已撤销。");
+    assert.equal(adminWrites[0].reason, "隔离邀请撤销测试");
+    assert.match(adminWrites[0].operation, /pending-tokens\/[b]+\/revoke$/);
+    assert.equal(
+      await evaluate("document.querySelector('.admin-dialog').open"),
+      false,
+    );
+    await browser("wait", "--text", "没有待使用的链接。");
+    assert.equal(
+      await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+      true,
+    );
+  } finally {
+    accounts = false;
+    operatorAccount = false;
   }
 });
 

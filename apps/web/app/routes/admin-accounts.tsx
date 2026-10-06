@@ -127,6 +127,9 @@ export default function Accounts({
         <Link className="text-button" to="/admin">
           管理员后台
         </Link>
+        <Link className="text-button" to="/admin/tokens">
+          待使用的链接
+        </Link>
       </div>
       <Form method="get" className="course-search">
         <label htmlFor="account-search">姓名或邮箱</label>

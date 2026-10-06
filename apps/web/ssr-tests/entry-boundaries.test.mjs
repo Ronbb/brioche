@@ -65,6 +65,12 @@ const server = createServer((request, response) => {
     response.statusCode = authenticated ? 200 : fixture ? 404 : 401;
     response.end(JSON.stringify(authenticated ? profile : {}));
   } else if (
+    request.url.startsWith("/api/v1/operator/accounts/pending-tokens") &&
+    authenticated &&
+    profile.role === "operator"
+  ) {
+    response.end(JSON.stringify({ items: [], nextId: null }));
+  } else if (
     request.url.startsWith("/api/v1/operator/characters") &&
     authenticated &&
     profile.role === "operator"
@@ -681,6 +687,37 @@ test("exercise referenced by explore uses the real learning entry in production"
     lesson.steps = originalSteps;
     authenticated = false;
     fixture = false;
+  }
+});
+
+test("pending token SSR authorizes and forwards only kind and cursor", async () => {
+  authenticated = false;
+  requests.length = 0;
+  assert.equal((await request("/admin/tokens")).status, 401);
+  assert.ok(!requests.some((r) => r.path.includes("pending-tokens")));
+  authenticated = true;
+  profile.role = "learner";
+  requests.length = 0;
+  assert.equal((await request("/admin/tokens")).status, 403);
+  assert.ok(!requests.some((r) => r.path.includes("pending-tokens")));
+  profile.role = "operator";
+  try {
+    requests.length = 0;
+    const response = await request(
+      "/admin/tokens?kind=invite&afterId=" + "b".repeat(64) + "&token=discard",
+    );
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get("cache-control"), /no-store/);
+    const read = requests.find((r) => r.path.includes("pending-tokens"));
+    assert.ok(read);
+    const query = new URL(read.path, "http://test").searchParams;
+    assert.equal(query.get("kind"), "invite");
+    assert.equal(query.get("afterId"), "b".repeat(64));
+    assert.equal(query.has("token"), false);
+    assert.ok(!requests.some((r) => r.method !== "GET"));
+  } finally {
+    profile.role = "learner";
+    authenticated = false;
   }
 });
 

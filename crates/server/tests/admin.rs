@@ -16,6 +16,223 @@ struct Browser {
     cookie: String,
     csrf: String,
 }
+#[tokio::test]
+#[ignore = "set TEST_DATABASE_URL to a dedicated PostgreSQL database"]
+async fn pending_links_are_private_revocable_and_serialized_with_consumption() {
+    let url = std::env::var("TEST_DATABASE_URL").unwrap();
+    let admin = Database::connect(&url).await.unwrap();
+    let schema = format!(
+        "token_admin_{}",
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    );
+    admin
+        .execute_unprepared(&format!("CREATE SCHEMA {schema}"))
+        .await
+        .unwrap();
+    let mut options = ConnectOptions::new(url);
+    options.set_schema_search_path(&schema);
+    let db = Database::connect(options).await.unwrap();
+    brioche_migration::Migrator::up(&db, None).await.unwrap();
+    let backend = Backend::new(db.clone()).await.unwrap();
+    let app = identity::router_with_media_root(
+        backend.clone(),
+        CsrfPolicy::new(["http://localhost:5173".into()]).unwrap(),
+        false,
+        std::env::temp_dir(),
+    );
+    let mut visitor = Browser::new(app.clone()).await;
+    let mut operator = Browser::new(app.clone()).await;
+    operator
+        .register(&backend, "operator@example.test", true)
+        .await;
+    let mut learner = Browser::new(app).await;
+    learner
+        .register(&backend, "learner@example.test", false)
+        .await;
+    let path = "/api/v1/operator/accounts/pending-tokens";
+    assert_eq!(visitor.send("GET", path, None, true).await.0, 401);
+    assert_eq!(learner.send("GET", path, None, true).await.0, 403);
+    let invite = backend
+        .issue_token("pending@example.test", false, false)
+        .await
+        .unwrap();
+    let reset_token = backend
+        .issue_token("learner@example.test", true, false)
+        .await
+        .unwrap();
+    db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO identity_tokens(token_hash,kind,email,expires_at) VALUES($1,'invite','expired@example.test',CURRENT_TIMESTAMP-interval '1 second')",vec!["e".repeat(64).into()])).await.unwrap();
+    let listed = operator.send("GET", path, None, true).await;
+    assert_eq!(listed.0, 200);
+    assert_eq!(listed.1["items"].as_array().unwrap().len(), 2);
+    assert!(!listed.1.to_string().contains(&invite));
+    assert!(!listed.1.to_string().contains("tokenHash"));
+    let id = listed.1["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|item| item["email"] == "pending@example.test")
+        .unwrap()["id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let revoke = format!("{path}/{id}/revoke");
+    assert_eq!(
+        learner
+            .send("POST", &revoke, Some(json!({"reason":"isolated"})), true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", &revoke, Some(json!({"reason":"isolated"})), false)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", &revoke, Some(json!({"reason":"isolated"})), true)
+            .await
+            .0,
+        200
+    );
+    assert_eq!(
+        operator
+            .send("POST", &revoke, Some(json!({"reason":"isolated"})), true)
+            .await
+            .0,
+        404
+    );
+    assert!(
+        backend
+            .accept_invite(brioche_course_contract::AcceptInviteRequest {
+                token: invite,
+                email: "pending@example.test".into(),
+                display_name: "Pending".into(),
+                password: "correct horse brioche fromage".into()
+            })
+            .await
+            .is_err()
+    );
+    let remaining = operator
+        .send("GET", &format!("{path}?kind=invite"), None, true)
+        .await;
+    assert_eq!(remaining.1["items"].as_array().unwrap().len(), 0);
+    assert_eq!(
+        operator
+            .send("GET", &format!("{path}?kind=unknown"), None, true)
+            .await
+            .0,
+        400
+    );
+    let reset_list = operator
+        .send("GET", &format!("{path}?kind=reset"), None, true)
+        .await;
+    let reset_id = reset_list.1["items"][0]["id"].as_str().unwrap();
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                &format!("{path}/{reset_id}/revoke"),
+                Some(json!({"reason":"isolated reset revocation"})),
+                true
+            )
+            .await
+            .0,
+        200
+    );
+    assert!(
+        backend
+            .reset_password(brioche_course_contract::ResetPasswordRequest {
+                token: reset_token,
+                password: "changed but rejected brioche password".into()
+            })
+            .await
+            .is_err()
+    );
+    assert_eq!(learner.send("GET", "/api/v1/me", None, true).await.0, 200);
+    assert_eq!(
+        operator
+            .send("GET", &format!("{path}?afterId=bad"), None, true)
+            .await
+            .0,
+        400
+    );
+    let audited=db.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT count(*) AS n FROM account_admin_audit a JOIN users u ON u.id=a.actor_id WHERE a.action IN ('revokeInvite','revokeReset') AND u.email='operator@example.test'".to_owned())).await.unwrap().unwrap().try_get::<i64>("","n").unwrap();
+    assert_eq!(audited, 2);
+    let history = operator
+        .send("GET", "/api/v1/operator/history", None, true)
+        .await;
+    assert!(
+        history.1["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|item| item["action"] == "revokeInvite")
+    );
+    assert!(
+        history.1["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|item| item["action"] == "revokeReset")
+    );
+    for i in 0..25 {
+        db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO identity_tokens(token_hash,kind,email,role,expires_at) VALUES($1,'invite',$2,'learner',CURRENT_TIMESTAMP+interval '1 day')",vec![format!("{i:064x}").into(),format!("synthetic-{i}@example.test").into()])).await.unwrap();
+    }
+    let page = operator
+        .send("GET", &format!("{path}?kind=invite"), None, true)
+        .await;
+    assert_eq!(page.1["items"].as_array().unwrap().len(), 20);
+    let next = operator
+        .send(
+            "GET",
+            &format!(
+                "{path}?kind=invite&afterId={}",
+                page.1["nextId"].as_str().unwrap()
+            ),
+            None,
+            true,
+        )
+        .await;
+    assert_eq!(next.1["items"].as_array().unwrap().len(), 5);
+    assert_eq!(learner.send("GET", "/api/v1/me", None, true).await.0, 200);
+    let race = backend
+        .issue_token("race@example.test", false, false)
+        .await
+        .unwrap();
+    // Query the synthetic identifier directly if the first page is filled by other records.
+    use sha2::{Digest, Sha256};
+    let record_id = format!(
+        "{:x}",
+        Sha256::digest(format!("{:x}", Sha256::digest(&race)))
+    );
+    let race_path = format!("{path}/{record_id}/revoke");
+    let (revoked, accepted) = tokio::join!(
+        operator.send(
+            "POST",
+            &race_path,
+            Some(json!({"reason":"race test"})),
+            true
+        ),
+        backend.accept_invite(brioche_course_contract::AcceptInviteRequest {
+            token: race,
+            email: "race@example.test".into(),
+            display_name: "Race".into(),
+            password: "correct horse brioche fromage".into()
+        })
+    );
+    assert_ne!(revoked.0 == 200, accepted.is_ok());
+    db.close().await.unwrap();
+    admin
+        .execute_unprepared(&format!("DROP SCHEMA {schema} CASCADE"))
+        .await
+        .unwrap();
+}
 impl Browser {
     async fn new(app: Router) -> Self {
         let mut result = Self {
