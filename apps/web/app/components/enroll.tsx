@@ -7,10 +7,12 @@ export function Enroll({
   knowledgeId,
   lessonId,
   revision,
+  onWithdrawn,
 }: {
   knowledgeId: string;
   lessonId: string;
   revision: number;
+  onWithdrawn?: () => void;
 }) {
   const learning = useLearning(),
     [card, setCard] = useState<ReviewCard | null>(null),
@@ -18,6 +20,9 @@ export function Enroll({
       userId: learning.profile?.id,
       target: { kind: "enroll", knowledgeId, lessonId, revision },
       accept: setCard,
+      onUnavailable: (status) => {
+        if (status === 410) onWithdrawn?.();
+      },
     });
   if (!learning.profile) return null;
   return (

@@ -173,35 +173,57 @@ function SavedRow({
   headingRef: (element: HTMLButtonElement | null) => void;
 }) {
   const [open, setOpen] = useState(false),
+    [current, setCurrent] = useState(item),
     audio = useLearning(),
     panelId = useId();
+  const heading = useRef<HTMLButtonElement>(null),
+    wasWithdrawn = useRef(item.withdrawn);
+  useLayoutEffect(() => {
+    if (current.withdrawn && !wasWithdrawn.current) heading.current?.focus();
+    wasWithdrawn.current = current.withdrawn;
+  }, [current.withdrawn]);
+  function withdraw() {
+    audio.stop();
+    setCurrent((old) => ({ ...old, withdrawn: true, vocabulary: null }));
+  }
+  function accept(saved: SavedItem) {
+    if (saved.withdrawn) audio.stop();
+    // A hard withdrawal is irreversible for this fixed source revision.
+    setCurrent((old) =>
+      old.withdrawn ? { ...saved, withdrawn: true, vocabulary: null } : saved,
+    );
+    if (!saved.saved) remove();
+  }
   return (
     <article className="library-entry">
       <button
-        ref={headingRef}
+        ref={(element) => {
+          heading.current = element;
+          headingRef(element);
+        }}
         className="library-entry-heading"
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
         onClick={() => {
           setOpen(!open);
-          if (!open && item.vocabulary)
+          if (!open && current.vocabulary)
             audio.play([
-              { id: "saved-" + item.id, text: item.vocabulary.lemma },
+              { id: "saved-" + current.id, text: current.vocabulary.lemma },
             ]);
         }}
       >
         <span>
-          <strong lang={item.withdrawn ? "zh-CN" : "fr"}>
-            {item.vocabulary?.lemma ?? "来源内容已撤回"}
+          <strong lang={current.withdrawn ? "zh-CN" : "fr"}>
+            {current.vocabulary?.lemma ?? "来源内容已撤回"}
           </strong>
-          <small>{item.vocabulary?.meaningZh}</small>
+          <small>{current.vocabulary?.meaningZh}</small>
         </span>
         <Icon name="chevron" />
       </button>
       {open && (
         <div id={panelId} className="library-entry-body">
-          <p>{item.vocabulary?.noteZh}</p>
-          {!item.withdrawn && (
+          <p>{current.vocabulary?.noteZh}</p>
+          {!current.withdrawn && (
             <Link
               className="text-button"
               to={"/lessons/" + item.sourceLessonId}
@@ -210,25 +232,25 @@ function SavedRow({
             </Link>
           )}
           <Bookmark
-            initial={item}
+            initial={current}
             knowledgeId={item.knowledgeId}
             lessonId={item.sourceLessonId}
             revision={item.sourceRevision}
-            onChange={(saved) => {
-              if (!saved.saved) remove();
-            }}
+            onChange={accept}
+            onWithdrawn={withdraw}
             onRefresh={(saved) => {
+              accept(saved);
               if (!saved.saved) {
-                remove();
                 audio.toast("这条表达已在其他设备取消收藏。");
               }
             }}
           />
-          {!item.withdrawn && (
+          {!current.withdrawn && (
             <Enroll
               knowledgeId={item.knowledgeId}
               lessonId={item.sourceLessonId}
               revision={item.sourceRevision}
+              onWithdrawn={withdraw}
             />
           )}
         </div>

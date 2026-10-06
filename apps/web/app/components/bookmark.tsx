@@ -12,6 +12,7 @@ export function Bookmark({
   initial,
   onChange,
   onRefresh,
+  onWithdrawn,
 }: {
   knowledgeId: string;
   lessonId: string;
@@ -19,6 +20,7 @@ export function Bookmark({
   initial?: SavedItem;
   onChange?: (item: SavedItem) => void;
   onRefresh?: (item: SavedItem) => void;
+  onWithdrawn?: () => void;
 }) {
   const [item, setItem] = useState<SavedItem | null>(initial ?? null),
     [ready, setReady] = useState(!!initial),
@@ -53,6 +55,9 @@ export function Bookmark({
     accept: (saved) => {
       setItem(saved);
       onChange?.(saved);
+    },
+    onUnavailable: (status) => {
+      if (status === 410) onWithdrawn?.();
     },
   });
   useEffect(() => {
