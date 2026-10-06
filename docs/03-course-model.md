@@ -112,7 +112,7 @@ v1 只做线性流程。用户可以回到已访问步骤、预览目录和退�
 
 当前公共课程语义校验要求标题、简介、学习目标、场景描述、正文中文译文、角色标签、词汇的词形/词性/中文释义、语法标题/正文及已有例句的双语文本、解释正文、文化说明与适用范围、生活任务及替代任务、回顾要点均非空白。学习目标和回顾要点至少一项，建议时长为 1–60 分钟；Unicode 空白同样视为空。词汇额外备注、提示与未提供的语法例句不因此变成必填内容。`check` 和最终导入/发布投影复用同一校验，错误指向具体字段；这些检查只证明教学字段齐备，不证明法语、译文或教学难度已经人工审校。
 
-当前实现以 Rust Serde 反序列化检查结构，再执行共享语义校验；公共及作者 JSON Schema 从 Rust 类型生成，供编辑工具使用，运行时未引入 jsonschema crate。公共 DTO 独立定义，所有课程块拒绝未知字段；练习仍使用平铺的 type/id/exerciseType 格式，解析时拆出外层字段后严格检查练习内容，避开 [Serde flatten 与 deny_unknown_fields 的组合限制](https://serde.rs/attr-flatten.html)。作者错误包含文件、JSON Pointer 和可读描述；未知块字段当前定位原块起始行列并列出字段名，其他部分字段可精确定位。课程源的重复 JSON key 由专门的源解析检查拒绝。
+当前实现以 Rust Serde 反序列化检查结构，再执行共享语义校验；公共及作者 JSON Schema 从 Rust 类型生成，供编辑工具使用，运行时未引入 jsonschema crate。公共 DTO 独立定义，所有课程块拒绝未知字段；练习仍使用平铺的 type/id/exerciseType 格式，解析时拆出外层字段后严格检查练习内容，避开 [Serde flatten 与 deny_unknown_fields 的组合限制](https://serde.rs/attr-flatten.html)。块与练习字段通过宏同时定义公开类型和严格 wire struct，按类型显式分派后保留嵌套错误路径。作者错误包含文件、JSON Pointer 和可读描述；未知块字段、嵌套正文/角色/选项/token 类型错误均能定位原字段行列；缺失字段仍只能定位最近存在的父节点。课程源的重复 JSON key 由专门的源解析检查拒绝。
 
 - ID 在各自命名空间唯一；不存在重复 JSON key（源解析器需检测，普通 JSON.parse 会覆盖重复 key）。
 - level/unit 关系有效，catalog 的课程映射及顺序有效。

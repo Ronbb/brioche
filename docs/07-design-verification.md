@@ -1,5 +1,11 @@
 # 设计验证记录
 
+## 2026-10-06：课程块嵌套类型错误定位
+
+- 扩展真实作者 CLI 回归先复现对话 turns/segments/text 类型为整数时仅报告 /blocks/1 及整个块位置。serde_path_to_error 包住 internally tagged enum 仍丢失内部路径，因此以同一字段宏生成严格 wire struct，显式拆 type/exerciseType 后解析。普通 Block Deserialize 与作者带前缀解析共用实现；未知字段继续拒绝，public DTO 仍保持原平铺形式。
+- check/import 在数据库前分别验证对话语块 text、角色 displayName、choice options/text 和 order tokens/text 的准确字段行列，覆盖 CRLF/中文源。所有块未知字段回归改为要求字段值位置；嵌套未知键中的 / 和 ~ 通过 JSON Pointer 转义单元测试。各示例块往返保持相同 JSON，重新生成公共 TS、公共/作者 Schema 无差异。
+- 19 项公共契约、37 项 server 单元、21 项作者 CLI、13 项 curriculum 通过（48 课/144 题），Clippy -D warnings 与格式检查通过。未修改课程源、数据库或常用服务；缺失字段依然按最近存在父节点定位，其他完整语义、人工内容、设备与生产门槛未因此宣称完成。上一提交 1aca7bb 的 CI job 112176811052 已观测 completed/success；新提交另行触发 CI。
+
 ## 2026-10-06：练习步骤与完成策略一致性
 
 - 现有设计要求练习只进入 practice、必做题属于必做 practice，但原 validate 只验证引用存在与块可达。新增公共契约回归实际复现把 practice 改为 read 仍通过；修复后按原步骤 blockIds 项拒绝。移除 practice 的必做身份但保留必做题，按 completion.requiredExerciseIds 项拒绝；可选 practice/可选题和同题在其他 practice 再次回顾仍合法。

@@ -287,6 +287,15 @@ fn project_source_types(mut source: serde_json::Value) -> anyhow::Result<PublicL
     object.remove("editorial");
     object.remove("assetRefs");
     object.remove("audioRefs");
+    if let Some(blocks) = object.get("blocks").and_then(serde_json::Value::as_array) {
+        for (index, block) in blocks.iter().enumerate() {
+            brioche_course_contract::Block::from_value_with_path(
+                block.clone(),
+                &format!("/blocks/{index}"),
+            )
+            .map_err(anyhow::Error::msg)?;
+        }
+    }
     author_json::from_value(source, "")
 }
 

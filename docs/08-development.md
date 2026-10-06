@@ -1,5 +1,7 @@
 # 第一轮工程实现
 
+作者文件中的块/练习先按显式类型分派到与公开 DTO 共用字段宏生成的严格结构，保留嵌套类型与未知字段 JSON Pointer。`check`/`import` 可定位对话语块、角色、选项/token 的实际字段行列；缺失字段定位最近存在父节点。公开课程/Schema/TS 形状保持不变，运行 API 的错误仍不暴露作者诊断。
+
 练习步骤约束现由共享 Rust 语义校验执行：exercise 仅被 practice 引用，completion.requiredExerciseIds 必须属于至少一个必做 practice。`check` 与 `import` 数据库前预检报告原 steps/blockIds 或 requiredExerciseIds 项的行列；可选练习与其他 practice 中的再次回顾仍允许，完整登记媒体验证保留在 hydration 后。
 
 选择题作者检查拒绝归一化后相同的选项文字：NFC、空白和法语撇号等价，大小写与重音保留。`check` 与 `import` 均在数据库访问前给出第二个重复选项的 `/blocks/.../options/.../text` 和原文件行列；正式导入仍完整验证登记素材与课程语义。排序题允许重复显示语块，共用同一个 Rust 文本归一化函数，避免作者校验与判分规则漂移。

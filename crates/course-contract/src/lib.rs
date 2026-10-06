@@ -123,22 +123,69 @@ dto!(OptionItem {
 dto!(Step { id: String, kind: String, title_zh: String, block_ids: Vec<String> });
 dto!(Completion { strategy: String, required_step_ids: Vec<String>, required_exercise_ids: Vec<String> });
 
-#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, TS)]
-#[serde(tag = "exerciseType", rename_all = "kebab-case", deny_unknown_fields)]
-pub enum Exercise {
-    #[serde(rename_all = "camelCase")]
-    SingleChoice {
+fn parse_type_value<T: serde::de::DeserializeOwned>(
+    value: serde_json::Value,
+    prefix: &str,
+) -> Result<T, String> {
+    serde_path_to_error::deserialize(value).map_err(|error| {
+        let mut pointer = prefix.to_owned();
+        for segment in error.path().iter() {
+            let token = match segment {
+                serde_path_to_error::Segment::Seq { index } => index.to_string(),
+                serde_path_to_error::Segment::Map { key } => key.clone(),
+                _ => continue,
+            };
+            pointer.push('/');
+            pointer.push_str(&token.replace('~', "~0").replace('/', "~1"));
+        }
+        format!(
+            "{}: {}",
+            if pointer.is_empty() { "/" } else { &pointer },
+            error.inner()
+        )
+    })
+}
+
+macro_rules! exercises {
+    ($($variant:ident => $kind:literal { $($field:ident: $ty:ty),* $(,)? }),* $(,)?) => {
+        #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, TS)]
+        #[serde(tag = "exerciseType", rename_all = "kebab-case", deny_unknown_fields)]
+        pub enum Exercise {
+            $(#[serde(rename_all = "camelCase")] $variant { $($field: $ty),* },)*
+        }
+        mod exercise_wire {
+            use super::*;
+            $(#[derive(Deserialize)]
+            #[serde(rename_all = "camelCase", deny_unknown_fields)]
+            pub(super) struct $variant { $(pub(super) $field: $ty),* })*
+        }
+        impl Exercise {
+            fn from_value_with_path(mut value: serde_json::Value, prefix: &str) -> Result<Self, String> {
+                let kind = value.get("exerciseType").and_then(serde_json::Value::as_str)
+                    .ok_or_else(|| format!("{prefix}/exerciseType: expected exercise type string"))?.to_owned();
+                value.as_object_mut().unwrap().remove("exerciseType");
+                match kind.as_str() {
+                    $($kind => {
+                        let exercise_wire::$variant { $($field),* } = parse_type_value(value, prefix)?;
+                        Ok(Self::$variant { $($field),* })
+                    },)*
+                    _ => Err(format!("{prefix}/exerciseType: unsupported exercise type")),
+                }
+            }
+        }
+    };
+}
+exercises! {
+    SingleChoice => "single-choice" {
         prompt_zh: String,
         options: Vec<OptionItem>,
     },
-    #[serde(rename_all = "camelCase")]
-    FillBlank {
+    FillBlank => "fill-blank" {
         prompt_zh: String,
         template_fr: String,
         hint_zh: String,
     },
-    #[serde(rename_all = "camelCase")]
-    Order {
+    Order => "order" {
         prompt_zh: String,
         tokens: Vec<OptionItem>,
     },
@@ -155,27 +202,42 @@ macro_rules! blocks {
             $($(#[$meta])* $variant { $($field: $ty),* },)*
             Exercise { id: String, #[serde(flatten)] exercise: Exercise },
         }
-        #[derive(Deserialize)]
-        #[serde(tag = "type", rename_all = "lowercase", deny_unknown_fields)]
-        enum RegularBlock {
-            $($(#[$meta])* $variant { $($field: $ty),* },)*
+        mod block_wire {
+            use super::*;
+            $(#[derive(Deserialize)]
+            #[serde(deny_unknown_fields)]
+            $(#[$meta])*
+            pub(super) struct $variant { $(pub(super) $field: $ty),* })*
+        }
+        impl Block {
+            /// Author tools retain nested type paths across the flat exercise envelope.
+            /// Uses the same strict types as ordinary deserialization.
+            pub fn from_value_with_path(mut value: serde_json::Value, prefix: &str) -> Result<Self, String> {
+                let kind = value.get("type").and_then(serde_json::Value::as_str)
+                    .ok_or_else(|| format!("{prefix}/type: expected block type string"))?.to_owned();
+                if kind == "exercise" {
+                    let fields = value.as_object_mut().ok_or_else(|| format!("{prefix}: expected block object"))?;
+                    fields.remove("type");
+                    let id = fields.remove("id").ok_or_else(|| format!("{prefix}/id: missing field `id`"))?;
+                    let id = parse_type_value(id, &format!("{prefix}/id"))?;
+                    let exercise = Exercise::from_value_with_path(value, prefix)?;
+                    return Ok(Self::Exercise { id, exercise });
+                }
+                value.as_object_mut().unwrap().remove("type");
+                match kind.as_str() {
+                    $(kind if kind == stringify!($variant).to_ascii_lowercase() => {
+                        let block_wire::$variant { $($field),* } = parse_type_value(value, prefix)?;
+                        Ok(Self::$variant { $($field),* })
+                    },)*
+                    _ => Err(format!("{prefix}/type: unsupported block type")),
+                }
+            }
         }
         impl<'de> Deserialize<'de> for Block {
             fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
                 use serde::de::Error;
-                let mut value = serde_json::Value::deserialize(deserializer)?;
-                if value.get("type").and_then(serde_json::Value::as_str) == Some("exercise") {
-                    let fields = value.as_object_mut().ok_or_else(|| D::Error::custom("expected block object"))?;
-                    fields.remove("type");
-                    let id = fields.remove("id").ok_or_else(|| D::Error::missing_field("id"))?;
-                    let id = serde_json::from_value(id).map_err(D::Error::custom)?;
-                    let exercise = serde_json::from_value(value).map_err(D::Error::custom)?;
-                    return Ok(Self::Exercise { id, exercise });
-                }
-                let block = serde_json::from_value(value).map_err(D::Error::custom)?;
-                Ok(match block {
-                    $(RegularBlock::$variant { $($field),* } => Self::$variant { $($field),* },)*
-                })
+                let value = serde_json::Value::deserialize(deserializer)?;
+                Self::from_value_with_path(value, "").map_err(D::Error::custom)
             }
         }
     };
@@ -725,6 +787,23 @@ mod tests {
             }
         }
     }
+    #[test]
+    fn block_type_paths_preserve_nested_and_escaped_keys_without_changing_wire_shape() {
+        for block in fixture().blocks {
+            let value = serde_json::to_value(&block).unwrap();
+            let parsed = Block::from_value_with_path(value.clone(), "/blocks/0").unwrap();
+            assert_eq!(serde_json::to_value(parsed).unwrap(), value);
+        }
+        let mut block = serde_json::to_value(fixture().blocks.remove(1)).unwrap();
+        block["speakers"][0]["意外/字段~"] = serde_json::json!(42);
+        let error = Block::from_value_with_path(block, "/blocks/1").unwrap_err();
+        assert!(
+            error.starts_with("/blocks/1/speakers/0/意外~1字段~0:"),
+            "{error}"
+        );
+        assert!(error.contains("unknown field"), "{error}");
+    }
+
     #[test]
     fn unknown_fields_rejected_in_every_block() {
         for block in fixture().blocks {

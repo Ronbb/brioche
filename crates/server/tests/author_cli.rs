@@ -507,6 +507,16 @@ fn import_public_types_are_located_before_database_or_media_hydration() {
             serde_json::json!(271828),
         ),
         ("/blocks", serde_json::json!("public-invalid-blocks")),
+        (
+            "/blocks/1/turns/0/segments/0/text",
+            serde_json::json!(314160),
+        ),
+        (
+            "/blocks/1/speakers/0/displayName",
+            serde_json::json!(314161),
+        ),
+        ("/blocks/7/options/0/text", serde_json::json!(314162)),
+        ("/blocks/9/tokens/0/text", serde_json::json!(314163)),
         ("/steps", serde_json::json!("public-invalid-steps")),
     ] {
         let mut source = original.clone();
@@ -521,21 +531,23 @@ fn import_public_types_are_located_before_database_or_media_hydration() {
         let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
         let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
         std::fs::write(&path, text).unwrap();
-        let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
-            .args(["import", path.to_str().unwrap()])
-            .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
-            .env("CONTENT_MODE", "database")
-            .env("APP_ENV", "production")
-            .output()
-            .unwrap();
-        let error = String::from_utf8_lossy(&output.stderr);
-        assert!(!output.status.success());
-        assert!(
-            error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
-            "{error}"
-        );
-        assert!(!error.contains("database connection"), "{error}");
-        assert!(output.stdout.is_empty());
+        for command in ["check", "import"] {
+            let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+                .args([command, path.to_str().unwrap()])
+                .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+                .env("CONTENT_MODE", "database")
+                .env("APP_ENV", "production")
+                .output()
+                .unwrap();
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(!output.status.success());
+            assert!(
+                error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
+                "{error}"
+            );
+            assert!(!error.contains("database connection"), "{error}");
+            assert!(output.stdout.is_empty());
+        }
     }
     std::fs::remove_file(path).unwrap();
 }
@@ -1045,14 +1057,9 @@ fn unknown_block_fields_fail_check_and_import_before_database_access() {
         let text = serde_json::to_string_pretty(&source)
             .unwrap()
             .replace('\n', "\r\n");
-        let block_text = serde_json::to_string_pretty(&source["blocks"][index])
-            .unwrap()
-            .lines()
-            .map(|line| format!("    {line}"))
-            .collect::<Vec<_>>()
-            .join("\r\n");
-        assert_eq!(text.matches(&block_text).count(), 1);
-        let offset = text.find(&block_text).unwrap() + 4;
+        let token = serde_json::to_string("拼错的内容").unwrap();
+        assert_eq!(text.matches(&token).count(), 1);
+        let offset = text.find(&token).unwrap();
         let before = &text[..offset];
         let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
         let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
@@ -1061,7 +1068,10 @@ fn unknown_block_fields_fail_check_and_import_before_database_access() {
             let output = run(command, &path);
             let error = String::from_utf8_lossy(&output.stderr);
             assert!(!output.status.success(), "{command} accepted block {index}");
-            assert!(error.contains(&format!("/blocks/{index}:")), "{error}");
+            assert!(
+                error.contains(&format!("/blocks/{index}/unexpectedAuthorField:")),
+                "{error}"
+            );
             assert!(
                 error.contains("unknown field `unexpectedAuthorField`"),
                 "{error}"
