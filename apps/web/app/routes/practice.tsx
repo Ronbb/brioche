@@ -8,6 +8,7 @@ import { getCatalog, getLesson } from "../lib/api.server";
 import { useLearning } from "../components/learning";
 import { OrderEditor } from "../components/order-editor";
 import { Icon } from "../components/icon";
+import { LessonNote } from "../components/lesson-note";
 import type { Route } from "./+types/practice";
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -143,11 +144,10 @@ function PracticeSession({ lesson }: Route.ComponentProps["loaderData"]) {
         {lesson.blocks
           .filter((b) => b.type === "habit")
           .map((b) => (
-            <details className="lesson-note" key={b.id}>
-              <summary>带进日常</summary>
+            <LessonNote kind="habit" title="带进日常" key={b.id}>
               <p>{b.taskZh}</p>
               <p className="profile-note">{b.alternativeZh}</p>
-            </details>
+            </LessonNote>
           ))}
         {lesson.blocks
           .filter((b) => b.type === "summary")
@@ -163,7 +163,6 @@ function PracticeSession({ lesson }: Route.ComponentProps["loaderData"]) {
           ))}
         <Link className="primary" to={"/review/" + lesson.id}>
           复习表达
-          <Icon name="arrow" />
         </Link>
         <Link
           className="text-button practice-back"
@@ -289,7 +288,6 @@ function PracticeSession({ lesson }: Route.ComponentProps["loaderData"]) {
           <div className="practice-next">
             <button type="button" className="primary" onClick={next}>
               {index + 1 === exercises.length ? "查看回顾" : "下一题"}
-              <Icon name="arrow" />
             </button>
             {!result.correct && (
               <button

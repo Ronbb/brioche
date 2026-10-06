@@ -1,7 +1,7 @@
 const paths = {
   play: <path d="m9 5 10 7-10 7Z" />,
   pause: <path d="M8 5v14M16 5v14" />,
-  arrow: <path d="M4 12h16m-6-6 6 6-6 6" />,
+  plus: <path d="M12 5v14M5 12h14" />,
   close: <path d="m6 6 12 12M18 6 6 18" />,
   chevron: <path d="m9 6 6 6-6 6" />,
   check: <path d="m5 12 4 4L19 6" />,

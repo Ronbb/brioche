@@ -2,6 +2,7 @@ import type { Block } from "@brioche/contracts/Block";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
 import { useLearning } from "./learning";
 import { Illustration, illustration } from "./illustration";
+import { LessonNote } from "./lesson-note";
 
 type TeachingBlock = Exclude<
   Block,
@@ -31,23 +32,20 @@ export function TeachingBlock({
       );
     case "explanation":
       return (
-        <details className="lesson-note">
-          <summary>{block.titleZh}</summary>
+        <LessonNote kind="explanation" title={block.titleZh}>
           <p>{block.bodyZh}</p>
-        </details>
+        </LessonNote>
       );
     case "culture":
       return (
-        <details className="lesson-note">
-          <summary>{block.titleZh}</summary>
+        <LessonNote kind="culture" title={block.titleZh}>
           <p>{block.bodyZh}</p>
           <p className="profile-note">{block.scopeZh}</p>
-        </details>
+        </LessonNote>
       );
     case "vocabulary":
       return (
-        <details className="lesson-note">
-          <summary>表达与词汇</summary>
+        <LessonNote kind="vocabulary" title="表达与词汇">
           <dl className="vocabulary-list">
             {block.entryIds.map((id) => {
               const word = lesson.knowledge.vocabulary.find(
@@ -72,7 +70,7 @@ export function TeachingBlock({
               );
             })}
           </dl>
-        </details>
+        </LessonNote>
       );
     case "grammar":
       return (
@@ -80,8 +78,7 @@ export function TeachingBlock({
           {block.entryIds.map((id) => {
             const grammar = lesson.knowledge.grammar.find((g) => g.id === id)!;
             return (
-              <details key={id} className="lesson-note">
-                <summary>{grammar.titleZh}</summary>
+              <LessonNote key={id} kind="grammar" title={grammar.titleZh}>
                 <p>{grammar.bodyZh}</p>
                 {grammar.examples.map((example, i) => (
                   <div className="grammar-example" key={i}>
@@ -97,18 +94,17 @@ export function TeachingBlock({
                     <p>{example.zh}</p>
                   </div>
                 ))}
-              </details>
+              </LessonNote>
             );
           })}
         </>
       );
     case "habit":
       return (
-        <details className="lesson-note">
-          <summary>带进日常</summary>
+        <LessonNote kind="habit" title="带进日常">
           <p>{block.taskZh}</p>
           <p className="profile-note">{block.alternativeZh}</p>
-        </details>
+        </LessonNote>
       );
     case "summary":
       return (

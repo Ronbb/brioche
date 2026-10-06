@@ -97,7 +97,6 @@ export default function Library({ loaderData }: Route.ComponentProps) {
         </Link>
         <Link className="text-button" to="/reviews">
           开始复习
-          <Icon name="arrow" />
         </Link>
       </div>
     </section>

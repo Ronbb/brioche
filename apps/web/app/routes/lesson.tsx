@@ -451,7 +451,6 @@ function LessonLearningEntry({
       }
     >
       {demo ? "练习" : "登录后开始学习"}
-      <Icon name="arrow" />
     </Link>
   );
 }

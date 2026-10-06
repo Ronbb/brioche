@@ -298,7 +298,6 @@ function ProfileContent() {
         identity?.enabled && (
           <Link className="primary" to="/login">
             登录账号
-            <Icon name="arrow" />
           </Link>
         )
       )}

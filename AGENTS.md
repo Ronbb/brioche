@@ -14,6 +14,7 @@
 - Compose 网关采用 Traefik，仅对外映射 HTTP 30075；HTTPS 由用户处理，不加入自动证书或 HTTPS 端口。
 - 用户要求工程收尾后在 Docker Compose 中实际启动应用，核对迁移、服务健康与 HTTP 30075 入口；不能仅交付 Compose 文件或构建镜像代替启动。不以此授权修改外部 DNS、路由器或 HTTPS。
 - 界面美观且有情境插图；前台不暴露数据 Schema、部署方式等实现术语。
+- 操作入口不使用长箭头装饰；课程知识点采用分类色签的笔记卡片、圆形 SVG 展开标记与柔和展开动效，保留键盘操作、清晰焦点与 reduced-motion。
 - 服务端优先 Rust；前端 Vite 8 + TypeScript 7 + Tailwind CSS 4 + React Router，不使用 Next.js。
 - 持久化采用 SeaORM + PostgreSQL；Entity 与公共 DTO 分开，复杂查询可显式 SQL，事务和用户权限不能交给 ORM 自动推断。
 

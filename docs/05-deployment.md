@@ -4,7 +4,7 @@
 
 用户已确定生产运行在本机 Docker Compose，域名由 Cloudflare DNS 管理，路由器做静态端口映射。开发时 Web、API 和数据库在本机直接运行，不要求 Docker。工程已提供 `compose.yaml` 与 `infra/` 镜像配置；实际命令和当前限制见 [工程说明](08-development.md)。
 
-本设计没有修改 DNS、路由器、防火墙，也没有启动生产服务。用户要求工程收尾后在 Docker Compose 中实际启动并验收本机入口；实际域名、公网地址、生产机器/系统和可映射外网端口仍待对接。
+本机已启动 Compose 的 production/database 应用栈并保留运行，当前正式课程目录为空；运行验证见 [验证记录](07-design-verification.md)，本机配置位置见被忽略的 AGENTS.local.md。没有修改 DNS、路由器、防火墙或外部 HTTPS；实际公网入口与生产环境验收仍待对接。
 
 2026-10-06 用户确认：入口网关使用 Traefik，Compose 对外仅映射 HTTP `30075`，HTTPS 由用户在外部处理。本项目不配置证书、ACME、HTTPS 端口或 HTTP→HTTPS 跳转。
 

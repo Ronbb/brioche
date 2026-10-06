@@ -788,3 +788,12 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - 用户明确要求最终在Docker中启动，已写入AGENTS及部署/工程说明：收尾后实际Compose build/up，核对migrate退出0、四个长期服务healthy、HTTP30075和巡检，最终保留应用运行。此要求不授权修改外部HTTPS/DNS/路由器。
 - 对照当前main/config/Compose/.env示例移除部署文档的旧提案变量SESSION_COOKIE_KEY、CONTENT_SOURCE_ROOT、REGISTRATION_MODE，补实际APP_ENV/CONTENT_MODE/API_BIND/ADDITIONAL_APP_ORIGINS/POSTGRES_PASSWORD及origin用途。核对当前Compose up帮助支持wait/wait-timeout、巡检路径及.env忽略规则；生产空目录可启动供私有预览，不以启动代替内容审校。
 - 当前根.env不存在，docker ps未见brioche应用栈；本轮没有创建秘密或启动/停止容器，最终启动仍待执行，不用先前隔离演练冒充运行状态。文档/diff检查通过，未改运行代码、不追加应用测试。
+
+## 2026-10-06：知识笔记卡片、无箭头操作与本机 Docker 运行
+
+- 按用户新反馈将解释/文化/词汇/语法/日常提示统一为LessonNote笔记卡片：分类色签、暖橙/淡蓝/淡绿纸卡、层叠边缘、圆形SVG加号旋转、内容到达动效和品牌色键盘焦点。沿用原生details/summary，不隐藏标题或把说明改成操作教学；练习回顾的日常卡也复用。reduced-motion禁用过渡及展开动画。移除全部Web操作入口的长箭头SVG和对应Icon分支，首页复习入口改为简洁文字下划线交互。
+- TS7、生产client/SSR构建、28Web/12SSR及三项生产页面壳67.08s通过。独立生产SSR/受控公共API的一次性QA44.19s覆盖320/390/768/1440原生Enter/Space展开收起、标题保留焦点、无横向溢出、390px语法卡、reduced-motion、无箭头练习入口与原生链接跳转，未捕获错误为零。已查看390px折叠/展开截图，临时QA/截图在.local并被忽略，服务器/Chromium已关闭。第一次借独立浏览器读取开发页虽完成原生卡片检查，但记录到客户端动态模块加载错误，不计完整通过；后续该模块HTTP200，未重启用户开发服务。临时生产QA搬到.local后的两次模块导入装配错误也不计产品证据。本轮未重复全45组件浏览器，完整设备/辅助技术继续待验。
+- 原测试隔离提交7dfe94d的完整Linux Check37468521427/job112285595048实际completed/success，不能扩展为本轮界面提交CI成功。
+- 按用户要求实际构建并启动Compose project brioche，部署参数使用独立.local/docker.env，系统随机数据库秘密不输出、不入Git，Git/dockerignore均排除该文件，不覆盖开发.env。当前本机LAN origin及localhost/loopback额外允许origin仅在本机配置。开始前确认无brioche项目容器/卷和HTTP30075占用，未停止其他应用。
+- Docker build实际成功；API/migrate使用同一镜像sha256:653f883bc9a409b1016e0a408e2605849b37805922a0e46526981b6c1a394db4，Web镜像sha256:9edae829b48d3014fc268accd60502ea4dc4250f8a846fcc5ab125c2d7a84a0c。up --wait实际完成，migrate exited0，PostgreSQL/API/Web/Traefik四个长期服务healthy、零重启；只Traefik发布0.0.0.0/[::]的30075→8080，无TLS。API/Web/Traefik非root，数据库/API/Web无宿主端口。
+- HTTP loopback及本机LAN origin各执行health:check：五个服务状态及/api/health、/api/ready、/health、首页均healthy/exit0。容器与新数据库/媒体卷保留运行，此次不是启动后清理的隔离演练；实际手机跨设备/公网与认证学习全链路尚未验收。生产目录为空，没有发布48课draft或伪造审校/素材/录音授权。首个管理员邮箱已向用户询问，尚未签发邀请；人工内容/正式录音、真实设备及完整生产门槛继续保留。

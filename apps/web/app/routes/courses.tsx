@@ -1,7 +1,6 @@
 import { Form, Link, useNavigation } from "react-router";
 import { useEffect, useRef } from "react";
 import { getCatalog } from "../lib/api.server";
-import { Icon } from "../components/icon";
 import type { Route } from "./+types/courses";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -65,7 +64,7 @@ export default function Courses({
             aria-disabled={navigation.state !== "idle"}
             aria-busy={navigation.state !== "idle"}
           >
-            搜索 <Icon name="arrow" />
+            搜索
           </button>
         </div>
       </Form>
@@ -96,7 +95,6 @@ export default function Courses({
                     <small lang="fr">{lesson.title.fr}</small>
                     <small>{lesson.summaryZh}</small>
                   </span>
-                  <Icon name="arrow" />
                 </Link>
               ))}
             </div>

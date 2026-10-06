@@ -12,7 +12,6 @@ import type { LearningSession } from "@brioche/contracts/LearningSession";
 import { StudyOverview } from "../components/study-overview";
 import { StartLearning } from "../components/start-learning";
 import { useLearning } from "../components/learning";
-import { Icon } from "../components/icon";
 import { Illustration, illustration } from "../components/illustration";
 import type { Route } from "./+types/home";
 export async function loader({ request }: Route.LoaderArgs) {
@@ -81,7 +80,6 @@ export default function Home({
             <small>接着上次</small>
             <strong>{resume.title.zh}</strong>
           </span>
-          <Icon name="arrow" />
         </Link>
       )}
       {!lesson ? (
@@ -140,7 +138,7 @@ export default function Home({
               <div className="section-head">
                 <h2>课程</h2>
                 <Link className="text-button" to="/courses">
-                  浏览与搜索 <Icon name="arrow" />
+                  浏览与搜索
                 </Link>
               </div>
               {catalog.levels.map((level) => (
@@ -220,7 +218,6 @@ export default function Home({
                       ? "我的复习"
                       : "登录后复习"}
                 </span>
-                <Icon name="arrow" />
               </Link>
             </aside>
           </div>

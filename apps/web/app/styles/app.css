@@ -3363,6 +3363,8 @@ a {
 }
 .lesson-explore {
   padding-top: 24px;
+  display: grid;
+  gap: 14px;
 }
 .lesson-note {
   padding: 22px 0;
@@ -3378,19 +3380,106 @@ a {
   justify-content: space-between;
   gap: 16px;
 }
-.lesson-note summary::after {
-  content: "";
-  width: 8px;
-  height: 8px;
-  border-right: 1.5px solid;
-  border-bottom: 1.5px solid;
-  transform: rotate(45deg);
-  margin-right: 8px;
-  transition: transform 0.25s;
-  flex-shrink: 0;
+.note-card {
+  --note-tint: #fff0d9;
+  --note-ink: #995021;
+  --note-edge: #edcfa6;
+  border: 1px solid var(--note-edge);
+  border-radius: 22px;
+  padding: 0;
+  background: linear-gradient(120deg, var(--note-tint), #fffdf8 85%);
+  box-shadow: 0 3px 0 #fffdf8, 0 4px 0 var(--note-edge);
+  margin: 4px 0 10px;
+  transition: box-shadow 220ms ease, border-color 220ms ease;
 }
-.lesson-note[open] summary::after {
-  transform: rotate(225deg);
+.note-card[data-kind="grammar"],
+.note-card[data-kind="habit"] {
+  --note-tint: #edf3e5;
+  --note-ink: #4c6549;
+  --note-edge: #cfdec0;
+}
+.note-card[data-kind="culture"] {
+  --note-tint: #edf3f7;
+  --note-ink: #45667e;
+  --note-edge: #d0dfe8;
+}
+.note-card[open] {
+  box-shadow: 0 5px 0 #fffdf8, 0 6px 0 var(--note-edge), 0 14px 24px #5d422408;
+}
+.note-card summary {
+  padding: 20px;
+  border-radius: 22px;
+  list-style: none;
+}
+.note-card summary::-webkit-details-marker {
+  display: none;
+}
+.note-card summary:focus-visible {
+  outline: 2px solid var(--note-ink);
+  outline-offset: 4px;
+}
+.note-card-heading {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+.note-card-label {
+  width: fit-content;
+  padding: 2px 8px;
+  border: 1px solid var(--note-edge);
+  border-radius: 7px;
+  color: var(--note-ink);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .06em;
+}
+.note-card-title {
+  font-weight: 600;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.note-card-toggle {
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  height: 32px;
+  color: var(--note-ink);
+  background: #fffdf8;
+  border: 1px solid var(--note-edge);
+  border-radius: 50%;
+  transition: transform 300ms cubic-bezier(.22,.8,.25,1), background 200ms ease;
+}
+.note-card-toggle .icon {
+  width: 16px;
+  height: 16px;
+}
+.note-card[open] .note-card-toggle {
+  transform: rotate(45deg);
+  background: var(--note-tint);
+}
+.note-card summary:active .note-card-toggle {
+  scale: .88;
+}
+.lesson-note-body {
+  padding: 0 20px 22px;
+  overflow-wrap: anywhere;
+}
+.lesson-note-body > p + p {
+  margin-top: 12px;
+}
+.note-card .grammar-example {
+  border: 1px solid var(--note-edge);
+  background: #fffdf8b3;
+}
+.home-review-link {
+  width: fit-content;
+  padding: 12px 0 !important;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  transition: border-color 180ms ease, color 180ms ease;
+}
+.home-review-link:hover {
+  border-color: var(--accent);
 }
 .lesson-note > p,
 .lesson-note > dl,
@@ -3438,6 +3527,10 @@ a {
   font-size: 15px;
 }
 @media (prefers-reduced-motion: reduce) {
+  .note-card,
+  .note-card-toggle {
+    transition: none;
+  }
   .lesson-note[open] > :not(summary),
   .practice-feedback,
   .page-arrive {

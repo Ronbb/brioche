@@ -488,7 +488,6 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
                 onClick={() => void nextBatch()}
               >
                 查看下一组
-                <Icon name="arrow" />
               </button>
             )}
             <Link className="text-button" to="/">

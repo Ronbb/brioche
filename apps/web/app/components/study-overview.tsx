@@ -63,7 +63,6 @@ export function StudyOverview({ dashboard }: { dashboard: StudyDashboard }) {
                 : "学完课程或加入表达后开始复习。"}
           </span>
         </span>
-        <Icon name="arrow" />
       </Link>
     </div>
   );

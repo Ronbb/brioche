@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router";
 import type { LearningSession } from "@brioche/contracts/LearningSession";
 import { ApiRequestError, privateRequest } from "../lib/api.client";
 import { operationKey } from "../lib/operation-key";
-import { Icon } from "./icon";
 type StartLearningProps = {
   lessonId: string;
   children?: React.ReactNode;
@@ -76,7 +75,6 @@ function LearningEntry({
         onClick={() => void start()}
       >
         {pending ? "正在打开" : children}
-        <Icon name="arrow" />
       </button>
       {error && (
         <p className="error-message" role="alert">

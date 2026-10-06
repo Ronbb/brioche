@@ -154,7 +154,6 @@ function Session({
           </p>
           <Link className="primary" to="/">
             回到今天
-            <Icon name="arrow" />
           </Link>
         </div>
       </section>
@@ -197,7 +196,6 @@ function Session({
             </ul>
             <Link className="primary" to="/reviews">
               复习表达
-              <Icon name="arrow" />
             </Link>
             <Link className="text-button practice-back" to="/">
               回到今天
@@ -296,7 +294,6 @@ function Session({
                   onClick={() => void session.refresh()}
                 >
                   {session.saving ? "正在读取" : "重新读取进度"}
-                  <Icon name="arrow" />
                 </button>
               ) : session.uncertain ? (
                 <button
@@ -336,7 +333,6 @@ function Session({
                     : index === lesson.steps.length - 1
                       ? "确认回顾"
                       : "继续"}
-                  <Icon name="arrow" />
                 </button>
               )}
               {index > 0 && (

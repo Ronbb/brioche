@@ -7,7 +7,6 @@ import type { ResetPasswordRequest } from "@brioche/contracts/ResetPasswordReque
 import { authRequest } from "../lib/auth.client";
 import { accountReturnPath } from "../lib/account-return";
 import { useLearning } from "./learning";
-import { Icon } from "./icon";
 export function Account({
   mode,
 }: {
@@ -141,7 +140,6 @@ export function Account({
           <p>旧会话已退出，请用新密码登录。</p>
           <Link className="primary" to="/login">
             登录
-            <Icon name="arrow" />
           </Link>
         </>
       ) : !identity?.enabled ? (
@@ -236,7 +234,6 @@ export function Account({
                 : mode === "invite"
                   ? "创建账号"
                   : "更新密码"}
-            <Icon name="arrow" />
           </button>
           {mode === "login" && (
             <p className="profile-note">
