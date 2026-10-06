@@ -246,6 +246,8 @@ restore 首先完整校验 manifest、文件大小/哈希和 pg_restore 的 arch
 
 `cargo run -p brioche-server -- assets-import <bundle.json> <source-directory> <actor>` 读取严格字段的清单，登记素材与角色，文件按 SHA-256 命名。参考 `examples/asset-bundle.json`：它故意保持 planned 与 rightsConfirmed=false，作者/授权未确认，不能直接导入。正式素材必须明确来源、作者、license、中文替代文本/署名、ready 状态与人工确认授权；工具只记录操作者的声明，不能代替授权审核。
 
+仓库 SVG 通过 `.gitattributes` 固定 LF。编辑素材后先保存为 LF，再运行 `asset-check` 更新草稿清单的真实文件哈希；Windows 遗留 CRLF 工作副本会改变字节，不能用该副本哈希描述 Git/Linux 中的 LF 文件。`curriculum` 测试同时检查示例四张图片与 A1/A2 场景素材的哈希和尺寸。已登记版本不可原位替换，正式素材变更仍需新 revision。
+
 图片支持静态 SVG、PNG、JPEG、WebP，逐文件验证实际 MIME、SHA-256、尺寸和完整解码，大小 1–32 MiB，宽高最多 8192。SVG 仅允许静态图形白名单，拒绝脚本、外部引用、事件属性、DOCTYPE 和任意 HTML；栅格解码分配上限 64 MiB。来源路径必须在指定素材目录内，拒绝绝对路径、父级和 symlink 逃逸。角色引用精确头像 revision，头像必须正方形；当前角色语音 locale 为 fr-FR。
 
 课程私有源增加 `assetRefs`，例如 `[{"assetId":"art-bakery-morning","revision":1}]`，同时引用正文所需的全部头像。课程 import 根据注册表填充公共 `media`，移除私有 assetRefs；cast 必须与已注册角色 revision 的完整快照一致。release-stage 和 release-activate 都核对每个场景插图、角色头像、注册描述与存储文件哈希，缺文件或篡改阻止整个发布。

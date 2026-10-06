@@ -14,6 +14,28 @@ fn a2_scene_inventory_matches_actual_svg_sources() {
     check_scene_inventory("a2", 1);
 }
 
+#[test]
+fn example_inventory_matches_the_committed_visual_sources() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let document = Document::load(root.join("docs/examples/asset-bundle.json")).unwrap();
+    let bundle: brioche_server::media::AssetBundle =
+        serde_json::from_value(document.value).unwrap();
+    assert_eq!(bundle.assets.len(), 4);
+    for asset in bundle.assets {
+        let info = brioche_server::media::inspect_file(
+            &root.join("apps/web/public/assets").join(&asset.file),
+            &asset.mime_type,
+        )
+        .unwrap();
+        assert_eq!(
+            info.sha256, asset.sha256,
+            "stale hash for {}",
+            asset.asset_id
+        );
+        assert_eq!((info.width, info.height), (asset.width, asset.height));
+    }
+}
+
 fn check_scene_inventory(level: &str, expected_count: usize) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../../docs/content")
