@@ -14,10 +14,10 @@ import { LearningProvider } from "./components/learning";
 import { IdentitySync } from "./components/identity-sync";
 import "./styles/app.css";
 import { Scrollbar } from "./components/scrollbar";
-import { RouteFocus } from "./components/route-focus";
+import { RouteFocus, focusPageContent } from "./components/route-focus";
 import { getIdentity } from "./lib/api.server";
 import type { Route } from "./+types/root";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 export async function loader({ request }: Route.LoaderArgs) {
   return data(await getIdentity(request), {
     headers: { "Cache-Control": "private, no-store", Vary: "Cookie" },
@@ -134,6 +134,13 @@ export default function App() {
 }
 export function ErrorBoundary() {
   const error = useRouteError();
+  useEffect(() => {
+    // Layout can remount when this root error resolves, including a history POP.
+    // Focus the committed destination after disposal; normal first loads keep their focus.
+    return () => {
+      requestAnimationFrame(focusPageContent);
+    };
+  }, []);
   const status = isRouteErrorResponse(error) ? error.status : 500;
   const retryable = status >= 500;
   const [title, message] =

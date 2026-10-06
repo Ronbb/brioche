@@ -371,6 +371,24 @@ test("lesson errors recover through native keyboard reload and catalog navigatio
         ),
         "H1:课程",
       );
+      await browser("focus", "a[href^='/lessons/']");
+      await browser("press", "Enter");
+      await browser(
+        "wait",
+        "--fn",
+        `document.querySelector('main h1')?.textContent===${JSON.stringify(title)}`,
+      );
+      await browser("back");
+      await browser(
+        "wait",
+        "--fn",
+        "location.pathname==='/courses' && !!document.querySelector('.courses-page')",
+      );
+      await browser(
+        "wait",
+        "--fn",
+        "location.pathname==='/courses' && document.activeElement.matches('main h1')",
+      );
     }
     assert.deepEqual(serverErrors, []);
     const { errors } = await browser("errors");
