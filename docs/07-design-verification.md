@@ -376,6 +376,13 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 
 这些证据仅证明作者结构与判分规则一致，不能证明教学内容正确、素材授权或可发布。课程全部保持 draft；未导入数据库、未执行 release-stage/activate，development fixture 未替换。此时新增插图引用尚无资产文件，角色与旧插图授权仍待确认，正式录音尚未制作。逐课人工审校与来源记录见 `content/a1/README.md`；完整 A1/A2、真实 iPhone 和生产公网验收继续待完成。
 
+## 2026-10-06：构建后 SSR 的恢复重放、原生离页确认与收藏冲突
+
+- 对 243a3a6 的 Web 构建 Docker 镜像，使用 Traefik HTTP 30075、真实 Rust API 和隔离恢复数据库，不经过 Vite。正常暂停把卡片版本 2→3；恢复 PUT 实际 200、版本 3→4 后丢弃响应，标签页保留完整原请求（版本 3、suspended=false、原 idempotencyKey）。刷新后条目显示已恢复但禁止新写入；点击重试实际 200，请求体与原请求完全相同，pending 清除，数据库仍为版本 4/非暂停。
+- 使用专用 agent-browser 会话与该 Chrome 的独立 CDP 观察器，捕获真实 `Page.javascriptDialogOpening` 的 beforeunload。CLI 自动确认在本机出现读取超时，改由同一个浏览器目标的原生 `Page.handleJavaScriptDialog` 操作，不移除应用的 beforeunload 监听。另一个待确认请求分别选择取消和接受：两次均观察 opening/closed 与实际选择；取消时 document timeOrigin 不变，接受后 timeOrigin 改变，两次原 sessionStorage 请求内容都完整保留。刷新后显式提交清除 pending。这是桌面 Chromium 原生事件/选择与恢复验收，不能代表 iPhone/Safari、BFCache 或背景行为。
+- 同账号两标签取消收藏实测：A 成功取消，B 旧版本 PUT 409、最新状态 GET 200，数据库只更新一次。修复前 B 的收藏列表仍残留未收藏条目；Bookmark 新增读取结果回调，收藏列表在确认 saved=false 时移除条目，toast 说明其他设备取消收藏。构建新 Web 镜像后重测：B 列表条目为 0、toast 存在、pending 为 0，收藏版本 3→4 且 saved=false，没有额外更新。
+- 最终 Web 实际镜像 ID 为 `sha256:e3dcc3e7a44ac28f505507f968f234b411cd4a38b5498484d079a68023afe92b`，仅供本机隔离验证，没有发布生产镜像。TypeScript 7 类型检查、17 项 Web 协议测试及 Docker 内客户端/SSR 构建通过；浏览器验证直接使用新构建，测试没有模拟 API 成功或修改评分/进度。专用浏览器、容器和卷清理；真实 iPhone、完整可访问性与其他故障组合继续待验收。
+
 ## 2026-10-06：暂停响应丢失、会话失效与登录返回
 
 - 使用当前 Web 源代码、隔离 Compose API/数据库及恢复后的合成账号。暂停 PUT 实际 200 后丢弃响应，页面保留原 cardVersion/suspended/idempotencyKey，禁用新写入并显示重试。SPA 转入个人页及未确认保存页，再次实际提交成功但响应继续丢失；核对两次请求体完全相同。恢复响应后第三次确认清除 pending，数据库版本始终只从 2 变为 3，状态暂停，没有重复更新。

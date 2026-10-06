@@ -11,12 +11,14 @@ export function Bookmark({
   revision,
   initial,
   onChange,
+  onRefresh,
 }: {
   knowledgeId: string;
   lessonId: string;
   revision: number;
   initial?: SavedItem;
   onChange?: (item: SavedItem) => void;
+  onRefresh?: (item: SavedItem) => void;
 }) {
   const [item, setItem] = useState<SavedItem | null>(initial ?? null),
     [ready, setReady] = useState(!!initial),
@@ -31,6 +33,7 @@ export function Bookmark({
         setItem(result);
         setReady(true);
         setReadError("");
+        onRefresh?.(result);
       }
     } catch (error) {
       if (!mounted.current) return;

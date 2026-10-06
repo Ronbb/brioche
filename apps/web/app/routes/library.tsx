@@ -157,6 +157,12 @@ function SavedRow({ item, remove }: { item: SavedItem; remove: () => void }) {
             onChange={(saved) => {
               if (!saved.saved) remove();
             }}
+            onRefresh={(saved) => {
+              if (!saved.saved) {
+                remove();
+                audio.toast("这条表达已在其他设备取消收藏。");
+              }
+            }}
           />
           {!item.withdrawn && (
             <Enroll
