@@ -293,13 +293,13 @@ export function LearningProvider({
           }
         };
         utterance.onerror = (event) => {
-          if (
-            current() &&
-            event.error !== "canceled" &&
-            event.error !== "interrupted"
-          ) {
+          if (current()) {
             stop();
-            notify("朗读暂时无法播放，请重试。");
+            notify(
+              event.error === "canceled" || event.error === "interrupted"
+                ? "朗读已中断，请再次点击播放。"
+                : "朗读暂时无法播放，请重试。",
+            );
           }
         };
         window.speechSynthesis.speak(utterance);
