@@ -300,26 +300,18 @@ function LessonContent({
                 const block = lesson.blocks.find((b) => b.id === id)!;
                 if (block.type === "dialogue" || block.type === "article")
                   return null;
+                if (block.type === "exercise")
+                  return (
+                    <div className="lesson-note" key={id}>
+                      <p>{block.promptZh}</p>
+                      <LessonLearningEntry lessonId={lesson.id} demo={demo} />
+                    </div>
+                  );
                 return <TeachingBlock key={id} block={block} lesson={lesson} />;
               })}
           </div>
           <div className="reading-footer">
-            {learning.profile ? (
-              <StartLearning lessonId={lesson.id}>开始或继续学习</StartLearning>
-            ) : (
-              <Link
-                className="primary"
-                to={
-                  demo
-                    ? "/practice/" + lesson.id
-                    : "/login?next=" +
-                      encodeURIComponent("/lessons/" + lesson.id)
-                }
-              >
-                {demo ? "练习" : "登录后开始学习"}
-                <Icon name="arrow" />
-              </Link>
-            )}
+            <LessonLearningEntry lessonId={lesson.id} demo={demo} />
           </div>
         </div>
         <ResponsiveKnowledge
@@ -417,3 +409,28 @@ function LessonContent({
 }
 import { Bookmark } from "../components/bookmark";
 import { Enroll } from "../components/enroll";
+
+function LessonLearningEntry({
+  lessonId,
+  demo,
+}: {
+  lessonId: string;
+  demo: boolean;
+}) {
+  const learning = useLearning();
+  return learning.profile ? (
+    <StartLearning lessonId={lessonId}>开始或继续学习</StartLearning>
+  ) : (
+    <Link
+      className="primary"
+      to={
+        demo
+          ? "/practice/" + lessonId
+          : "/login?next=" + encodeURIComponent("/lessons/" + lessonId)
+      }
+    >
+      {demo ? "练习" : "登录后开始学习"}
+      <Icon name="arrow" />
+    </Link>
+  );
+}

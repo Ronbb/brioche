@@ -1,10 +1,12 @@
 import type { Block } from "@brioche/contracts/Block";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
-import { Link } from "react-router";
 import { useLearning } from "./learning";
 import { Illustration, illustration } from "./illustration";
 
-type TeachingBlock = Exclude<Block, { type: "dialogue" | "article" }>;
+type TeachingBlock = Exclude<
+  Block,
+  { type: "dialogue" | "article" | "exercise" }
+>;
 export function TeachingBlock({
   block,
   lesson,
@@ -99,12 +101,6 @@ export function TeachingBlock({
             );
           })}
         </>
-      );
-    case "exercise":
-      return (
-        <Link className="text-button" to={"/practice/" + lesson.id}>
-          {block.promptZh}
-        </Link>
       );
     case "habit":
       return (

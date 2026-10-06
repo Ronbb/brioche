@@ -173,3 +173,50 @@ test("signed-in legacy review redirects to the private queue and forwards only i
     authenticated = false;
   }
 });
+
+test("exercise referenced by explore uses the real learning entry in production", async () => {
+  const originalSteps = lesson.steps;
+  const exercise = lesson.blocks.find((block) => block.type === "exercise");
+  lesson.steps = [
+    ...originalSteps,
+    {
+      id: "explore-exercise",
+      kind: "explore",
+      titleZh: "表达练习",
+      blockIds: [exercise.id],
+    },
+  ];
+  requests.length = 0;
+  try {
+    fixture = false;
+    let response = await request(`/lessons/${lesson.id}`);
+    assert.equal(response.status, 200);
+    let html = await response.text();
+    assert.ok(
+      !html.includes(`href="/practice/${lesson.id}"`),
+      "production exercise must not link back through the legacy redirect",
+    );
+    assert.ok(
+      html.includes(encodeURIComponent(`/lessons/${lesson.id}`)),
+      "anonymous entry preserves the lesson after login",
+    );
+    authenticated = true;
+    response = await request(`/lessons/${lesson.id}`);
+    assert.equal(response.status, 200);
+    html = await response.text();
+    assert.ok(!html.includes(`href="/practice/${lesson.id}"`));
+    assert.ok(html.includes("开始或继续学习"));
+    authenticated = false;
+    fixture = true;
+    response = await request(`/lessons/${lesson.id}`);
+    assert.equal(response.status, 200);
+    assert.ok(
+      (await response.text()).includes(`href="/practice/${lesson.id}"`),
+    );
+    assert.ok(requests.every((entry) => entry.method === "GET"));
+  } finally {
+    lesson.steps = originalSteps;
+    authenticated = false;
+    fixture = false;
+  }
+});
