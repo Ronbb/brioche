@@ -586,3 +586,11 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 作者预览交互进展（2026-10-06）：隔离 PostgreSQL/API/Web 的 operator 草稿预览，合法地在两个步骤复用同一正文块，实际复现两个 knowledge-title ID 重复，第二个弹窗的 aria-labelledby 解析到第一个空标题，辅助树名称退化为整段内容。ReadingBlock 改为 React useId 实例标题，SSR/客户端关联稳定；第二个弹窗现在仅名为 baguette，全页无重复 ID，modal 初始焦点在关闭按钮、Escape 返回原词按钮。作者预览明确关闭 personalActions，不渲染收藏/加入复习组件；仍可查看与朗读，并保留三类判分预览。实际 operator 草稿题目判分后，数据库 learning_sessions/exercise_attempts/review_cards/saved_items 均为零；未发布草稿和测试素材只在隔离库。另建 synthetic reviewed 对照课程并在隔离库激活，正常账号学习页保留操作，实际收藏/加入复习各产生一条记录，未产生题目尝试。320/390/900px 弹窗在视口内、无横向溢出，390px 截图已查看，reduce 的动画 none/过渡 0s；TS 7、17 项 Web 测试和 SSR/client build 通过。专用浏览器、两个 QA 服务和临时 PostgreSQL 已清理，常用 API 健康 200。该检查不代表真实屏幕阅读器或 iPhone 验收，全部课程人工审校/录音与生产验收继续待完成。
 
 练习反馈与重试进展（2026-10-06）：隔离 PostgreSQL/API/真实账号学习页复现确认后焦点落 BODY。ExerciseEditor 在本次提交确认后聚焦 feedback（tabIndex=-1），重试后聚焦当前题目的答案控件；初始已保存结果与外部最新记录不主动抢焦点。确认保存的恢复通知也可触发反馈焦点，完整恢复组合仍待验收。继续实测发现结果的 type=button 重试按钮在状态更新时被 React 复用为默认提交按钮，点击重试实际产生额外尝试。现为 retry/submit 使用不同 key，提交按钮显式 type=submit；新 DOM 节点避免浏览器默认动作把重试当成提交。实际键盘选择、填空、排序各自确认后焦点在该题反馈；重试分别回到 radio、保留 une 的 input、已排序语块按钮。修复前重试试验累计 4 次尝试；修复后重试保持 4，明确提交错误选择增至 5、明确提交填空增至 6、明确提交排序增至 7，各类后续重试不新增。作者草稿另合法复用填空块，两个 input 改 React useId 独立关联标签，DOM 无重复 ID；第二题实际预览判分焦点正确，重试回到第二 input，fetch 计数从 1 保持 1，数据库尝试仍为 7。320/390px 无溢出，390px 聚焦反馈截图已查看；TS 7、17 项 Web 测试与最终 SSR/client build 通过。专用浏览器、3002/5177 两个服务、临时 PostgreSQL 已清理，常用 API 健康 200。未发布正式内容；会话失效/请求失败更多组合、辅助技术/真实 iPhone、人工审校与生产验收继续待推进。
+
+## 长词响应式与减少动态效果回归（2026-10-06）
+
+独立 Chromium/Vite 装配使用实际 Lesson、Learning、Reviews、Profile 和 ExerciseEditor 组件，合成课程/身份、受控 HTTP/TTS，不连接用户常用浏览器或数据库。加入长法语词 anticonstitutionnellement、长标题、38 字符昵称及三类题目边界数据，仅作为技术压力样例，不作为 A1 教学内容。修复前 320px 对话词按钮从 x=78 延伸至 321.625；修复阅读词按钮后，学习页标题文字仍使 document.scrollWidth=372（视口 320），元素盒边界并未显示该文字溢出。现在标题、单词、选择标签、填空题句、排序词块和昵称按可用宽度换行，保留完整词按钮/词块及原始点击、朗读与答案值。
+
+新增持久浏览器回归检查 320/390/768/1440px：等待页面有限动画结束、确认实际组件已显示，分别核对控件盒、文字 Range、父容器与视口边界及文档宽度，避免将 overflow:hidden 的裁剪误判为通过。对话/短文切换保留键盘操作；长词 Enter 仍完整交给受控 TTS，320px 排序词块 Enter 移入句子后仍在视口内。另启用浏览器 prefers-reduced-motion，原生 Enter 展开实际复习卡片，确认 document.getAnimations() 为零、transitionDuration=0s，然后恢复测试会话媒体设置。
+
+最终全 22 项 Chromium 回归通过（295.96s），27 项 Web、6 项 SSR、TS7 类型检查与 client/SSR 生产构建通过；测试自动关闭独立浏览器和随机端口。此证据覆盖组件装配，不冒充完整生产页面壳、真实 iPhone、安全区/系统键盘、法语系统声音或辅助技术验收。完整教学审校、录音、设备与公网生产验收仍待完成。固定前一提交 68a361d 的远端 Check 37439244244 已实际读取为 completed/success；本次提交的远端结果须单独确认。

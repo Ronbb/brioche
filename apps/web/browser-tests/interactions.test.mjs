@@ -1260,3 +1260,121 @@ test("native fill-blank input bounds UTF-16 units and submits the exact text wit
     text: "e\u0301",
   });
 });
+
+test("responsive content keeps long words and controls inside the viewport", async () => {
+  const selectors =
+    ".lesson-header h1,.sentence .word,.practice-option span,.practice-sentence,.order-bank button,.order-answer button,.learning-step-heading h2,.review-expression,.profile-summary h2";
+  for (const kind of [
+    "reading",
+    "session",
+    "reviews",
+    "profile",
+    "text-limit",
+  ]) {
+    await open(kind + "&stress=1");
+    await browser(
+      "wait",
+      kind === "profile"
+        ? ".profile-summary h2"
+        : kind === "reviews"
+          ? ".review-expression"
+          : kind === "text-limit"
+            ? ".order-bank button"
+            : ".sentence .word",
+    );
+    for (const width of [320, 390, 768, 1440]) {
+      await browser("set", "viewport", String(width), "844");
+      await browser(
+        "wait",
+        "--fn",
+        "document.getAnimations().every(a=>a.playState!=='running'||!Number.isFinite(a.effect.getComputedTiming().endTime))",
+      );
+      const overflow = await evaluate(`(() => {
+        const nodes = [...document.querySelectorAll(${JSON.stringify(selectors)})];
+        return nodes.filter(e => e.getClientRects().length).flatMap(e => {
+          const r = e.getBoundingClientRect();
+          const range = document.createRange();
+          range.selectNodeContents(e);
+          const text = range.getBoundingClientRect();
+          const parent = e.parentElement.getBoundingClientRect();
+          return Math.min(r.left,text.left) < Math.max(0,parent.left) - 1 || Math.max(r.right,text.right) > Math.min(innerWidth,parent.right) + 1 ? [{text:e.textContent,left:r.left,right:r.right,textRight:text.right,parentLeft:parent.left,parentRight:parent.right}] : [];
+        });
+      })()`);
+      assert.deepEqual(overflow, [], kind + " at " + width + "px");
+      const documentBounds = await evaluate(
+        `({width:document.documentElement.scrollWidth,viewport:innerWidth,overflow:[...document.querySelectorAll('main *')].filter(e=>e.getClientRects().length && e.getBoundingClientRect().right > innerWidth + 1).map(e=>({tag:e.tagName,cls:e.className,text:e.textContent.slice(0,100),right:e.getBoundingClientRect().right})).slice(0,12)})`,
+      );
+      assert.ok(
+        documentBounds.width <= documentBounds.viewport,
+        kind +
+          " document at " +
+          width +
+          "px: " +
+          JSON.stringify(documentBounds),
+      );
+      if (kind === "reading") {
+        await browser("focus", "[aria-selected=true]");
+        await press("ArrowRight");
+        assert.equal(
+          await evaluate("document.querySelectorAll('.speaker').length"),
+          0,
+        );
+        assert.equal(
+          await evaluate(
+            "[...document.querySelectorAll('.sentence .word')].every(e=>{const r=e.getBoundingClientRect(),p=e.parentElement.getBoundingClientRect();return r.left>=p.left-1&&r.right<=p.right+1&&r.right<=innerWidth+1})",
+          ),
+          true,
+          "article at " + width + "px",
+        );
+        await press("Home");
+      }
+    }
+    if (kind === "reading") {
+      await browser("focus", ".sentence .word");
+      await press("Enter");
+      await browser("wait", "--fn", "qa.playback==='playing'");
+      assert.equal(
+        await evaluate("qa.spoken.at(-1)"),
+        "anticonstitutionnellement",
+      );
+    }
+  }
+  await browser("set", "viewport", "320", "844");
+  await browser("focus", ".order-bank button");
+  await press("Enter");
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.order-answer button').textContent",
+    ),
+    "anticonstitutionnellement",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.order-answer button').getBoundingClientRect().right<=innerWidth",
+    ),
+    true,
+  );
+});
+
+test("reduced motion disables card expansion animations", async () => {
+  await browser("set", "media", "light", "reduced-motion");
+  try {
+    await open("reviews");
+    assert.equal(
+      await evaluate("matchMedia('(prefers-reduced-motion: reduce)').matches"),
+      true,
+    );
+    await browser("focus", ".review-flashcard");
+    await press("Enter");
+    await browser("wait", ".review-ratings");
+    assert.equal(await evaluate("document.getAnimations().length"), 0);
+    assert.equal(
+      await evaluate(
+        "getComputedStyle(document.querySelector('.review-flashcard')).transitionDuration",
+      ),
+      "0s",
+    );
+  } finally {
+    await browser("set", "media", "light");
+  }
+});

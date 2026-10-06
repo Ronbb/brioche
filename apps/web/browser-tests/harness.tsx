@@ -28,6 +28,17 @@ import type { LearningState } from "@brioche/contracts/LearningState";
 import type { UserProfile } from "@brioche/contracts/UserProfile";
 import "../app/styles/app.css";
 
+const stress = new URL(location.href).searchParams.has("stress");
+if (stress) {
+  lesson.title.fr = "Une conversation autour du mot anticonstitutionnellement";
+  for (const block of lesson.blocks) {
+    if (block.type === "dialogue")
+      block.turns[0].segments[0].text = "anticonstitutionnellement";
+    if (block.type === "article")
+      block.paragraphs[0].segments[0].text = "anticonstitutionnellement";
+  }
+}
+
 const qa = {
   ready: false,
   writes: [] as { lessonId: string; idempotencyKey: string }[],
@@ -263,7 +274,7 @@ function ProfileHarness() {
   const [user, setUser] = useState<UserProfile>({
     id: "account-a",
     email: "a@example.test",
-    displayName: "Alice",
+    displayName: stress ? "LearnerWithASingleLongNameWithoutSpaces" : "Alice",
     role: "learner",
     version: 1,
     settings: {
@@ -359,6 +370,7 @@ const reviewQueue: ReviewQueue = {
   timeZone: "Asia/Shanghai",
 };
 qa.reviewFixture = reviewQueue;
+if (stress) reviewQueue.items[0].vocabulary.lemma = "anticonstitutionnellement";
 const reviewUser: UserProfile = {
   id: "qa-account",
   email: "qa@example.test",
@@ -527,7 +539,7 @@ function TextLimitHarness({ hintText = "边界测试" }: { hintText?: string }) 
             id: "text-limit",
             exerciseType: "fill-blank",
             promptZh: "输入表达",
-            templateFr: "___",
+            templateFr: stress ? "anticonstitutionnellement ___" : "___",
             hintZh: hintText,
           }}
           hinted={hinted}
@@ -541,6 +553,48 @@ function TextLimitHarness({ hintText = "边界测试" }: { hintText?: string }) 
             qa.textAnswers.push(answer);
           }}
         />
+        {stress && (
+          <ExerciseEditor
+            block={{
+              type: "exercise",
+              id: "long-choice",
+              exerciseType: "single-choice",
+              promptZh: "选择表达",
+              options: [
+                { id: "long", text: "anticonstitutionnellement" },
+                { id: "short", text: "bonjour" },
+              ],
+            }}
+            hinted={false}
+            blocked={false}
+            completed={false}
+            hint={() => {}}
+            submit={async (answer) => {
+              qa.textAnswers.push(answer);
+            }}
+          />
+        )}
+        {stress && (
+          <ExerciseEditor
+            block={{
+              type: "exercise",
+              id: "long-order",
+              exerciseType: "order",
+              promptZh: "排列表达",
+              tokens: [
+                { id: "long", text: "anticonstitutionnellement" },
+                { id: "short", text: "bonjour" },
+              ],
+            }}
+            hinted={false}
+            blocked={false}
+            completed={false}
+            hint={() => {}}
+            submit={async (answer) => {
+              qa.textAnswers.push(answer);
+            }}
+          />
+        )}
       </main>
     </LearningProvider>
   );
