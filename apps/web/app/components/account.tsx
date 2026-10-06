@@ -5,6 +5,7 @@ import type { LoginRequest } from "@brioche/contracts/LoginRequest";
 import type { AcceptInviteRequest } from "@brioche/contracts/AcceptInviteRequest";
 import type { ResetPasswordRequest } from "@brioche/contracts/ResetPasswordRequest";
 import { authRequest } from "../lib/auth.client";
+import { accountReturnPath } from "../lib/account-return";
 import { useLearning } from "./learning";
 import { Icon } from "./icon";
 export function Account({
@@ -68,13 +69,7 @@ export function Account({
           mode === "login"
             ? new URLSearchParams(window.location.search).get("next")
             : null;
-        window.location.assign(
-          next &&
-            (["/reviews", "/library", "/review-history"].includes(next) ||
-              /^\/(?:learning|lessons)\/[a-zA-Z0-9_-]+$/.test(next))
-            ? next
-            : "/profile",
-        );
+        window.location.assign(accountReturnPath(next));
       }
     } catch (e) {
       setError(
