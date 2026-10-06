@@ -1,6 +1,6 @@
 # A2 课程草稿包
 
-状态：2026-10-06，「周末与出行」「一起生活」「办理日常事务」「身体与状态」四个单元十六课作者草稿，均 `editorial.status=draft`。未导入、未人工审校、无正式录音，未 staging 或激活正式目录；其余两个 A2 规划单元继续待制作。
+状态：2026-10-06，「周末与出行」「一起生活」「办理日常事务」「身体与状态」「工作学习与经历」五个单元二十课作者草稿，均 `editorial.status=draft`。未导入、未人工审校、无正式录音，未 staging 或激活正式目录；最后一个 A2 规划单元「表达与协商」继续待制作。
 
 | 顺序 | 作者源文件 | 正文 | 交际目标 | 正文词数（空白分词） |
 | --- | --- | --- | --- | --- |
@@ -20,6 +20,10 @@
 | 14 | [预约就诊并确认信息](a2-health-book-consultation.lesson.json) | 预约电话，8 轮 | 礼貌请求、Est-ce que、时刻确认 | 209 |
 | 15 | [表达情绪与状态](a2-health-talk-feelings.lesson.json) | 感受消息，6 段 | être + 形容词、阴阳性配合、parce que | 175 |
 | 16 | [读懂接待处的简单指引](a2-health-read-instructions.lesson.json) | 接待说明，6 段 | vous 命令式、否定指令、等候与填写区域 | 173 |
+| 17 | [简述一次学习实践经历](a2-work-describe-experience.lesson.json) | 经历短文，6 段 | avoir 复合过去时、apprendre à、具体任务 | 166 |
+| 18 | [安排一次协作](a2-work-plan-collaboration.lesson.json) | 分工对话，8 轮 | si + 现在时条件、近期将来、文件与时刻 | 210 |
+| 19 | [说明项目进度](a2-work-report-progress.lesson.json) | 进度消息，6 段 | déjà / pas encore、已完成与计划区分 | 171 |
+| 20 | [讲述昨天的一天](a2-work-tell-yesterday.lesson.json) | 一天回顾，7 段 | être 复合过去时、主语配合、叙事顺序 | 191 |
 
 这四课是独立的虚构场景，不是一份贯穿四课的真实行程：住宿日期、周末往返时刻与一天出游经历分别供练习。每课有八个目标词汇/语块、两个语法点、解释和有范围的场景说明、单选/填空/排序各一题、可选生活任务与回顾。日期未指定年份，住宿正文星期几是虚构日历设定；价格、票程、直达、早餐与座位不是市场信息或运营方条款。A1 知识点复用原有固定条目，新增知识跨课使用同一 ID 和释义。
 
@@ -30,6 +34,8 @@
 [三个 A2 单元的联合目录](catalog.three-units.release.json) 使用独立 ID `a1-a2-three-units-draft-v1`，包含 A1 24 + A2 12 课、108 道题；前两份联合目录保持不变。「办理日常事务」为独立的虚构社区中心/图书馆情境，不代表真实机构流程或行政规则。日期未指定年份；“五个工作日”仅为练习设定，没有给出完整工作日历，不要求计算实际截止日期。表格采用短文说明，明确字段含义与用途，不新增交互式个人信息收集。
 
 [四个 A2 单元的联合目录](catalog.four-units.release.json) 使用独立 ID `a1-a2-four-units-draft-v1`，包含 A1 24 + A2 16 课、120 道题，保留前三份目录。「身体与状态」各课是独立语言场景，目标是描述感觉、核对预约与理解接待文字；不解释症状原因或严重程度，不给出诊断、治疗、用药、分诊或等待时限判断。情绪为主观表达，接待指令只涉及报到/填表/等候的虚构流程；习惯任务使用虚构人物，不要求提供真实健康资料。
+
+[五个 A2 单元的联合目录](catalog.five-units.release.json) 使用独立 ID `a1-a2-five-units-draft-v1`，包含 A1 24 + A2 20 课、132 道题，之前目录保持不变。「工作学习与经历」用虚构图书馆项目讲经历、分工、进度和昨天的活动；四课可独立阅读，没有要求同一篇里的相对日期与另一篇强行对应。练习只评价所述事实与目标表达，不评价劳动效率或要求提供真实雇主/项目资料。
 
 ## 素材与角色
 
@@ -43,6 +49,8 @@
 
 「身体与状态」固定 Camille/Luc revision 1。朋友交谈与情绪消息复用 `art-home-morning`；预约与接待说明使用新原创 [接待室 SVG](assets/clinic-reception.svg)，引用 `art-clinic-reception` revision 1。其实际 SHA-256、640×470 尺寸、来源和替代文本见 [A2 素材清单](scene-assets.bundle.json)，仍 planned/rightsConfirmed=false；导入来源目录为 `docs/content/a2/assets`。画面为通用虚构工作人员与等候椅，不声称某一角色快照的肖像或真实机构标识。没有外部位图/字体；没有放入 Web public 或绕过登记。独立离线浏览器图像展示页检查 320/390/900px 无溢出、按比例缩放，390px 截图已查看；不能代替逐课 operator 预览或真实设备验收。
 
+「工作学习与经历」固定 Camille/Luc revision 1；协作对话前介绍两位成员，三篇短文由 Camille 叙述。复用 `art-home-morning` revision 1，表示在家准备和整理消息的场景，不把室内图宣称为图书馆现场。素材清单、授权/登记与 operator 预览边界沿用 A1 室内图记录，没有重复登记或新增公共媒体。
+
 ## 检查与发布边界
 
 - 单课：`cargo run -p brioche-server -- check docs/content/a2/<lesson-id>.lesson.json`。
@@ -50,8 +58,9 @@
 - 新联合目录：`cargo run -p brioche-server -- check-release docs/content/a2/catalog.two-units.release.json`。
 - 三单元联合目录：`cargo run -p brioche-server -- check-release docs/content/a2/catalog.three-units.release.json`。
 - 四单元联合目录：`cargo run -p brioche-server -- check-release docs/content/a2/catalog.four-units.release.json`。
+- 五单元联合目录：`cargo run -p brioche-server -- check-release docs/content/a2/catalog.five-units.release.json`。
 - 新接待图：`cargo run -p brioche-server -- asset-check docs/content/a2/assets/clinic-reception.svg image/svg+xml`。
-- 全包：`cargo test -p brioche-server --test curriculum`；十项检查核对两级目录及十个单元顺序、固定 revision/角色、A1/A2 共享知识一致、公开投影剥离私有字段，并使用正式 Grader 核对 120 道题的正确和合法错误答案；十六课 A2 正文检查 120–250 个空白分隔词和预期正文形式，A1/A2 两份素材清单核对真实哈希与尺寸。
+- 全包：`cargo test -p brioche-server --test curriculum`；十一项检查核对两级目录及十一个单元顺序、固定 revision/角色、A1/A2 共享知识一致、公开投影剥离私有字段，并使用正式 Grader 核对 132 道题的正确和合法错误答案；二十课 A2 正文检查 120–250 个空白分隔词和预期正文形式，A1/A2 两份素材清单核对真实哈希与尺寸。
 
 作者文件含 `serverOnly.grading`，不能直接发送给公共 API 或作为静态资源。正式预览需要先登记素材，再导入课程，由 operator 查看固定版本；当前不宣称完成四课的浏览器预览或教学审校。人工法语、中文译文、难度、文化范围、练习有效性、插图适配与录音仍待审校。正式发布继续受 reviewed 元数据、注册快照、授权与实际文件校验约束。
 
@@ -69,11 +78,16 @@
 - [OQLF parce que 与 puisque](https://vitrinelinguistique.oqlf.gouv.qc.ca/23501/la-syntaxe/les-conjonctions/emploi-de-parce-que-et-de-puisque)：核对 parce que 的原因表达与省音，2026-10-06。
 - [Larousse mal](https://www.larousse.fr/dictionnaires/francais/mal/48790)：核对 avoir mal à 与身体部位搭配，2026-10-06。
 - [OQLF 命令式术语](https://vitrinelinguistique.oqlf.gouv.qc.ca/fiche-gdt/fiche/26559572/imperatif)：核对显式主语缺省与人称范围，2026-10-06。
+- [Larousse apprendre 变位](https://www.larousse.fr/conjugaison/francais/apprendre/506)：核对 avoir + appris，2026-10-06。
+- [OQLF 现在时的特殊用法](https://vitrinelinguistique.oqlf.gouv.qc.ca/24200/la-grammaire/le-verbe/temps-grammaticaux/present/valeurs-particulieres-du-present-de-lindicatif)：核对 si 条件从句中的现在时及结果句的现在/将来表达，2026-10-06。
+- [OQLF être 过去分词配合](https://vitrinelinguistique.oqlf.gouv.qc.ca/21547/la-grammaire/le-verbe/accord-du-participe-passe/avec-lauxiliaire-etre/accord-du-participe-passe-employe-avec-lauxiliaire-etre)：核对本课非代动词 passé composé 的主语配合，2026-10-06。
 
 「一起生活」待审校项：频率副词限定在本课简单现在时示例；ne faut pas 在规则语境中表示不应做，不能误译成“不必”。形容词比较仍保留阴阳性配合（lumineux / lumineuse），不把所有形容词比较都套用 plus。dont、celle、y、en 等正文支持表达有随文解释，仍需人工确认阅读负担和是否需要进一步拆分练习。住房比较的理解题使用明确给出的两项虚构金额，不评判学习者应选择哪套住房。
 
 「办理日常事务」待审校项：Pouvez-vous 为礼貌请求倒装，puis-je、a-t-elle 等正式问法先随文理解；je l’ai utilisée 的阴性直接宾语配合有单句说明，尚未系统教学。pour + 原形表示目的，parce que + 句子说明原因，练习分别验证。Nom 在本表格指姓，不扩大为所有语境；adresse électronique 与住址区分。复用词条保留原知识 ID/释义，借阅 carte、表格 champ 和材料 pièces 的语境义另有说明，避免与其他课程词义混淆。
 
 「身体与状态」待审校项：depuis + 现在时表达持续到现在；au dos 与 à la tête 的介词/冠词配合；fatiguée、stressée、inquiète、contente 的阴性形式。命令式 Présentez-vous 中 vous 是反身代词，Lisez 为不规则形式，不能套用 -ez。pour que vous puissiez、venue、ni 与代词支持说明仍需人工确认是否超出阅读负担；预约理解题只核对所述时刻，不要求学习者判断是否应该等待。正式法语、中文、难度、插图适配与健康表达范围审校仍待完成。
+
+「工作学习与经历」待审校项：appris、accueilli、relu 等不规则过去分词；depuis 不用于本单元已结束的实践时长；si 条件用法与间接疑问的 si 区分。arrivée / rentrée 与 Camille 配合，arrivé 与 Luc 配合，partis 指两人；不是所有移动动词都使用 être，rentrer 的带直接宾语用法也不能套用本课规则。n’était pas、ne connaissais pas、vérifiait 是过去背景的未完成过去时，有支持解释但尚未系统教学，仍需人工确认是否降低阅读难度或增补练习。déjà 与 pas encore 练习须保持书单完成、摘要尚未发送的事实区分。
 
 本单元不是完整过去时教程：prendre → pris、faire → fait 作为正文例形；明确不能把全部动词的助动词都设为 avoir。pas de souvenirs 的数量宾语否定和 comprend-il 的正式提问有随文解释，系统练习后续补充。待人工审校确认这些支持说明是否足够、八轮较长电话/售票正文是否适合目标学习者。

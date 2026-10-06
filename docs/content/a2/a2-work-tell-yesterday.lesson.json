@@ -1,0 +1,518 @@
+{
+  "schemaVersion": "1.0",
+  "id": "a2-work-tell-yesterday",
+  "revision": 1,
+  "levelId": "a2",
+  "unitId": "a2-work-study-experience",
+  "title": {
+    "fr": "Hier, une journée de travail",
+    "zh": "讲述昨天的一天"
+  },
+  "summaryZh": "按顺序回顾到达、工作、离开和回家的动作，辨认两种助动词。",
+  "estimatedMinutes": 16,
+  "objectivesZh": [
+    "按顺序讲述昨天的动作",
+    "识别本课用 être 的过去表达",
+    "核对过去分词与人物的配合"
+  ],
+  "knowledge": {
+    "vocabulary": [
+      {
+        "id": "word-hier",
+        "lemma": "hier",
+        "partOfSpeech": "adverb",
+        "meaningZh": "昨天",
+        "noteZh": "以说话日为参照。"
+      },
+      {
+        "id": "word-arriver",
+        "lemma": "arriver",
+        "partOfSpeech": "verb",
+        "meaningZh": "到达",
+        "noteZh": "本课 je suis arrivée 使用 être，Camille 为女性。"
+      },
+      {
+        "id": "word-partir",
+        "lemma": "partir",
+        "partOfSpeech": "verb",
+        "meaningZh": "出发；离开",
+        "noteZh": "le train part 是第三人称单数现在时。"
+      },
+      {
+        "id": "word-rentrer",
+        "lemma": "rentrer",
+        "partOfSpeech": "verb",
+        "meaningZh": "回家；返回",
+        "noteZh": "本课不及物 rentrer 使用 être；其他带宾语用法不能一律套用。"
+      },
+      {
+        "id": "word-rencontrer",
+        "lemma": "rencontrer",
+        "partOfSpeech": "verb",
+        "meaningZh": "见到；遇见",
+        "noteZh": "j’ai rencontré 使用 avoir，本课直接接见到的人。"
+      },
+      {
+        "id": "word-prendre-voyage",
+        "lemma": "prendre",
+        "partOfSpeech": "verb",
+        "meaningZh": "乘坐；拿取",
+        "noteZh": "本课 j’ai pris le train 表示乘火车，pris 是过去分词。"
+      },
+      {
+        "id": "word-pause",
+        "lemma": "pause",
+        "partOfSpeech": "noun",
+        "meaningZh": "休息；暂停",
+        "noteZh": "faire une pause 表示休息一会儿。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-document",
+        "lemma": "document",
+        "partOfSpeech": "noun",
+        "meaningZh": "文件；资料",
+        "noteZh": "搭配冠词学习 document。",
+        "gender": "masculine"
+      }
+    ],
+    "grammar": [
+      {
+        "id": "grammar-a2-past-etre-movement",
+        "titleZh": "être + 过去分词：到达、离开、回家",
+        "bodyZh": "本课 arriver、partir、不带直接宾语的 rentrer 在复合过去时使用 être。过去分词与主语配合：Camille 说 je suis arrivée、rentrée；Luc 说 il est arrivé；两人混合性别用 nous sommes partis。不是所有移动或动作动词都用 être，如 prendre、rencontrer 在本课用 avoir。",
+        "examples": [
+          {
+            "fr": "Je suis rentrée à la maison.",
+            "zh": "我回到了家。"
+          }
+        ]
+      },
+      {
+        "id": "grammar-a2-sequence",
+        "titleZh": "D’abord, ensuite, enfin：组织顺序",
+        "bodyZh": "d’abord 引出首先做的事，ensuite 引出下一步，enfin 表示最后。本课用这些连接词组织计划；它们本身不决定动词时态。",
+        "examples": [
+          {
+            "fr": "D’abord, nous allons visiter le musée.",
+            "zh": "首先，我们打算参观博物馆。"
+          }
+        ]
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "id": "scene-main",
+      "type": "scene",
+      "placeZh": "Camille 回家后整理昨天的活动",
+      "situationZh": "按顺序回顾到达、工作、离开和回家的动作，辨认两种助动词。",
+      "illustrationId": "art-home-morning"
+    },
+    {
+      "id": "article-main",
+      "type": "article",
+      "titleZh": "讲述昨天的一天",
+      "narratorId": "character-camille",
+      "paragraphs": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Hier",
+              "vocabularyId": "word-hier"
+            },
+            {
+              "id": "segment-1-2",
+              "text": ", j’ai "
+            },
+            {
+              "id": "segment-1-3",
+              "text": "pris",
+              "vocabularyId": "word-prendre-voyage"
+            },
+            {
+              "id": "segment-1-4",
+              "text": " le bus pour aller au centre où nous préparons notre projet. Je "
+            },
+            {
+              "id": "segment-1-5",
+              "text": "suis arrivée",
+              "vocabularyId": "word-arriver",
+              "grammarId": "grammar-a2-past-etre-movement"
+            },
+            {
+              "id": "segment-1-6",
+              "text": " à neuf heures, avec mon sac et les "
+            },
+            {
+              "id": "segment-1-7",
+              "text": "documents",
+              "vocabularyId": "word-document"
+            },
+            {
+              "id": "segment-1-8",
+              "text": " nécessaires pour la journée."
+            }
+          ],
+          "translationZh": "昨天，我乘公交去我们准备项目的中心。我九点到达，带着包和当天所需文件。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "D’abord",
+              "grammarId": "grammar-a2-sequence"
+            },
+            {
+              "id": "segment-2-2",
+              "text": ", j’ai "
+            },
+            {
+              "id": "segment-2-3",
+              "text": "rencontré",
+              "vocabularyId": "word-rencontrer"
+            },
+            {
+              "id": "segment-2-4",
+              "text": " Luc devant la salle. Il est arrivé quelques minutes après moi. Nous avons regardé le programme et choisi la première tâche à faire ensemble."
+            }
+          ],
+          "translationZh": "首先，我在房间前见到 Luc。他比我晚到几分钟。我们看了安排，选了第一项一起做的任务。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Nous avons préparé la liste des livres et vérifié les informations sur les pages. J’ai posé deux questions quand une description n’était pas assez claire pour moi."
+            }
+          ],
+          "translationZh": "我们准备书单，核对页面信息。有一段介绍对我不够清楚时，我问了两个问题。"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Ensuite",
+              "grammarId": "grammar-a2-sequence"
+            },
+            {
+              "id": "segment-4-2",
+              "text": ", nous avons fait une "
+            },
+            {
+              "id": "segment-4-3",
+              "text": "pause",
+              "vocabularyId": "word-pause"
+            },
+            {
+              "id": "segment-4-4",
+              "text": " à midi. Nous avons mangé dans une petite salle et parlé des activités prévues pour l’après-midi, sans modifier le programme."
+            }
+          ],
+          "translationZh": "然后，我们中午休息。我们在一个小房间吃饭，谈下午计划的活动，没有改变安排。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Après le repas, j’ai relu les phrases pendant que Luc vérifiait les images. Nous avons noté les questions dans un fichier pour la prochaine réunion."
+            }
+          ],
+          "translationZh": "饭后，我重读句子，Luc 核对图片。我们把下次会议的问题记在文件里。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Nous "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "sommes partis",
+              "vocabularyId": "word-partir"
+            },
+            {
+              "id": "segment-6-3",
+              "text": " ensemble à dix-sept heures. Luc a pris le métro et j’ai pris le bus. Nous avons confirmé le moment de notre prochaine rencontre avant de nous séparer."
+            }
+          ],
+          "translationZh": "我们十七点一起离开。Luc 乘地铁，我乘公交。分别前，我们确认下次见面的时间。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Enfin",
+              "grammarId": "grammar-a2-sequence"
+            },
+            {
+              "id": "segment-7-2",
+              "text": ", je "
+            },
+            {
+              "id": "segment-7-3",
+              "text": "suis rentrée",
+              "vocabularyId": "word-rentrer"
+            },
+            {
+              "id": "segment-7-4",
+              "text": " à la maison et j’ai envoyé un court message à l’équipe. J’ai décrit les tâches terminées et les points à reprendre aujourd’hui."
+            }
+          ],
+          "translationZh": "最后，我回到家，给团队发了简短消息。我描述已完成任务和今天需要继续处理的事项。"
+        }
+      ]
+    },
+    {
+      "id": "explanation-main",
+      "type": "explanation",
+      "titleZh": "这句话如何使用",
+      "bodyZh": "je suis arrivée、je suis rentrée 的主语为 Camille，使用阴性过去分词；il est arrivé 的 Luc 为阳性，nous sommes partis 指 Camille 和 Luc。j’ai pris、j’ai rencontré 用 avoir，不因动作或移动含义改成 être。n’était pas、vérifiait 为过去背景的未完成过去时，本课随文理解。",
+      "targets": [
+        {
+          "blockId": "article-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-5"
+        },
+        {
+          "blockId": "article-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1"
+        }
+      ]
+    },
+    {
+      "id": "culture-context",
+      "type": "culture",
+      "titleZh": "场景中的细节",
+      "bodyZh": "交通、时间与任务是个人虚构一天，不代表一般作息或法国工作流程。",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。"
+    },
+    {
+      "id": "vocabulary-targets",
+      "type": "vocabulary",
+      "entryIds": [
+        "word-hier",
+        "word-arriver",
+        "word-partir",
+        "word-rentrer",
+        "word-rencontrer",
+        "word-prendre-voyage",
+        "word-pause",
+        "word-document"
+      ]
+    },
+    {
+      "id": "grammar-targets",
+      "type": "grammar",
+      "entryIds": [
+        "grammar-a2-past-etre-movement",
+        "grammar-a2-sequence"
+      ]
+    },
+    {
+      "id": "exercise-comprehension",
+      "type": "exercise",
+      "exerciseType": "single-choice",
+      "promptZh": "Camille 和 Luc 几点一起离开中心？",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "九点"
+        },
+        {
+          "id": "correct",
+          "text": "十七点"
+        },
+        {
+          "id": "distractor-b",
+          "text": "中午十二点"
+        }
+      ]
+    },
+    {
+      "id": "exercise-fill",
+      "type": "exercise",
+      "exerciseType": "fill-blank",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Camille dit : « Je suis ___ à neuf heures. »",
+      "hintZh": "arriver 的复合过去时用 être；Camille 的阴性单数形式是 arrivée。"
+    },
+    {
+      "id": "exercise-order",
+      "type": "exercise",
+      "exerciseType": "order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "à la maison."
+        },
+        {
+          "id": "token-1",
+          "text": "Je suis"
+        },
+        {
+          "id": "token-2",
+          "text": "rentrée"
+        }
+      ]
+    },
+    {
+      "id": "habit-main",
+      "type": "habit",
+      "taskZh": "为虚构人物写三句昨天的动作，尝试区分 avoir 和本课的 être 表达。",
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。"
+    },
+    {
+      "id": "summary-main",
+      "type": "summary",
+      "takeawaysZh": [
+        "我能按顺序讲述昨天的动作。",
+        "我能识别本课用 être 的过去表达。",
+        "我能核对过去分词与人物的配合。"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景",
+      "blockIds": [
+        "scene-main"
+      ]
+    },
+    {
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段短文",
+      "blockIds": [
+        "article-main"
+      ]
+    },
+    {
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达",
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ]
+    },
+    {
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用",
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ]
+    },
+    {
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常",
+      "blockIds": [
+        "habit-main"
+      ]
+    },
+    {
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课",
+      "blockIds": [
+        "summary-main"
+      ]
+    }
+  ],
+  "completion": {
+    "strategy": "attempt-all",
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ]
+  },
+  "reviewItemIds": [
+    "word-arriver",
+    "word-partir",
+    "word-rentrer"
+  ],
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "kind": "choice",
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：十七点。"
+      },
+      "exercise-fill": {
+        "kind": "text",
+        "accepted": [
+          "arrivée"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "arriver 的复合过去时用 être；Camille 的阴性单数形式是 arrivée。"
+      },
+      "exercise-order": {
+        "kind": "order",
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Je suis rentrée à la maison."
+      }
+    }
+  },
+  "editorial": {
+    "status": "draft",
+    "note": "项目原创课程草稿，未完成人工法语、译文和教学审校。工作实践、项目、协作与日程为虚构语言练习。素材待来源授权确认及登记；无正式录音。审校记录见 docs/content/a2/README.md，禁止直接作为已审校课程发布。"
+  },
+  "assetRefs": [
+    {
+      "assetId": "art-home-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    }
+  ],
+  "cast": [
+    {
+      "characterId": "character-camille",
+      "revision": 1,
+      "displayName": "Camille",
+      "avatarId": "avatar-camille-v1",
+      "speechLocale": "fr-FR"
+    },
+    {
+      "characterId": "character-luc",
+      "revision": 1,
+      "displayName": "Luc",
+      "avatarId": "avatar-luc-v1",
+      "speechLocale": "fr-FR"
+    }
+  ]
+}

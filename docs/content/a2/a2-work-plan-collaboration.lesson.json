@@ -1,0 +1,546 @@
+{
+  "schemaVersion": "1.0",
+  "id": "a2-work-plan-collaboration",
+  "revision": 1,
+  "levelId": "a2",
+  "unitId": "a2-work-study-experience",
+  "title": {
+    "fr": "Préparons le projet ensemble",
+    "zh": "安排一次协作"
+  },
+  "summaryZh": "分配文字和图片任务，确认共享文件及条件成立后的核对安排。",
+  "estimatedMinutes": 16,
+  "objectivesZh": [
+    "商量任务分工",
+    "用 si 表达一个可能条件",
+    "用近期将来说明计划"
+  ],
+  "knowledge": {
+    "vocabulary": [
+      {
+        "id": "word-reunion",
+        "lemma": "réunion",
+        "partOfSpeech": "noun",
+        "meaningZh": "会议",
+        "noteZh": "搭配冠词学习 réunion。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-tache",
+        "lemma": "tâche",
+        "partOfSpeech": "noun",
+        "meaningZh": "任务",
+        "noteZh": "搭配冠词学习 tâche。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-preparer",
+        "lemma": "préparer",
+        "partOfSpeech": "verb",
+        "meaningZh": "准备",
+        "noteZh": "elle prépare 是第三人称单数现在时。"
+      },
+      {
+        "id": "word-partager",
+        "lemma": "partager",
+        "partOfSpeech": "verb",
+        "meaningZh": "分享；分担",
+        "noteZh": "partager les tâches 表示分担任务。"
+      },
+      {
+        "id": "word-fichier",
+        "lemma": "fichier",
+        "partOfSpeech": "noun",
+        "meaningZh": "文件",
+        "noteZh": "本课指共享的电子文档，与 document 的一般资料含义区分。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-ensemble",
+        "lemma": "ensemble",
+        "partOfSpeech": "adverb",
+        "meaningZh": "一起",
+        "noteZh": "本课用于朋友一起活动的安排。"
+      },
+      {
+        "id": "word-disponible",
+        "lemma": "disponible",
+        "partOfSpeech": "adjective",
+        "meaningZh": "可用的；有空的",
+        "noteZh": "本课指可安排的时间。"
+      },
+      {
+        "id": "word-verifier",
+        "lemma": "vérifier",
+        "partOfSpeech": "verb",
+        "meaningZh": "核对；检查",
+        "noteZh": "本课 vérifier les informations 表示核对信息。"
+      }
+    ],
+    "grammar": [
+      {
+        "id": "grammar-a2-si-present-condition",
+        "titleZh": "si + 现在时：商量一个可能条件",
+        "bodyZh": "本课 si 引出尚未确定的条件，使用现在时，如 si tu termines。结果句用现在时 nous pouvons，表示条件成立时可做什么。这里不是过去的假设；不要在这个 si 条件从句中直接使用将来时或条件式。",
+        "examples": [
+          {
+            "fr": "Si tu termines le texte, nous pouvons le relire ensemble.",
+            "zh": "如果你完成文字，我们可以一起重读。"
+          }
+        ]
+      },
+      {
+        "id": "grammar-futur-proche-plan",
+        "titleZh": "aller + 动词原形：表达接下来的计划",
+        "bodyZh": "本课用 aller 的现在时加动词原形表达计划：je vais prendre、elle va retrouver、elles vont marcher。后一个动词保留原形；这里的近期将来是语法名称，不意味着所有用法都有固定的时间上限。",
+        "examples": [
+          {
+            "fr": "Je vais prendre le métro demain.",
+            "zh": "我明天打算乘地铁。"
+          }
+        ]
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "id": "scene-main",
+      "type": "scene",
+      "placeZh": "两位成员在家远程讨论项目",
+      "situationZh": "分配文字和图片任务，确认共享文件及条件成立后的核对安排。",
+      "illustrationId": "art-home-morning"
+    },
+    {
+      "id": "dialogue-main",
+      "type": "dialogue",
+      "titleZh": "安排一次协作",
+      "speakers": [
+        {
+          "id": "speaker-1",
+          "labelZh": "项目成员 Camille",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "avatarId": "avatar-camille-v1"
+        },
+        {
+          "id": "speaker-2",
+          "labelZh": "项目成员 Luc",
+          "characterId": "character-luc",
+          "displayName": "Luc",
+          "avatarId": "avatar-luc-v1"
+        }
+      ],
+      "turns": [
+        {
+          "id": "entry-1",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Pour notre projet, nous devons "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "partager",
+              "vocabularyId": "word-partager"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " les "
+            },
+            {
+              "id": "segment-1-4",
+              "text": "tâches",
+              "vocabularyId": "word-tache"
+            },
+            {
+              "id": "segment-1-5",
+              "text": " avant la prochaine "
+            },
+            {
+              "id": "segment-1-6",
+              "text": "réunion",
+              "vocabularyId": "word-reunion"
+            },
+            {
+              "id": "segment-1-7",
+              "text": ". Je peux préparer le texte, et tu peux choisir les images si cela te convient."
+            }
+          ],
+          "translationZh": "为了项目，下次会议前我们需要分担任务。我可以准备文字，你可以选图片，如果这个安排适合你。"
+        },
+        {
+          "id": "entry-2",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "D’accord. Je "
+            },
+            {
+              "id": "segment-2-2",
+              "text": "vais préparer",
+              "vocabularyId": "word-preparer",
+              "grammarId": "grammar-futur-proche-plan"
+            },
+            {
+              "id": "segment-2-3",
+              "text": " une sélection d’images aujourd’hui. Nous pouvons utiliser un "
+            },
+            {
+              "id": "segment-2-4",
+              "text": "fichier",
+              "vocabularyId": "word-fichier"
+            },
+            {
+              "id": "segment-2-5",
+              "text": " commun pour voir les changements, plutôt que d’envoyer plusieurs versions différentes."
+            }
+          ],
+          "translationZh": "好的。我今天会准备一组图片。我们可以用共享文件查看变化，不发送多个不同版本。"
+        },
+        {
+          "id": "entry-3",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Si tu termines",
+              "grammarId": "grammar-a2-si-present-condition"
+            },
+            {
+              "id": "segment-3-2",
+              "text": " les images avant demain, nous pouvons "
+            },
+            {
+              "id": "segment-3-3",
+              "text": "vérifier",
+              "vocabularyId": "word-verifier"
+            },
+            {
+              "id": "segment-3-4",
+              "text": " la présentation "
+            },
+            {
+              "id": "segment-3-5",
+              "text": "ensemble",
+              "vocabularyId": "word-ensemble"
+            },
+            {
+              "id": "segment-3-6",
+              "text": ". Je vais ajouter mes phrases au fichier ce soir, après mon travail."
+            }
+          ],
+          "translationZh": "如果你明天前完成图片，我们可以一起核对展示稿。我今晚下班后会把句子加到文件里。"
+        },
+        {
+          "id": "entry-4",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Je suis "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "disponible",
+              "vocabularyId": "word-disponible"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " demain à dix-huit heures. Si une image manque, je peux expliquer le problème dans le fichier, sans retarder la préparation de tout le texte."
+            }
+          ],
+          "translationZh": "我明天十八点有空。如果缺一张图，我可以在文件里说明问题，不耽误全部文字的准备。"
+        },
+        {
+          "id": "entry-5",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Très bien. Je vais aussi noter les questions pour notre réunion. Chacun peut lire la liste avant de commencer, afin de savoir ce qui reste à discuter."
+            }
+          ],
+          "translationZh": "很好。我也会记录会议要讨论的问题。每个人开始前可以读清单，知道还有哪些内容要谈。"
+        },
+        {
+          "id": "entry-6",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Si je ne comprends pas une phrase, je te demande une explication dans le même fichier. Comme cela, nous gardons les commentaires au même endroit."
+            }
+          ],
+          "translationZh": "如果不理解一句话，我会在同一文件里问你。这样评论都在同一个地方。"
+        },
+        {
+          "id": "entry-7",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Oui. Demain, nous pouvons relire l’ensemble avant la réunion. Nous devons vérifier les informations et décider ensemble si la présentation est prête à être montrée."
+            }
+          ],
+          "translationZh": "是的。明天开会前我们可以重读全部内容。我们需要核对信息，一起决定展示稿是否可以给别人看。"
+        },
+        {
+          "id": "entry-8",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Cela me convient. Je confirme donc les images pour moi et le texte pour toi. Nous allons regarder les questions demain à dix-huit heures et ajuster les tâches si nécessaire."
+            }
+          ],
+          "translationZh": "我可以。那么确认我做图片、你做文字。我们明天十八点看问题，必要时调整任务。"
+        }
+      ]
+    },
+    {
+      "id": "explanation-main",
+      "type": "explanation",
+      "titleZh": "这句话如何使用",
+      "bodyZh": "si tu termines 使用现在时引出可能条件，后面的 nous pouvons 说明条件成立时的安排。je vais préparer、je vais ajouter 为近期将来计划。最后一轮确认 Luc 做图片、Camille 做文字。afin de 是目的连接词；是否准备好的 si 是间接疑问用法，不能与条件 si 混同。",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2"
+        }
+      ]
+    },
+    {
+      "id": "culture-context",
+      "type": "culture",
+      "titleZh": "场景中的细节",
+      "bodyZh": "任务、共享文件和时刻为虚构协作设定，不是特定公司的工作制度。",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。"
+    },
+    {
+      "id": "vocabulary-targets",
+      "type": "vocabulary",
+      "entryIds": [
+        "word-reunion",
+        "word-tache",
+        "word-preparer",
+        "word-partager",
+        "word-fichier",
+        "word-ensemble",
+        "word-disponible",
+        "word-verifier"
+      ]
+    },
+    {
+      "id": "grammar-targets",
+      "type": "grammar",
+      "entryIds": [
+        "grammar-a2-si-present-condition",
+        "grammar-futur-proche-plan"
+      ]
+    },
+    {
+      "id": "exercise-comprehension",
+      "type": "exercise",
+      "exerciseType": "single-choice",
+      "promptZh": "谁负责准备文字？",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "Luc"
+        },
+        {
+          "id": "correct",
+          "text": "Camille"
+        },
+        {
+          "id": "distractor-b",
+          "text": "还没有分配"
+        }
+      ]
+    },
+    {
+      "id": "exercise-fill",
+      "type": "exercise",
+      "exerciseType": "fill-blank",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Si tu ___ les images, nous pouvons les vérifier.",
+      "hintZh": "terminer 搭配 tu 的现在时为 termines；条件从句使用现在时。"
+    },
+    {
+      "id": "exercise-order",
+      "type": "exercise",
+      "exerciseType": "order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "le relire ensemble."
+        },
+        {
+          "id": "token-1",
+          "text": "Si tu termines le texte,"
+        },
+        {
+          "id": "token-2",
+          "text": "nous pouvons"
+        }
+      ]
+    },
+    {
+      "id": "habit-main",
+      "type": "habit",
+      "taskZh": "给两个虚构成员分配任务，再写一句 si 引出的协作条件。",
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。"
+    },
+    {
+      "id": "summary-main",
+      "type": "summary",
+      "takeawaysZh": [
+        "我能商量任务分工。",
+        "我能用 si 表达一个可能条件。",
+        "我能用近期将来说明计划。"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景",
+      "blockIds": [
+        "scene-main"
+      ]
+    },
+    {
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话",
+      "blockIds": [
+        "dialogue-main"
+      ]
+    },
+    {
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达",
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ]
+    },
+    {
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用",
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ]
+    },
+    {
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常",
+      "blockIds": [
+        "habit-main"
+      ]
+    },
+    {
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课",
+      "blockIds": [
+        "summary-main"
+      ]
+    }
+  ],
+  "completion": {
+    "strategy": "attempt-all",
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ]
+  },
+  "reviewItemIds": [
+    "word-tache",
+    "word-fichier",
+    "word-ensemble"
+  ],
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "kind": "choice",
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：Camille。"
+      },
+      "exercise-fill": {
+        "kind": "text",
+        "accepted": [
+          "termines"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "terminer 搭配 tu 的现在时为 termines；条件从句使用现在时。"
+      },
+      "exercise-order": {
+        "kind": "order",
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Si tu termines le texte, nous pouvons le relire ensemble."
+      }
+    }
+  },
+  "editorial": {
+    "status": "draft",
+    "note": "项目原创课程草稿，未完成人工法语、译文和教学审校。工作实践、项目、协作与日程为虚构语言练习。素材待来源授权确认及登记；无正式录音。审校记录见 docs/content/a2/README.md，禁止直接作为已审校课程发布。"
+  },
+  "assetRefs": [
+    {
+      "assetId": "art-home-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    }
+  ],
+  "cast": [
+    {
+      "characterId": "character-camille",
+      "revision": 1,
+      "displayName": "Camille",
+      "avatarId": "avatar-camille-v1",
+      "speechLocale": "fr-FR"
+    },
+    {
+      "characterId": "character-luc",
+      "revision": 1,
+      "displayName": "Luc",
+      "avatarId": "avatar-luc-v1",
+      "speechLocale": "fr-FR"
+    }
+  ]
+}

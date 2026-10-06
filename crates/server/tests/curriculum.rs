@@ -186,6 +186,32 @@ fn a2_body_wellbeing_matches_cross_level_catalog_and_grades_all_exercises() {
     );
 }
 
+#[test]
+fn a2_work_study_matches_cross_level_catalog_and_grades_all_exercises() {
+    check_a2_readings(&[
+        ("a2-work-describe-experience", "article"),
+        ("a2-work-plan-collaboration", "dialogue"),
+        ("a2-work-report-progress", "article"),
+        ("a2-work-tell-yesterday", "article"),
+    ]);
+    check_catalog(
+        "../a2/catalog.five-units.release.json",
+        &[
+            "a1-first-conversations",
+            "a1-breakfast-bakery",
+            "a1-city-travel",
+            "a1-home-routine",
+            "a1-food-shopping",
+            "a1-social-meetings",
+            "a2-weekend-travel",
+            "a2-shared-living",
+            "a2-daily-services",
+            "a2-body-wellbeing",
+            "a2-work-study-experience",
+        ],
+    );
+}
+
 fn check_a2_readings(readings: &[(&str, &str)]) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/content/a2");
     for &(id, mode) in readings {
