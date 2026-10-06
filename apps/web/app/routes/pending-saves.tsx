@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, redirect } from "react-router";
 import { getIdentity } from "../lib/api.server";
 import {
@@ -22,10 +22,29 @@ export default function PendingSaves({
     [ready, setReady] = useState(false),
     [busy, setBusy] = useState(""),
     [error, setError] = useState("");
+  const buttons = useRef(new Map<string, HTMLButtonElement>()),
+    empty = useRef<HTMLParagraphElement>(null),
+    pendingFocus = useRef<string | null | undefined>(undefined);
+  useLayoutEffect(() => {
+    if (pendingFocus.current === undefined) return;
+    const next = pendingFocus.current;
+    pendingFocus.current = undefined;
+    const target =
+      (next && buttons.current.get(next)) ||
+      buttons.current.values().next().value ||
+      empty.current;
+    target?.focus();
+  }, [items]);
   useEffect(() => {
     setItems(pendingOwned(userId));
     setReady(true);
   }, [userId]);
+  function removeConfirmed(item: (typeof items)[number]) {
+    const index = items.findIndex((entry) => entry.key === item.key);
+    pendingFocus.current =
+      items[index + 1]?.key ?? items[index - 1]?.key ?? null;
+    setItems(pendingOwned(userId));
+  }
   async function confirm(item: (typeof items)[number]) {
     if (busy) return;
     setBusy(item.key);
@@ -33,14 +52,14 @@ export default function PendingSaves({
     try {
       await privateRequest(item.job.path, item.job.method, item.job.body);
       clearPending(item.key, item.job.body.idempotencyKey);
-      setItems(pendingOwned(userId));
+      removeConfirmed(item);
     } catch (failure) {
       if (
         failure instanceof ApiRequestError &&
         definitiveWriteFailure(failure)
       ) {
         clearPending(item.key, item.job.body.idempotencyKey);
-        setItems(pendingOwned(userId));
+        removeConfirmed(item);
         setError(
           failure.status === 409
             ? "记录已在其他地方更新，请回到原页面检查后继续。"
@@ -63,7 +82,9 @@ export default function PendingSaves({
       {!ready ? (
         <p role="status">正在读取</p>
       ) : !items.length ? (
-        <p role="status">没有待确认的保存。</p>
+        <p ref={empty} tabIndex={-1} role="status">
+          没有待确认的保存。
+        </p>
       ) : (
         <div className="library-list">
           {items.map((item) => (
@@ -81,6 +102,10 @@ export default function PendingSaves({
                         : "复习自评"}
                 </span>
                 <button
+                  ref={(element) => {
+                    if (element) buttons.current.set(item.key, element);
+                    else buttons.current.delete(item.key);
+                  }}
                   className="text-button"
                   disabled={!!busy}
                   onClick={() => void confirm(item)}
