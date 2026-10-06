@@ -107,6 +107,8 @@ const qa = {
   learningWrites: [] as Record<string, unknown>[],
   learningRelease: [] as ((value: LearningState | number) => void)[],
   learningPaths: [] as { path: string; method?: string }[],
+  learningReads: [] as ((value: LearningState | number) => void)[],
+  sessionLesson: lesson,
   reviewWrites: [] as Record<string, unknown>[],
   reviewRelease: [] as ((value: ReviewAttemptResult | number) => void)[],
   queueReads: [] as ((value: ReviewQueue | number) => void)[],
@@ -287,6 +289,20 @@ window.fetch = async (input, init) => {
           typeof value === "number"
             ? new Response("", { status: value })
             : Response.json(value),
+        ),
+      );
+    });
+  }
+  if (
+    String(input) === "/api/v1/learning-sessions/qa-session" &&
+    init?.method === "GET"
+  ) {
+    return new Promise<Response>((resolve) => {
+      qa.learningReads.push((value) =>
+        resolve(
+          typeof value === "number"
+            ? new Response("", { status: value })
+            : Response.json({ lesson: qa.sessionLesson, progress: value }),
         ),
       );
     });
@@ -483,6 +499,7 @@ function SessionHarness() {
         : lesson,
     progress,
   };
+  qa.sessionLesson = session.lesson;
   return (
     <LearningProvider user={kind === "session-revoked" ? reviewUser : null}>
       <main>

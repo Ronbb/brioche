@@ -801,6 +801,95 @@ test("restored multi-step confirmation advances once without another write", asy
   assert.equal(await evaluate("qa.learningWrites.length"), 3);
 });
 
+test("learning conflict rereads progress without advancing and removes withdrawn content", async () => {
+  await open("session-multi");
+  await browser("focus", ".learning-actions .primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.learningWrites.length===1");
+  const rejected = await evaluate("qa.learningWrites[0]");
+  await evaluate("qa.learningRelease[0](409)");
+  await browser("wait", "--fn", "qa.learningReads.length===1");
+  await evaluate("qa.learningReads[0](503)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('.learning-actions .primary')?.textContent.includes('重新读取进度')",
+  );
+  assert.equal(
+    await evaluate(
+      "document.activeElement.matches('.learning-actions .primary')",
+    ),
+    true,
+  );
+  assert.equal(
+    await evaluate(
+      "sessionStorage.getItem('brioche.learning.v1:qa-account:qa-session:1:pending')",
+    ),
+    null,
+  );
+  await press("Enter");
+  await browser("wait", "--fn", "qa.learningReads.length===2");
+  await press("Enter");
+  assert.equal(await evaluate("qa.learningReads.length"), 2);
+  assert.equal(await evaluate("qa.learningWrites.length"), 1);
+  await evaluate(
+    "qa.learningReads[1]({id:'qa-session',lessonId:'reading-protocol',revision:1,version:7,lastStepId:'read',confirmedStepIds:['read'],hintedExerciseIds:[],attempts:[],completedAt:null,firstCompletedAt:null})",
+  );
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('.learning-actions .primary')?.textContent.includes('继续')",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.learning-step-heading h2').textContent",
+    ),
+    "阅读",
+  );
+  assert.equal(await evaluate("qa.learningWrites.length"), 1);
+  await press("Enter");
+  await browser("wait", "--fn", "qa.learningWrites.length===2");
+  assert.equal(await evaluate("qa.learningWrites[1].version"), 7);
+  assert.notEqual(
+    await evaluate("qa.learningWrites[1].idempotencyKey"),
+    rejected.idempotencyKey,
+  );
+  await evaluate(
+    "qa.learningRelease[1]({id:'qa-session',lessonId:'reading-protocol',revision:1,version:8,lastStepId:'read',confirmedStepIds:['read'],hintedExerciseIds:[],attempts:[],completedAt:null,firstCompletedAt:null})",
+  );
+  await browser("wait", "--fn", "document.activeElement.textContent==='回顾'");
+  assert.equal(await evaluate("qa.learningWrites.length"), 2);
+  await browser("focus", ".learning-actions .primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.learningWrites.length===3");
+  assert.equal(
+    await evaluate("qa.learningPaths[2].path"),
+    "/api/v1/learning-sessions/qa-session/steps/recap",
+  );
+  await evaluate("qa.learningRelease[2](409)");
+  await browser("wait", "--fn", "qa.learningReads.length===3");
+  await evaluate("qa.learningReads[2](410)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.activeElement.textContent==='课程已撤回'",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('.sentence,.learning-actions').length",
+    ),
+    0,
+  );
+  assert.equal(
+    await evaluate(
+      "Object.keys(sessionStorage).some(key=>key.startsWith('brioche.learning.v1:qa-account:qa-session:1:'))",
+    ),
+    false,
+  );
+  assert.equal(await evaluate("qa.learningWrites.length"), 3);
+  assert.equal(await evaluate("qa.learningReads.length"), 3);
+});
+
 test("learning navigation keeps the exact pending request across leaving and returning", async () => {
   await open("session");
   await browser("set", "viewport", "320", "700");
