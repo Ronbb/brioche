@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+html:has(dialog:modal) {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+html:has(dialog:modal) .page-scrollbar {
+  visibility: hidden;
+}
+
 .skip-link {
   position: fixed;
   top: 0;
