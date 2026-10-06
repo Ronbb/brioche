@@ -67,6 +67,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
   const storageKey = audio.profile
     ? draftScope(audio.profile.id, "reviews", 1) + ":pending"
     : "";
+  const hasPendingWrite = !!pending.current;
   useEffect(() => {
     generation.current++;
     alive.current = true;
@@ -129,14 +130,14 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
     return true;
   }
   useEffect(() => {
-    if (!saving && !uncertain) return;
+    if (!hasPendingWrite) return;
     const warn = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       event.returnValue = "";
     };
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
-  }, [saving, uncertain]);
+  }, [hasPendingWrite]);
   async function submit(job: NonNullable<typeof pending.current>) {
     if (busy.current) return;
     const gen = generation.current;
@@ -311,7 +312,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
   return (
     <section className="review-page page-arrive">
       <PendingNavigation
-        active={saving || uncertain}
+        active={hasPendingWrite}
         onStay={() => heading.current?.focus({ preventScroll: true })}
       />
       <div className="review-session-header">

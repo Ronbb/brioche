@@ -8,6 +8,9 @@ import { lesson } from "./lesson";
 import { ChoiceDialog } from "../app/components/choice-dialog";
 import Profile from "../app/routes/profile";
 import Learning from "../app/routes/learning";
+import Reviews from "../app/routes/reviews";
+import type { ReviewQueue } from "@brioche/contracts/ReviewQueue";
+import type { ReviewAttemptResult } from "@brioche/contracts/ReviewAttemptResult";
 import type { LearningState } from "@brioche/contracts/LearningState";
 import type { UserProfile } from "@brioche/contracts/UserProfile";
 import "../app/styles/app.css";
@@ -30,6 +33,9 @@ const qa = {
   navigate: null as ((destination: string | number) => void) | null,
   learningWrites: [] as Record<string, unknown>[],
   learningRelease: [] as ((value: LearningState | number) => void)[],
+  reviewWrites: [] as Record<string, unknown>[],
+  reviewRelease: [] as ((value: ReviewAttemptResult | number) => void)[],
+  queueReads: [] as ((value: ReviewQueue | number) => void)[],
 };
 Object.assign(window, { qa });
 class ControlledUtterance extends EventTarget {
@@ -64,6 +70,28 @@ const originalFetch = window.fetch;
 window.fetch = async (input, init) => {
   if (String(input) === "/api/v1/auth/csrf")
     return Response.json({ csrfToken: "controlled" });
+  if (String(input) === "/api/v1/me/reviews/qa-card/attempts") {
+    const index = qa.reviewWrites.push(JSON.parse(String(init?.body))) - 1;
+    return new Promise<Response>((resolve) => {
+      qa.reviewRelease[index] = (value) =>
+        resolve(
+          typeof value === "number"
+            ? new Response("", { status: value })
+            : Response.json(value),
+        );
+    });
+  }
+  if (String(input) === "/api/v1/me/reviews") {
+    return new Promise<Response>((resolve) => {
+      qa.queueReads.push((value) =>
+        resolve(
+          typeof value === "number"
+            ? new Response("", { status: value })
+            : Response.json(value),
+        ),
+      );
+    });
+  }
   if (String(input).startsWith("/api/v1/learning-sessions/qa-session/")) {
     const index = qa.learningWrites.push(JSON.parse(String(init?.body))) - 1;
     return new Promise<Response>((resolve) => {
@@ -262,6 +290,74 @@ function SessionHarness() {
   );
 }
 const kind = new URL(location.href).searchParams.get("case");
+const reviewQueue: ReviewQueue = {
+  items: [
+    {
+      id: "qa-card",
+      knowledgeId: "qa-word",
+      sourceLessonId: lesson.id,
+      sourceRevision: 1,
+      vocabulary: {
+        id: "qa-word",
+        lemma: "bonjour",
+        partOfSpeech: "phrase",
+        gender: null,
+        meaningZh: "你好",
+        noteZh: "日常问候",
+      },
+      stage: 0,
+      dueAt: "2026-10-06T00:00:00Z",
+      version: 1,
+      suspended: false,
+    },
+  ],
+  dueCount: 1,
+  nextDueAt: null,
+  localDate: "2026-10-06",
+  timeZone: "Asia/Shanghai",
+};
+const reviewUser: UserProfile = {
+  id: "qa-account",
+  email: "qa@example.test",
+  displayName: "QA",
+  role: "learner",
+  version: 1,
+  settings: {
+    timeZone: "Asia/Shanghai",
+    weeklyDays: 5,
+    dailyMinutes: 10,
+    showTranslation: false,
+    speechRate: 1,
+  },
+};
+function ReviewsHarness() {
+  return (
+    <LearningProvider user={reviewUser}>
+      <main>
+        <Reviews
+          loaderData={reviewQueue}
+          params={{}}
+          matches={[
+            {
+              id: "root",
+              params: {},
+              pathname: "/",
+              loaderData: { user: reviewUser, enabled: true },
+              handle: undefined,
+            },
+            {
+              id: "routes/reviews",
+              params: {},
+              pathname: "/",
+              loaderData: reviewQueue,
+              handle: undefined,
+            },
+          ]}
+        />
+      </main>
+    </LearningProvider>
+  );
+}
 const reading = kind === "reading";
 const router = createMemoryRouter(
   [
@@ -279,6 +375,8 @@ const router = createMemoryRouter(
         <ProfileHarness />
       ) : kind === "session" ? (
         <SessionHarness />
+      ) : kind === "reviews" ? (
+        <ReviewsHarness />
       ) : (
         <StartHarness />
       ),

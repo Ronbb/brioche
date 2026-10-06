@@ -40,6 +40,7 @@ export function useLearningSession(initial: LearningSession, scope: string) {
     alive = useRef(true),
     stale = useRef(false),
     removed = useRef(false);
+  const hasPendingWrite = !!pending.current;
   function removeUnavailable(status: 404 | 410) {
     removed.current = true;
     stale.current = true;
@@ -64,14 +65,14 @@ export function useLearningSession(initial: LearningSession, scope: string) {
     };
   }, [scope]);
   useEffect(() => {
-    if (!saving && !uncertain) return;
+    if (!hasPendingWrite) return;
     const beforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       event.returnValue = "";
     };
     window.addEventListener("beforeunload", beforeUnload);
     return () => window.removeEventListener("beforeunload", beforeUnload);
-  }, [saving, uncertain]);
+  }, [hasPendingWrite]);
   function accept(value: LearningState) {
     if (value.version < latest.current.version) return;
     latest.current = value;
@@ -238,6 +239,7 @@ export function useLearningSession(initial: LearningSession, scope: string) {
     uncertain,
     readFailed,
     unavailable,
+    hasPendingWrite,
     blocked: saving || uncertain || readFailed || !!unavailable || !restored,
     write,
     retry,

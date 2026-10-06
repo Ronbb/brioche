@@ -667,6 +667,12 @@ test("learning navigation keeps the exact pending request across leaving and ret
   await press("Enter");
   await browser("wait", "--fn", "qa.learningWrites.length===1");
   const original = await evaluate("qa.learningWrites[0]");
+  assert.equal(
+    await evaluate(
+      "(()=>{const e=new Event('beforeunload',{cancelable:true});window.dispatchEvent(e);return e.defaultPrevented})()",
+    ),
+    true,
+  );
   await evaluate("qa.navigate('/login')");
   await browser("wait", ".pending-navigation[open]");
   assert.equal(
@@ -750,4 +756,84 @@ test("learning navigation keeps the exact pending request across leaving and ret
   assert.equal(await evaluate("qa.learningWrites.length"), 1);
   await evaluate("qa.navigate('/login')");
   await browser("wait", "--fn", "qa.route==='/login'");
+});
+
+test("review navigation preserves the original rating and does not treat queue reads as pending writes", async () => {
+  await open("reviews");
+  await browser("focus", ".review-flashcard");
+  await press("Enter");
+  await browser("focus", '.review-ratings button[data-grade="2"]');
+  await press("Enter");
+  await browser("wait", "--fn", "qa.reviewWrites.length===1");
+  const original = await evaluate("qa.reviewWrites[0]");
+  assert.equal(
+    await evaluate(
+      "(()=>{const e=new Event('beforeunload',{cancelable:true});window.dispatchEvent(e);return e.defaultPrevented})()",
+    ),
+    true,
+  );
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", ".pending-navigation[open]");
+  await press("Escape");
+  assert.equal(
+    await evaluate(
+      "document.activeElement.matches('.review-session-header h1')",
+    ),
+    true,
+  );
+  await evaluate("qa.reviewRelease[0](503)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('.empty-state h2')?.textContent==='确认上次复习'",
+  );
+  await evaluate("qa.navigate(-1)");
+  await browser("wait", ".pending-navigation[open]");
+  await browser("focus", ".pending-navigation .text-button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.route==='/previous'");
+  assert.deepEqual(
+    await evaluate(
+      "JSON.parse(sessionStorage.getItem('brioche.learning.v1:qa-account:reviews:1:pending')).body",
+    ),
+    original,
+  );
+  await evaluate("qa.navigate('/')");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('.empty-state h2')?.textContent==='确认上次复习'",
+  );
+  await browser("focus", ".review-page > button.primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.reviewWrites.length===2");
+  assert.deepEqual(await evaluate("qa.reviewWrites[1]"), original);
+  await evaluate(
+    "qa.reviewRelease[1]({card:{id:'qa-card',knowledgeId:'qa-word',sourceLessonId:'reading-protocol',sourceRevision:1,vocabulary:{id:'qa-word',lemma:'bonjour',partOfSpeech:'phrase',gender:null,meaningZh:'你好',noteZh:'日常问候'},stage:1,dueAt:'2026-10-07T00:00:00Z',version:2,suspended:false},reviewedAt:'2026-10-06T00:00:00Z',timeZone:'Asia/Shanghai'})",
+  );
+  await browser("wait", "--fn", "qa.queueReads.length===1");
+  assert.equal(
+    await evaluate(
+      "(()=>{const e=new Event('beforeunload',{cancelable:true});window.dispatchEvent(e);return e.defaultPrevented})()",
+    ),
+    false,
+  );
+  assert.equal(
+    await evaluate(
+      "sessionStorage.getItem('brioche.learning.v1:qa-account:reviews:1:pending')",
+    ),
+    null,
+  );
+  await evaluate("qa.navigate('/login')");
+  await browser(
+    "wait",
+    "--fn",
+    "qa.route==='/login'||!!document.querySelector('.pending-navigation[open]')",
+  );
+  assert.equal(await evaluate("qa.route"), "/login");
+  assert.equal(await evaluate("qa.reviewWrites.length"), 2);
+  await evaluate(
+    "qa.queueReads[0]({items:[],dueCount:0,nextDueAt:null,localDate:'2026-10-06',timeZone:'Asia/Shanghai'})",
+  );
+  assert.equal(await evaluate("qa.route"), "/login");
 });

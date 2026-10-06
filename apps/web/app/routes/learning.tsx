@@ -144,7 +144,7 @@ function Session({
   return (
     <section className="page-arrive learning-page">
       <PendingNavigation
-        active={session.saving || session.uncertain}
+        active={session.hasPendingWrite}
         onStay={() => heading.current?.focus({ preventScroll: true })}
       />
       <div className="lesson-header">
