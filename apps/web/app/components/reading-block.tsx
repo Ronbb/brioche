@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { Block } from "@brioche/contracts/Block";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
 import type { Vocabulary } from "@brioche/contracts/Vocabulary";
@@ -15,12 +15,15 @@ import { readingScope, readingUnits } from "../lib/recording-playback";
 export function ReadingBlock({
   block,
   lesson,
+  personalActions = true,
 }: {
   block: Extract<Block, { type: "dialogue" | "article" }>;
   lesson: PublicLesson;
+  personalActions?: boolean;
 }) {
   const learning = useLearning(),
-    dialog = useRef<HTMLDialogElement>(null);
+    dialog = useRef<HTMLDialogElement>(null),
+    knowledgeTitleId = useId();
   const [revealed, setRevealed] = useState(new Set<string>()),
     [term, setTerm] = useState<Vocabulary | null>(null),
     [grammar, setGrammar] = useState<Grammar | null>(null);
@@ -130,7 +133,7 @@ export function ReadingBlock({
       <dialog
         className="knowledge-dialog"
         ref={dialog}
-        aria-labelledby={block.id + "-knowledge-title"}
+        aria-labelledby={knowledgeTitleId}
         onClick={(event) => {
           if (event.target !== dialog.current || !dialog.current) return;
           const rect = dialog.current.getBoundingClientRect();
@@ -155,25 +158,29 @@ export function ReadingBlock({
             <Icon name="close" />
           </button>
         </div>
-        <h2 id={block.id + "-knowledge-title"} lang={grammar ? "zh-CN" : "fr"}>
+        <h2 id={knowledgeTitleId} lang={grammar ? "zh-CN" : "fr"}>
           {grammar?.titleZh ?? term?.lemma}
         </h2>
         {term && (
           <>
             <p className="meaning">{term.meaningZh}</p>
             <p className="explain">{term.noteZh}</p>
-            <Bookmark
-              key={term.id}
-              knowledgeId={term.id}
-              lessonId={lesson.id}
-              revision={lesson.revision}
-            />
-            <Enroll
-              key={"enroll-" + term.id}
-              knowledgeId={term.id}
-              lessonId={lesson.id}
-              revision={lesson.revision}
-            />
+            {personalActions && (
+              <Bookmark
+                key={term.id}
+                knowledgeId={term.id}
+                lessonId={lesson.id}
+                revision={lesson.revision}
+              />
+            )}
+            {personalActions && (
+              <Enroll
+                key={"enroll-" + term.id}
+                knowledgeId={term.id}
+                lessonId={lesson.id}
+                revision={lesson.revision}
+              />
+            )}
             <div className="example" lang="fr">
               {entries
                 .find((entry) =>

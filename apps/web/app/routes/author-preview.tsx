@@ -167,7 +167,12 @@ export default function AuthorPreview({
                 const block = lesson.blocks.find((b) => b.id === id)!;
                 if (block.type === "dialogue" || block.type === "article")
                   return (
-                    <ReadingBlock key={id} block={block} lesson={lesson} />
+                    <ReadingBlock
+                      key={id}
+                      block={block}
+                      lesson={lesson}
+                      personalActions={false}
+                    />
                   );
                 if (block.type === "exercise")
                   return (
