@@ -1263,12 +1263,13 @@ test("native fill-blank input bounds UTF-16 units and submits the exact text wit
 
 test("responsive content keeps long words and controls inside the viewport", async () => {
   const selectors =
-    ".lesson-header h1,.sentence .word,.practice-option span,.practice-sentence,.order-bank button,.order-answer button,.learning-step-heading h2,.review-expression,.profile-summary h2";
+    ".lesson-header h1,.sentence .word,.practice-option span,.practice-sentence,.order-bank button,.order-answer button,.learning-step-heading h2,.review-expression,.profile-summary h2,.library-entry-heading,.library-entry-heading strong";
   for (const kind of [
     "reading",
     "session",
     "reviews",
     "profile",
+    "library",
     "text-limit",
   ]) {
     await open(kind + "&stress=1");
@@ -1280,7 +1281,9 @@ test("responsive content keeps long words and controls inside the viewport", asy
           ? ".review-expression"
           : kind === "text-limit"
             ? ".order-bank button"
-            : ".sentence .word",
+            : kind === "library"
+              ? ".library-entry-heading"
+              : ".sentence .word",
     );
     for (const width of [320, 390, 768, 1440]) {
       await browser("set", "viewport", String(width), "844");
@@ -1338,6 +1341,27 @@ test("responsive content keeps long words and controls inside the viewport", asy
         "anticonstitutionnellement",
       );
     }
+    if (kind === "library") {
+      await browser("focus", ".library-entry-heading");
+      await press("Enter");
+      await browser("wait", ".library-entry-body");
+      await browser("wait", "--fn", "qa.spoken.length>0");
+      assert.equal(
+        await evaluate("qa.spoken.at(-1)"),
+        "anticonstitutionnellement",
+      );
+      assert.equal(
+        await evaluate("document.activeElement.className"),
+        "library-entry-heading",
+      );
+      await press("Enter");
+      assert.equal(
+        await evaluate(
+          "document.querySelectorAll('.library-entry-body').length",
+        ),
+        0,
+      );
+    }
   }
   await browser("set", "viewport", "320", "844");
   await browser("focus", ".order-bank button");
@@ -1377,4 +1401,126 @@ test("reduced motion disables card expansion animations", async () => {
   } finally {
     await browser("set", "media", "light");
   }
+});
+
+test("managed review recovery preserves keyboard focus and deduplicates reads and retries", async () => {
+  await open("managed-library");
+  await browser("set", "viewport", "320", "844");
+  await browser("focus", ".library-entry-heading");
+  await press("Enter");
+  await browser("focus", ".library-entry-body button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.ownedWrites.length===1");
+  await evaluate("qa.ownedRelease[0](503)");
+  await browser("wait", "--text", "重试保存");
+  await browser("focus", ".library-entry-body button:nth-of-type(2)");
+  await press("Enter");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.ownedWrites.length===2");
+  assert.equal(
+    await evaluate("document.activeElement.textContent.trim()"),
+    "重试保存",
+  );
+  assert.equal(
+    await evaluate(
+      "JSON.stringify(qa.ownedWrites[0])===JSON.stringify(qa.ownedWrites[1])",
+    ),
+    true,
+  );
+  await evaluate(
+    "qa.ownedRelease[1]({...qa.reviewFixture.items[0],version:2,suspended:true})",
+  );
+  await browser("wait", "--text", "恢复复习");
+  assert.equal(
+    await evaluate("document.activeElement.textContent.trim()"),
+    "恢复复习",
+  );
+  await press("Enter");
+  await browser("wait", "--fn", "qa.ownedWrites.length===3");
+  await evaluate("qa.ownedRelease[2](409)");
+  await browser("wait", "--fn", "qa.cardReads.length===1");
+  await evaluate("qa.cardReads[0](503)");
+  await browser("wait", "--text", "重新读取记录");
+  await browser("focus", ".library-entry-body button:nth-of-type(2)");
+  await press("Enter");
+  await press("Enter");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.cardReads.length>=2");
+  assert.equal(await evaluate("qa.cardReads.length"), 2);
+  assert.equal(
+    await evaluate("document.activeElement.textContent.trim()"),
+    "正在读取",
+  );
+  await evaluate("qa.cardReads[1](503)");
+  await browser("wait", "--text", "重新读取记录");
+  assert.equal(
+    await evaluate("document.activeElement.textContent.trim()"),
+    "重新读取记录",
+  );
+  await press("Enter");
+  await browser("wait", "--fn", "qa.cardReads.length===3");
+  await evaluate(
+    "qa.cardReads[2]({...qa.reviewFixture.items[0],version:3,suspended:false})",
+  );
+  await browser(
+    "wait",
+    "--fn",
+    "!document.querySelector('.library-entry-body')?.textContent.includes('重新读取记录')",
+  );
+  assert.equal(
+    await evaluate("document.activeElement.className"),
+    "library-entry-heading",
+  );
+  assert.equal(await evaluate("qa.ownedWrites.length"), 3);
+  await browser("focus", ".library-entry-body button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.ownedWrites.length===4");
+  await evaluate("qa.ownedRelease[3](409)");
+  await browser("wait", "--fn", "qa.cardReads.length===4");
+  await evaluate("qa.cardReads[3](503)");
+  await browser("wait", "--text", "重新读取记录");
+  await browser("focus", ".library-entry-body button:nth-of-type(2)");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.cardReads.length===5");
+  await browser("focus", ".library-entry-body a");
+  await evaluate(
+    "qa.cardReads[4]({...qa.reviewFixture.items[0],version:4,suspended:false})",
+  );
+  await browser(
+    "wait",
+    "--fn",
+    "!document.querySelector('.library-entry-body')?.textContent.includes('重新读取记录')",
+  );
+  assert.equal(
+    await evaluate("document.activeElement.textContent.trim()"),
+    "回看来源课程",
+  );
+  await open("managed-library");
+  await browser("focus", ".library-entry-heading");
+  await press("Enter");
+  await browser("focus", ".library-entry-body button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.ownedWrites.length===1");
+  await evaluate("qa.ownedRelease[0](503)");
+  await browser("wait", "--text", "重试保存");
+  await browser("focus", ".library-entry-body button:nth-of-type(2)");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.ownedWrites.length===2");
+  await evaluate("qa.ownedRelease[1](422)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.activeElement.getAttribute('role')==='alert'",
+  );
+  assert.equal(
+    await evaluate("document.activeElement.textContent.trim()"),
+    "请检查填写的信息。",
+  );
+  assert.equal(await evaluate("qa.cardReads.length"), 0);
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('.library-entry-body button').length",
+    ),
+    1,
+  );
 });

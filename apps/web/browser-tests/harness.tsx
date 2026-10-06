@@ -68,6 +68,7 @@ const qa = {
   confirmExternal: null as ((index: number) => void) | null,
   textAnswers: [] as ExerciseAnswer[],
   hintRequests: 0,
+  cardReads: [] as ((value: ReviewCard | number) => void)[],
 };
 Object.assign(window, { qa });
 class ControlledUtterance extends EventTarget {
@@ -107,7 +108,8 @@ window.fetch = async (input, init) => {
   if (
     (String(input).startsWith("/api/v1/me/saved-items/") &&
       init?.method === "PUT") ||
-    String(input) === "/api/v1/me/review-enrollments"
+    String(input) === "/api/v1/me/review-enrollments" ||
+    String(input) === "/api/v1/me/reviews/qa-card/preferences"
   ) {
     const index =
       qa.ownedWrites.push({
@@ -121,6 +123,20 @@ window.fetch = async (input, init) => {
             ? new Response("", { status: value })
             : Response.json(value),
         );
+    });
+  }
+  if (
+    String(input) === "/api/v1/me/reviews/qa-card" &&
+    init?.method === "GET"
+  ) {
+    return new Promise<Response>((resolve) => {
+      qa.cardReads.push((value) =>
+        resolve(
+          typeof value === "number"
+            ? new Response("", { status: value })
+            : Response.json(value),
+        ),
+      );
     });
   }
   if (String(input) === "/api/v1/me/reviews/qa-card/attempts") {
@@ -426,11 +442,18 @@ const savedItem: SavedItem = {
 };
 qa.savedFixture = savedItem;
 function LibraryHarness() {
-  const loaderData = {
-    view: "saved" as const,
-    page: { items: [savedItem], nextCursor: null },
-    cursor: null,
-  };
+  const loaderData =
+    kind === "managed-library"
+      ? {
+          view: "reviews" as const,
+          page: { items: reviewQueue.items, nextCursor: null },
+          cursor: null,
+        }
+      : {
+          view: "saved" as const,
+          page: { items: [savedItem], nextCursor: null },
+          cursor: null,
+        };
   return (
     <LearningProvider user={reviewUser}>
       <main>
@@ -618,7 +641,7 @@ const router = createMemoryRouter(
         <SessionHarness />
       ) : kind === "reviews" ? (
         <ReviewsHarness />
-      ) : kind === "library" ? (
+      ) : kind === "library" || kind === "managed-library" ? (
         <LibraryHarness />
       ) : kind === "pending" ? (
         <PendingHarness />

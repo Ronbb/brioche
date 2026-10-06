@@ -3528,6 +3528,7 @@ h2[tabindex="-1"]:focus {
 .library-list { margin-top: 28px; }
 .library-entry { border-bottom: 1px solid var(--line); }
 .library-entry-heading { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 20px; padding: 24px 0; text-align: left; background: transparent; border: 0; color: var(--ink); }
+.library-entry-heading > span { min-width: 0; overflow-wrap: anywhere; }
 .library-entry-heading strong { display: block; font-family: var(--serif); font-size: 26px; font-weight: 500; }
 .library-entry-heading small { display: block; margin-top: 8px; color: var(--muted); }
 .library-entry-heading[aria-expanded="true"] > svg { transform: rotate(90deg); }

@@ -317,7 +317,13 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
     audio = useLearning(),
     panelId = useId();
   const mounted = useRef(true),
-    unavailableHeading = useRef<HTMLHeadingElement>(null);
+    unavailableHeading = useRef<HTMLHeadingElement>(null),
+    heading = useRef<HTMLButtonElement>(null),
+    preference = useRef<HTMLButtonElement>(null),
+    writeError = useRef<HTMLParagraphElement>(null),
+    reading = useRef(false),
+    focusRead = useRef(false),
+    focusRetry = useRef(false);
   useLayoutEffect(() => {
     if (unavailable) unavailableHeading.current?.focus();
   }, [unavailable]);
@@ -334,6 +340,8 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
     };
   }, []);
   async function refresh() {
+    if (reading.current || !mounted.current) return;
+    reading.current = true;
     setRefreshing(true);
     try {
       const fresh = await privateRequest<ReviewCard>(
@@ -354,6 +362,7 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
       else if (mounted.current) setReadFailed(true);
       throw error;
     } finally {
+      reading.current = false;
       if (mounted.current) setRefreshing(false);
     }
   }
@@ -363,6 +372,30 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
     accept: setCard,
     onUnavailable: removeUnavailable,
   });
+  useLayoutEffect(() => {
+    if (unavailable) {
+      focusRead.current = false;
+      focusRetry.current = false;
+      return;
+    }
+    if (focusRead.current && !refreshing && !readFailed) {
+      focusRead.current = false;
+      heading.current?.focus({ preventScroll: true });
+    }
+    if (focusRetry.current && !write.saving && !write.uncertain) {
+      focusRetry.current = false;
+      (write.error ? writeError.current : preference.current)?.focus({
+        preventScroll: true,
+      });
+    }
+  }, [
+    unavailable,
+    refreshing,
+    readFailed,
+    write.saving,
+    write.uncertain,
+    write.error,
+  ]);
   if (unavailable)
     return (
       <article className="library-entry">
@@ -375,6 +408,7 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
   return (
     <article className="library-entry">
       <button
+        ref={heading}
         className="library-entry-heading"
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
@@ -396,6 +430,7 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
         <div id={panelId} className="library-entry-body">
           <p>{card.vocabulary.noteZh}</p>
           <button
+            ref={preference}
             className="text-button"
             aria-disabled={write.blocked || readFailed || refreshing}
             aria-busy={write.saving}
@@ -415,7 +450,12 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
                 : "暂停复习"}
           </button>
           {write.error && (
-            <p className="error-message" role="alert">
+            <p
+              ref={writeError}
+              tabIndex={-1}
+              className="error-message"
+              role="alert"
+            >
               {write.error}
             </p>
           )}
@@ -426,8 +466,16 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
               </p>
               <button
                 className="text-button"
-                disabled={refreshing}
-                onClick={() => void refresh().catch(() => {})}
+                aria-disabled={refreshing}
+                aria-busy={refreshing}
+                onBlur={() => {
+                  focusRead.current = false;
+                }}
+                onClick={() => {
+                  if (reading.current) return;
+                  focusRead.current = true;
+                  void refresh().catch(() => {});
+                }}
               >
                 {refreshing ? "正在读取" : "重新读取记录"}
               </button>
@@ -436,8 +484,16 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
           {write.uncertain && (
             <button
               className="text-button"
-              disabled={write.saving}
-              onClick={write.retry}
+              aria-disabled={write.saving}
+              aria-busy={write.saving}
+              onBlur={() => {
+                focusRetry.current = false;
+              }}
+              onClick={() => {
+                if (write.saving) return;
+                focusRetry.current = true;
+                write.retry();
+              }}
             >
               重试保存
             </button>
