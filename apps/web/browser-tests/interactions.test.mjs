@@ -2073,6 +2073,97 @@ test("an old logout cannot navigate or toast into a new profile and leaving canc
   assert.equal(await evaluate("qa.route"), "/reviews");
 });
 
+test("author preview grading isolates a replaced operator and ignores old results", async () => {
+  await open("author");
+  await browser("wait", ".exercise-sheet input[type=radio]");
+  await browser("focus", ".exercise-sheet input[type=radio]");
+  await press("Space");
+  await browser("focus", ".exercise-sheet .primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.previewWrites.length===1");
+  await evaluate("qa.changeUser()");
+  await browser(
+    "wait",
+    "--fn",
+    "!document.querySelector('.exercise-sheet fieldset').disabled",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('.exercise-sheet input:checked').length",
+    ),
+    0,
+  );
+  assert.equal(await evaluate("qa.previewWrites[0].signal.aborted"), true);
+  await browser("focus", ".exercise-sheet input[type=radio]");
+  await press("Space");
+  await browser("focus", ".exercise-sheet .primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.previewWrites.length===2");
+  await evaluate(
+    "qa.previewWrites[0].release({correct:true,feedbackZh:'Old operator result'})",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.exercise-sheet fieldset').disabled",
+    ),
+    true,
+  );
+  assert.equal(
+    await evaluate("document.querySelectorAll('.practice-feedback').length"),
+    0,
+  );
+  await evaluate(
+    "qa.previewWrites[1].release({correct:false,feedbackZh:'Current operator result'})",
+  );
+  await browser("wait", ".practice-feedback");
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.practice-feedback p').textContent",
+    ),
+    "Current operator result",
+  );
+  assert.equal(
+    await evaluate(
+      "document.activeElement.classList.contains('practice-feedback')",
+    ),
+    true,
+  );
+});
+
+test("changing an author preview cancels pending CSRF before grading the old revision", async () => {
+  await open("author");
+  await browser("wait", ".exercise-sheet input[type=radio]");
+  await evaluate("qa.deferAuthBootstrap=true");
+  await browser("focus", ".exercise-sheet input[type=radio]");
+  await press("Space");
+  await browser("focus", ".exercise-sheet .primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.authBootstraps.length===1");
+  await browser("focus", ".course-directory .lesson-list li:nth-child(2) a");
+  await press("Enter");
+  await browser(
+    "wait",
+    "--fn",
+    "new URLSearchParams(qa.search).get('lessonId')==='qa-second'",
+  );
+  assert.equal(await evaluate("qa.authBootstraps[0].signal.aborted"), true);
+  await evaluate("qa.authBootstraps[0].release(200)");
+  assert.equal(await evaluate("qa.previewWrites.length"), 0);
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.exercise-sheet fieldset').disabled",
+    ),
+    false,
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('.exercise-sheet input:checked').length",
+    ),
+    0,
+  );
+  assert.equal(await evaluate("document.querySelector('.toast').hidden"), true);
+});
+
 test("author preview resets edited opener fields to the selected immutable context and focuses loaded content", async () => {
   await open("author");
   await browser("wait", ".author-preview > div:last-child .lesson-header h2");

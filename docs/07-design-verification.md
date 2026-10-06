@@ -669,3 +669,12 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - 新生产 SSR handler 用受控 HTTP 后端另验证匿名 401、learner 403 且无 operator 读取；operator 按批次及确切版本读取，private/no-store、Vary Cookie、只转发 session cookie；不属于所选批次的版本 404 且不读取课程，非法批次 400 且不读取预览。此证据不表示数据库发布或正式内容审校完成。
 - 本轮受影响的三个 Chromium 用例通过（58.63s，包含多正文与迟到语音回归），27 Web、10 SSR、TS7、client/SSR build、定向 Prettier/diff 通过。本轮未重新执行全部 35 项浏览器用例；独立浏览器与随机 Vite 已清理，没有操作用户服务或生产。
 - 固定上一提交 d44dc39 的 [Check 37452861794](https://github.com/Ronbb/brioche/actions/runs/37452861794) 本轮实际读取 completed/success；新提交另行确认。完整教学审校/正式录音、真实设备/辅助技术与生产门槛继续待完成。
+
+## 2026-10-06：预览判分的身份与课程生命周期
+
+- PreviewExercise 旧 ownerRef 仅过滤返回结果，未按身份重建 pending/草稿/反馈。新增实际 AuthorPreview、LearningProvider、ExerciseEditor 的 Chromium 装配，在旧管理员判分 POST 暂挂时切换到另一 operator；修复前新身份的 fieldset 持续 disabled，回归在等待恢复作答处实际失败（63.43s）。首次测试装配没有练习块，等待 radio 超时，已补合成选择题和 practice 步骤；该首次失败不作为缺陷证据。
+- 现按 operator ID、lesson ID/revision、exercise ID 固定内层练习实例，换身份或题目卸载旧实例。useLayoutEffect 清理关闭活动状态并取消专用 AbortController；旧成功/失败不能更新新实例、toast 或反馈焦点。新实例保留独立同步提交锁。
+- privateRequest 新增可选 signal，保持未传信号的既有调用/超时语义，组合外部取消和超时；开始前及 CSRF JSON 读取后再次核对取消状态，避免旧引导响应继续发 POST。新增单元回归让 CSRF JSON 忽略网络取消后迟到返回，证明取消后零判分 POST；预先取消也不访问网络。
+- 身份回归验证新 operator 的选择清空、控件可用、旧请求 signal aborted；新判分暂挂时释放旧成功，仍处于新请求等待且无旧反馈，新请求成功才显示当前反馈并聚焦。另一回归使用目录键盘链接换到另一课程固定版本，CSRF signal aborted，迟到引导无 POST、无 toast、无选择或等待残留。它们使用合成身份/受控 HTTP，不证明真实登录 cookie、数据库权限或服务器回滚。
+- 初次修复后两项 author 回归通过（50.40s，含前一轮参数切换）；新增取消断言和课程切换后最终两个受影响用例通过（45.81s）。28 Web、10 SSR、TS7、client/SSR build、定向格式/diff 通过。本轮未运行完整 37 项浏览器；自己的随机 Vite/Chromium 自动清理。已发请求的服务端处理不因客户端取消而保证回滚；正式内容审校/授权/录音、真实 iPhone/辅助技术和生产门槛继续待完成。
+- 固定 f410336 的 [Check 37453982397](https://github.com/Ronbb/brioche/actions/runs/37453982397) 本轮实际读取仍 in_progress，不提前声称远端绿色。

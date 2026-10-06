@@ -6,6 +6,46 @@ import {
   privateRequest,
 } from "../app/lib/api.client.ts";
 
+test("canceled private writes cannot continue after a late CSRF body", async () => {
+  const original = globalThis.fetch;
+  const controller = new AbortController();
+  const paths: string[] = [];
+  try {
+    globalThis.fetch = async (input) => {
+      paths.push(String(input));
+      return {
+        ok: true,
+        json: async () => {
+          controller.abort();
+          return { csrfToken: "obsolete" };
+        },
+      } as Response;
+    };
+    await assert.rejects(
+      privateRequest(
+        "/api/v1/operator/lessons/test/revisions/1/grade",
+        "POST",
+        {},
+        controller.signal,
+      ),
+      { name: "AbortError" },
+    );
+    assert.deepEqual(paths, ["/api/v1/auth/csrf"]);
+    await assert.rejects(
+      privateRequest(
+        "/api/v1/operator/lessons/test/revisions/1/grade",
+        "POST",
+        {},
+        controller.signal,
+      ),
+      { name: "AbortError" },
+    );
+    assert.equal(paths.length, 1);
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+
 test("CSRF bootstrap rejection never impersonates a mutation rejection", async () => {
   const original = globalThis.fetch;
   try {

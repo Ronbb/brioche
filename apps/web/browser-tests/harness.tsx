@@ -10,6 +10,7 @@ import {
 import { StartLearning } from "../app/components/start-learning";
 import { ExerciseEditor } from "../app/components/exercise-editor";
 import type { ExerciseAnswer } from "@brioche/contracts/ExerciseAnswer";
+import type { GradeResult } from "@brioche/contracts/GradeResult";
 import { LearningProvider, useLearning } from "../app/components/learning";
 import Lesson from "../app/routes/lesson";
 import { lesson } from "./lesson";
@@ -63,6 +64,12 @@ if (stress) {
 }
 
 const qa = {
+  previewWrites: [] as {
+    path: string;
+    body: unknown;
+    signal?: AbortSignal | null;
+    release: (value: GradeResult | number) => void;
+  }[],
   ready: false,
   deferAuthBootstrap: false,
   authBootstraps: [] as {
@@ -161,6 +168,24 @@ function controlledAuth(
   });
 }
 window.fetch = async (input, init) => {
+  if (
+    String(input).startsWith("/api/v1/operator/lessons/") &&
+    init?.method === "POST"
+  ) {
+    return new Promise<Response>((resolve) => {
+      qa.previewWrites.push({
+        path: String(input),
+        body: JSON.parse(String(init.body)),
+        signal: init.signal,
+        release: (value) =>
+          resolve(
+            typeof value === "number"
+              ? new Response("", { status: value })
+              : Response.json(value),
+          ),
+      });
+    });
+  }
   if (String(input) === "/api/v1/auth/csrf") {
     if (qa.deferAuthBootstrap)
       return controlledAuth(init?.signal, (release) =>
@@ -538,7 +563,17 @@ function AuthorHarness() {
     release: PreviewRelease | null;
     releaseId: string;
   };
-  const user = { ...reviewUser, role: "operator" as const };
+  const [user, setUser] = useState({
+    ...reviewUser,
+    role: "operator" as const,
+  });
+  qa.changeUser = () =>
+    setUser({
+      ...reviewUser,
+      id: "operator-b",
+      displayName: "Bob",
+      role: "operator",
+    });
   return (
     <LearningProvider user={user}>
       <main>
@@ -1028,6 +1063,28 @@ const router = createMemoryRouter(
                 id,
                 revision: Number(revision),
                 title: id === "qa-second" ? second.title : lesson.title,
+                blocks: [
+                  ...lesson.blocks,
+                  {
+                    type: "exercise",
+                    id: "preview-choice",
+                    exerciseType: "single-choice",
+                    promptZh: "选择问候",
+                    options: [
+                      { id: "bonjour", text: "Bonjour !" },
+                      { id: "merci", text: "Merci !" },
+                    ],
+                  },
+                ],
+                steps: [
+                  ...lesson.steps,
+                  {
+                    id: "preview-practice",
+                    kind: "practice",
+                    titleZh: "练习",
+                    blockIds: ["preview-choice"],
+                  },
+                ],
               }
             : null,
         };

@@ -19,12 +19,16 @@ export async function privateRequest<T>(
   path: string,
   method: "GET" | "PATCH" | "POST" | "PUT",
   body?: object,
+  signal?: AbortSignal,
 ): Promise<T> {
+  signal?.throwIfAborted();
   const headers: Record<string, string> = {};
   if (method !== "GET") {
     const bootstrap = await fetch("/api/v1/auth/csrf", {
       cache: "no-store",
-      signal: AbortSignal.timeout(10000),
+      signal: signal
+        ? AbortSignal.any([signal, AbortSignal.timeout(10000)])
+        : AbortSignal.timeout(10000),
     });
     if (!bootstrap.ok)
       throw new ApiRequestError(
@@ -33,6 +37,7 @@ export async function privateRequest<T>(
         "csrf",
       );
     headers["X-CSRF-Token"] = ((await bootstrap.json()) as CsrfToken).csrfToken;
+    signal?.throwIfAborted();
     headers["Content-Type"] = "application/json";
   }
   const response = await fetch(path, {
@@ -40,7 +45,9 @@ export async function privateRequest<T>(
     headers,
     body: body ? JSON.stringify(body) : undefined,
     cache: "no-store",
-    signal: AbortSignal.timeout(15000),
+    signal: signal
+      ? AbortSignal.any([signal, AbortSignal.timeout(15000)])
+      : AbortSignal.timeout(15000),
   });
   if (!response.ok) {
     const messages: Record<number, string> = {
