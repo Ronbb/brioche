@@ -1,5 +1,12 @@
 # 设计验证记录
 
+## 2026-10-06：手机词汇抽屉的模态焦点
+
+- 实际在公开阅读页 390px 点 Bonjour 后按 Tab，原知识 aside 虽已展示，activeElement 仍落在其外的背景正文，证实手机覆盖面板缺少模态焦点管理。
+- 新增 ResponsiveKnowledge：桌面保持原侧栏，手机采用 native dialog/showModal；同一时刻只挂载一份词汇/语法视图，避免重复收藏/复习控件。手机抽屉沿用原底部视觉、品牌配色、安全区与动效，用原生 backdrop 取代背景关闭按钮；对话名称关联当前词汇/语法标题。Escape、关闭按钮及外部点击关闭会清理当前解释，原生对话框负责焦点隔离与返回。
+- 独立 agent-browser 会话实测打开后可访问树只展示当前解释，连续 Tab 焦点留在 dialog 内；Escape 与关闭按钮后 dialog closed 且焦点返回 Bonjour。390px 截图核对底部抽屉构图；320px 无横向溢出。900px 打开状态变为侧栏且保留 bonjour，缩回 390px 恢复同一词的模态焦点，始终只有一个标题 ID。减少动效时抽屉 animationName=none。
+- TS 7 typecheck、client/SSR build、15 项 Web 协议测试和 diff 检查通过。这里验证访客公开阅读页；账号控件的宽度切换、辅助技术实际朗读、真实 iPhone 与完整故障流程仍待验收，不作为整体完成证明。
+
 ## 2026-10-06：键盘入口、页签与减少动效
 
 - 补全局“跳到正文”链接，只有键盘聚焦时显示，不占内容空间；正文 main 可接收程序/片段焦点。独立 agent-browser 会话从 profile 页面首次 Tab 实际聚焦链接，Enter 后 activeElement 为 page-content/main。

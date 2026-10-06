@@ -17,6 +17,31 @@
   transform: none;
 }
 
+.knowledge-sheet {
+  display: none;
+  border: 0;
+  margin: 0;
+  max-width: none;
+  width: 100%;
+  height: auto;
+  color: var(--ink);
+  inset: auto 0 0;
+}
+.knowledge-sheet::backdrop {
+  background: #38291f38;
+  backdrop-filter: blur(7px);
+}
+@media (max-width: 650px) {
+  .knowledge-sheet[open] {
+    display: block;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .knowledge-sheet[open] {
+    animation: drawer-enter 240ms ease-out;
+  }
+}
+
 :root {
   --paper: #f7f4ec;
   --surface: #fffefa;

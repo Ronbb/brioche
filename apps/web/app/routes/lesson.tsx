@@ -9,6 +9,7 @@ import { getCatalog, getLesson } from "../lib/api.server";
 import { StartLearning } from "../components/start-learning";
 import { Player, useLearning } from "../components/learning";
 import { Icon } from "../components/icon";
+import { ResponsiveKnowledge } from "../components/responsive-knowledge";
 import { readingUnits, wordUnit } from "../lib/recording-playback";
 import type { Route } from "./+types/lesson";
 export async function loader({ params }: Route.LoaderArgs) {
@@ -321,9 +322,10 @@ function LessonContent({
             )}
           </div>
         </div>
-        <aside
-          className={"knowledge" + (term || grammar ? " is-open" : "")}
-          aria-label="表达解释"
+        <ResponsiveKnowledge
+          open={!!(term || grammar)}
+          onDismiss={closeNote}
+          labelledBy={`${bodyId}-knowledge-title`}
         >
           <button
             className="icon-button note-close"
@@ -335,7 +337,7 @@ function LessonContent({
           {grammar ? (
             <>
               <span className="knowledge-label">语法</span>
-              <h2>{grammar.titleZh}</h2>
+              <h2 id={`${bodyId}-knowledge-title`}>{grammar.titleZh}</h2>
               <p className="explain">{grammar.bodyZh}</p>
               {grammar.examples.map((e, i) => (
                 <div className="grammar-example" key={i}>
@@ -354,7 +356,9 @@ function LessonContent({
           ) : term ? (
             <>
               <span className="knowledge-label">表达与词汇</span>
-              <h2 lang="fr">{term.lemma}</h2>
+              <h2 id={`${bodyId}-knowledge-title`} lang="fr">
+                {term.lemma}
+              </h2>
               <p className="meaning">{term.meaningZh}</p>
               <p className="explain">{term.noteZh}</p>
               <Bookmark
@@ -398,21 +402,16 @@ function LessonContent({
           ) : (
             <>
               <span className="knowledge-label">本课表达</span>
-              <h2 lang="fr">{lesson.knowledge.vocabulary[1]?.lemma}</h2>
+              <h2 id={`${bodyId}-knowledge-title`} lang="fr">
+                {lesson.knowledge.vocabulary[1]?.lemma}
+              </h2>
               <p className="meaning">
                 {lesson.knowledge.vocabulary[1]?.meaningZh}
               </p>
             </>
           )}
-        </aside>
+        </ResponsiveKnowledge>
       </div>
-      {(term || grammar) && (
-        <button
-          className="knowledge-backdrop"
-          aria-label="关闭解释"
-          onClick={closeNote}
-        />
-      )}
     </section>
   );
 }
