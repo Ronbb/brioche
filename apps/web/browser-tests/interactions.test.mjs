@@ -739,6 +739,68 @@ test("learning step and completion preserve waiting focus and retry their exact 
   assert.equal(await evaluate("qa.learningWrites.length"), 4);
 });
 
+test("restored multi-step confirmation advances once without another write", async () => {
+  await open("session-multi");
+  await browser("focus", ".learning-actions .primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.learningWrites.length===1");
+  const original = await evaluate("qa.learningWrites[0]");
+  await evaluate("qa.learningRelease[0](503)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('.learning-actions .primary')?.textContent.includes('重试保存')",
+  );
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", ".pending-navigation[open]");
+  await browser("focus", ".pending-navigation .text-button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.route==='/login'");
+  await evaluate("qa.navigate('/')");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('.learning-actions .primary')?.textContent.includes('重试保存')",
+  );
+  await browser("focus", ".learning-actions .primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.learningWrites.length===2");
+  assert.deepEqual(await evaluate("qa.learningWrites[1]"), original);
+  await evaluate(
+    "qa.learningRelease[1]({id:'qa-session',lessonId:'reading-protocol',revision:1,version:2,lastStepId:'read',confirmedStepIds:['read'],hintedExerciseIds:[],attempts:[],completedAt:null,firstCompletedAt:null})",
+  );
+  await browser(
+    "wait",
+    "--fn",
+    "!sessionStorage.getItem('brioche.learning.v1:qa-account:qa-session:1:pending')",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.learning-step-heading h2').textContent",
+    ),
+    "回顾",
+  );
+  await browser("wait", "--fn", "document.activeElement.textContent==='回顾'");
+  assert.equal(await evaluate("qa.learningWrites.length"), 2);
+  await browser("focus", ".learning-actions .text-button");
+  await press("Enter");
+  await browser("wait", "--fn", "document.activeElement.textContent==='阅读'");
+  assert.equal(await evaluate("qa.learningWrites.length"), 2);
+  await browser("focus", ".learning-actions .primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.learningWrites.length===3");
+  assert.equal(await evaluate("qa.learningWrites[2].version"), 2);
+  assert.notEqual(
+    await evaluate("qa.learningWrites[2].idempotencyKey"),
+    original.idempotencyKey,
+  );
+  await evaluate(
+    "qa.learningRelease[2]({id:'qa-session',lessonId:'reading-protocol',revision:1,version:3,lastStepId:'read',confirmedStepIds:['read'],hintedExerciseIds:[],attempts:[],completedAt:null,firstCompletedAt:null})",
+  );
+  await browser("wait", "--fn", "document.activeElement.textContent==='回顾'");
+  assert.equal(await evaluate("qa.learningWrites.length"), 3);
+});
+
 test("learning navigation keeps the exact pending request across leaving and returning", async () => {
   await open("session");
   await browser("set", "viewport", "320", "700");

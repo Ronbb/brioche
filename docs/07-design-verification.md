@@ -755,3 +755,10 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - 学习页步骤确认/完成按钮的等待状态现使用aria-disabled/aria-busy并保留焦点；未满足步骤/题目条件、初始草稿恢复未完成仍原生disabled。useLearningSession显式暴露restored供控件区分初始化和异步等待，原blocked/pending/busy/stale检查不变，完成按钮也显式核对blocked。重新读取/重试/已完成页待确认按钮保留等待焦点，仍由hook的同步busy锁保护。
 - 两项定向浏览器62.16s通过：每个初次提交重复Enter只有一请求，pending焦点/busy=true；503后原按钮保持聚焦，重试路径/方法/完整body含idempotencyKey均相同；完成返回成功后才显示本课已完成并标题聚焦，pending清空；既有学习离页/返回原请求恢复也通过。装配记录真实privateRequest目标路径及method，没有假装写入真实数据库。独立随机Vite/Chromium已自动清理，无未捕获页面错误。
 - 28Web/12SSR、TS7、SSR/client build及目标格式/diff通过，本轮未重跑现42项全组件浏览器或三项生产页面壳。固定b19b763的Check37463008841本轮读取in_progress，不能称终态成功。更多跨步骤恢复/冲突组合、真实数据库与设备、完整内容人工审校/正式录音和生产门槛继续保留。
+
+## 2026-10-06：多步骤确认恢复后的推进
+
+- 补合成的阅读→回顾两步骤账号课程，实际Learning/MemoryRouter Chromium在步骤PUT收到503后确认离页、返回读取sessionStorage原请求、重试200。修复前pending已清除但标题仍是阅读，实际断言阅读!==回顾；原步骤onSaved回调不在持久化请求中，恢复无法调用它。
+- useLearningSession现对精确本会话/课程步骤PUT且成功结果含对应confirmedStepId生成步骤确认（step ID + 原幂等key），页面layout effect按key只消费一次，推进到该步骤的下一步并沿用既有audio.stop、步草稿及标题焦点。正常步骤写入也使用同一确认路径，练习自身onSaved保持原逻辑；GET冲突恢复/失败/未确认结果不产生推进确认，已完成页不再推进。
+- 三项定向Chromium72.92s通过（单步骤确认/完成503重试、恢复多步骤推进、原离页待确认恢复）。补正常推进断言后，多步骤用例再42.46s通过：恢复重试body/key相同、不追加第三写请求，标题回顾聚焦；回看阅读不会消费旧回执或自动新增请求，主动重新确认才以version2和新key发第三次PUT并再推进到回顾。没有假定响应丢失必然已commit；装配是受控HTTP，不代替真实数据库幂等证明。独立随机Vite/浏览器已自动清理。
+- 首轮TS7发现泛型结果局部变量推断为Result，显式标注LearningState恢复上下文收窄后类型通过；该类型声明无运行时变化。28Web/12SSR、client/SSR build、目标格式/diff通过。现43项组件浏览器及三项生产页面壳本轮未全量重跑；多账号/冲突组合、真实设备、人工内容/正式录音与生产验收继续保留。

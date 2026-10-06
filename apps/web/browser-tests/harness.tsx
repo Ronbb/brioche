@@ -461,7 +461,28 @@ const progress: LearningState = {
   firstCompletedAt: null,
 };
 function SessionHarness() {
-  const session = { lesson, progress };
+  const session = {
+    lesson:
+      kind === "session-multi"
+        ? {
+            ...lesson,
+            steps: [
+              ...lesson.steps,
+              {
+                id: "recap",
+                kind: "recap",
+                titleZh: "回顾",
+                blockIds: ["evening"],
+              },
+            ],
+            completion: {
+              ...lesson.completion,
+              requiredStepIds: ["read", "recap"],
+            },
+          }
+        : lesson,
+    progress,
+  };
   return (
     <LearningProvider user={kind === "session-revoked" ? reviewUser : null}>
       <main>
@@ -1089,7 +1110,9 @@ const router = createMemoryRouter(
         <ChoicesHarness />
       ) : kind === "profile" ? (
         <ProfileHarness />
-      ) : kind === "session" || kind === "session-revoked" ? (
+      ) : kind === "session" ||
+        kind === "session-revoked" ||
+        kind === "session-multi" ? (
         <SessionHarness />
       ) : kind === "reviews" ? (
         <ReviewsHarness />

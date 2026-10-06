@@ -33,6 +33,10 @@ export function useLearningSession(initial: LearningSession, scope: string) {
     >({}),
     [uncertain, setUncertain] = useState(false),
     [readFailed, setReadFailed] = useState(false),
+    [stepConfirmation, setStepConfirmation] = useState<{
+      id: string;
+      key: string;
+    } | null>(null),
     [unavailable, setUnavailable] = useState<404 | 410 | null>(null);
   const latest = useRef(initial.progress),
     busy = useRef(false),
@@ -144,8 +148,31 @@ export function useLearningSession(initial: LearningSession, scope: string) {
         (job.body as Record<string, unknown>).idempotencyKey,
       );
       if (!alive.current) return null;
-      accept("progress" in result ? result.progress : result);
+      const confirmedProgress: LearningState =
+        "progress" in result ? result.progress : result;
+      accept(confirmedProgress);
       const fields = job.body as Record<string, unknown>;
+      const confirmedStep =
+        job.method === "PUT"
+          ? initial.lesson.steps.find(
+              (step) =>
+                job.path ===
+                "/api/v1/learning-sessions/" +
+                  initial.progress.id +
+                  "/steps/" +
+                  encodeURIComponent(step.id),
+            )
+          : undefined;
+      if (
+        confirmedStep &&
+        typeof fields.idempotencyKey === "string" &&
+        confirmedProgress.confirmedStepIds.includes(confirmedStep.id)
+      ) {
+        setStepConfirmation({
+          id: confirmedStep.id,
+          key: fields.idempotencyKey,
+        });
+      }
       if (
         typeof fields.exerciseId === "string" &&
         typeof fields.idempotencyKey === "string"
@@ -234,6 +261,7 @@ export function useLearningSession(initial: LearningSession, scope: string) {
   return {
     progress,
     confirmedAttempts,
+    stepConfirmation,
     restored,
     saving,
     error,

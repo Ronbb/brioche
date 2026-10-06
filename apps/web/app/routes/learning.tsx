@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, redirect } from "react-router";
 import type { LearningSession } from "@brioche/contracts/LearningSession";
 import type { LearningState } from "@brioche/contracts/LearningState";
@@ -102,6 +102,19 @@ function Session({
       heading.current?.scrollIntoView({ block: "start", behavior: "instant" });
     });
   }
+  const consumedStepConfirmation = useRef<string | null>(null);
+  useLayoutEffect(() => {
+    const confirmation = session.stepConfirmation;
+    if (!confirmation || consumedStepConfirmation.current === confirmation.key)
+      return;
+    consumedStepConfirmation.current = confirmation.key;
+    if (session.progress.completedAt) return;
+    const confirmedIndex = lesson.steps.findIndex(
+      (step) => step.id === confirmation.id,
+    );
+    if (confirmedIndex >= 0 && confirmedIndex + 1 < lesson.steps.length)
+      move(confirmedIndex + 1);
+  }, [session.stepConfirmation]);
   const requiredInStep = lesson.completion.requiredExerciseIds.filter((id) =>
     step.blockIds.includes(id),
   );
@@ -113,10 +126,6 @@ function Session({
     void session.write<LearningState>(
       "/steps/" + encodeURIComponent(step.id),
       "PUT",
-      {},
-      () => {
-        if (index + 1 < lesson.steps.length) move(index + 1);
-      },
     );
   }
   const allRequired =
