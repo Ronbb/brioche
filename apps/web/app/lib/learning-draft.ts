@@ -49,6 +49,10 @@ export function clearLearningDrafts(userId: string) {
     /* private browsing may deny storage */
   }
 }
+export function clearSessionDrafts(scope: string) {
+  for (const key of storedKeys())
+    if (key.startsWith(scope + ":")) saveDraft(key, null);
+}
 export function clearPending(key: string, idempotencyKey: unknown) {
   const stored = readDraft(key) as {
     body?: { idempotencyKey?: unknown };

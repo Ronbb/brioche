@@ -6,6 +6,7 @@ import {
   readDraft,
   saveDraft,
   clearLearningDrafts,
+  clearSessionDrafts,
   clearPending,
   validAnswer,
   validPending,
@@ -76,7 +77,7 @@ test("pending recovery accepts only this fixed session's valid mutations", () =>
     ),
   );
 });
-test("tab storage restores exact JSON, separates owners and clears only signed-out owner's data", () => {
+test("tab storage separates owners and revisions and clears only the intended owner or session", () => {
   const data: Record<string, string> = {};
   const storage = {
     getItem: (k: string) => data[k] ?? null,
@@ -109,6 +110,21 @@ test("tab storage restores exact JSON, separates owners and clears only signed-o
   clearPending(a, "newer");
   assert.equal(readDraft(a), null);
   saveDraft(b, { other: true });
+  const anotherSession = draftScope("a", "session-other", 1) + ":answer:test",
+    anotherRevision = draftScope("a", "session", 2) + ":pending",
+    withdrawnScope = draftScope("a", "session", 1);
+  saveDraft(anotherSession, { answer: "kept" });
+  saveDraft(anotherRevision, { revision: 2 });
+  saveDraft(withdrawnScope + ":answer:test", { answer: "removed" });
+  saveDraft(withdrawnScope + ":step", "step-read");
+  saveDraft(a, { body: { idempotencyKey: "pending" } });
+  clearSessionDrafts(withdrawnScope);
+  assert.equal(readDraft(a), null);
+  assert.equal(readDraft(withdrawnScope + ":answer:test"), null);
+  assert.equal(readDraft(withdrawnScope + ":step"), null);
+  assert.deepEqual(readDraft(anotherSession), { answer: "kept" });
+  assert.deepEqual(readDraft(anotherRevision), { revision: 2 });
+  assert.deepEqual(readDraft(b), { other: true });
   clearLearningDrafts("a");
   assert.equal(readDraft(a), null);
   assert.deepEqual(readDraft(b), { other: true });
@@ -123,4 +139,5 @@ test("tab storage restores exact JSON, separates owners and clears only signed-o
   assert.equal(readDraft(a), null);
   assert.equal(saveDraft(a, { pending: true }), false);
   clearLearningDrafts("a");
+  clearSessionDrafts(withdrawnScope);
 });

@@ -11,6 +11,7 @@ import {
 import { operationKey } from "../lib/operation-key";
 import {
   clearPending,
+  clearSessionDrafts,
   readDraft,
   saveDraft,
   validPending,
@@ -31,12 +32,24 @@ export function useLearningSession(initial: LearningSession, scope: string) {
       Record<string, string>
     >({}),
     [uncertain, setUncertain] = useState(false),
-    [readFailed, setReadFailed] = useState(false);
+    [readFailed, setReadFailed] = useState(false),
+    [unavailable, setUnavailable] = useState<404 | 410 | null>(null);
   const latest = useRef(initial.progress),
     busy = useRef(false),
     pending = useRef<Pending | null>(null),
     alive = useRef(true),
-    stale = useRef(false);
+    stale = useRef(false),
+    removed = useRef(false);
+  function removeUnavailable(status: 404 | 410) {
+    removed.current = true;
+    stale.current = true;
+    pending.current = null;
+    clearSessionDrafts(scope);
+    setUncertain(false);
+    setReadFailed(false);
+    setUnavailable(status);
+    setError("");
+  }
   useEffect(() => {
     alive.current = true;
     const restored = readDraft(scope + ":pending");
@@ -65,22 +78,37 @@ export function useLearningSession(initial: LearningSession, scope: string) {
     setProgress(value);
   }
   async function readLatest() {
-    const fresh = await privateRequest<LearningSession>(
-      "/api/v1/learning-sessions/" + initial.progress.id,
-      "GET",
-    );
-    if (!alive.current) return;
+    let fresh: LearningSession;
+    try {
+      fresh = await privateRequest<LearningSession>(
+        "/api/v1/learning-sessions/" + initial.progress.id,
+        "GET",
+      );
+    } catch (failure) {
+      if (
+        alive.current &&
+        failure instanceof ApiRequestError &&
+        (failure.status === 404 || failure.status === 410)
+      ) {
+        removeUnavailable(failure.status);
+        return false;
+      }
+      throw failure;
+    }
+    if (!alive.current) return false;
     accept(fresh.progress);
     stale.current = false;
     setReadFailed(false);
+    return true;
   }
   async function refresh() {
-    if (busy.current || pending.current || !alive.current) return;
+    if (busy.current || pending.current || removed.current || !alive.current)
+      return;
     busy.current = true;
     setSaving(true);
     try {
-      await readLatest();
-      if (alive.current) setError("最新进度已读取，请检查当前记录后再确认。");
+      if ((await readLatest()) && alive.current)
+        setError("最新进度已读取，请检查当前记录后再确认。");
     } catch {
       if (alive.current)
         setError("最新进度暂时无法读取。答案仍保留，请重新读取后继续。");
@@ -90,7 +118,7 @@ export function useLearningSession(initial: LearningSession, scope: string) {
     }
   }
   async function send<T extends Result>(job: Pending): Promise<T | null> {
-    if (busy.current || !alive.current) return null;
+    if (busy.current || removed.current || !alive.current) return null;
     busy.current = true;
     pending.current = job;
     if (
@@ -133,6 +161,13 @@ export function useLearningSession(initial: LearningSession, scope: string) {
       if (!alive.current) return null;
       if (
         failure instanceof ApiRequestError &&
+        (failure.status === 404 || failure.status === 410)
+      ) {
+        removeUnavailable(failure.status);
+        return null;
+      }
+      if (
+        failure instanceof ApiRequestError &&
         definitiveWriteFailure(failure.status)
       ) {
         clearPending(
@@ -145,7 +180,7 @@ export function useLearningSession(initial: LearningSession, scope: string) {
           stale.current = true;
           setReadFailed(true);
           try {
-            await readLatest();
+            if (!(await readLatest())) return null;
           } catch {
             if (alive.current)
               setError("最新进度暂时无法读取。答案仍保留，请重新读取后继续。");
@@ -156,11 +191,9 @@ export function useLearningSession(initial: LearningSession, scope: string) {
         setError(
           failure.status === 409
             ? "另一处学习进度已更新，请检查当前记录后再确认。"
-            : failure.status === 410
-              ? "课程已撤回，暂时无法继续学习。"
-              : failure.status === 400
-                ? "请检查答案后再确认。"
-                : failure.message,
+            : failure.status === 400
+              ? "请检查答案后再确认。"
+              : failure.message,
         );
       } else {
         // Keep the exact body/key. A server commit may have happened before the connection failed.
@@ -202,7 +235,8 @@ export function useLearningSession(initial: LearningSession, scope: string) {
     error,
     uncertain,
     readFailed,
-    blocked: saving || uncertain || readFailed || !restored,
+    unavailable,
+    blocked: saving || uncertain || readFailed || !!unavailable || !restored,
     write,
     retry,
     refresh,

@@ -77,6 +77,15 @@ function Session({
     return () => cancelAnimationFrame(frame);
   }, [completionConfirmed]);
   useEffect(() => {
+    if (!session.unavailable) return;
+    audio.stop();
+    const frame = requestAnimationFrame(() => {
+      heading.current?.focus();
+      heading.current?.scrollIntoView({ block: "start", behavior: "instant" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [session.unavailable]);
+  useEffect(() => {
     const stored = readDraft(scope + ":step");
     const restored = lesson.steps.findIndex((step) => step.id === stored);
     if (restored >= 0) setIndex(restored);
@@ -113,6 +122,23 @@ function Session({
     ) &&
     lesson.completion.requiredExerciseIds.every((id) =>
       session.progress.attempts.some((attempt) => attempt.exerciseId === id),
+    );
+  if (session.unavailable)
+    return (
+      <section className="page-arrive learning-page">
+        <div className="lesson-header">
+          <h1 ref={heading} tabIndex={-1}>
+            {session.unavailable === 410 ? "课程已撤回" : "学习记录暂不可用"}
+          </h1>
+          <p className="practice-intro">
+            当前无法继续这堂课，已保存的历史学习记录不会因此删除。
+          </p>
+          <Link className="primary" to="/">
+            回到今天
+            <Icon name="arrow" />
+          </Link>
+        </div>
+      </section>
     );
   return (
     <section className="page-arrive learning-page">
