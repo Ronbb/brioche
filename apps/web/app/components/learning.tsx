@@ -13,6 +13,7 @@ import type { UserProfile } from "@brioche/contracts/UserProfile";
 import type { UpdateProfileRequest } from "@brioche/contracts/UpdateProfileRequest";
 import { ApiRequestError, privateRequest } from "../lib/api.client";
 import { clearLearningDrafts } from "../lib/learning-draft";
+import { withFrenchVoice } from "../lib/speech-voices";
 import {
   RecordingPlayer,
   continuousRecording,
@@ -88,6 +89,7 @@ export function LearningProvider({
     dialog = useRef<HTMLDialogElement>(null);
   const location = useLocation();
   const restartPaused = useRef(false);
+  const voiceWait = useRef<AbortController | null>(null);
   const recording = useRef<RecordingPlayer | null>(null);
   function acceptProfile(value: UserProfile | null) {
     if (savedProfile.current && savedProfile.current.id !== value?.id) {
@@ -189,6 +191,8 @@ export function LearningProvider({
     setPlayer(value);
   }
   function stop(keepRecording = false) {
+    voiceWait.current?.abort();
+    voiceWait.current = null;
     restartPaused.current = false;
     generation.current++;
     if (typeof window !== "undefined") window.speechSynthesis?.cancel();
@@ -211,68 +215,86 @@ export function LearningProvider({
       notify("当前浏览器不支持语音朗读");
       return;
     }
-    const gen = generation.current,
-      voices = window.speechSynthesis.getVoices(),
-      voice =
-        voices.find((v) => v.lang === (unit.locale ?? "fr-FR")) ??
-        voices.find((v) => v.lang.startsWith("fr"));
-    if (!voice) {
-      stop();
-      notify("当前浏览器没有可用的法语语音");
-      return;
-    }
-    const utterance = new SpeechSynthesisUtterance(unit.text);
-    utterance.lang = unit.locale ?? "fr-FR";
-    utterance.voice = voice;
-    utterance.rate = rateRef.current;
+    const gen = generation.current;
+    voiceWait.current?.abort();
+    const pending = new AbortController();
+    voiceWait.current = pending;
     update({
       status: "loading",
       id: unit.id,
       progress: index.current / queue.current.length,
     });
-    utterance.onstart = () => {
-      if (gen === generation.current && state.current.status === "paused") {
-        window.speechSynthesis.pause();
-        return;
-      }
-      if (gen === generation.current)
-        update({
-          status: "playing",
-          id: unit.id,
-          progress: index.current / queue.current.length,
-        });
-    };
-    utterance.onboundary = (event) => {
-      if (gen === generation.current && state.current.status !== "paused")
-        update({
-          status: "playing",
-          id: unit.id,
-          progress:
-            (index.current + event.charIndex / Math.max(1, unit.text.length)) /
-            queue.current.length,
-        });
-    };
-    utterance.onend = () => {
-      if (gen === generation.current) {
-        index.current++;
+    withFrenchVoice(
+      window.speechSynthesis,
+      unit.locale ?? "fr-FR",
+      pending.signal,
+      (voice) => {
+        if (gen !== generation.current) return;
+        voiceWait.current = null;
+        if (!voice) {
+          stop();
+          notify("当前浏览器没有可用的法语语音");
+          return;
+        }
         if (state.current.status === "paused") {
           restartPaused.current = true;
           return;
         }
-        speakCurrent();
-      }
-    };
-    utterance.onerror = (event) => {
-      if (
-        gen === generation.current &&
-        event.error !== "canceled" &&
-        event.error !== "interrupted"
-      ) {
-        stop();
-        notify("朗读暂时无法播放，请重试。");
-      }
-    };
-    window.speechSynthesis.speak(utterance);
+        const utterance = new SpeechSynthesisUtterance(unit.text);
+        utterance.lang = unit.locale ?? "fr-FR";
+        utterance.voice = voice;
+        utterance.rate = rateRef.current;
+        update({
+          status: "loading",
+          id: unit.id,
+          progress: index.current / queue.current.length,
+        });
+        utterance.onstart = () => {
+          if (gen === generation.current && state.current.status === "paused") {
+            window.speechSynthesis.pause();
+            return;
+          }
+          if (gen === generation.current)
+            update({
+              status: "playing",
+              id: unit.id,
+              progress: index.current / queue.current.length,
+            });
+        };
+        utterance.onboundary = (event) => {
+          if (gen === generation.current && state.current.status !== "paused")
+            update({
+              status: "playing",
+              id: unit.id,
+              progress:
+                (index.current +
+                  event.charIndex / Math.max(1, unit.text.length)) /
+                queue.current.length,
+            });
+        };
+        utterance.onend = () => {
+          if (gen === generation.current) {
+            index.current++;
+            if (state.current.status === "paused") {
+              restartPaused.current = true;
+              return;
+            }
+            speakCurrent();
+          }
+        };
+        utterance.onerror = (event) => {
+          if (
+            gen === generation.current &&
+            event.error !== "canceled" &&
+            event.error !== "interrupted"
+          ) {
+            stop();
+            notify("朗读暂时无法播放，请重试。");
+          }
+        };
+        window.speechSynthesis.speak(utterance);
+      },
+    );
   }
   function playRecording(clip: RecordingClip, whole: boolean) {
     const gen = generation.current;
@@ -313,11 +335,7 @@ export function LearningProvider({
           notify("请再次点击播放，允许浏览器开始朗读。");
           return;
         }
-        const voices = window.speechSynthesis?.getVoices() ?? [];
-        if (
-          !window.SpeechSynthesisUtterance ||
-          !voices.some((voice) => voice.lang.startsWith("fr"))
-        ) {
+        if (!window.SpeechSynthesisUtterance || !window.speechSynthesis) {
           stop();
           notify("录音暂时无法播放，请重试。");
           return;
@@ -328,7 +346,7 @@ export function LearningProvider({
         if (whole && currentIndex >= 0) index.current = currentIndex;
         queue.current = queue.current.map(({ recording: _, ...unit }) => unit);
         generation.current++;
-        notify("录音暂时不可用，已切换为浏览器语音。");
+        notify("录音暂时不可用，正在尝试浏览器语音。");
         speakCurrent();
       },
     });
@@ -362,10 +380,14 @@ export function LearningProvider({
       if (recording.current?.isActive) recording.current.resume();
       else if (restartPaused.current) {
         restartPaused.current = false;
+        window.speechSynthesis.resume();
         speakCurrent();
       } else {
         window.speechSynthesis.resume();
-        update({ ...state.current, status: "playing" });
+        update({
+          ...state.current,
+          status: voiceWait.current ? "loading" : "playing",
+        });
       }
     } else play(units);
   }
@@ -382,6 +404,8 @@ export function LearningProvider({
       window.speechSynthesis.cancel();
       speakCurrent();
     } else if (state.current.status === "paused") {
+      voiceWait.current?.abort();
+      voiceWait.current = null;
       generation.current++;
       window.speechSynthesis.cancel();
       restartPaused.current = true;
@@ -399,6 +423,8 @@ export function LearningProvider({
   }, [location.pathname, location.search, user?.id]);
   useEffect(
     () => () => {
+      voiceWait.current?.abort();
+      voiceWait.current = null;
       generation.current++;
       window.speechSynthesis?.cancel();
       recording.current?.stop();
