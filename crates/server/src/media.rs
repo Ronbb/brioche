@@ -486,6 +486,35 @@ pub async fn import_bundle(
     store: &Path,
     actor: &str,
 ) -> Result<()> {
+    import_bundle_impl(db, bundle, source_root, store, actor, None).await
+}
+pub(crate) async fn import_operator_bundle(
+    db: &DatabaseConnection,
+    bundle: AssetBundle,
+    source_root: &Path,
+    store: &Path,
+    actor: i64,
+    reason: &str,
+) -> Result<()> {
+    crate::admin::reason(reason)?;
+    import_bundle_impl(
+        db,
+        bundle,
+        source_root,
+        store,
+        &format!("user:{actor}"),
+        Some((actor, reason)),
+    )
+    .await
+}
+async fn import_bundle_impl(
+    db: &DatabaseConnection,
+    bundle: AssetBundle,
+    source_root: &Path,
+    store: &Path,
+    actor: &str,
+    operator: Option<(i64, &str)>,
+) -> Result<()> {
     bundle.validate_author(actor)?;
     ensure!(
         bundle.schema_version == "1.0"
@@ -558,6 +587,24 @@ pub async fn import_bundle(
         })
         .await??;
     let tx = db.begin().await?;
+    if let Some((actor, _)) = operator {
+        exec(
+            &tx,
+            "SELECT pg_advisory_xact_lock(hashtextextended('account-admin',0))",
+            vec![],
+        )
+        .await?;
+        let row = one(
+            &tx,
+            "SELECT role FROM users WHERE id=$1",
+            vec![actor.into()],
+        )
+        .await?
+        .ok_or(AppError::Forbidden)?;
+        if field::<String>(&row, "role")? != "operator" {
+            return Err(AppError::Forbidden.into());
+        }
+    }
     one(
         &tx,
         "SELECT generation FROM content_state WHERE singleton FOR UPDATE",
@@ -576,6 +623,7 @@ pub async fn import_bundle(
         )
         .await
         .map_err(anyhow::Error::msg)?;
+        ensure!(existing.is_none() || operator.is_none(), AppError::Conflict);
         ensure!(
             existing.is_none(),
             "/assets/{index}/revision: asset revision already registered"
@@ -632,7 +680,21 @@ pub async fn import_bundle(
         );
         exec(&tx,"INSERT INTO character_revisions(character_id,revision,snapshot,avatar_id,avatar_revision) VALUES($1,$2,$3,$4,$5)",vec![snapshot.character_id.clone().into(),(snapshot.revision as i32).into(),serde_json::to_value(snapshot)?.into(),snapshot.avatar_id.clone().into(),(character.avatar_revision as i32).into()]).await.map_err(anyhow::Error::msg)?;
     }
-    exec(&tx,"INSERT INTO asset_import_audit(actor,bundle_hash,asset_count,character_count) VALUES($1,$2,$3,$4)",vec![actor.into(),bundle_hash.into(),(bundle.assets.len() as i32).into(),(bundle.characters.len() as i32).into()]).await.map_err(anyhow::Error::msg)?;
+    let target = operator.map(|_| {
+        bundle
+            .assets
+            .iter()
+            .map(|a| format!("{} v{}", a.asset_id, a.revision))
+            .chain(
+                bundle
+                    .characters
+                    .iter()
+                    .map(|c| format!("{} v{}", c.snapshot.character_id, c.snapshot.revision)),
+            )
+            .collect::<Vec<_>>()
+            .join(", ")
+    });
+    exec(&tx,"INSERT INTO asset_import_audit(actor,bundle_hash,asset_count,character_count,actor_id,reason,target) VALUES($1,$2,$3,$4,$5,$6,$7)",vec![actor.into(),bundle_hash.into(),(bundle.assets.len() as i32).into(),(bundle.characters.len() as i32).into(),operator.map(|(id,_)|id).into(),operator.map(|(_,reason)|reason.to_owned()).into(),target.into()]).await.map_err(anyhow::Error::msg)?;
     tx.commit().await?;
     Ok(())
 }

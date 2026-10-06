@@ -286,6 +286,37 @@ impl Browser {
         let token = backend.issue_token(email, false, operator).await.unwrap();
         assert_eq!(self.send("POST","/api/v1/auth/accept-invite",Some(json!({"token":token,"email":email,"displayName":"Test","password":"correct horse brioche fromage"})),true).await.0,200);
     }
+    async fn upload_asset(&self, document: Value, file: &[u8], protect: bool) -> (u16, Value) {
+        let boundary = "brioche-test-boundary";
+        let mut body=format!("--{boundary}\r\nContent-Disposition: form-data; name=\"document\"\r\n\r\n{}\r\n--{boundary}\r\nContent-Disposition: form-data; name=\"file\"; filename=\"../../untrusted.svg\"\r\nContent-Type: image/svg+xml\r\n\r\n",document).into_bytes();
+        body.extend_from_slice(file);
+        body.extend_from_slice(format!("\r\n--{boundary}--\r\n").as_bytes());
+        let mut request = Request::builder()
+            .method("POST")
+            .uri("/api/v1/operator/assets")
+            .header("cookie", &self.cookie)
+            .header(
+                "content-type",
+                format!("multipart/form-data; boundary={boundary}"),
+            );
+        if protect {
+            request = request
+                .header("origin", "http://localhost:5173")
+                .header("x-csrf-token", &self.csrf);
+        }
+        let response = self
+            .app
+            .clone()
+            .oneshot(request.body(Body::from(body)).unwrap())
+            .await
+            .unwrap();
+        let status = response.status().as_u16();
+        let bytes = response.into_body().collect().await.unwrap().to_bytes();
+        (
+            status,
+            serde_json::from_slice(&bytes).unwrap_or(Value::Null),
+        )
+    }
 }
 #[tokio::test]
 #[ignore = "set TEST_DATABASE_URL to a dedicated PostgreSQL database"]
@@ -339,6 +370,110 @@ async fn approvals_permissions_concurrency_and_publication() {
         .register(&backend, "operator@example.test", true)
         .await;
     let voices_path = "/api/v1/operator/characters";
+    let upload = json!({"assetId":"qa-web-upload","revision":1,"mimeType":"image/svg+xml","altZh":"隔离上传","creditZh":"仅测试","source":"test:synthetic","license":"LicenseRef-TestOnly","creator":"test fixture","rightsConfirmed":true,"reason":"isolated asset upload"});
+    let svg = format!(
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\"><!--{}--><rect width=\"96\" height=\"96\" fill=\"red\"/></svg>",
+        "x".repeat(20_000)
+    );
+    assert_eq!(
+        visitor
+            .upload_asset(upload.clone(), svg.as_bytes(), true)
+            .await
+            .0,
+        401
+    );
+    assert_eq!(
+        learner
+            .upload_asset(upload.clone(), svg.as_bytes(), true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .upload_asset(upload.clone(), svg.as_bytes(), false)
+            .await
+            .0,
+        403
+    );
+    let mut invalid = upload.clone();
+    invalid["rightsConfirmed"] = json!(false);
+    assert_eq!(
+        operator.upload_asset(invalid, svg.as_bytes(), true).await.0,
+        400
+    );
+    assert_eq!(operator.upload_asset(upload.clone(),b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"><script>alert(1)</script></svg>",true).await.0,400);
+    assert_eq!(
+        operator
+            .upload_asset(upload.clone(), b"not an image", true)
+            .await
+            .0,
+        400
+    );
+    let first_upload = operator
+        .upload_asset(upload.clone(), svg.as_bytes(), true)
+        .await;
+    assert_eq!(first_upload.0, 200);
+    assert_eq!(
+        first_upload.1,
+        json!({"assetId":"qa-web-upload","revision":1})
+    );
+    assert_eq!(
+        operator
+            .upload_asset(upload.clone(), svg.as_bytes(), true)
+            .await
+            .0,
+        409
+    );
+    let row=db.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT count(*) AS n FROM asset_import_audit a JOIN users u ON a.actor_id=u.id WHERE u.email='operator@example.test' AND a.reason='isolated asset upload'".to_owned())).await.unwrap().unwrap();
+    assert_eq!(row.try_get::<i64>("", "n").unwrap(), 1);
+    let upload_history = operator
+        .send("GET", "/api/v1/operator/history", None, true)
+        .await;
+    assert!(
+        upload_history.1["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|item| item["action"] == "assetImport"
+                && item["target"] == "qa-web-upload v1"
+                && item["reason"] == "isolated asset upload")
+    );
+    let mut invalid = upload.clone();
+    invalid["assetId"] = json!("../escape");
+    assert_eq!(
+        operator.upload_asset(invalid, svg.as_bytes(), true).await.0,
+        400
+    );
+    let mut invalid = upload.clone();
+    invalid["reason"] = json!("");
+    assert_eq!(
+        operator.upload_asset(invalid, svg.as_bytes(), true).await.0,
+        400
+    );
+    let image = operator
+        .app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri("/api/v1/operator/assets/qa-web-upload/1/file")
+                .header("cookie", &operator.cookie)
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(image.status(), 200);
+    assert_eq!(
+        image
+            .into_body()
+            .collect()
+            .await
+            .unwrap()
+            .to_bytes()
+            .as_ref(),
+        svg.as_bytes()
+    );
     let assets_path = "/api/v1/operator/assets";
     let file_path = "/api/v1/operator/assets/avatar-camille-v1/1/file";
     for path in [assets_path, file_path] {
@@ -347,7 +482,7 @@ async fn approvals_permissions_concurrency_and_publication() {
     }
     let registry = operator.send("GET", assets_path, None, true).await;
     assert_eq!(registry.0, 200);
-    assert_eq!(registry.1["items"].as_array().unwrap().len(), 4);
+    assert_eq!(registry.1["items"].as_array().unwrap().len(), 5);
     assert!(registry.1["items"].as_array().unwrap().iter().all(|item| {
         item.get("file").is_none()
             && item.get("provenance").is_none()

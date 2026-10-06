@@ -33,3 +33,32 @@ test("canceled admin writes cannot issue a token after late CSRF bootstrap", asy
     globalThis.fetch = original;
   }
 });
+
+test("multipart admin writes preserve browser boundaries and the CSRF header", async () => {
+  const original = globalThis.fetch;
+  const body = new FormData();
+  body.set("document", "{}");
+  body.set("file", new Blob(["svg"]), "test.svg");
+  try {
+    let writes = 0;
+    globalThis.fetch = async (input, init) => {
+      if (String(input).endsWith("/csrf"))
+        return new Response(JSON.stringify({ csrfToken: "controlled" }));
+      writes++;
+      assert.equal(init?.body, body);
+      const headers = new Headers(init?.headers);
+      assert.equal(headers.has("content-type"), false);
+      assert.equal(headers.get("x-csrf-token"), "controlled");
+      return new Response(
+        JSON.stringify({ assetId: "test-image", revision: 1 }),
+      );
+    };
+    assert.deepEqual(await adminWrite("assets", body), {
+      assetId: "test-image",
+      revision: 1,
+    });
+    assert.equal(writes, 1);
+  } finally {
+    globalThis.fetch = original;
+  }
+});

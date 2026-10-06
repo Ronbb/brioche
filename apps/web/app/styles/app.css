@@ -3775,3 +3775,10 @@ h2[tabindex="-1"]:focus {
 .admin-asset dt { color: var(--muted); }
 .admin-asset dd { margin: 0; overflow-wrap: anywhere; }
 .admin-asset-hash { font-family: ui-monospace, monospace; font-size: 12px; }
+
+.admin-upload-consent { display: flex !important; flex-direction: row !important; align-items: center; gap: 12px; }
+.admin-upload-consent > input { width: 20px; height: 20px; flex: 0 0 auto; accent-color: var(--accent); }
+
+.asset-upload-form label { display: grid; gap: 8px; min-width: 0; color: var(--muted); }
+.asset-upload-form input:not([type=checkbox]) { width: 100%; min-width: 0; min-height: 48px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font: inherit; }
+.asset-upload-form input::file-selector-button { border: 0; border-radius: 8px; background: var(--soft); color: var(--ink); padding: 8px 10px; margin-right: 12px; font: inherit; }

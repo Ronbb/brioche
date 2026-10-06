@@ -53,6 +53,7 @@
 - 作者文件先运行 `cargo run -p brioche-server -- check <lesson.json>` 或 `check-release <manifest.json>`，不要求数据库。它们检查结构与本地引用/判分一致性，不替代素材登记、授权、人工审校或 release-stage 的数据库发布校验。
 - 整个本地课包可用 `check-release <manifest.json> --sources <file-or-directory> ...`（1–20 个来源）。目录仅按清单引用查 `<lessonId>.lesson.json`，别名课源显式传文件；会检查课源完整结构/语义/私有规则与清单 ID/revision/等级/单元对应，缺失或歧义失败。默认不带 sources 仍只检查清单，不将离线成功当作导入/审校/发布证明。
 - 图片可先运行 `asset-check <file> <image/svg+xml|image/png|image/jpeg|image/webp>`，不访问数据库，输出实际哈希/字节数/尺寸；复用正式导入的大小、格式与安全 SVG 校验，不表示素材已经登记或获得授权。
+- `/admin/assets` 网页上传复用素材登记，文件名不参与服务端路径；请求/文件/元数据有界，实际格式、哈希与尺寸由服务端验证。account-admin→content_state 锁内复核 operator，素材与真实用户/对象/理由审计原子提交；固定版本冲突返回409，不覆盖或自动发布。文件系统写入先于DB提交，失败可能留下不公开的未引用对象，不得自动删除共用媒体。旧CLI审计不冒充网页actor。
 - 登记用素材包可先运行 `assets-check <bundle.json> <source-directory>`，录音包用 `audio-bundle-check` 同参数；只读、不连接 DB/写媒体，复用导入的元数据、目录边界、哈希、解码与尺寸/时长检查。ready/授权元数据不得伪造；角色登记引用、重复版本、课程时间轴与发布状态仍须正式导入/release 验证，检查后正式导入重新读取文件。
 - `/author-preview` 仅供 operator 查看已导入固定 revision；私有媒体也必须经过当前管理员身份与撤回检查。不得把预览素材放到公开路由、返回私有答案或以预览创建真实学习进度。
 - `/admin` 是实际后台入口，首批含审批、目录切换和版本撤回。网页审批追加不可变 editorial_reviews，当前用户为 actor、版本控制防止覆盖；未有网页决定时沿用作者源 editorial。stage 与 activate 都检查最新决定，并与撤回共用 content_state→revision 锁顺序。不要修改不可变 server_document 来实现审批，或把后台首批能力当作全部管理功能完成。

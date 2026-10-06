@@ -257,3 +257,18 @@ pub struct AdminAsset {
     pub rights_confirmed: bool,
     pub byte_size: u32,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAssetUpload {
+    pub asset_id: String,
+    pub revision: u32,
+    pub mime_type: String,
+    pub alt_zh: String,
+    pub credit_zh: String,
+    pub source: String,
+    pub license: String,
+    pub creator: String,
+    pub rights_confirmed: bool,
+    pub reason: String,
+}

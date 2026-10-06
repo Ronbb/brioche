@@ -2,6 +2,7 @@ import { Form, Link, data, useLocation } from "react-router";
 import type { AdminAssets } from "@brioche/contracts/AdminAssets";
 import { getIdentity, getPrivate } from "../lib/api.server";
 import { usePageCursorFocus } from "../components/page-cursor-focus";
+import { AssetUpload } from "../components/admin-asset-upload";
 import type { Route } from "./+types/admin-assets";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -43,6 +44,7 @@ export default function Assets({ loaderData }: Route.ComponentProps) {
           管理员后台
         </Link>
       </div>
+      <AssetUpload />
       <Form method="get" className="admin-toolbar" key={loaderData.q}>
         <label>
           搜索素材

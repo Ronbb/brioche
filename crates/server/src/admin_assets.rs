@@ -2,11 +2,11 @@
 use crate::{
     AppError,
     identity::{AuthSession, Backend, require_operator},
-    learning::{field, one},
+    learning::{field, one, owner, random_id},
 };
 use axum::{
     Json, Router,
-    extract::{Path, Query, State},
+    extract::{DefaultBodyLimit, Multipart, Path, Query, State},
     routing::get,
 };
 use brioche_course_contract::{AdminAsset, AdminAssetCursor, AdminAssets, MediaAsset};
@@ -14,8 +14,134 @@ use sea_orm::{ConnectionTrait, DbBackend, Statement};
 
 pub fn router() -> Router<Backend> {
     Router::new()
-        .route("/api/v1/operator/assets", get(list))
+        .route(
+            "/api/v1/operator/assets",
+            get(list)
+                .post(upload)
+                .layer(DefaultBodyLimit::max(34 * 1024 * 1024)),
+        )
         .route("/api/v1/operator/assets/{id}/{revision}/file", get(file))
+}
+// Owned scratch directory: neither the path nor filename comes from the upload.
+struct Scratch(std::path::PathBuf);
+impl Drop for Scratch {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_file(self.0.join("upload"));
+        let _ = std::fs::remove_dir(&self.0);
+    }
+}
+async fn upload(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    axum::Extension(root): axum::Extension<std::path::PathBuf>,
+    axum::Extension(permits): axum::Extension<std::sync::Arc<tokio::sync::Semaphore>>,
+    mut multipart: Multipart,
+) -> Result<Json<AdminAssetCursor>, AppError> {
+    require_operator(&auth)?;
+    let actor = owner(&auth)?;
+    let _permit = permits
+        .try_acquire_owned()
+        .map_err(|_| AppError::RateLimited)?;
+    let mut document = None;
+    let mut bytes = None;
+    while let Some(mut part) = multipart
+        .next_field()
+        .await
+        .map_err(|_| AppError::InvalidInput)?
+    {
+        let name = part.name().unwrap_or_default().to_owned();
+        let limit = match name.as_str() {
+            "document" if document.is_none() => 16 * 1024,
+            "file" if bytes.is_none() => 32 * 1024 * 1024,
+            _ => return Err(AppError::InvalidInput),
+        };
+        let mut data = Vec::new();
+        while let Some(chunk) = part.chunk().await.map_err(|_| AppError::InvalidInput)? {
+            if data.len().saturating_add(chunk.len()) > limit {
+                return Err(AppError::InvalidInput);
+            }
+            data.extend_from_slice(&chunk);
+        }
+        if name == "document" {
+            document = Some(data);
+        } else {
+            bytes = Some(data);
+        }
+    }
+    let value = crate::author_json::parse_document(&document.ok_or(AppError::InvalidInput)?)
+        .map_err(|_| AppError::InvalidInput)?;
+    let request: brioche_course_contract::AdminAssetUpload =
+        serde_json::from_value(value).map_err(|_| AppError::InvalidInput)?;
+    crate::admin::reason(&request.reason)?;
+    let bytes = bytes
+        .filter(|b| !b.is_empty())
+        .ok_or(AppError::InvalidInput)?;
+    let mut spec = crate::media::AssetSpec {
+        asset_id: request.asset_id.clone(),
+        revision: request.revision,
+        sha256: "0".repeat(64),
+        mime_type: request.mime_type.clone(),
+        width: 1,
+        height: 1,
+        alt_zh: request.alt_zh,
+        credit_zh: request.credit_zh,
+        file: "upload".into(),
+        status: "ready".into(),
+        source: request.source,
+        license: request.license,
+        creator: request.creator,
+        rights_confirmed: request.rights_confirmed,
+    };
+    let mut bundle = crate::media::AssetBundle {
+        schema_version: "1.0".into(),
+        assets: vec![spec.clone()],
+        characters: vec![],
+    };
+    bundle
+        .validate_author("web-upload")
+        .map_err(|_| AppError::InvalidInput)?;
+    let scratch_id = random_id()?;
+    let mime = request.mime_type;
+    let (scratch, info) = tokio::task::spawn_blocking(move || -> Result<_, AppError> {
+        let path = std::env::temp_dir().join(format!("brioche-asset-upload-{scratch_id}"));
+        std::fs::create_dir(&path).map_err(|_| AppError::Unavailable)?;
+        let scratch = Scratch(path);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&scratch.0, std::fs::Permissions::from_mode(0o700))
+                .map_err(|_| AppError::Unavailable)?;
+        }
+        std::fs::write(scratch.0.join("upload"), bytes).map_err(|_| AppError::Unavailable)?;
+        let info = crate::media::inspect_file(&scratch.0.join("upload"), &mime)
+            .map_err(|_| AppError::InvalidInput)?;
+        Ok((scratch, info))
+    })
+    .await
+    .map_err(|_| AppError::Unavailable)??;
+    spec.sha256 = info.sha256;
+    spec.width = info.width;
+    spec.height = info.height;
+    bundle.assets[0] = spec;
+    crate::media::import_operator_bundle(
+        &backend.db,
+        bundle,
+        &scratch.0,
+        &root,
+        actor,
+        &request.reason,
+    )
+    .await
+    .map_err(|e| match e.downcast_ref::<AppError>() {
+        Some(AppError::Forbidden) => AppError::Forbidden,
+        Some(AppError::Conflict) => AppError::Conflict,
+        Some(_) => AppError::Unavailable,
+        None => AppError::InvalidInput,
+    })?;
+    Ok(Json(AdminAssetCursor {
+        asset_id: request.asset_id,
+        revision: request.revision,
+    }))
 }
 #[derive(serde::Deserialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

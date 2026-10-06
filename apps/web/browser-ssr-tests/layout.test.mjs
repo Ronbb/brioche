@@ -109,6 +109,37 @@ const profile = (id) => ({
 const api = createServer((request, response) => {
   response.setHeader("Content-Type", "application/json");
   if (request.url.startsWith("/api/v1/operator/assets")) {
+    if (request.method === "POST") {
+      const chunks = [];
+      request.on("data", (chunk) => chunks.push(chunk));
+      request.on("end", async () => {
+        try {
+          const payload = await new Request("http://test", {
+            method: "POST",
+            headers: { "content-type": request.headers["content-type"] },
+            body: Buffer.concat(chunks),
+          }).formData();
+          const document = JSON.parse(payload.get("document"));
+          const file = payload.get("file");
+          adminWrites.push({
+            operation: request.url,
+            ...document,
+            fileBytes: file.size,
+            csrf: request.headers["x-csrf-token"],
+          });
+          response.end(
+            JSON.stringify({
+              assetId: document.assetId,
+              revision: document.revision,
+            }),
+          );
+        } catch (e) {
+          serverErrors.push(String(e));
+          response.writeHead(400).end("{}");
+        }
+      });
+      return;
+    }
     if (request.url.endsWith("/file")) {
       response.setHeader("content-type", "image/svg+xml");
       response.end(characterAvatar);
@@ -470,15 +501,19 @@ const web = createServer(async (request, response) => {
       return;
     }
     if (url.pathname.startsWith("/api/")) {
-      let body = "";
-      for await (const chunk of request) body += chunk;
+      const chunks = [];
+      for await (const chunk of request) chunks.push(chunk);
+      const body = Buffer.concat(chunks);
       const proxied = await fetch(
         process.env.INTERNAL_API_URL + url.pathname + url.search,
         {
           method: request.method,
-          ...(body ? { body } : {}),
+          ...(body.length ? { body } : {}),
           headers: {
             "X-Shell-Channel": "browser",
+            ...(request.headers["x-csrf-token"]
+              ? { "x-csrf-token": request.headers["x-csrf-token"] }
+              : {}),
             ...(request.headers["content-type"]
               ? { "Content-Type": request.headers["content-type"] }
               : {}),
@@ -567,6 +602,75 @@ test("visual registry renders private images and searches at mobile widths", asy
     assert.equal(
       await evaluate("new URL(location.href).searchParams.get('q')"),
       "missing",
+    );
+  } finally {
+    accounts = false;
+    operatorAccount = false;
+  }
+});
+
+test("operator uploads an actual SVG and supplies provenance in the mobile dialog", async () => {
+  accounts = true;
+  operatorAccount = true;
+  adminWrites = [];
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("set", "viewport", "390", "844");
+    await browser("open", origin + "/admin/assets");
+    await browser("wait", ".admin-asset");
+    const snapshot = await browser("snapshot", "-i");
+    const ref = Object.entries(snapshot.refs).find(
+      ([, item]) => item.role === "button" && item.name === "上传图片",
+    )?.[0];
+    assert.ok(ref, JSON.stringify(snapshot));
+    await browser("click", "@" + ref);
+    await browser("wait", ".admin-dialog[open]");
+    for (const width of [320, 390]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate(
+          "document.querySelector('.admin-dialog').scrollWidth <= document.querySelector('.admin-dialog').clientWidth",
+        ),
+        true,
+      );
+    }
+    await browser(
+      "upload",
+      "input[name=file]",
+      fileURLToPath(
+        new URL("../public/assets/avatars/camille.svg", import.meta.url),
+      ),
+    );
+    for (const [name, value] of Object.entries({
+      assetId: "browser-upload",
+      altZh: "浏览器上传测试",
+      source: "test:original",
+      license: "LicenseRef-TestOnly",
+      creator: "test fixture",
+      creditZh: "仅隔离测试",
+      reason: "验证实际文件上传",
+    }))
+      await browser("fill", `.admin-dialog [name=${name}]`, value);
+    await browser("check", "input[name=rightsConfirmed]");
+    await browser("fill", "textarea[name=reason]", "验证实际文件上传");
+    await browser("press", "Tab");
+    await browser("press", "Tab");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "素材 browser-upload · 版本 1 已登记。");
+    assert.equal(adminWrites.length, 1);
+    assert.equal(adminWrites[0].assetId, "browser-upload");
+    assert.equal(adminWrites[0].mimeType, "image/svg+xml");
+    assert.equal(adminWrites[0].rightsConfirmed, true);
+    assert.equal(adminWrites[0].csrf, "controlled-admin-csrf");
+    assert.equal(adminWrites[0].fileBytes, characterAvatar.length);
+    assert.equal(
+      await evaluate("document.querySelector('.admin-dialog').open"),
+      false,
+    );
+    assert.equal(
+      await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+      true,
     );
   } finally {
     accounts = false;
