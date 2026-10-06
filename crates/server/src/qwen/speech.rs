@@ -29,7 +29,10 @@ impl SpeechRequest {
             || self.text.chars().count() > 600
             || !bounded_text(&self.emotion, 1000)
             || (p.voice_kind == "cloned" && !p.voice_id.starts_with(&format!("{MODEL}-")))
-            || (p.voice_kind == "system" && p.voice_id.starts_with("qwen-audio-"))
+            || (p.voice_kind == "system"
+                && !brioche_course_contract::QWEN_FRENCH_SYSTEM_VOICES
+                    .iter()
+                    .any(|(id, _)| *id == p.voice_id))
         {
             return Err(ProviderError::Rejected);
         }
@@ -242,7 +245,7 @@ mod tests {
                 default_emotion: "Relaxed.".into(),
                 provider: "qwen".into(),
                 model: MODEL.into(),
-                voice_id: "longanhuan_v3.6".into(),
+                voice_id: "longanhuan_v3.1".into(),
                 voice_kind: "system".into(),
                 locale: "fr-FR".into(),
                 rate: 0.85,
@@ -308,6 +311,12 @@ mod tests {
         r.profile.model = "qwen-audio-3.1-tts-next".into();
         assert!(r.parameters().is_err());
         r.profile.model = MODEL.into();
+        for (voice, _) in brioche_course_contract::QWEN_FRENCH_SYSTEM_VOICES {
+            r.profile.voice_id = (*voice).into();
+            assert!(r.parameters().is_ok());
+        }
+        r.profile.voice_id = "longanhuan_v3.6".into();
+        assert!(r.parameters().is_err());
         r.profile.voice_id = format!("{MODEL}-test-voice");
         assert!(r.parameters().is_err());
         r.profile.voice_kind = "cloned".into();
@@ -453,7 +462,7 @@ mod tests {
         assert_eq!(calls.lock().unwrap()[4], r.parameters().unwrap());
         assert_eq!(*downloads.lock().unwrap(), 0);
         r.profile.voice_kind = "system".into();
-        r.profile.voice_id = "longanhuan_v3.6".into();
+        r.profile.voice_id = "longanhuan_v3.1".into();
         r.profile.reference_audio = None;
         state.lock().unwrap().2 = 503;
         assert!(matches!(

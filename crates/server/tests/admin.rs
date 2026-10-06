@@ -91,10 +91,12 @@ impl brioche_server::qwen::Transport for MockQwen {
             wav,
             info,
             request_id: "audition-test".into(),
-            verification: Some(brioche_server::qwen::Details {
-                model: brioche_server::qwen::MODEL.into(),
-                status: "OK".into(),
-                request_id: "verify-audition".into(),
+            verification: (request.profile.voice_kind == "cloned").then(|| {
+                brioche_server::qwen::Details {
+                    model: brioche_server::qwen::MODEL.into(),
+                    status: "OK".into(),
+                    request_id: "verify-audition".into(),
+                }
             }),
             input_tokens: Some(10),
             output_tokens: Some(20),
@@ -893,7 +895,7 @@ async fn voice_reference_delivery_is_bounded_revocable_private_and_audited() {
     assert!(h.to_string().contains("voiceAuditionRejected"));
     for i in 0..25u32 {
         let id = format!("{i:032x}");
-        db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO voice_auditions SELECT $1,clone_job_id,clone_version,profile,parameters,actor_id,reason,CURRENT_TIMESTAMP FROM voice_auditions WHERE id=$2",vec![id.clone().into(),audition_id.clone().into()])).await.unwrap();
+        db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO voice_auditions(id,clone_job_id,clone_version,profile,parameters,actor_id,reason,created_at) SELECT $1,clone_job_id,clone_version,profile,parameters,actor_id,reason,CURRENT_TIMESTAMP FROM voice_auditions WHERE id=$2",vec![id.clone().into(),audition_id.clone().into()])).await.unwrap();
         db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO voice_audition_events(audition_id,version,status,created_at) VALUES($1,1,'submitted',CURRENT_TIMESTAMP-interval '301 seconds')",vec![id.into()])).await.unwrap();
     }
     let first_auditions = operator.send("GET", audition_api, None, true).await.1;
@@ -954,6 +956,255 @@ async fn voice_reference_delivery_is_bounded_revocable_private_and_audited() {
             .await
             .is_err()
     );
+    // First system profile: independent fixed character source, durable exact paid-request retry.
+    qwen.unknown
+        .store(false, std::sync::atomic::Ordering::SeqCst);
+    let new_character = json!({"characterId":"character-system-qa","expectedRevision":0,"displayName":"System QA","avatarId":"avatar-lea-v1","avatarRevision":1,"reason":"isolated system audition source"});
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                "/api/v1/operator/characters/revisions",
+                Some(new_character),
+                true
+            )
+            .await
+            .0,
+        200
+    );
+    let mut candidate = json!({"characterId":"character-system-qa","characterRevision":1,"expectedVoiceRevision":0,"profile":seed["items"][0]["profile"]});
+    candidate["profile"]["rate"] = json!(1.0);
+    let system = json!({"id":"f".repeat(32),"cloneJobId":null,"expectedCloneVersion":null,"candidate":candidate,"text":"Bonjour ! Je m’appelle Léa. Au revoir !","emotion":"A friendly introduction.","costConfirmed":true,"reason":"isolated system candidate"});
+    let calls_before = qwen.calls.lock().unwrap().len();
+    for (key, value) in [
+        ("costConfirmed", json!(false)),
+        ("cloneJobId", job["id"].clone()),
+        ("expectedCloneVersion", json!(1)),
+    ] {
+        let mut invalid = system.clone();
+        invalid[key] = value;
+        assert_eq!(
+            operator
+                .send("POST", audition_api, Some(invalid), true)
+                .await
+                .0,
+            400
+        );
+    }
+    for voice in [
+        "longanhuan_v3.6",
+        "english-only",
+        "qwen-audio-3.1-tts-flash-fake",
+    ] {
+        let mut invalid = system.clone();
+        invalid["candidate"]["profile"]["voiceId"] = json!(voice);
+        assert_eq!(
+            operator
+                .send("POST", audition_api, Some(invalid), true)
+                .await
+                .0,
+            400
+        );
+    }
+    let mut stale = system.clone();
+    stale["candidate"]["expectedVoiceRevision"] = json!(1);
+    assert_eq!(
+        operator
+            .send("POST", audition_api, Some(stale), true)
+            .await
+            .0,
+        409
+    );
+    let mut missing = system.clone();
+    missing["candidate"]["characterId"] = json!("character-missing");
+    assert_eq!(
+        operator
+            .send("POST", audition_api, Some(missing), true)
+            .await
+            .0,
+        404
+    );
+    assert_eq!(
+        learner
+            .send("POST", audition_api, Some(system.clone()), true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        visitor
+            .send("POST", audition_api, Some(system.clone()), true)
+            .await
+            .0,
+        401
+    );
+    assert_eq!(
+        operator
+            .send("POST", audition_api, Some(system.clone()), false)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(qwen.calls.lock().unwrap().len(), calls_before);
+    let (a, b) = tokio::join!(
+        operator.send("POST", audition_api, Some(system.clone()), true),
+        disabled.send("POST", audition_api, Some(system.clone()), true)
+    );
+    // The disabled route may win the race and reject before recording; the configured route always records.
+    assert_eq!(a.0, 200);
+    assert!([200, 503].contains(&b.0));
+    let system_path = format!("{audition_api}/{}", "f".repeat(32));
+    let ready = settled(&mut operator, &system_path).await;
+    assert_eq!(ready["status"], "ready");
+    assert!(ready["cloneJobId"].is_null());
+    assert_eq!(ready["baseVoiceRevision"], 0);
+    assert_eq!(ready["profile"], candidate["profile"]);
+    assert_eq!(
+        disabled
+            .send("POST", audition_api, Some(system.clone()), true)
+            .await
+            .0,
+        200
+    );
+    let mut different = system.clone();
+    different["candidate"]["profile"]["personality"] = json!("Changed candidate.");
+    assert_eq!(
+        operator
+            .send("POST", audition_api, Some(different), true)
+            .await
+            .0,
+        409
+    );
+    assert_eq!(qwen.calls.lock().unwrap().len(), calls_before + 1);
+    assert_eq!(
+        operator
+            .send("GET", &format!("{system_path}/file"), None, true)
+            .await
+            .0,
+        200
+    );
+    let filtered = operator
+        .send(
+            "GET",
+            &format!("{audition_api}?characterId=character-system-qa&characterRevision=1"),
+            None,
+            true,
+        )
+        .await;
+    assert_eq!(filtered.0, 200);
+    assert_eq!(filtered.1["items"].as_array().unwrap().len(), 1);
+    for query in [
+        "characterId=character-system-qa",
+        "characterRevision=1",
+        "characterId=character-system-qa&characterRevision=0",
+    ] {
+        assert_eq!(
+            operator
+                .send("GET", &format!("{audition_api}?{query}"), None, true)
+                .await
+                .0,
+            400
+        );
+    }
+    let mut stale_review = system.clone();
+    stale_review["id"] = json!("6".repeat(32));
+    assert_eq!(
+        operator
+            .send("POST", audition_api, Some(stale_review), true)
+            .await
+            .0,
+        200
+    );
+    let stale_path = format!("{audition_api}/{}", "6".repeat(32));
+    assert_eq!(settled(&mut operator, &stale_path).await["status"], "ready");
+    let approval = json!({"accepted":true,"heard":true,"expectedVoiceRevision":0,"reason":"synthetic protocol approval only"});
+    let mut unheard = approval.clone();
+    unheard["heard"] = json!(false);
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                &format!("{system_path}/review"),
+                Some(unheard),
+                true
+            )
+            .await
+            .0,
+        400
+    );
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                &format!("{system_path}/review"),
+                Some(approval.clone()),
+                true
+            )
+            .await
+            .1["appliedVoiceRevision"],
+        1
+    );
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                &format!("{system_path}/review"),
+                Some(approval),
+                true
+            )
+            .await
+            .0,
+        409
+    );
+    let stale_approval = json!({"accepted":true,"heard":true,"expectedVoiceRevision":0,"reason":"must preserve first accepted system voice"});
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                &format!("{stale_path}/review"),
+                Some(stale_approval.clone()),
+                true
+            )
+            .await
+            .0,
+        409
+    );
+    let mut rejection = stale_approval;
+    rejection["accepted"] = json!(false);
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                &format!("{stale_path}/review"),
+                Some(rejection),
+                true
+            )
+            .await
+            .0,
+        200
+    );
+    let applied = operator
+        .send(
+            "GET",
+            "/api/v1/operator/characters/character-system-qa/1",
+            None,
+            true,
+        )
+        .await
+        .1;
+    assert_eq!(applied["profile"], candidate["profile"]);
+    assert_eq!(applied["voiceRevision"], 1);
+    let mut new_attempt = system.clone();
+    new_attempt["id"] = json!("9".repeat(32));
+    assert_eq!(
+        operator
+            .send("POST", audition_api, Some(new_attempt), true)
+            .await
+            .0,
+        409
+    );
+    assert_eq!(qwen.calls.lock().unwrap().len(), calls_before + 2);
+    assert!(db.execute_unprepared("INSERT INTO voice_auditions(id,clone_job_id,clone_version,profile,parameters,actor_id,reason,character_id,character_revision,base_voice_revision) SELECT '77777777777777777777777777777777',clone_job_id,clone_version,profile,parameters,actor_id,reason,'character-system-qa',1,0 FROM voice_auditions WHERE clone_job_id IS NOT NULL LIMIT 1").await.is_err());
     // Every job remains reachable with a bounded cursor; abandoned workers become unknown, never resent.
     for i in 0..25u32 {
         let id = format!("{i:032x}");

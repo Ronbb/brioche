@@ -341,7 +341,15 @@ const api = createServer((request, response) => {
         const audition = voiceAuditions.find((a) => a.id === parts.at(-2));
         setTimeout(() => {
           audition.accepted = change.accepted;
-          audition.appliedVoiceRevision = change.accepted ? 2 : null;
+          audition.appliedVoiceRevision = change.accepted
+            ? audition.baseVoiceRevision + 1
+            : null;
+          if (change.accepted && !audition.cloneJobId)
+            characterVoice = {
+              ...characterVoice,
+              voiceRevision: audition.appliedVoiceRevision,
+              profile: structuredClone(audition.profile),
+            };
           response.end(JSON.stringify(audition));
         }, 1200);
         return;
@@ -351,10 +359,17 @@ const api = createServer((request, response) => {
         audition = {
           id: change.id,
           cloneJobId: change.cloneJobId,
-          characterId: "character-camille",
-          characterRevision: 1,
-          baseVoiceRevision: 1,
-          voiceId: voiceJob.voiceId,
+          characterId: change.candidate?.characterId ?? "character-camille",
+          characterRevision: change.candidate?.characterRevision ?? 1,
+          baseVoiceRevision: change.candidate?.expectedVoiceRevision ?? 1,
+          profile: structuredClone(
+            change.candidate?.profile ?? {
+              ...voiceSeed.items[0].profile,
+              voiceId: voiceJob.voiceId,
+              voiceKind: "cloned",
+            },
+          ),
+          voiceId: change.candidate?.profile.voiceId ?? voiceJob.voiceId,
           text: change.text,
           emotion: change.emotion,
           status: "submitted",
@@ -553,7 +568,7 @@ const api = createServer((request, response) => {
     return;
   }
   if (
-    /^\/api\/v1\/operator\/characters\/character-camille\/1\/voices\/1$/.test(
+    /^\/api\/v1\/operator\/characters\/character-camille\/1(?:\/voices\/1)?$/.test(
       request.url,
     )
   ) {
@@ -1525,6 +1540,182 @@ test("operator auditions a clone privately and confirms a new voice with safe pa
     accounts = false;
     operatorAccount = false;
     voiceJob = null;
+    voiceAuditions = [];
+    auditionLostReply = false;
+  }
+});
+
+test("operator auditions a system voice for a first profile with custom choices and safe paid-request recovery", async () => {
+  accounts = true;
+  operatorAccount = true;
+  adminWrites = [];
+  voiceAuditions = [];
+  auditionSynthCalls = 0;
+  auditionLostReply = true;
+  characterVoice = { ...voiceSeed.items[0], voiceRevision: 0, profile: null };
+  voiceJob = null;
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("set", "viewport", "390", "844");
+    await browser(
+      "open",
+      origin +
+        "/admin/voice-auditions?characterId=character-camille&characterRevision=1",
+    );
+    await browser("wait", "--text", "生成一段试听");
+    const snapshot = await browser("snapshot", "-i"),
+      ref = Object.entries(snapshot.refs).find(
+        ([, item]) => item.role === "button" && item.name === "生成一段试听",
+      )?.[0];
+    assert.ok(ref);
+    await browser("click", "@" + ref);
+    await browser("wait", "textarea[name=auditionText]");
+    const choices = await browser("snapshot", "-i");
+    const voiceRef = Object.entries(choices.refs).find(
+      ([, item]) =>
+        item.role === "button" && item.name.startsWith("法语音色："),
+    )?.[0];
+    assert.ok(voiceRef);
+    await browser("click", "@" + voiceRef);
+    await browser("wait", ".choice-dialog[open]");
+    const voiceOptions = await browser("snapshot", "-i");
+    const choiceRef = Object.entries(voiceOptions.refs).find(
+      ([, item]) => item.role === "radio" && item.name.startsWith("龙安欢"),
+    )?.[0];
+    assert.ok(choiceRef);
+    await browser("click", "@" + choiceRef);
+    await browser(
+      "fill",
+      "input[name=candidatePersonality]",
+      "Curious and kind.",
+    );
+    await browser(
+      "fill",
+      "input[name=candidateStyle]",
+      "Gentle, clear French.",
+    );
+    await browser(
+      "fill",
+      "input[name=candidateEmotion]",
+      "Warm and thoughtful.",
+    );
+    await browser("fill", "input[name=candidateRate]", "0.85");
+    assert.equal(
+      await evaluate("document.querySelector('select')===null"),
+      true,
+    );
+    await browser(
+      "fill",
+      "textarea[name=auditionText]",
+      "Bonjour ! Je voudrais une baguette.",
+    );
+    await browser(
+      "fill",
+      "input[name=auditionEmotion]",
+      "A warm, politely expectant request.",
+    );
+    await browser(
+      "fill",
+      "textarea[name=auditionReason]",
+      "isolated audition generation",
+    );
+    await browser("check", "input[name=auditionConsent]");
+    for (const width of [320, 390]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate(
+          "document.querySelector('.admin-dialog[open]').scrollWidth<=document.querySelector('.admin-dialog[open]').clientWidth",
+        ),
+        true,
+      );
+    }
+    await browser("focus", ".admin-dialog[open] .primary");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "操作未确认");
+    assert.equal(
+      await evaluate("document.querySelector('[name=auditionText]').readOnly"),
+      true,
+    );
+    assert.equal(auditionSynthCalls, 1);
+    assert.equal(
+      await evaluate(
+        "document.querySelector('[name=candidatePersonality]').readOnly",
+      ),
+      true,
+    );
+    await browser("focus", ".admin-dialog[open] .primary");
+    await browser("press", "Enter");
+    await browser(
+      "wait",
+      "--fn",
+      "!document.querySelector('.admin-dialog[open]')",
+    );
+    await browser("wait", "--text", "试听已生成");
+    assert.equal(adminWrites.length, 2);
+    assert.equal(adminWrites[0].id, adminWrites[1].id);
+    assert.equal(adminWrites[0].expectedCloneVersion, null);
+    assert.equal(adminWrites[0].cloneJobId, null);
+    assert.deepEqual(adminWrites[0], adminWrites[1]);
+    assert.equal(adminWrites[0].candidate.expectedVoiceRevision, 0);
+    assert.equal(adminWrites[0].candidate.profile.voiceId, "longanhuan_v3.1");
+    assert.equal(
+      adminWrites[0].candidate.profile.personality,
+      "Curious and kind.",
+    );
+    assert.equal(adminWrites[0].candidate.profile.rate, 0.85);
+
+    assert.equal(adminWrites[0].costConfirmed, true);
+    assert.equal(auditionSynthCalls, 1);
+    await browser("scrollintoview", ".recording-preview");
+    await browser("click", ".recording-preview");
+    await browser(
+      "wait",
+      "--fn",
+      "parseFloat(document.querySelector('.recording-preview-track > span').style.width)>0",
+    );
+    for (const width of [320, 390]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+        true,
+      );
+    }
+    const reviewSnap = await browser("snapshot", "-i"),
+      reviewRef = Object.entries(reviewSnap.refs).find(
+        ([, item]) => item.role === "button" && item.name === "确认试听结果",
+      )?.[0];
+    assert.ok(reviewRef);
+    await browser("click", "@" + reviewRef);
+    await browser("wait", "input[name=auditionConsent]");
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.admin-dialog[open] .primary').disabled",
+      ),
+      true,
+    );
+    await browser("check", "input[name=auditionConsent]");
+    await browser(
+      "fill",
+      "textarea[name=auditionReason]",
+      "isolated approval, not real audio review",
+    );
+    await browser("focus", ".admin-dialog[open] .primary");
+    await browser("press", "Enter");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "已通过 · 声音 v1");
+    assert.equal(adminWrites.length, 3);
+    assert.equal(adminWrites[2].heard, true);
+    assert.equal(adminWrites[2].accepted, true);
+    assert.equal(adminWrites[2].expectedVoiceRevision, 0);
+    assert.equal(auditionSynthCalls, 1);
+    assert.equal(characterVoice.voiceRevision, 1);
+    assert.deepEqual(characterVoice.profile, adminWrites[0].candidate.profile);
+  } finally {
+    accounts = false;
+    operatorAccount = false;
+    voiceJob = null;
+    characterVoice = { ...voiceSeed.items[0], voiceRevision: 0, profile: null };
     voiceAuditions = [];
     auditionLostReply = false;
   }

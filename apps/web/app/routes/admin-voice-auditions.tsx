@@ -1,5 +1,9 @@
 import { Link, data, useLocation, useRevalidator } from "react-router";
 import { useEffect, useRef, useState } from "react";
+import type { AdminCharacterVoice } from "@brioche/contracts/AdminCharacterVoice";
+import type { CharacterVoiceProfile } from "@brioche/contracts/CharacterVoiceProfile";
+import { QWEN_FRENCH_SYSTEM_VOICES } from "@brioche/contracts/tts-voices";
+import { ChoiceDialog } from "../components/choice-dialog";
 import type { AdminAudition } from "@brioche/contracts/AdminAudition";
 import type { AdminAuditions } from "@brioche/contracts/AdminAuditions";
 import type { AdminAuditionRequest } from "@brioche/contracts/AdminAuditionRequest";
@@ -23,6 +27,21 @@ export async function loader({ request }: Route.LoaderArgs) {
   for (const value of [jobId, id])
     if (value && !/^[a-f0-9]{32}$/.test(value))
       throw new Response("编号无效。", { status: 400 });
+  const characterId = params.get("characterId"),
+    characterRevision = params.get("characterRevision");
+  if (
+    (characterId !== null) !== (characterRevision !== null) ||
+    (characterId !== null &&
+      (!/^[A-Za-z0-9_-]{1,100}$/.test(characterId) ||
+        !/^[1-9][0-9]*$/.test(characterRevision!) ||
+        Number(characterRevision) > 2147483647)) ||
+    (jobId && characterId)
+  )
+    throw new Response("角色版本无效。", { status: 400 });
+  if (characterId) {
+    query.set("characterId", characterId);
+    query.set("characterRevision", characterRevision!);
+  }
   if (jobId) query.set("cloneJobId", jobId);
   if (params.has("afterId")) query.set("afterId", params.get("afterId")!);
   const list = await getPrivate<AdminAuditions>(
@@ -35,13 +54,22 @@ export async function loader({ request }: Route.LoaderArgs) {
         `/api/v1/operator/voice-jobs/${jobId}`,
       )
     : null;
+  const characterSource = characterId
+    ? await getPrivate<AdminCharacterVoice>(
+        request,
+        `/api/v1/operator/characters/${characterId}/${characterRevision}`,
+      )
+    : null;
   const selected = id
     ? await getPrivate<AdminAudition>(
         request,
         `/api/v1/operator/voice-auditions/${id}`,
       )
     : null;
-  return data({ ...list, source, selected }, { headers: headers() });
+  return data(
+    { ...list, source, characterSource, selected },
+    { headers: headers() },
+  );
 }
 export function headers() {
   return { "Cache-Control": "private, no-store", Vary: "Cookie" };
@@ -51,6 +79,23 @@ const labels: Record<string, string> = {
   ready: "试听已生成",
   unknown: "生成结果未确认，请先核对提供方记录",
   failed: "提供方拒绝了这次请求",
+};
+const voiceChoices = QWEN_FRENCH_SYSTEM_VOICES.map(([value, label]) => ({
+  value,
+  label,
+  detail: "法语 · Flash 3.1",
+}));
+const defaultProfile: CharacterVoiceProfile = {
+  personality: "Friendly and thoughtful.",
+  speakingStyle: "Natural, clear French at a calm pace.",
+  defaultEmotion: "Warm and relaxed.",
+  provider: "qwen",
+  model: "qwen-audio-3.1-tts-flash",
+  voiceId: QWEN_FRENCH_SYSTEM_VOICES[0][0],
+  voiceKind: "system",
+  locale: "fr-FR",
+  rate: 1,
+  referenceAudio: null,
 };
 export default function Auditions({ loaderData }: Route.ComponentProps) {
   const location = useLocation(),
@@ -75,6 +120,7 @@ export default function Auditions({ loaderData }: Route.ComponentProps) {
     [attempted, setAttempted] = useState(false),
     [error, setError] = useState(""),
     [notice, setNotice] = useState("");
+  const [profile, setProfile] = useState<CharacterVoiceProfile>(defaultProfile);
   const player = useRef<RecordingPlayer | null>(null),
     [active, setActive] = useState<string | null>(null),
     [status, setStatus] = useState("idle"),
@@ -124,6 +170,20 @@ export default function Auditions({ loaderData }: Route.ComponentProps) {
     player.current?.stop();
     setActive(null);
     setStatus("idle");
+    if (next === "create" && loaderData.characterSource) {
+      const previous = loaderData.characterSource.profile;
+      setProfile({
+        ...defaultProfile,
+        ...previous,
+        provider: defaultProfile.provider,
+        model: defaultProfile.model,
+        voiceKind: "system",
+        referenceAudio: null,
+        voiceId: voiceChoices.some((v) => v.value === previous?.voiceId)
+          ? previous!.voiceId
+          : defaultProfile.voiceId,
+      });
+    }
     setMode(next);
     setReason("");
     setConsent(false);
@@ -180,14 +240,23 @@ export default function Auditions({ loaderData }: Route.ComponentProps) {
       if (mode === "create") {
         if (!attempt.current) {
           const source = loaderData.source;
-          if (!source || source.status !== "ready")
+          const character = loaderData.characterSource;
+          if (!character && (!source || source.status !== "ready"))
             throw Error("请先核对音色状态。");
           attempt.current = {
             id: Array.from(crypto.getRandomValues(new Uint8Array(16)), (n) =>
               n.toString(16).padStart(2, "0"),
             ).join(""),
-            cloneJobId: source.id,
-            expectedCloneVersion: source.version,
+            cloneJobId: character ? null : source!.id,
+            expectedCloneVersion: character ? null : source!.version,
+            candidate: character
+              ? {
+                  characterId: character.character.characterId,
+                  characterRevision: character.character.revision,
+                  expectedVoiceRevision: character.voiceRevision,
+                  profile: structuredClone(profile),
+                }
+              : null,
             text,
             emotion,
             costConfirmed: true,
@@ -237,6 +306,13 @@ export default function Auditions({ loaderData }: Route.ComponentProps) {
   const next = new URLSearchParams();
   if (loaderData.next) next.set("afterId", loaderData.next);
   if (loaderData.source) next.set("jobId", loaderData.source.id);
+  if (loaderData.characterSource) {
+    next.set("characterId", loaderData.characterSource.character.characterId);
+    next.set(
+      "characterRevision",
+      String(loaderData.characterSource.character.revision),
+    );
+  }
   return (
     <section className="settings-page page-arrive">
       <div className="settings-heading">
@@ -248,10 +324,44 @@ export default function Auditions({ loaderData }: Route.ComponentProps) {
         </Link>
       </div>
       <p>试听通过后追加声音版本，已发布课程和原声音档案保持原样。</p>
+      <Link className="text-button" to="/admin/characters">
+        角色库
+      </Link>
       <Link className="text-button" to="/admin/voice-jobs">
         音色创建任务
       </Link>
       {!loaderData.configured && <p role="status">当前未配置生成服务。</p>}
+      {loaderData.characterSource && (
+        <article className="voice-job-card">
+          <header className="character-profile-head">
+            <img
+              width="64"
+              height="64"
+              alt=""
+              src={`/api/v1/operator/characters/${loaderData.characterSource.character.characterId}/${loaderData.characterSource.character.revision}/avatar`}
+            />
+            <div>
+              <h2>{loaderData.characterSource.character.displayName}</h2>
+              <p>
+                角色 v{loaderData.characterSource.character.revision} ·{" "}
+                {loaderData.characterSource.voiceRevision
+                  ? `原声音 v${loaderData.characterSource.voiceRevision}`
+                  : "尚未配置声音"}
+              </p>
+            </div>
+          </header>
+          <p>选择法语系统音色与角色语气，试听后再确认新声音。</p>
+          {loaderData.configured && (
+            <button
+              className="secondary"
+              onClick={() => open("create")}
+              aria-disabled={pending}
+            >
+              生成一段试听
+            </button>
+          )}
+        </article>
+      )}
       {loaderData.source && (
         <article className="voice-job-card">
           <h2>{loaderData.source.characterId}</h2>
@@ -290,6 +400,16 @@ export default function Auditions({ loaderData }: Route.ComponentProps) {
             <p lang="fr">{item.text}</p>
             <p>{item.emotion}</p>
             <p>音色：{item.voiceId}</p>
+            <dl>
+              <dt>个性特点</dt>
+              <dd>{item.profile.personality}</dd>
+              <dt>说话习惯</dt>
+              <dd>{item.profile.speakingStyle}</dd>
+              <dt>默认语气</dt>
+              <dd>{item.profile.defaultEmotion}</dd>
+              <dt>语速</dt>
+              <dd>{item.profile.rate}×</dd>
+            </dl>
             <Link
               className="text-button"
               to={`/admin/voice-auditions?auditionId=${item.id}`}
@@ -352,7 +472,8 @@ export default function Auditions({ loaderData }: Route.ComponentProps) {
         onCancel={(e) => {
           if (busy.current) e.preventDefault();
         }}
-        onClose={() => {
+        onClose={(event) => {
+          if (event.target !== event.currentTarget) return;
           setMode(null);
           setError("");
           attempt.current = null;
@@ -362,6 +483,87 @@ export default function Auditions({ loaderData }: Route.ComponentProps) {
         <form className="reference-delivery-form" onSubmit={submit}>
           {mode === "create" ? (
             <>
+              {loaderData.characterSource && (
+                <fieldset className="audition-decision">
+                  <legend>候选声音 · Flash 3.1 · 法语</legend>
+                  <ChoiceDialog
+                    title="法语音色"
+                    value={profile.voiceId}
+                    choices={voiceChoices}
+                    disabled={pending || attempted}
+                    onChange={(voiceId) =>
+                      setProfile((p) => ({ ...p, voiceId }))
+                    }
+                  />
+                  <label>
+                    个性特点
+                    <input
+                      name="candidatePersonality"
+                      required
+                      maxLength={600}
+                      value={profile.personality}
+                      onChange={(e) =>
+                        setProfile((p) => ({
+                          ...p,
+                          personality: e.target.value,
+                        }))
+                      }
+                      readOnly={pending || attempted}
+                    />
+                  </label>
+                  <label>
+                    说话习惯
+                    <input
+                      name="candidateStyle"
+                      required
+                      maxLength={600}
+                      value={profile.speakingStyle}
+                      onChange={(e) =>
+                        setProfile((p) => ({
+                          ...p,
+                          speakingStyle: e.target.value,
+                        }))
+                      }
+                      readOnly={pending || attempted}
+                    />
+                  </label>
+                  <label>
+                    默认语气
+                    <input
+                      name="candidateEmotion"
+                      required
+                      maxLength={600}
+                      value={profile.defaultEmotion}
+                      onChange={(e) =>
+                        setProfile((p) => ({
+                          ...p,
+                          defaultEmotion: e.target.value,
+                        }))
+                      }
+                      readOnly={pending || attempted}
+                    />
+                  </label>
+                  <label>
+                    语速
+                    <input
+                      name="candidateRate"
+                      type="number"
+                      min={0.5}
+                      max={2}
+                      step={0.05}
+                      required
+                      value={profile.rate}
+                      onChange={(e) =>
+                        setProfile((p) => ({
+                          ...p,
+                          rate: e.target.valueAsNumber,
+                        }))
+                      }
+                      readOnly={pending || attempted}
+                    />
+                  </label>
+                </fieldset>
+              )}
               <label>
                 法语台词
                 <textarea

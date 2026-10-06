@@ -19,10 +19,10 @@ use brioche_course_contract::{
 use sea_orm::{ConnectionTrait, DbBackend, QueryResult, Statement, TransactionTrait};
 use serde_json::{Value, json};
 use std::{path::PathBuf, sync::Arc};
-const SELECT: &str = r#"SELECT a.id,a.clone_job_id,g.character_id,g.character_revision,g.voice_revision,a.profile,a.parameters,e.result,
+const SELECT: &str = r#"SELECT a.id,a.clone_job_id,COALESCE(g.character_id,a.character_id) AS character_id,COALESCE(g.character_revision,a.character_revision) AS character_revision,COALESCE(g.voice_revision,a.base_voice_revision) AS voice_revision,a.profile,a.parameters,e.result,
 CASE WHEN e.status='submitted' AND e.created_at<clock_timestamp()-interval '300 seconds' THEN 'unknown' ELSE e.status END AS status,
 r.accepted,r.voice_revision AS applied_voice_revision,to_char(a.created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at
-FROM voice_auditions a JOIN voice_clone_jobs j ON j.id=a.clone_job_id JOIN voice_reference_grants g ON g.id=j.grant_id
+FROM voice_auditions a LEFT JOIN voice_clone_jobs j ON j.id=a.clone_job_id LEFT JOIN voice_reference_grants g ON g.id=j.grant_id
 JOIN LATERAL (SELECT * FROM voice_audition_events WHERE audition_id=a.id ORDER BY version DESC LIMIT 1) e ON true
 LEFT JOIN voice_audition_reviews r ON r.audition_id=a.id"#;
 pub fn router() -> Router<Backend> {
@@ -39,6 +39,7 @@ fn item(row: &QueryResult) -> Result<AdminAudition, AppError> {
     Ok(AdminAudition {
         id: field(row, "id")?,
         clone_job_id: field(row, "clone_job_id")?,
+        profile: serde_json::from_value(p.clone()).map_err(|_| AppError::Unavailable)?,
         character_id: field(row, "character_id")?,
         character_revision: field::<i32>(row, "character_revision")? as u32,
         base_voice_revision: field::<i32>(row, "voice_revision")? as u32,
@@ -79,6 +80,8 @@ async fn load(db: &impl ConnectionTrait, id: &str) -> Result<QueryResult, AppErr
 struct Cursor {
     after_id: Option<String>,
     clone_job_id: Option<String>,
+    character_id: Option<String>,
+    character_revision: Option<u32>,
 }
 async fn list(
     auth: AuthSession,
@@ -92,7 +95,18 @@ async fn list(
     if (!after.is_empty() && !hex(&after, 32)) || clone.as_ref().is_some_and(|s| !hex(s, 32)) {
         return Err(AppError::InvalidInput);
     }
-    let rows=b.db.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,format!("{SELECT} WHERE a.id>$1 AND ($2::text IS NULL OR a.clone_job_id=$2) ORDER BY a.id LIMIT 21"),vec![after.into(),clone.into()])).await.map_err(|_|AppError::Unavailable)?;
+    if cursor.character_id.is_some() != cursor.character_revision.is_some()
+        || cursor
+            .character_id
+            .as_deref()
+            .is_some_and(|id| !brioche_course_contract::valid_content_id(id))
+        || cursor
+            .character_revision
+            .is_some_and(|v| !brioche_course_contract::valid_content_revision(v))
+    {
+        return Err(AppError::InvalidInput);
+    }
+    let rows=b.db.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,format!("{SELECT} WHERE a.id>$1 AND ($2::text IS NULL OR a.clone_job_id=$2) AND ($3::text IS NULL OR COALESCE(g.character_id,a.character_id)=$3) AND ($4::integer IS NULL OR COALESCE(g.character_revision,a.character_revision)=$4) ORDER BY a.id LIMIT 21"),vec![after.into(),clone.into(),cursor.character_id.into(),cursor.character_revision.map(|v|v as i32).into()])).await.map_err(|_|AppError::Unavailable)?;
     let items = rows
         .iter()
         .take(20)
@@ -126,14 +140,35 @@ async fn create(
 ) -> Result<Json<AdminAudition>, AppError> {
     require_operator(&auth)?;
     crate::admin::reason(&request.reason)?;
-    if !request.cost_confirmed
-        || !hex(&request.id, 32)
-        || !hex(&request.clone_job_id, 32)
-        || request.expected_clone_version == 0
-        || request.expected_clone_version > i32::MAX as u32
-    {
+    if !request.cost_confirmed || !hex(&request.id, 32) {
         return Err(AppError::InvalidInput);
     }
+    match (
+        &request.clone_job_id,
+        request.expected_clone_version,
+        &request.candidate,
+    ) {
+        (Some(id), Some(v), None)
+            if hex(id, 32) && brioche_course_contract::valid_content_revision(v) => {}
+        (None, None, Some(c))
+            if brioche_course_contract::valid_content_id(&c.character_id)
+                && brioche_course_contract::valid_content_revision(c.character_revision)
+                && c.expected_voice_revision < i32::MAX as u32
+                && c.profile.voice_kind == "system"
+                && c.profile.reference_audio.is_none() =>
+        {
+            crate::qwen::SpeechRequest {
+                profile: c.profile.clone(),
+                text: request.text.clone(),
+                emotion: request.emotion.clone(),
+            }
+            .parameters()
+            .map_err(|_| AppError::InvalidInput)?;
+        }
+        _ => return Err(AppError::InvalidInput),
+    }
+    let candidate_json =
+        serde_json::to_value(&request.candidate).map_err(|_| AppError::InvalidInput)?;
     let actor = owner(&auth)?;
     let tx = b.db.begin().await.map_err(|_| AppError::Unavailable)?;
     lock_operator(&tx, actor).await?;
@@ -146,7 +181,7 @@ async fn create(
     .await?;
     if let Some(row)=one(&tx,"SELECT actor_id,reason,clone_job_id,clone_version,parameters FROM voice_auditions WHERE id=$1",vec![request.id.clone().into()]).await?{
         let p:Value=field(&row,"parameters")?;
-        if field::<i64>(&row,"actor_id")?!=actor||field::<String>(&row,"reason")?!=request.reason||field::<String>(&row,"clone_job_id")?!=request.clone_job_id||field::<i32>(&row,"clone_version")? as u32!=request.expected_clone_version||p["input"]["text"]!=request.text||p["sceneEmotion"]!=request.emotion{return Err(AppError::Conflict);}
+        if field::<i64>(&row,"actor_id")?!=actor||field::<String>(&row,"reason")?!=request.reason||field::<Option<String>>(&row,"clone_job_id")?!=request.clone_job_id||field::<Option<i32>>(&row,"clone_version")?.map(|v|v as u32)!=request.expected_clone_version||p["candidate"]!=candidate_json||p["input"]["text"]!=request.text||p["sceneEmotion"]!=request.emotion{return Err(AppError::Conflict);}
         return Ok(Json(item(&load(&tx,&request.id).await?)?));
     }
     let service = service.ok_or(AppError::Unavailable)?.0;
@@ -155,26 +190,45 @@ async fn create(
         .clone()
         .try_acquire_owned()
         .map_err(|_| AppError::RateLimited)?;
-    exec(
-        &tx,
-        "SELECT id FROM voice_clone_jobs WHERE id=$1 FOR UPDATE",
-        vec![request.clone_job_id.clone().into()],
-    )
-    .await?;
-    let source = crate::voice_jobs::load(&tx, &request.clone_job_id).await?;
-    if source.version != request.expected_clone_version
-        || !matches!(source.status, VoiceJobStatus::Ready)
+    let (profile, character_id, character_revision, base_voice_revision) = if let Some(c) =
+        &request.candidate
     {
-        return Err(AppError::Conflict);
-    }
-    let profile_row=one(&tx,"SELECT profile FROM character_voice_profiles WHERE character_id=$1 AND character_revision=$2 AND revision=$3",vec![source.character_id.into(),(source.character_revision as i32).into(),(source.voice_revision as i32).into()]).await?.ok_or(AppError::NotFound)?;
-    let mut profile: CharacterVoiceProfile =
-        serde_json::from_value(field(&profile_row, "profile")?)
-            .map_err(|_| AppError::Unavailable)?;
-    profile.voice_id = source.voice_id.ok_or(AppError::Conflict)?;
-    profile.voice_kind = "cloned".into();
-    profile.model = crate::qwen::MODEL.into();
-    profile.provider = "qwen".into();
+        let row=one(&tx,"SELECT COALESCE(MAX(v.revision),0)::integer AS voice_revision FROM character_revisions c LEFT JOIN character_voice_profiles v ON v.character_id=c.character_id AND v.character_revision=c.revision WHERE c.character_id=$1 AND c.revision=$2 GROUP BY c.character_id,c.revision",vec![c.character_id.clone().into(),(c.character_revision as i32).into()]).await?.ok_or(AppError::NotFound)?;
+        if field::<i32>(&row, "voice_revision")? as u32 != c.expected_voice_revision {
+            return Err(AppError::Conflict);
+        }
+        (
+            c.profile.clone(),
+            Some(c.character_id.clone()),
+            Some(c.character_revision as i32),
+            Some(c.expected_voice_revision as i32),
+        )
+    } else {
+        let job_id = request
+            .clone_job_id
+            .as_deref()
+            .ok_or(AppError::InvalidInput)?;
+        exec(
+            &tx,
+            "SELECT id FROM voice_clone_jobs WHERE id=$1 FOR UPDATE",
+            vec![job_id.into()],
+        )
+        .await?;
+        let source = crate::voice_jobs::load(&tx, job_id).await?;
+        if Some(source.version) != request.expected_clone_version
+            || !matches!(source.status, VoiceJobStatus::Ready)
+        {
+            return Err(AppError::Conflict);
+        }
+        let row=one(&tx,"SELECT profile FROM character_voice_profiles WHERE character_id=$1 AND character_revision=$2 AND revision=$3",vec![source.character_id.into(),(source.character_revision as i32).into(),(source.voice_revision as i32).into()]).await?.ok_or(AppError::NotFound)?;
+        let mut profile: CharacterVoiceProfile =
+            serde_json::from_value(field(&row, "profile")?).map_err(|_| AppError::Unavailable)?;
+        profile.voice_id = source.voice_id.ok_or(AppError::Conflict)?;
+        profile.voice_kind = "cloned".into();
+        profile.model = crate::qwen::MODEL.into();
+        profile.provider = "qwen".into();
+        (profile, None, None, None)
+    };
     let speech = crate::qwen::SpeechRequest {
         profile,
         text: request.text,
@@ -182,7 +236,8 @@ async fn create(
     };
     let mut parameters = speech.parameters().map_err(|_| AppError::InvalidInput)?;
     parameters["sceneEmotion"] = json!(speech.emotion); // Private reproducibility metadata, not sent to Qwen.
-    exec(&tx,"INSERT INTO voice_auditions(id,clone_job_id,clone_version,profile,parameters,actor_id,reason) VALUES($1,$2,$3,$4,$5,$6,$7)",vec![request.id.clone().into(),request.clone_job_id.into(),(request.expected_clone_version as i32).into(),serde_json::to_value(&speech.profile).map_err(|_|AppError::InvalidInput)?.into(),parameters.into(),actor.into(),request.reason.into()]).await?;
+    parameters["candidate"] = candidate_json;
+    exec(&tx,"INSERT INTO voice_auditions(id,clone_job_id,clone_version,profile,parameters,actor_id,reason,character_id,character_revision,base_voice_revision) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",vec![request.id.clone().into(),request.clone_job_id.into(),request.expected_clone_version.map(|v|v as i32).into(),serde_json::to_value(&speech.profile).map_err(|_|AppError::InvalidInput)?.into(),parameters.into(),actor.into(),request.reason.into(),character_id.into(),character_revision.into(),base_voice_revision.into()]).await?;
     exec(
         &tx,
         "INSERT INTO voice_audition_events(audition_id,version,status) VALUES($1,1,'submitted')",
@@ -191,6 +246,7 @@ async fn create(
     .await?;
     let result = item(&load(&tx, &request.id).await?)?;
     tx.commit().await.map_err(|_| AppError::Unavailable)?;
+    let cloned = speech.profile.voice_kind == "cloned";
     tokio::spawn(async move {
         let _permit = permit;
         let response = tokio::time::timeout(
@@ -200,7 +256,7 @@ async fn create(
         .await
         .unwrap_or(Err(ProviderError::Unknown));
         let (status, result) = match response {
-            Ok(s) => match tokio::task::spawn_blocking(move || store(&root, s)).await {
+            Ok(s) => match tokio::task::spawn_blocking(move || store(&root, s, cloned)).await {
                 Ok(Ok(r)) => ("ready", Some(r)),
                 _ => ("unknown", None),
             },
@@ -213,7 +269,7 @@ async fn create(
     });
     Ok(Json(result))
 }
-fn store(root: &std::path::Path, s: crate::qwen::Speech) -> Result<Value, AppError> {
+fn store(root: &std::path::Path, s: crate::qwen::Speech, cloned: bool) -> Result<Value, AppError> {
     let info = crate::audio::inspect(&s.wav, "audio/wav").map_err(|_| AppError::Unavailable)?;
     if s.provider_wav.len() < 44
         || !s.provider_wav.starts_with(b"RIFF")
@@ -225,7 +281,8 @@ fn store(root: &std::path::Path, s: crate::qwen::Speech) -> Result<Value, AppErr
         || info.duration_ms > 180000
         || info != s.info
         || !crate::qwen::valid_id(&s.request_id)
-        || s.verification.as_ref().is_none_or(|v| {
+        || s.verification.is_some() != cloned
+        || s.verification.as_ref().is_some_and(|v| {
             v.model != crate::qwen::MODEL
                 || v.status != "OK"
                 || !crate::qwen::valid_id(&v.request_id)
@@ -238,9 +295,11 @@ fn store(root: &std::path::Path, s: crate::qwen::Speech) -> Result<Value, AppErr
     crate::media::store_file(root, &s.provider_wav, &provider_sha, "wav")
         .map_err(|_| AppError::Unavailable)?;
     crate::media::store_file(root, &s.wav, &sha, "wav").map_err(|_| AppError::Unavailable)?;
-    let verify = s.verification.unwrap();
+    let verification = s
+        .verification
+        .map(|v| json!({"model":v.model,"status":v.status,"requestId":v.request_id}));
     Ok(
-        json!({"sha256":sha,"providerSha256":provider_sha,"byteLength":s.wav.len(),"durationMs":info.duration_ms,"requestId":s.request_id,"inputTokens":s.input_tokens,"outputTokens":s.output_tokens,"verification":{"model":verify.model,"status":verify.status,"requestId":verify.request_id},"postprocessing":"qwen-riff-length-v1-metadata-preserved"}),
+        json!({"sha256":sha,"providerSha256":provider_sha,"byteLength":s.wav.len(),"durationMs":info.duration_ms,"requestId":s.request_id,"inputTokens":s.input_tokens,"outputTokens":s.output_tokens,"verification":verification,"postprocessing":"qwen-riff-length-v1-metadata-preserved"}),
     )
 }
 async fn finish(

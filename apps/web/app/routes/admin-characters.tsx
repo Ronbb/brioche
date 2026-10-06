@@ -220,6 +220,12 @@ export default function Characters({ loaderData }: Route.ComponentProps) {
             {item.profile ? "创建新声音版本" : "配置声音档案"}
           </button>
         )}
+        <Link
+          className="text-button"
+          to={`/admin/voice-auditions?characterId=${item.character.characterId}&characterRevision=${item.character.revision}`}
+        >
+          选择音色并试听
+        </Link>
         {!!item.profile && (
           <button className="text-button" onClick={() => exportProfile(item)}>
             导出固定版本

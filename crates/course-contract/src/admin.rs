@@ -411,10 +411,19 @@ pub struct AdminVoiceJobs {
 
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSystemAuditionCandidate {
+    pub character_id: String,
+    pub character_revision: u32,
+    pub expected_voice_revision: u32,
+    pub profile: CharacterVoiceProfile,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct AdminAuditionRequest {
     pub id: String,
-    pub clone_job_id: String,
-    pub expected_clone_version: u32,
+    pub clone_job_id: Option<String>,
+    pub expected_clone_version: Option<u32>,
+    pub candidate: Option<AdminSystemAuditionCandidate>,
     pub text: String,
     pub emotion: String,
     pub cost_confirmed: bool,
@@ -432,7 +441,8 @@ pub struct AdminAuditionReview {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct AdminAudition {
     pub id: String,
-    pub clone_job_id: String,
+    pub clone_job_id: Option<String>,
+    pub profile: CharacterVoiceProfile,
     pub character_id: String,
     pub character_revision: u32,
     pub base_voice_revision: u32,

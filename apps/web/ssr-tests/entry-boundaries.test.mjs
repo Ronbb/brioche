@@ -975,11 +975,53 @@ test("audition SSR requires current operator identity, allowlists cursors and ne
       ),
     );
     assert.ok(requests.every((r) => r.method === "GET"));
-    for (const query of ["jobId=invalid", "auditionId=invalid"])
+    for (const query of [
+      "jobId=invalid",
+      "auditionId=invalid",
+      "characterId=character-camille",
+      "characterRevision=1",
+      "characterId=character-camille&characterRevision=0",
+      "characterId=character-camille&characterRevision=2147483648",
+      "jobId=" +
+        "a".repeat(32) +
+        "&characterId=character-camille&characterRevision=1",
+    ])
       assert.equal(
         (await request("/admin/voice-auditions?" + query)).status,
         400,
       );
+  } finally {
+    authenticated = false;
+    profile.role = "learner";
+  }
+});
+
+test("system audition SSR loads a fixed character without any voice and never sends a paid request", async () => {
+  authenticated = true;
+  profile.role = "operator";
+  try {
+    requests.length = 0;
+    const response = await request(
+      "/admin/voice-auditions?characterId=character-camille&characterRevision=1&secret=discard",
+    );
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get("cache-control"), /private, no-store/);
+    assert.match(await response.text(), /Camille/);
+    assert.ok(
+      requests.some(
+        (r) => r.path === "/api/v1/operator/characters/character-camille/1",
+      ),
+    );
+    assert.ok(
+      requests.some(
+        (r) =>
+          r.path ===
+          "/api/v1/operator/voice-auditions?characterId=character-camille&characterRevision=1",
+      ),
+    );
+    assert.ok(
+      requests.every((r) => r.method === "GET" && !r.path.includes("secret=")),
+    );
   } finally {
     authenticated = false;
     profile.role = "learner";
