@@ -29,7 +29,7 @@ test("generation locks character and voice revisions and refuses ambiguous or un
   assert.throws(() => characterFor(sample[0], library), /缺少/);
   a.character.revision = 1;
   a.profile.voiceKind = "cloned";
-  assert.throws(() => requestFor(sample[0], env, library), /尚未适配/);
+  assert.throws(() => requestFor(sample[0], env, library), /参考录音/);
 });
 const wav = Buffer.alloc(44);
 wav.write("RIFF");

@@ -21,7 +21,7 @@ node scripts/qwen-tts.mjs --plan --profiles <character-voices.json>
 node --env-file=.local/tts.env scripts/qwen-tts.mjs --generate --profiles <character-voices.json>
 ```
 
-面包店脚本按固定角色 Camille v1、Luc v1 解析档案。每个角色必须恰好有一个声音版本，缺失/重复或不支持的模型/复刻类型在计费调用之前失败。角色特点和默认情绪与每句话的场景情绪共同形成指令；音色、模型、语速均读取档案。生成回执记录三重版本、完整参数与档案哈希，原始录音保留。这里只是面包店试听生产工具，尚未覆盖全部课程、Léa、词级时间轴或正式音频发布。
+面包店脚本按固定角色 Camille v1、Luc v1 解析档案。每个角色必须恰好有一个声音版本，缺失/重复或不支持的模型在计费调用之前失败。复刻档案须有参考原文与授权，生成前查询提供方状态和绑定模型。角色特点和默认情绪与每句话的场景情绪共同形成指令；音色、模型、语速均读取档案。生成回执记录三重版本、完整参数与档案哈希，原始录音保留。这里只是面包店试听生产工具，尚未覆盖全部课程、Léa、词级时间轴或正式音频发布。
 
 提供方的模型名可能是可更新别名，固定档案只能稳定生成配置，不能保证重新生成的声纹/波形完全不变。正式课程应固定审听后登记的录音版本与文件哈希，保留原文件，而不是上线时重新请求 TTS。
 
@@ -31,7 +31,7 @@ node --env-file=.local/tts.env scripts/qwen-tts.mjs --generate --profiles <chara
 
 用户提供的[阿里云声音复刻指南](https://help.aliyun.com/en/model-studio/voice-cloning-user-guide)列出北京地域 Qwen Audio 3.1 Flash，创建接口是北京业务空间 `/api/v1/services/audio/tts/customization`。使用 `voice-enrollment`、`create_voice` 和明确的 `target_model`，之后合成使用返回的 `voice_id`；创建和合成必须绑定相同模型。北京与新加坡支持范围不同，不把 Qwen Audio、Qwen3-TTS VC 和 Realtime 的请求混用。
 
-文档建议10–20秒参考，至少5秒连续清晰的单人语音，避免背景音乐、其他人声音和过长停顿。现有13.12秒混合对话含多个角色，不能作为单个角色参考。生产档案可以登记人工创建的复刻音色及其参考，但当前生成器仍明确拒绝 cloned；尚未发送任何复刻请求、上传私人录音或验证复刻法语/情绪效果。后续适配应先核验目标模型与音色绑定、参考文件授权/解码/哈希，再为每个角色单独试听。
+文档建议10–20秒参考，至少5秒连续清晰的单人语音，避免背景音乐、其他人声音和过长停顿。现有13.12秒混合对话含多个角色，不能作为单个角色参考。生产档案可以登记人工创建的复刻音色及其参考，生成器已支持通过提供方查询的 Flash cloned 档案；尚未发送任何复刻请求、上传私人录音或验证复刻法语/情绪效果。后续适配应先核验目标模型与音色绑定、参考文件授权/解码/哈希，再为每个角色单独试听。
 
 ### 复刻接入流程（设计，尚未实现）
 
@@ -47,4 +47,19 @@ node --env-file=.local/tts.env scripts/qwen-tts.mjs --generate --profiles <chara
 
 当前继续沿用已试听的两个系统音色；此设计没有触发新的 API 计费请求或上传参考录音。
 
-本次核对：指南的北京支持列表明确包含 `qwen-audio-3.1-tts-flash`，未列出 `qwen-audio-3.1-tts-next` 的克隆支持，不能仅因模型能够合成就推断能够复刻。音色 ID 与模型绑定，跨模型须分别创建；提供方可能清理一年未使用的音色，生成前应查询可用性，保留已登记录音。该查询及远程创建仍待实现。
+本次核对：指南的北京支持列表明确包含 `qwen-audio-3.1-tts-flash`，未列出 `qwen-audio-3.1-tts-next` 的克隆支持，不能仅因模型能够合成就推断能够复刻。音色 ID 与模型绑定，跨模型须分别创建；提供方可能清理一年未使用的音色，生成前应查询可用性，保留已登记录音。提供方查询已接入 CLI 和面包店生成器；远程创建、受限参考文件交付与后台任务仍待实现。
+
+### 已实现的提供方可用性核对
+
+`scripts/qwen-voices.mjs` 调用北京业务空间的 `voice-enrollment` 查询接口，不创建、修改或删除音色。依据[声音复刻 HTTP API](https://help.aliyun.com/en/model-studio/voice-clone-design-http-api)，列表使用 `list_voice` 与从0开始的页码，详情使用 `query_voice`。列表没有模型绑定信息，不能用列表中的 OK 代替详情校验；满页仅说明可能还有下一页，不冒充总数。
+
+```powershell
+node --env-file=.local/tts.env scripts/qwen-voices.mjs --list 0
+node --env-file=.local/tts.env scripts/qwen-voices.mjs --query <voice-id>
+```
+
+面包店生成器对 `cloned` 档案先验证固定参考版本、非空原文与复刻授权字段，再查询详情。仅状态 `OK` 且 `target_model` 与档案完全一致时合成；`DEPLOYING`、`UNDEPLOYED`、未知状态、模型不一致或读取失败均在合成前拒绝。整批开始前核对所有所需角色，每句生成前再次核对，记录脱敏的 requestId、model、status、checkedAt。记录授权文本不等于独立法律审查，也不替代正式登记的来源及文件校验。
+
+查询只向允许的北京 HTTPS 业务空间发送 API Key，禁止重定向，响应不超过256KB且30秒有界；错误不输出提供方原文、密钥或参考录音 URL。结果明确丢弃 `resource_link`。查询失败没有自动重试或触发创建；原系统音色不增加复刻查询。离线 `--plan` 不访问网络，不能证明复刻音色当前可用。
+
+2026-10-07：16项语音协议测试通过，覆盖上述拒绝条件、全部角色预检、合成顺序与收据脱敏。实际凭据成功读取第一页，当前列表为空；未创建音色或生成新音频，未验证真实复刻发音。后台仍只维护档案及参考选择，这些 CLI 能力不等于远程复刻任务页面已完成。

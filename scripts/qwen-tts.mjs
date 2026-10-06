@@ -3,6 +3,8 @@ import { mkdir, writeFile, open } from "node:fs/promises";
 import defaultLibrary from "../docs/characters/voices.json" with { type: "json" };
 import { resolve, relative, isAbsolute } from "node:path";
 import { pathToFileURL } from "node:url";
+import { qwenBase } from "./qwen-api.mjs";
+import { validateReference, verifyClonedVoice } from "./qwen-voices.mjs";
 
 const roleCharacters = {
   customer: "character-camille",
@@ -27,15 +29,14 @@ export function characterFor(line, library = defaultLibrary) {
     p.provider !== "qwen" ||
     p.model !== "qwen-audio-3.1-tts-flash" ||
     p.locale !== "fr-FR" ||
-    p.voiceKind !== "system" ||
+    !["system", "cloned"].includes(p.voiceKind) ||
     !/^[a-zA-Z0-9_.-]{1,200}$/.test(p.voiceId ?? "") ||
     !Number.isFinite(p.rate) ||
     p.rate < 0.5 ||
     p.rate > 2
   )
-    throw Error(
-      "角色声音档案尚未适配：当前生成器只支持 Qwen Flash 法语固定音色。",
-    );
+    throw Error("角色声音档案尚未适配：当前生成器只支持 Qwen Flash 法语音色。");
+  if (p.voiceKind === "cloned") validateReference(p.referenceAudio);
   for (const key of ["personality", "speakingStyle", "defaultEmotion"])
     if (
       typeof p[key] !== "string" ||
@@ -100,47 +101,7 @@ export const sample = [
 export function requestFor(line, env, library = defaultLibrary) {
   const character = characterFor(line, library);
   const profile = character.profile;
-  if (!env.DASHSCOPE_API_KEY) {
-    throw new Error("请在 .local/tts.env 配置北京地域 DASHSCOPE_API_KEY。");
-  }
-  let base;
-  if (env.DASHSCOPE_BASE_URL) {
-    try {
-      base = new URL(env.DASHSCOPE_BASE_URL);
-    } catch {
-      throw new Error("提供方基础地址无效。");
-    }
-    if (
-      base.protocol !== "https:" ||
-      base.username ||
-      base.password ||
-      base.port ||
-      base.search ||
-      base.hash ||
-      !/^[a-zA-Z0-9_-]{1,100}\.cn-beijing\.maas\.aliyuncs\.com$/.test(
-        base.hostname,
-      ) ||
-      ![
-        "/",
-        "/api/v1",
-        "/api/v1/",
-        "/compatible-mode/v1",
-        "/compatible-mode/v1/",
-      ].includes(base.pathname)
-    ) {
-      throw new Error(
-        "提供方基础地址需为北京业务空间 HTTPS 域名，路径为根路径、/api/v1 或 /compatible-mode/v1。",
-      );
-    }
-  } else {
-    if (!/^[a-zA-Z0-9_-]{1,100}$/.test(env.QWEN_WORKSPACE_ID ?? ""))
-      throw new Error(
-        "请在 .local/tts.env 配置 DASHSCOPE_BASE_URL 或 QWEN_WORKSPACE_ID。",
-      );
-    base = new URL(
-      `https://${env.QWEN_WORKSPACE_ID}.cn-beijing.maas.aliyuncs.com`,
-    );
-  }
+  const base = qwenBase(env);
   if (
     !line ||
     !/^[a-zA-Z0-9_-]{1,40}$/.test(line.id ?? "") ||
@@ -154,7 +115,7 @@ export function requestFor(line, env, library = defaultLibrary) {
     throw new Error("试听台词无效。");
   }
   return {
-    endpoint: `${base.origin}/api/v1/services/audio/tts/SpeechSynthesizer`,
+    endpoint: `${base}/api/v1/services/audio/tts/SpeechSynthesizer`,
     body: {
       model: profile.model,
       input: {
@@ -222,6 +183,11 @@ export async function synthesize(
   library = defaultLibrary,
 ) {
   const request = requestFor(line, env, library);
+  const profile = characterFor(line, library).profile;
+  const voiceVerification =
+    profile.voiceKind === "cloned"
+      ? await verifyClonedVoice(profile, env, fetcher)
+      : null;
   let response;
   try {
     response = await fetcher(request.endpoint, {
@@ -271,6 +237,7 @@ export async function synthesize(
     wav,
     providerWav,
     parameters: request.body,
+    voiceVerification,
     usage: {
       inputTokens: Number.isSafeInteger(result.usage?.input_tokens)
         ? result.usage.input_tokens
@@ -325,7 +292,7 @@ export function normalizeWav(source) {
   throw new Error("提供方 WAV 数据长度无法安全修正。");
 }
 
-export async function run(args, env = process.env) {
+export async function run(args, env = process.env, fetcher = fetch) {
   if (
     ![1, 3].includes(args.length) ||
     !["--plan", "--generate"].includes(args[0]) ||
@@ -348,19 +315,30 @@ export async function run(args, env = process.env) {
   // Validate every required role before any paid request or output file creation.
   for (const line of sample) characterFor(line, library);
   // Validate credentials before creating any output or issuing paid requests.
-  if (args[0] === "--generate") requestFor(sample[0], env, library);
+  if (args[0] === "--generate") {
+    requestFor(sample[0], env, library);
+    // Check all required cloned voices before any synthesis can incur a charge.
+    const checked = new Set();
+    for (const line of sample) {
+      const character = characterFor(line, library);
+      const key = `${character.character.characterId}:${character.voiceRevision}`;
+      if (!checked.has(key) && character.profile.voiceKind === "cloned")
+        await verifyClonedVoice(character.profile, env, fetcher);
+      checked.add(key);
+    }
+  }
   const privateRoot = resolve(".local/private/tts-qwen");
   const output = resolve(privateRoot, `bakery-${Date.now()}`);
   const within = relative(privateRoot, output);
   if (within.startsWith("..") || isAbsolute(within))
     throw new Error("输出路径无效。");
   if (args[0] === "--plan")
-    return `Qwen Audio 3.1：${sample.length} 句、${sample.reduce((n, line) => n + [...line.text].length, 0)} 个原文字符，2 个支持法语的音色。仅计划，未请求 API。`;
+    return `Qwen Audio 3.1：${sample.length} 句、${sample.reduce((n, line) => n + [...line.text].length, 0)} 个原文字符，2 个法语角色声音档案。仅计划，未请求 API，复刻音色可用性尚未查询。`;
   await mkdir(output, { recursive: true });
   // Per-line receipts survive a later failure. New runs are explicit and bill again.
   for (const line of sample) {
     const character = characterFor(line, library);
-    const result = await synthesize(line, env, fetch, library);
+    const result = await synthesize(line, env, fetcher, library);
     const receipt = {
       status: "unreviewed",
       provider: "qwen",
@@ -376,6 +354,7 @@ export async function run(args, env = process.env) {
       id: line.id,
       parameters: result.parameters,
       usage: result.usage,
+      voiceVerification: result.voiceVerification,
       inputSha256: createHash("sha256")
         .update(JSON.stringify(result.parameters))
         .digest("hex"),
