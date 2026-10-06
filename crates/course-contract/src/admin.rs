@@ -408,3 +408,48 @@ pub struct AdminVoiceJobs {
     pub next: Option<String>,
     pub configured: bool,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAuditionRequest {
+    pub id: String,
+    pub clone_job_id: String,
+    pub expected_clone_version: u32,
+    pub text: String,
+    pub emotion: String,
+    pub cost_confirmed: bool,
+    pub reason: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAuditionReview {
+    pub accepted: bool,
+    pub heard: bool,
+    pub expected_voice_revision: u32,
+    pub reason: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAudition {
+    pub id: String,
+    pub clone_job_id: String,
+    pub character_id: String,
+    pub character_revision: u32,
+    pub base_voice_revision: u32,
+    pub voice_id: String,
+    pub text: String,
+    pub emotion: String,
+    pub status: String,
+    pub duration_ms: Option<u32>,
+    pub request_id: Option<String>,
+    pub accepted: Option<bool>,
+    pub applied_voice_revision: Option<u32>,
+    pub created_at: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAuditions {
+    pub items: Vec<AdminAudition>,
+    pub next: Option<String>,
+    pub configured: bool,
+}

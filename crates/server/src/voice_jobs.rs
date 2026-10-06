@@ -46,7 +46,7 @@ fn item(row: &QueryResult) -> Result<AdminVoiceJob, AppError> {
         updated_at: field(row, "updated_at")?,
     })
 }
-async fn load(db: &impl ConnectionTrait, id: &str) -> Result<AdminVoiceJob, AppError> {
+pub(crate) async fn load(db: &impl ConnectionTrait, id: &str) -> Result<AdminVoiceJob, AppError> {
     if !hex(id, 32) {
         return Err(AppError::InvalidInput);
     }

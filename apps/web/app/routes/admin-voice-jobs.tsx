@@ -150,6 +150,14 @@ export default function VoiceJobs({ loaderData }: Route.ComponentProps) {
               {labels[item.status]}
             </p>
             <p>{item.model}</p>
+            {item.status === "ready" && (
+              <Link
+                className="text-button"
+                to={`/admin/voice-auditions?jobId=${item.id}`}
+              >
+                角色声音试听
+              </Link>
+            )}
             <p>任务前缀：{item.prefix}</p>
             {item.voiceId && (
               <p className="voice-job-id">音色：{item.voiceId}</p>

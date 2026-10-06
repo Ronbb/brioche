@@ -45,6 +45,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     brioche_course_contract::AdminVoiceJobRequest::export_all(&config)?;
     brioche_course_contract::AdminVoiceJobCheck::export_all(&config)?;
     brioche_course_contract::AdminVoiceJobs::export_all(&config)?;
+    brioche_course_contract::AdminAuditionRequest::export_all(&config)?;
+    brioche_course_contract::AdminAuditionReview::export_all(&config)?;
+    brioche_course_contract::AdminAuditions::export_all(&config)?;
     brioche_course_contract::AdminRevokeTokenRequest::export_all(&config)?;
     brioche_course_contract::PreviewRelease::export_all(&config)?;
     ApiError::export_all(&config)?;

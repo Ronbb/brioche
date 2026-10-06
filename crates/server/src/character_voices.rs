@@ -226,6 +226,16 @@ pub async fn append_profile(
     actor: i64,
     request: AdminCharacterVoiceRequest,
 ) -> Result<AdminCharacterVoice, AppError> {
+    let tx = db.begin().await.map_err(|_| AppError::Unavailable)?;
+    let result = append_profile_in(&tx, actor, request).await?;
+    tx.commit().await.map_err(|_| AppError::Unavailable)?;
+    Ok(result)
+}
+pub(crate) async fn append_profile_in(
+    tx: &impl ConnectionTrait,
+    actor: i64,
+    request: AdminCharacterVoiceRequest,
+) -> Result<AdminCharacterVoice, AppError> {
     crate::admin::reason(&request.reason)?;
     id_revision(&request.character_id, request.character_revision)?;
     validate(&request.profile)?;
@@ -234,32 +244,27 @@ pub async fn append_profile(
         .checked_add(1)
         .ok_or(AppError::InvalidInput)?;
     id_revision(&request.character_id, next)?;
-    let tx = db.begin().await.map_err(|_| AppError::Unavailable)?;
     // Serializes profiles and rechecks permissions in the same lock as role changes.
     exec(
-        &tx,
+        tx,
         "SELECT pg_advisory_xact_lock(hashtextextended('account-admin',0))",
         vec![],
     )
     .await?;
-    let operator = one(
-        &tx,
-        "SELECT role FROM users WHERE id=$1",
-        vec![actor.into()],
-    )
-    .await?
-    .ok_or(AppError::Forbidden)?;
+    let operator = one(tx, "SELECT role FROM users WHERE id=$1", vec![actor.into()])
+        .await?
+        .ok_or(AppError::Forbidden)?;
     if field::<String>(&operator, "role")? != "operator" {
         return Err(AppError::Forbidden);
     }
-    let row=one(&tx,"SELECT snapshot,avatar_revision FROM character_revisions WHERE character_id=$1 AND revision=$2",vec![request.character_id.clone().into(),(request.character_revision as i32).into()]).await?.ok_or(AppError::NotFound)?;
-    let latest=one(&tx,"SELECT COALESCE(max(revision),0) AS revision FROM character_voice_profiles WHERE character_id=$1 AND character_revision=$2",vec![request.character_id.clone().into(),(request.character_revision as i32).into()]).await?.ok_or(AppError::Unavailable)?;
+    let row=one(tx,"SELECT snapshot,avatar_revision FROM character_revisions WHERE character_id=$1 AND revision=$2",vec![request.character_id.clone().into(),(request.character_revision as i32).into()]).await?.ok_or(AppError::NotFound)?;
+    let latest=one(tx,"SELECT COALESCE(max(revision),0) AS revision FROM character_voice_profiles WHERE character_id=$1 AND character_revision=$2",vec![request.character_id.clone().into(),(request.character_revision as i32).into()]).await?.ok_or(AppError::Unavailable)?;
     if field::<i32>(&latest, "revision")? as u32 != request.expected_voice_revision {
         return Err(AppError::Conflict);
     }
     if let Some(reference) = &request.profile.reference_audio {
         let audio = one(
-            &tx,
+            tx,
             "SELECT duration_ms FROM audio_assets WHERE asset_id=$1 AND revision=$2",
             vec![
                 reference.asset_id.clone().into(),
@@ -273,7 +278,7 @@ pub async fn append_profile(
             return Err(AppError::InvalidInput);
         }
     }
-    exec(&tx,"INSERT INTO character_voice_profiles(character_id,character_revision,revision,profile,actor_id,reason) VALUES($1,$2,$3,$4,$5,$6)",vec![request.character_id.into(),(request.character_revision as i32).into(),(next as i32).into(),serde_json::to_value(&request.profile).map_err(|_|AppError::InvalidInput)?.into(),actor.into(),request.reason.into()]).await?;
+    exec(tx,"INSERT INTO character_voice_profiles(character_id,character_revision,revision,profile,actor_id,reason) VALUES($1,$2,$3,$4,$5,$6)",vec![request.character_id.into(),(request.character_revision as i32).into(),(next as i32).into(),serde_json::to_value(&request.profile).map_err(|_|AppError::InvalidInput)?.into(),actor.into(),request.reason.into()]).await?;
     let result = AdminCharacterVoice {
         character: serde_json::from_value(field(&row, "snapshot")?)
             .map_err(|_| AppError::Unavailable)?,
@@ -281,6 +286,5 @@ pub async fn append_profile(
         voice_revision: next,
         profile: Some(request.profile),
     };
-    tx.commit().await.map_err(|_| AppError::Unavailable)?;
     Ok(result)
 }

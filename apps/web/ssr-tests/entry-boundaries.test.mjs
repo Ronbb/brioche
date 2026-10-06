@@ -74,7 +74,8 @@ const server = createServer((request, response) => {
     (request.url.startsWith("/api/v1/operator/assets") ||
       request.url.startsWith("/api/v1/operator/recordings") ||
       request.url.startsWith("/api/v1/operator/voice-references") ||
-      request.url.startsWith("/api/v1/operator/voice-jobs")) &&
+      request.url.startsWith("/api/v1/operator/voice-jobs") ||
+      request.url.startsWith("/api/v1/operator/voice-auditions")) &&
     authenticated &&
     profile.role === "operator"
   ) {
@@ -931,6 +932,54 @@ test("voice jobs SSR is operator-only and never starts provider work", async () 
       (await request("/admin/voice-jobs?jobId=invalid")).status,
       400,
     );
+  } finally {
+    authenticated = false;
+    profile.role = "learner";
+  }
+});
+
+test("audition SSR requires current operator identity, allowlists cursors and never generates audio", async () => {
+  authenticated = false;
+  requests.length = 0;
+  assert.equal((await request("/admin/voice-auditions")).status, 401);
+  assert.ok(
+    !requests.some((r) =>
+      r.path.startsWith("/api/v1/operator/voice-auditions"),
+    ),
+  );
+  authenticated = true;
+  profile.role = "learner";
+  requests.length = 0;
+  assert.equal((await request("/admin/voice-auditions")).status, 403);
+  assert.ok(
+    !requests.some((r) =>
+      r.path.startsWith("/api/v1/operator/voice-auditions"),
+    ),
+  );
+  profile.role = "operator";
+  try {
+    requests.length = 0;
+    const response = await request(
+      "/admin/voice-auditions?afterId=" +
+        "a".repeat(32) +
+        "&token=discard&url=discard",
+    );
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get("cache-control"), /private, no-store/);
+    assert.match(await response.text(), /角色声音试听/);
+    assert.ok(
+      requests.some(
+        (r) =>
+          r.path ===
+          "/api/v1/operator/voice-auditions?afterId=" + "a".repeat(32),
+      ),
+    );
+    assert.ok(requests.every((r) => r.method === "GET"));
+    for (const query of ["jobId=invalid", "auditionId=invalid"])
+      assert.equal(
+        (await request("/admin/voice-auditions?" + query)).status,
+        400,
+      );
   } finally {
     authenticated = false;
     profile.role = "learner";

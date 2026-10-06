@@ -133,6 +133,23 @@ test(
         "backup_source",
         `CREATE TABLE media_assets(descriptor jsonb); CREATE TABLE audio_assets(descriptor jsonb); INSERT INTO media_assets VALUES ('{"sha256":"${hash}","mimeType":"image/svg+xml"}'); CREATE TABLE payloads AS SELECT g AS id,md5(g::text) AS payload FROM generate_series(1,100000) g;`,
       );
+      const audition = Buffer.from("private audition binary\u0000\u00ff");
+      const original = Buffer.from("private original AIGC binary\u0000\u00ff");
+      const auditionHash = createHash("sha256").update(audition).digest("hex"),
+        originalHash = createHash("sha256").update(original).digest("hex");
+      for (const [sha, buffer] of [
+        [auditionHash, audition],
+        [originalHash, original],
+      ])
+        await docker(
+          ["exec", "-i", helper, "tee", `/media/${sha}.wav`],
+          false,
+          buffer,
+        );
+      await sql(
+        "backup_source",
+        `CREATE TABLE voice_audition_events(status text,result jsonb); INSERT INTO voice_audition_events VALUES ('ready','{"sha256":"${auditionHash}","providerSha256":"${originalHash}"}'),('submitted',NULL),('ready','{"sha256":"${auditionHash}","providerSha256":"${originalHash}"}');`,
+      );
       const snapshot = join(root, "snapshot");
       await cli([
         "backup",
@@ -154,7 +171,11 @@ test(
         manifest.dump.bytes > 1024 * 1024,
         "archive exceeds pipe buffer size",
       );
-      assert.equal(manifest.media.length, 1);
+      assert.equal(manifest.media.length, 3);
+      for (const sha of [auditionHash, originalHash])
+        assert.ok(
+          manifest.media.some((record) => record.name === `${sha}.wav`),
+        );
       await cli([
         "restore",
         "--database-container",

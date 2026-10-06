@@ -91,6 +91,9 @@ const characterAvatar = await readFile(
 );
 let adminApproved = false;
 let adminWrites = [];
+let voiceAuditions = [],
+  auditionSynthCalls = 0,
+  auditionLostReply = false;
 let lessonStatus = 200;
 const identityReads = [];
 let identityProof = null;
@@ -292,6 +295,89 @@ const api = createServer((request, response) => {
         }),
       );
     }
+    return;
+  }
+  if (request.url.startsWith("/api/v1/operator/voice-auditions")) {
+    if (!accounts || !operatorAccount) {
+      response.writeHead(401).end("{}");
+      return;
+    }
+    const url = new URL(request.url, "http://fixture"),
+      parts = url.pathname.split("/");
+    if (request.method === "GET") {
+      if (parts.at(-1) === "file") {
+        const bytes = Buffer.alloc(44 + 24000 * 4 * 2);
+        bytes.write("RIFF");
+        bytes.writeUInt32LE(bytes.length - 8, 4);
+        bytes.write("WAVEfmt ", 8);
+        bytes.writeUInt32LE(16, 16);
+        bytes.writeUInt16LE(1, 20);
+        bytes.writeUInt16LE(1, 22);
+        bytes.writeUInt32LE(24000, 24);
+        bytes.writeUInt32LE(48000, 28);
+        bytes.writeUInt16LE(2, 32);
+        bytes.writeUInt16LE(16, 34);
+        bytes.write("data", 36);
+        bytes.writeUInt32LE(bytes.length - 44, 40);
+        response.setHeader("Content-Type", "audio/wav");
+        response.end(bytes);
+        return;
+      }
+      response.end(
+        JSON.stringify(
+          parts.length === 6
+            ? voiceAuditions.find((a) => a.id === parts.at(-1))
+            : { items: voiceAuditions, next: null, configured: true },
+        ),
+      );
+      return;
+    }
+    let body = "";
+    request.on("data", (chunk) => (body += chunk));
+    request.on("end", () => {
+      const change = JSON.parse(body);
+      adminWrites.push({ operation: request.url, ...change });
+      if (parts.at(-1) === "review") {
+        const audition = voiceAuditions.find((a) => a.id === parts.at(-2));
+        setTimeout(() => {
+          audition.accepted = change.accepted;
+          audition.appliedVoiceRevision = change.accepted ? 2 : null;
+          response.end(JSON.stringify(audition));
+        }, 1200);
+        return;
+      }
+      let audition = voiceAuditions.find((a) => a.id === change.id);
+      if (!audition) {
+        audition = {
+          id: change.id,
+          cloneJobId: change.cloneJobId,
+          characterId: "character-camille",
+          characterRevision: 1,
+          baseVoiceRevision: 1,
+          voiceId: voiceJob.voiceId,
+          text: change.text,
+          emotion: change.emotion,
+          status: "submitted",
+          durationMs: null,
+          requestId: null,
+          accepted: null,
+          appliedVoiceRevision: null,
+          createdAt: "2026-10-07T00:00:00Z",
+        };
+        voiceAuditions.push(audition);
+        auditionSynthCalls++;
+        const created = audition;
+        setTimeout(() => {
+          created.status = "ready";
+          created.durationMs = 4000;
+          created.requestId = "synthetic-audition";
+        }, 2500);
+      }
+      if (auditionLostReply) {
+        auditionLostReply = false;
+        setTimeout(() => response.writeHead(503).end("{}"), 1200);
+      } else response.end(JSON.stringify(audition));
+    });
     return;
   }
   if (request.url === "/api/v1/auth/csrf") {
@@ -1306,6 +1392,141 @@ test("operator creates and reconciles a voice enrollment without exposing the re
     operatorAccount = false;
     referenceGrant = null;
     voiceJob = null;
+  }
+});
+
+test("operator auditions a clone privately and confirms a new voice with safe paid-request recovery", async () => {
+  accounts = true;
+  operatorAccount = true;
+  adminWrites = [];
+  voiceAuditions = [];
+  auditionSynthCalls = 0;
+  auditionLostReply = true;
+  voiceJob = {
+    id: "e".repeat(32),
+    grantId: "c".repeat(32),
+    characterId: "character-camille",
+    characterRevision: 1,
+    voiceRevision: 1,
+    model: "qwen-audio-3.1-tts-flash",
+    prefix: "b123456789",
+    version: 6,
+    status: "ready",
+    voiceId: "qwen-audio-3.1-tts-flash-b123456789-test",
+    requestId: "synthetic-query",
+    createdAt: "2026-10-07T00:00:00Z",
+    updatedAt: "2026-10-07T00:00:00Z",
+  };
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("set", "viewport", "390", "844");
+    await browser(
+      "open",
+      origin + "/admin/voice-auditions?jobId=" + voiceJob.id,
+    );
+    await browser("wait", "--text", "生成一段试听");
+    const snapshot = await browser("snapshot", "-i"),
+      ref = Object.entries(snapshot.refs).find(
+        ([, item]) => item.role === "button" && item.name === "生成一段试听",
+      )?.[0];
+    assert.ok(ref);
+    await browser("click", "@" + ref);
+    await browser("wait", "textarea[name=auditionText]");
+    await browser(
+      "fill",
+      "textarea[name=auditionText]",
+      "Bonjour ! Je voudrais une baguette.",
+    );
+    await browser(
+      "fill",
+      "input[name=auditionEmotion]",
+      "A warm, politely expectant request.",
+    );
+    await browser(
+      "fill",
+      "textarea[name=auditionReason]",
+      "isolated audition generation",
+    );
+    await browser("check", "input[name=auditionConsent]");
+    for (const width of [320, 390]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate(
+          "document.querySelector('.admin-dialog[open]').scrollWidth<=document.querySelector('.admin-dialog[open]').clientWidth",
+        ),
+        true,
+      );
+    }
+    await browser("focus", ".admin-dialog[open] .primary");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "操作未确认");
+    assert.equal(
+      await evaluate("document.querySelector('[name=auditionText]').readOnly"),
+      true,
+    );
+    assert.equal(auditionSynthCalls, 1);
+    await browser("focus", ".admin-dialog[open] .primary");
+    await browser("press", "Enter");
+    await browser(
+      "wait",
+      "--fn",
+      "!document.querySelector('.admin-dialog[open]')",
+    );
+    await browser("wait", "--text", "试听已生成");
+    assert.equal(adminWrites.length, 2);
+    assert.equal(adminWrites[0].id, adminWrites[1].id);
+    assert.equal(adminWrites[0].expectedCloneVersion, 6);
+    assert.equal(adminWrites[0].costConfirmed, true);
+    assert.equal(auditionSynthCalls, 1);
+    await browser("scrollintoview", ".recording-preview");
+    await browser("click", ".recording-preview");
+    await browser(
+      "wait",
+      "--fn",
+      "parseFloat(document.querySelector('.recording-preview-track > span').style.width)>0",
+    );
+    for (const width of [320, 390]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+        true,
+      );
+    }
+    const reviewSnap = await browser("snapshot", "-i"),
+      reviewRef = Object.entries(reviewSnap.refs).find(
+        ([, item]) => item.role === "button" && item.name === "确认试听结果",
+      )?.[0];
+    assert.ok(reviewRef);
+    await browser("click", "@" + reviewRef);
+    await browser("wait", "input[name=auditionConsent]");
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.admin-dialog[open] .primary').disabled",
+      ),
+      true,
+    );
+    await browser("check", "input[name=auditionConsent]");
+    await browser(
+      "fill",
+      "textarea[name=auditionReason]",
+      "isolated approval, not real audio review",
+    );
+    await browser("focus", ".admin-dialog[open] .primary");
+    await browser("press", "Enter");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "已通过 · 声音 v2");
+    assert.equal(adminWrites.length, 3);
+    assert.equal(adminWrites[2].heard, true);
+    assert.equal(adminWrites[2].accepted, true);
+    assert.equal(adminWrites[2].expectedVoiceRevision, 1);
+    assert.equal(auditionSynthCalls, 1);
+  } finally {
+    accounts = false;
+    operatorAccount = false;
+    voiceJob = null;
+    voiceAuditions = [];
+    auditionLostReply = false;
   }
 });
 

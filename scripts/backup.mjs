@@ -348,12 +348,23 @@ export async function backup(options) {
   );
   // Registries and stored objects are append-only. Reading after pg_dump covers
   // every registration in its earlier MVCC snapshot; additional objects are harmless.
+  const auditions =
+    (await output(
+      sqlArgs(
+        options,
+        options.database,
+        "SELECT to_regclass('voice_audition_events') IS NOT NULL",
+      ),
+    )) === "t";
+  const auditionObjects = auditions
+    ? " UNION SELECT result->>'sha256' AS sha,'audio/wav' AS mime FROM voice_audition_events WHERE status='ready' UNION SELECT result->>'providerSha256' AS sha,'audio/wav' AS mime FROM voice_audition_events WHERE status='ready'"
+    : "";
   const inventory = JSON.parse(
     await output(
       sqlArgs(
         options,
         options.database,
-        "SELECT COALESCE(json_agg(objects), '[]'::json) FROM (SELECT descriptor->>'sha256' AS sha, descriptor->>'mimeType' AS mime FROM media_assets UNION SELECT descriptor->>'sha256' AS sha, descriptor->>'mimeType' AS mime FROM audio_assets) objects",
+        `SELECT COALESCE(json_agg(objects), '[]'::json) FROM (SELECT descriptor->>'sha256' AS sha, descriptor->>'mimeType' AS mime FROM media_assets UNION SELECT descriptor->>'sha256' AS sha, descriptor->>'mimeType' AS mime FROM audio_assets${auditionObjects}) objects`,
       ),
     ),
   );
