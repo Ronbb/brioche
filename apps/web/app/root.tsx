@@ -14,6 +14,7 @@ import { LearningProvider } from "./components/learning";
 import { IdentitySync } from "./components/identity-sync";
 import "./styles/app.css";
 import { Scrollbar } from "./components/scrollbar";
+import { RouteFocus } from "./components/route-focus";
 import { getIdentity } from "./lib/api.server";
 import type { Route } from "./+types/root";
 export async function loader({ request }: Route.LoaderArgs) {
@@ -97,6 +98,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </main>
           </div>
           <Scrollbar />
+          <RouteFocus />
         </LearningProvider>
         <ScrollRestoration />
         <Scripts />
