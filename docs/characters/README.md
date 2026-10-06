@@ -83,3 +83,13 @@ node --env-file=.local/tts.env scripts/qwen-voices.mjs --query <voice-id>
 私有配置通过可选compose.tts.yaml仅传给Rust server：生产维护命令在compose.yaml和compose.https.yaml后追加-f compose.tts.yaml，来源为被忽略的.local/tts.env；不打印合并后的config或容器环境。开发需显式加载相同私有变量；DASHSCOPE_BASE_URL或QWEN_WORKSPACE_ID限定北京HTTPS业务空间，PUBLIC_APP_URL为参考交付的HTTPS origin。未配置时可以读任务但不能创建或核对，非法显式配置在服务启动时拒绝。不把密钥传给Web、迁移或共享.env。
 
 隔离HTTP验证实际请求形状、认证、模型/法语参数、查询、响应限额、重定向拒绝、5xx不重试与拒绝分类；隔离PG验证权限/CSRF、缺配置、费用确认、错误凭据、单grant重复拒绝、创建先入库、未知结果找回只查询、绑定模型/处理/可用状态、CAS、不可变记录、27条20→7分页、停滞任务unknown和审计脱敏。生产没有合适的单角色授权参考（0录音），本批不发送真实创建或合成；这些测试不证明实际克隆的法语音质或情绪效果。试听、确认新声音版本和正式六课全量语音仍待实现。
+
+### Rust 角色试听合成边界（2026-10-07）
+
+`qwen::Transport::synthesize` 已新增实际 Flash HTTP 合成能力，供后续持久化试听工作器调用；当前没有新增网页合成入口或自动任务。调用方仍须先记录付费尝试、身份/授权/固定角色版本，再调用提供方；本模块不创建数据库记录、声音版本或发布课程。
+
+请求复用私有 CharacterVoiceProfile 的个性、说话方式、默认情绪和速度，并加入当前场景情绪。只支持 Qwen Flash/fr-FR、600个Unicode字符/2400字节原文和有界无控制字符的指令；未知模型、无授权参考的克隆档案、错误音色类别和非法输入在外呼前拒绝。克隆每次先 query_voice，只有精确模型且OK才发送付费合成，系统音色不额外查询。合成120秒、JSON响应256KB，下载60秒/16MiB，禁止重定向、代理与自动重试。失败保留不明确结果，不能认为未计费后自动重发。
+
+合成接口依据[非实时语音合成文档](https://help.aliyun.com/en/model-studio/non-realtime-tts-user-guide)，使用北京业务空间的 SpeechSynthesizer，WAV/24kHz、法语提示、seed=0和AIGC标记。返回URL只允许北京结果OSS桶，HTTP地址升级为HTTPS，下载不转发API Key/Cookie；URL只在内存，收据不包含它。成功收据包含原始WAV、修复后的WAV、实际解码元数据、脱敏requestId和可选token用量/克隆核对结果。修复仅处理本项目真实Qwen样本已观察到的RIFF流式长度，保持AIGC及PCM；完整解码要求mono/24kHz/最多180秒，在blocking worker中执行。不能由结构校验推断发音、情绪或听感已合格。
+
+新增4项Rust测试，连同既有2项提供方测试全部通过：实际隔离HTTP验证认证/参数/先查询再合成、状态及模型拒绝、5xx不重试、422分类、下载不带认证、重定向和大小拒绝；受控下载完成整条收据/解码路径，合成请求仍经真实隔离HTTP，URL校验与下载网络另行覆盖。WAV测试验证原文件不变、AIGC/PCM保持、正确时长及损坏拒绝。Rust工作区常规与Clippy通过，PG集成在本批未运行；没有新增DB/公共契约/前端。真实提供方试听、持久化试听任务、人工确认和六课正式音频继续未完成；本批未发送真实合成或创建请求。

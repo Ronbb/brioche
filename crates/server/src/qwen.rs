@@ -1,6 +1,8 @@
 //! Private provider boundary. Never log credentials, raw provider bodies or reference URLs.
 use serde_json::{Value, json};
 use std::{sync::Arc, time::Duration};
+mod speech;
+pub use speech::{Speech, SpeechRequest};
 pub const MODEL: &str = "qwen-audio-3.1-tts-flash";
 #[derive(Clone, Copy, Debug)]
 pub enum ProviderError {
@@ -21,6 +23,10 @@ pub struct Details {
 pub trait Transport: Send + Sync {
     async fn create(&self, prefix: &str, reference_url: &str) -> Result<Receipt, ProviderError>;
     async fn query(&self, voice_id: &str) -> Result<Details, ProviderError>;
+    /// A paid request. Callers must persist their attempt before invoking it; never retry automatically.
+    async fn synthesize(&self, _request: &SpeechRequest) -> Result<Speech, ProviderError> {
+        Err(ProviderError::Rejected)
+    }
 }
 #[derive(Clone)]
 pub struct Service {
@@ -130,12 +136,26 @@ impl Api {
         })
     }
     async fn call(&self, input: Value) -> Result<Value, ProviderError> {
+        self.call_at(
+            &self.endpoint,
+            json!({"model":"voice-enrollment","input":input}),
+            Duration::from_secs(30),
+        )
+        .await
+    }
+    async fn call_at(
+        &self,
+        endpoint: &str,
+        body: Value,
+        timeout: Duration,
+    ) -> Result<Value, ProviderError> {
         // Do not propagate reqwest::Error: its Display/Debug may include the sensitive request URL.
         let mut response = self
             .client
-            .post(&self.endpoint)
+            .post(endpoint)
             .bearer_auth(&self.key)
-            .json(&json!({"model":"voice-enrollment","input":input}))
+            .timeout(timeout)
+            .json(&body)
             .send()
             .await
             .map_err(|_| ProviderError::Unknown)?;
@@ -222,6 +242,9 @@ impl Transport for Api {
                 .call(json!({"action":"query_voice","voice_id":voice_id}))
                 .await?,
         )
+    }
+    async fn synthesize(&self, request: &SpeechRequest) -> Result<Speech, ProviderError> {
+        speech::synthesize(self, request).await
     }
 }
 #[cfg(test)]
