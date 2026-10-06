@@ -18,9 +18,11 @@ use brioche_course_contract::{
 use sea_orm::{ConnectionTrait, DbBackend, QueryResult, Statement, TransactionTrait};
 use serde_json::Value;
 use std::{path::PathBuf, sync::Arc};
-const SELECT: &str = r#"SELECT a.id,a.plan_id,a.generation_key,a.reused_from,e.result,
+pub(crate) const SELECT: &str = r#"SELECT a.id,a.plan_id,a.generation_key,a.reused_from,e.result,
 CASE WHEN e.status='submitted' AND e.created_at<clock_timestamp()-interval '300 seconds' THEN 'unknown' ELSE e.status END AS status,
 COALESCE(r.accepted,original_review.accepted) AS accepted,
+COALESCE(r.actor_id,original_review.actor_id) AS review_actor,
+COALESCE(r.reason,original_review.reason) AS review_reason,
 to_char(a.created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at
 FROM course_speech_clips a JOIN course_speech_plans p ON p.id=a.plan_id
 LEFT JOIN course_speech_clips original ON original.id=a.reused_from
@@ -28,7 +30,7 @@ LEFT JOIN course_speech_plans original_plan ON original_plan.id=original.plan_id
 JOIN LATERAL(SELECT * FROM course_speech_clip_events WHERE clip_id=a.id ORDER BY version DESC LIMIT 1)e ON true
 LEFT JOIN course_speech_clip_reviews r ON r.clip_id=a.id
 LEFT JOIN course_speech_clip_reviews original_review ON original_review.clip_id=original.id"#;
-const VISIBLE: &str = "NOT EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(p.lesson_id,p.lesson_revision) OR (w.lesson_id,w.revision)=(original_plan.lesson_id,original_plan.lesson_revision))";
+pub(crate) const VISIBLE: &str = "NOT EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(p.lesson_id,p.lesson_revision) OR (w.lesson_id,w.revision)=(original_plan.lesson_id,original_plan.lesson_revision))";
 pub fn router() -> Router<Backend> {
     Router::new()
         .route("/api/v1/operator/speech-plans/{id}/clips", get(list))
@@ -37,7 +39,7 @@ pub fn router() -> Router<Backend> {
         .route("/api/v1/operator/speech-clips/{id}/file", get(file))
         .route("/api/v1/operator/speech-clips/{id}/review", post(review))
 }
-fn item(row: &QueryResult) -> Result<AdminSpeechClip, AppError> {
+pub(crate) fn item(row: &QueryResult) -> Result<AdminSpeechClip, AppError> {
     let result: Option<Value> = field(row, "result")?;
     Ok(AdminSpeechClip {
         id: field(row, "id")?,
@@ -69,14 +71,17 @@ async fn load(db: &impl ConnectionTrait, id: &str) -> Result<QueryResult, AppErr
     .await?
     .ok_or(AppError::NotFound)
 }
-async fn plan(db: &impl ConnectionTrait, id: &str) -> Result<Value, AppError> {
+pub(crate) async fn plan(db: &impl ConnectionTrait, id: &str) -> Result<Value, AppError> {
     if !hex(id, 32) {
         return Err(AppError::InvalidInput);
     }
     let row=one(db,"SELECT p.plan FROM course_speech_plans p WHERE p.id=$1 AND NOT EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(p.lesson_id,p.lesson_revision))",vec![id.into()]).await?.ok_or(AppError::NotFound)?;
     field(&row, "plan")
 }
-async fn latest(db: &impl ConnectionTrait, key: &str) -> Result<Option<QueryResult>, AppError> {
+pub(crate) async fn latest(
+    db: &impl ConnectionTrait,
+    key: &str,
+) -> Result<Option<QueryResult>, AppError> {
     one(db,&format!("{SELECT} WHERE a.generation_key=$1 AND {VISIBLE} ORDER BY a.created_at DESC,a.id DESC LIMIT 1"),vec![key.into()]).await
 }
 async fn read(

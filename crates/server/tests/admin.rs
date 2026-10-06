@@ -3556,6 +3556,116 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
         "ready"
     );
     assert_eq!(qwen.calls.lock().unwrap().len(), 4);
+    // Export is private, requires every distinct request's latest accepted output,
+    // and contains the fixed plan, real reviewer and verified content-addressed binaries.
+    let export_path = format!("{path}/{id}/export");
+    assert_eq!(visitor.send("GET", &export_path, None, true).await.0, 401);
+    assert_eq!(learner.send("GET", &export_path, None, true).await.0, 403);
+    assert_eq!(operator.send("GET", &export_path, None, true).await.0, 409);
+    let keys: std::collections::BTreeSet<String> = saved.1["targets"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|t| t["generationKey"].as_str().unwrap().to_owned())
+        .collect();
+    for (index, generation_key) in keys.iter().enumerate() {
+        let existing = operator
+            .send("GET", &format!("{path}/{id}/clips"), None, true)
+            .await
+            .1;
+        let current = existing["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|c| c["generationKey"] == *generation_key)
+            .cloned();
+        let ready = if let Some(c) = current {
+            c
+        } else {
+            let mut body = clip_request.clone();
+            let attempt_id = format!("{index:032x}");
+            body["id"] = json!(attempt_id);
+            body["generationKey"] = json!(generation_key);
+            assert_eq!(operator.send("POST", clips, Some(body), true).await.0, 200);
+            settled(&mut operator, &format!("{clips}/{attempt_id}")).await
+        };
+        assert_eq!(operator.send("POST", &format!("{clips}/{}/review", ready["id"].as_str().unwrap()),
+            Some(json!({"heard":true,"accepted":true,"reason":"Synthetic export fixture review"})), true).await.0, 200);
+    }
+    let response = operator
+        .app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri(&export_path)
+                .header("cookie", &operator.cookie)
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), 200);
+    assert_eq!(response.headers()["content-type"], "application/x-tar");
+    assert_eq!(response.headers()["cache-control"], "private, no-store");
+    let bytes = response.into_body().collect().await.unwrap().to_bytes();
+    let mut archive = tar::Archive::new(std::io::Cursor::new(bytes));
+    let mut members = std::collections::BTreeMap::new();
+    for entry in archive.entries().unwrap() {
+        use std::io::Read;
+        let mut entry = entry.unwrap();
+        assert!(entry.header().entry_type().is_file());
+        assert_eq!(entry.header().mode().unwrap(), 0o600);
+        let name = entry.path().unwrap().to_str().unwrap().to_owned();
+        let mut data = Vec::new();
+        entry.read_to_end(&mut data).unwrap();
+        assert!(members.insert(name, data).is_none());
+    }
+    let manifest: Value = serde_json::from_slice(&members["manifest.json"]).unwrap();
+    assert_eq!(manifest["plan"]["planHash"], saved.1["planHash"]);
+    assert_eq!(manifest["clips"].as_array().unwrap().len(), keys.len());
+    for clip in manifest["clips"].as_array().unwrap() {
+        assert!(clip["review"]["actorId"].as_i64().unwrap() > 0);
+        assert_eq!(clip["review"]["reason"], "Synthetic export fixture review");
+        for (file, hash) in [("file", "sha256"), ("providerFile", "providerSha256")] {
+            let name = clip[file].as_str().unwrap();
+            assert_eq!(
+                name,
+                format!("media/{}.wav", clip["result"][hash].as_str().unwrap())
+            );
+            assert_eq!(
+                {
+                    use sha2::Digest;
+                    format!("{:x}", sha2::Sha256::digest(&members[name]))
+                },
+                clip["result"][hash]
+            );
+        }
+        let key = clip["generationKey"].as_str().unwrap();
+        let raw = db
+            .query_one_raw(Statement::from_string(
+                DbBackend::Postgres,
+                "SELECT plan FROM course_speech_plans LIMIT 1",
+            ))
+            .await
+            .unwrap()
+            .unwrap();
+        let fixed: Value = raw.try_get("", "plan").unwrap();
+        let text = fixed["requests"][key]["parameters"]["input"]["text"]
+            .as_str()
+            .unwrap();
+        for word in clip["words"].as_array().unwrap() {
+            let start = word["start"].as_u64().unwrap() as usize;
+            let end = word["end"].as_u64().unwrap() as usize;
+            assert_eq!(
+                text.chars()
+                    .skip(start)
+                    .take(end - start)
+                    .collect::<String>(),
+                word["text"]
+            );
+        }
+    }
+    let calls_after_export = qwen.calls.lock().unwrap().len();
     // A corrupt cached object fails closed rather than silently issuing another paid call.
     let raw=db.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT result->>'sha256' AS hash FROM course_speech_clip_events WHERE status='ready' LIMIT 1")).await.unwrap().unwrap();
     let hash = raw.try_get::<String>("", "hash").unwrap();
@@ -3571,7 +3681,8 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
             .0,
         503
     );
-    assert_eq!(qwen.calls.lock().unwrap().len(), 4);
+    assert_eq!(qwen.calls.lock().unwrap().len(), calls_after_export);
+    assert_eq!(operator.send("GET", &export_path, None, true).await.0, 503);
     // Real withdrawal hides existing plan text and prevents further preview/creation.
     db.execute_raw(Statement::from_sql_and_values(
         DbBackend::Postgres,
@@ -3599,6 +3710,7 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
             .0,
         404
     );
+    assert_eq!(operator.send("GET", &export_path, None, true).await.0, 404);
     assert_eq!(operator.send("GET", &clip_path, None, true).await.0, 404);
     assert_eq!(
         operator

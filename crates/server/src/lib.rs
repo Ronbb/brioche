@@ -24,6 +24,7 @@ pub mod recording;
 pub mod reviews;
 pub mod session_store;
 mod speech_clips;
+mod speech_export;
 mod speech_media;
 pub mod speech_plan;
 mod voice_auditions;

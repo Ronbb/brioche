@@ -2943,6 +2943,20 @@ test("course clip batch stops on lost receipt and retries only the same immutabl
     await browser("wait", "--text", "生成未完成片段（0）");
     assert.equal(speechClips.length, 2);
     assert.equal(adminWrites.length, 3);
+    assert.equal(
+      await evaluate("!!document.querySelector('a[download]')"),
+      false,
+    );
+    for (const clip of speechClips) clip.accepted = true;
+    await browser("reload");
+    await browser("wait", "--text", "下载已审听音频与配音清单");
+    assert.equal(
+      await evaluate(
+        "document.querySelector('a[download]').getAttribute('href')",
+      ),
+      `/api/v1/operator/speech-plans/${id}/export`,
+    );
+    speechClips[0].accepted = null;
     speechClips[0].status = "unknown";
     await browser("reload");
     await browser("wait", "--text", "结果未确认");

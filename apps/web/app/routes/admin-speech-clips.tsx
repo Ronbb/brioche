@@ -316,6 +316,23 @@ export default function SpeechClips({
       >
         生成未完成片段（{missing.length}）
       </button>
+      {targets.length > 0 &&
+      targets.every((t) => {
+        const clip = byKey.get(t.generationKey);
+        return clip?.status === "ready" && clip.accepted === true;
+      }) ? (
+        <a
+          className="text-button"
+          href={`/api/v1/operator/speech-plans/${plan.id}/export`}
+          download
+        >
+          下载已审听音频与配音清单
+        </a>
+      ) : (
+        <p className="muted">
+          全部片段审听通过后，可以下载音频用于逐词对齐和正式录音登记。
+        </p>
+      )}
       {notice && <p role="status">{notice}</p>}
       <div className="speech-clip-list">
         {targets.map((t) => {
