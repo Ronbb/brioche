@@ -51,6 +51,7 @@ jobs:
       - run: git diff --exit-code -- packages/contracts/src/generated docs/generated
       - run: pnpm typecheck
       - run: pnpm test:web
+      - run: python3 -m unittest discover -s scripts/alignment -p test_align.py -v
       - run: pnpm test:ops
         env:
           BRIOCHE_BACKUP_DOCKER_TEST: "1"

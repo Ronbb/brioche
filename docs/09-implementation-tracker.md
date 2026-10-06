@@ -400,3 +400,6 @@ pre-course-speech-clips-20261007数据库+5媒体backup/verify完成。API镜像
 
 
 私有音频导出已实际Docker部署：HTTPS+TTS覆盖up--wait成功，迁移exit0、四长期服务healthy，两个HTTPS入口health/ready/首页均通过，新导出匿名401且private/no-store。部署前数据库及5媒体备份verify，正式录音0/试听0/声音2/计划0/片段0保持，无真实付费请求或新课程发布。Traefik无宿主映射、30075零监听。开发服务与独立gateway保留；隔离测试PG与匿名卷已删除。24Web、fmt、格式检查也通过。
+
+
+2026-10-07：本机离线alignment工具接入私有TAR，固定模型revision/文件SHA、Windows CPU全依赖版本；清单及19请求Rust哈希交叉核对、原始/修复WAV配对/PCM解码、词scalar范围、成员边界完整验证，保留原始预测，异常不修复、不伪造人工审核。13项标准库用例加入CI。实际8段旧试听+明确测试清单完成离线预测，零结构/范围问题但reviewRequired；不等于实际生产审听或准确时间轴证明。工具/模型不加入生产镜像，未计费/改账号/发布。正式后端时间轴接收/审查、录音包组装与新课程release仍待实现，目标active。
