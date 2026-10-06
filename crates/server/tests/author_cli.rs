@@ -123,6 +123,61 @@ fn media_bundle_checks_inspect_files_offline_and_locate_mismatches() {
 }
 
 #[test]
+fn bundled_nonsquare_avatar_is_located_before_files_or_database() {
+    use serde_json::json;
+    let mut source: serde_json::Value =
+        serde_json::from_str(include_str!("../../../docs/examples/asset-bundle.json")).unwrap();
+    for asset in source["assets"].as_array_mut().unwrap() {
+        asset["status"] = json!("ready");
+        asset["rightsConfirmed"] = json!(true);
+        asset["license"] = json!("LicenseRef-TestOnly");
+    }
+    let avatar = source["assets"][0]["assetId"].clone();
+    assert_ne!(source["assets"][0]["width"], source["assets"][0]["height"]);
+    source["characters"][0]["snapshot"]["avatarId"] = avatar.clone();
+    let path = std::env::temp_dir().join(format!("brioche-avatar-preflight-{}.json", random_id()));
+    let text = serde_json::to_string_pretty(&source)
+        .unwrap()
+        .replace('\n', "\r\n");
+    std::fs::write(&path, &text).unwrap();
+    let key = "\"avatarId\": ";
+    let offset = text
+        .find(&format!("{key}{}", serde_json::to_string(&avatar).unwrap()))
+        .unwrap()
+        + key.len();
+    let before = &text[..offset];
+    let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+    let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+    for command in ["assets-import", "assets-check"] {
+        let mut invocation = Command::new(env!("CARGO_BIN_EXE_brioche-server"));
+        invocation.args([command, path.to_str().unwrap(), "missing-source-directory"]);
+        if command == "assets-import" {
+            invocation.arg("protocol-test");
+        }
+        let output = invocation
+            .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+            .env("APP_ENV", "production")
+            .env("CONTENT_MODE", "database")
+            .output()
+            .unwrap();
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success());
+        assert!(
+            error.contains(&format!(
+                "{}:{line}:{column}: /characters/0/snapshot/avatarId:",
+                path.display()
+            )),
+            "{error}"
+        );
+        assert!(error.contains("avatar must be square"), "{error}");
+        assert!(!error.contains("database connection"), "{error}");
+        assert!(!error.contains("source directory unavailable"), "{error}");
+        assert!(output.stdout.is_empty());
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn full_release_checks_all_local_sources_without_database_or_publication() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/content");
     let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))

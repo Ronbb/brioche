@@ -614,3 +614,11 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 37 server 单元、24 作者 CLI、13 curriculum 共 74 项通过，Clippy（所有 target、-D warnings）、fmt/diff 通过。独立 PostgreSQL 的 author_runtime 与 recording 两项真实集成通过，覆盖原文件诊断/导入与 staging 原子性、图片登记、录音不可变/整批登记与固定 revision；专用容器 brioche-bundle-qa-9ae33ab6ea4e（仅 loopback 临时 49500）按精确 ID/名称核对后连匿名卷清理，初次失败的临时合成文件也按路径/内容核对清理。共享开发服务、用户浏览器、生产数据未修改。
 
 固定前一提交 9f85c01 的 Check 37443645612/job112203129839 本轮已实际确认 completed/success；本次整包预检提交的 CI 须另行确认。
+
+## 同包角色头像形状预检（2026-10-06）
+
+新增作者 CLI 回归先实际复现：角色引用同包 640×470 场景图时 assets-import 元数据仍通过，进入不可用数据库后只得到 database connection failed。AssetBundle 的共用元数据检查现按精确 avatarId/avatarRevision 查同包记录，发现长方形立即定位 /characters/0/snapshot/avatarId；assets-check 与 assets-import 均在文件/数据库访问前报告中文 CRLF 原值行列，错误理由 avatar must be square。包内不同 revision 不替代目标版本；包外版本及纯角色包继续留给登记数据库查询，没有误拒已有合法头像。
+
+新单元回归验证合法包、确切长方形 revision 拒绝、同 ID 不同 revision 延后、较新方形版本可用以及纯角色包合法。38 server 单元、25 作者 CLI、13 curriculum 共 76 项通过，Clippy 所有 target/-D warnings、fmt/diff 通过。扩展真实 PostgreSQL author_runtime 回归：纯角色包引用已登记方形头像成功，仅新增一条角色/审计，素材数量保持；另一纯角色包引用已登记场景图仍由数据库形状检查拒绝，角色/素材/审计数量保持，原文件头像引用位置正确。完整导入/staging 原子性回归通过。按精确 ID/名称清理专用 brioche-avatar-qa-455993471ddc 容器及匿名卷；未访问用户数据库、修改课程/素材审校状态或开放媒体。
+
+固定前一提交 ac0e090 的 Check 37444617769/job112206323082 本轮轮询确认 completed/success 后才推送，未取消其浏览器回归；本次头像预检提交的 CI 须另行确认。

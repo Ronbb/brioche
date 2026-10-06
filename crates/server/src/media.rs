@@ -140,6 +140,16 @@ impl AssetBundle {
                 brioche_course_contract::valid_content_revision(character.avatar_revision),
                 "{p}/avatarRevision: outside database range"
             );
+            // Exact bundled revisions can be checked before files or database access.
+            // Other revisions may already exist in the registry; import resolves those.
+            if let Some(avatar) = self.assets.iter().find(|asset| {
+                asset.asset_id == snapshot.avatar_id && asset.revision == character.avatar_revision
+            }) {
+                ensure!(
+                    avatar.width == avatar.height,
+                    "{p}/snapshot/avatarId: avatar must be square"
+                );
+            }
         }
         Ok(())
     }
@@ -903,6 +913,44 @@ pub(crate) async fn asset_response(
 mod tests {
     use super::*;
     use image::ImageFormat;
+    #[test]
+    fn bundled_avatars_use_exact_revisions_and_defer_registry_references() {
+        let mut bundle: AssetBundle =
+            serde_json::from_str(include_str!("../../../docs/examples/asset-bundle.json")).unwrap();
+        for asset in &mut bundle.assets {
+            asset.status = "ready".into();
+            asset.rights_confirmed = true;
+            asset.license = "LicenseRef-TestOnly".into();
+        }
+        assert!(bundle.validate_author("protocol-test").is_ok());
+        let index = bundle
+            .assets
+            .iter()
+            .position(|asset| asset.asset_id == bundle.characters[0].snapshot.avatar_id)
+            .unwrap();
+        bundle.assets[index].width -= 1;
+        assert!(
+            bundle
+                .validate_author("protocol-test")
+                .unwrap_err()
+                .to_string()
+                .contains("/characters/0/snapshot/avatarId: avatar must be square")
+        );
+        bundle.characters[0].avatar_revision = 2;
+        // Revision 2 may be in the existing registry even when only revision 1 is bundled.
+        assert!(bundle.validate_author("protocol-test").is_ok());
+        let mut next = bundle.assets[index].clone();
+        next.revision = 2;
+        next.width = next.height;
+        bundle.assets.push(next);
+        assert!(bundle.validate_author("protocol-test").is_ok());
+        bundle.characters[0].avatar_revision = 1;
+        assert!(bundle.validate_author("protocol-test").is_err());
+        bundle.characters[0].avatar_revision = 3;
+        assert!(bundle.validate_author("protocol-test").is_ok());
+        bundle.assets.clear();
+        assert!(bundle.validate_author("protocol-test").is_ok());
+    }
     #[test]
     fn raster_validation_decodes_supported_formats_and_checks_mime() {
         for (format, mime) in [

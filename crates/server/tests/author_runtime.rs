@@ -248,6 +248,54 @@ async fn import_and_stage_cli_locate_original_source_and_preserve_atomicity() {
     assert_eq!(count(&db, "character_revisions").await, character_count);
     assert_eq!(count(&db, "asset_import_audit").await, audit_count);
 
+    // A character-only package can intentionally refer to an already registered avatar.
+    let mut external = snapshot.clone();
+    external["characterId"] = json!("author-registry-avatar");
+    external["revision"] = json!(7997);
+    let mut registry_only = json!({"schemaVersion":"1.0", "assets":[], "characters":[{"snapshot":external,"avatarRevision":1}]});
+    write(&media_file, &registry_only);
+    let output = invoke_bundle(
+        url.as_str(),
+        &root,
+        "assets-import",
+        &media_file,
+        &visual_source,
+    );
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(count(&db, "character_revisions").await, character_count + 1);
+    assert_eq!(count(&db, "media_assets").await, visual_count);
+    assert_eq!(count(&db, "asset_import_audit").await, audit_count + 1);
+    // Package preflight cannot know this external image's shape; the registry still rejects it.
+    registry_only["characters"][0]["snapshot"]["characterId"] = json!("author-rejected-avatar");
+    registry_only["characters"][0]["snapshot"]["avatarId"] = visual["assets"][0]["assetId"].clone();
+    let text = write(&media_file, &registry_only);
+    let key = "\"avatarId\": ";
+    let marker = format!(
+        "{key}{}",
+        registry_only["characters"][0]["snapshot"]["avatarId"]
+    );
+    located(
+        invoke_bundle(
+            url.as_str(),
+            &root,
+            "assets-import",
+            &media_file,
+            &visual_source,
+        ),
+        &media_file,
+        &text,
+        "/characters/0/snapshot/avatarId",
+        text.find(&marker).unwrap() + key.len(),
+        "avatar must be square",
+    );
+    assert_eq!(count(&db, "character_revisions").await, character_count + 1);
+    assert_eq!(count(&db, "media_assets").await, visual_count);
+    assert_eq!(count(&db, "asset_import_audit").await, audit_count + 1);
+
     write(&media_file, &audio);
     assert!(
         invoke_bundle(url.as_str(), &root, "audio-import", &media_file, &root)

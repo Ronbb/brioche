@@ -82,7 +82,7 @@ cargo run -p brioche-server -- assets-check asset-bundle.json ./visuals
 cargo run -p brioche-server -- audio-bundle-check audio-bundle.json ./recordings
 ```
 
-两条命令不连接数据库、不写 `MEDIA_ROOT` 或修改源文件。严格读取至多 2 MiB 清单，沿用正式导入的元数据要求（包括 ready 与实际授权确认），并逐项复用正式导入的有界文件读取、目录边界、哈希、图片解码/尺寸或完整音频解码/时长检查；每次只保留一份至多 32 MiB 的原文件，检查在 blocking worker 执行。错误定位清单原字段行列；源目录错误定位根容器。成功只表示本地清单和文件一致，角色头像的登记引用/正方形要求、已登记版本冲突及课程时间轴和发布审校仍由正式导入/release 验证。planned 草稿保持原状态，可先用单文件 `asset-check`/`audio-check` 制作描述，不为通过整包检查伪造授权。文件检查后仍可能变化，正式导入会重新检查，离线通过不能代替登记或发布。
+两条命令不连接数据库、不写 `MEDIA_ROOT` 或修改源文件。严格读取至多 2 MiB 清单，沿用正式导入的元数据要求（包括 ready 与实际授权确认），并逐项复用正式导入的有界文件读取、目录边界、哈希、图片解码/尺寸或完整音频解码/时长检查；每次只保留一份至多 32 MiB 的原文件，检查在 blocking worker 执行。错误定位清单原字段行列；源目录错误定位根容器。同包包含角色引用的确切头像 ID/revision 时，元数据预检即要求方形，并定位 `/characters/<index>/snapshot/avatarId`；引用包外已登记版本仍合法，由导入查询数据库核对存在性与实际形状，不能用同 ID 的其他 revision 代替。成功只表示本地清单和文件一致，包外头像、已登记版本冲突及课程时间轴和发布审校仍由正式导入/release 验证。planned 草稿保持原状态，可先用单文件 `asset-check`/`audio-check` 制作描述，不为通过整包检查伪造授权。文件检查后仍可能变化，正式导入会重新检查，离线通过不能代替登记或发布。
 
 ```sh
 cargo run -p brioche-server -- migrate
