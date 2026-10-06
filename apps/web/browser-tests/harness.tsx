@@ -171,12 +171,13 @@ window.fetch = async (input, init) => {
       "/api/v1/auth/login",
       "/api/v1/auth/accept-invite",
       "/api/v1/auth/reset-password",
+      "/api/v1/auth/logout",
     ].includes(String(input))
   )
     return controlledAuth(init?.signal, (release) =>
       qa.authRequests.push({
         path: String(input),
-        body: JSON.parse(String(init?.body)),
+        body: init?.body ? JSON.parse(String(init.body)) : null,
         signal: init?.signal,
         release,
       }),

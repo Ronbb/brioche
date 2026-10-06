@@ -218,6 +218,38 @@ test("account SSR renders anonymous login and keeps invitation and recovery form
   }
 });
 
+test("profile SSR renders logout only for the server-authorized identity without making an auth mutation", async () => {
+  fixture = false;
+  authenticated = true;
+  requests.length = 0;
+  try {
+    let response = await request("/profile");
+    assert.equal(response.status, 200);
+    let html = await response.text();
+    assert.ok(html.includes(profile.displayName));
+    assert.ok(html.includes(profile.email));
+    assert.ok(html.includes("退出登录"));
+    assert.doesNotMatch(html, /href="\/login"/);
+    assert.match(response.headers.get("Cache-Control"), /private, no-store/);
+    assert.equal(
+      requests.find((entry) => entry.path === "/api/v1/me")?.cookie,
+      "brioche.sid=controlled-ssr-session",
+    );
+    authenticated = false;
+    response = await request("/profile");
+    assert.equal(response.status, 200);
+    html = await response.text();
+    assert.ok(html.includes("登录账号"));
+    assert.match(html, /href="\/login"/);
+    assert.ok(!html.includes(profile.email));
+    assert.ok(!html.includes("退出登录"));
+    assert.ok(requests.every((entry) => entry.method === "GET"));
+  } finally {
+    authenticated = false;
+    fixture = false;
+  }
+});
+
 test("production legacy entries reach real learning and authenticated review without writes", async () => {
   fixture = false;
   requests.length = 0;

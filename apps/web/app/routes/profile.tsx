@@ -26,6 +26,17 @@ function ProfileContent() {
   const learning = useLearning();
   const identity = useRouteLoaderData<typeof loader>("root");
   const [pending, setPending] = useState(false);
+  const logoutBusy = useRef(false);
+  const logoutRequest = useRef<AbortController | null>(null);
+  const alive = useRef(true);
+  useLayoutEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+      logoutRequest.current?.abort();
+      logoutRequest.current = null;
+    };
+  }, []);
   const profile = learning.profile;
   const editor = useRef<HTMLDialogElement>(null);
   const editBusy = useRef(false);
@@ -140,14 +151,31 @@ function ProfileContent() {
     editBusy.current = false;
   }
   async function logout() {
-    if (pending) return;
+    if (logoutBusy.current || !profile || !alive.current) return;
+    logoutBusy.current = true;
+    const attempt = new AbortController();
+    logoutRequest.current = attempt;
     setPending(true);
     try {
-      await authRequest("logout");
-      if (learning.profile) clearLearningDrafts(learning.profile.id);
+      await authRequest("logout", undefined, attempt.signal);
+      if (
+        !alive.current ||
+        logoutRequest.current !== attempt ||
+        attempt.signal.aborted
+      )
+        return;
+      clearLearningDrafts(profile.id);
       learning.stop();
       window.location.assign("/");
     } catch {
+      if (
+        !alive.current ||
+        logoutRequest.current !== attempt ||
+        attempt.signal.aborted
+      )
+        return;
+      logoutRequest.current = null;
+      logoutBusy.current = false;
       learning.toast("退出未完成，请重试。");
       setPending(false);
     }
@@ -260,7 +288,8 @@ function ProfileContent() {
       {profile ? (
         <button
           className="text-button"
-          disabled={pending}
+          aria-disabled={pending}
+          aria-busy={pending}
           onClick={() => void logout()}
         >
           {pending ? "正在退出" : "退出登录"}

@@ -1952,3 +1952,123 @@ test("a new invitation link cancels the old request and clears credentials befor
     "only-test-next-password",
   );
 });
+
+test("logout keeps focus and owner drafts on failure, then clears only the confirmed owner's drafts", async () => {
+  await open("profile");
+  await browser("wait", ".profile-summary h2");
+  await evaluate(
+    "sessionStorage.setItem('brioche.learning.v1:account-a:logout-qa:1:answer','owner draft');sessionStorage.setItem('brioche.learning.v1:account-b:logout-qa:1:answer','other draft');sessionStorage.setItem('logout-qa-unrelated','unrelated')",
+  );
+  await browser("focus", ".settings-page > button.text-button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.authRequests.length===1");
+  assert.equal(await evaluate("document.activeElement.tagName"), "BUTTON");
+  assert.equal(
+    await evaluate("document.activeElement.textContent.trim()"),
+    "正在退出",
+  );
+  await press("Enter");
+  assert.equal(await evaluate("qa.authRequests.length"), 1);
+  assert.equal(
+    await evaluate("qa.authRequests[0].path"),
+    "/api/v1/auth/logout",
+  );
+  assert.equal(await evaluate("qa.authRequests[0].body"), null);
+  await evaluate("qa.authRequests[0].release(503)");
+  await browser("wait", "--text", "退出未完成，请重试。");
+  assert.equal(
+    await evaluate("document.activeElement.textContent.trim()"),
+    "退出登录",
+  );
+  assert.equal(
+    await evaluate(
+      "sessionStorage.getItem('brioche.learning.v1:account-a:logout-qa:1:answer')",
+    ),
+    "owner draft",
+  );
+  await press("Enter");
+  await browser("wait", "--fn", "qa.authRequests.length===2");
+  await evaluate("qa.authRequests[1].release(200)");
+  await browser(
+    "wait",
+    "--fn",
+    "window.qa?.ready&&document.querySelector('main h1')?.textContent==='course-a'",
+  );
+  assert.equal(await evaluate("location.search"), "");
+  assert.equal(
+    await evaluate(
+      "sessionStorage.getItem('brioche.learning.v1:account-a:logout-qa:1:answer')",
+    ),
+    null,
+  );
+  assert.equal(
+    await evaluate(
+      "sessionStorage.getItem('brioche.learning.v1:account-b:logout-qa:1:answer')",
+    ),
+    "other draft",
+  );
+  assert.equal(
+    await evaluate("sessionStorage.getItem('logout-qa-unrelated')"),
+    "unrelated",
+  );
+  await evaluate(
+    "sessionStorage.removeItem('brioche.learning.v1:account-b:logout-qa:1:answer');sessionStorage.removeItem('logout-qa-unrelated')",
+  );
+});
+
+test("an old logout cannot navigate or toast into a new profile and leaving cancels its CSRF before POST", async () => {
+  await open("profile");
+  await browser("focus", ".settings-page > button.text-button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.authRequests.length===1");
+  await evaluate("qa.changeUser()");
+  await browser("wait", "--text", "Bob");
+  await evaluate("qa.authRequests[0].release(200)");
+  await browser(
+    "wait",
+    "--fn",
+    "qa.authRequests[0]?.signal.aborted||location.search===''",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.profile-summary h2')?.textContent",
+    ),
+    "Bob",
+  );
+  assert.equal(await evaluate("qa.authRequests[0].signal.aborted"), true);
+  assert.equal(await evaluate("document.querySelector('.toast').hidden"), true);
+  await open("profile");
+  await browser("focus", ".settings-page > button.text-button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.authRequests.length===1");
+  await evaluate("qa.changeUser()");
+  await browser("wait", "--text", "Bob");
+  await evaluate("qa.authRequests[0].release(503)");
+  await browser(
+    "wait",
+    "--fn",
+    "qa.authRequests[0].signal.aborted||!document.querySelector('.toast').hidden",
+  );
+  assert.equal(await evaluate("document.querySelector('.toast').hidden"), true);
+  assert.equal(
+    await evaluate("document.querySelector('.profile-summary h2').textContent"),
+    "Bob",
+  );
+  await open("profile");
+  await evaluate("qa.deferAuthBootstrap=true");
+  await browser("focus", ".settings-page > button.text-button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.authBootstraps.length===1");
+  await browser("focus", ".setting-link[href='/reviews']");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.route==='/reviews'");
+  await evaluate("qa.authBootstraps[0].release(200)");
+  await browser(
+    "wait",
+    "--fn",
+    "qa.authRequests.length>0||qa.authBootstraps[0].signal.aborted",
+  );
+  assert.equal(await evaluate("qa.authRequests.length"), 0);
+  assert.equal(await evaluate("qa.authBootstraps[0].signal.aborted"), true);
+  assert.equal(await evaluate("qa.route"), "/reviews");
+});

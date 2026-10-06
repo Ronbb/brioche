@@ -650,3 +650,13 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - 新 SSR 回归使用真实生产 build/request handler：匿名登录含正常表单；没有客户端完整链接时邀请/恢复表单保持关闭；访客模式不显示密码输入；全过程仅 GET。共 8 项 SSR 通过，HTTP 后端为隔离受控适配器，不表示真实 PostgreSQL 账号验收。
 - 全 32 项 Chromium 通过（424.56s），27 Web/8 SSR、TS7、client/SSR build、定向格式/diff 检查通过。自己的临时 Vite/浏览器自动清理；测试只用明确标记的合成凭据/受控响应，不连接真实账号。取消已经发出的 POST 不证明服务端回滚或 cookie 未变化，身份仍需服务器重新授权；真实 iPhone/辅助技术、课程人工审校、正式录音/授权和生产门槛仍待完成。
 - 上一提交 139b2ae 的 Check 37449232189/job112221439047 本轮先确认运行中，后实际 completed/success；本轮新提交的 CI 另行确认。
+
+## 2026-10-06：退出操作焦点与身份生命周期
+
+- 真实 Profile/LearningProvider 装配复现：原退出按钮 disabled 使焦点落到 body；合成身份从 Alice 换成 Bob 后，旧退出 POST 的迟到 200 仍执行首页全页导航，Bob 标题实际变成 null。
+- 退出现使用同步 ref 锁和独立 AbortController。按钮 aria-disabled/aria-busy 保留焦点，重复原生 Enter 不增加请求；同一资料身份离页或被替换时取消客户端等待，旧成功/失败不再清理草稿、停止新上下文播放、导航或 toast。成功返回后锁保持到离页，失败才开放明确重试。
+- 第一项新增键盘回归：受控 503 后按钮焦点与 owner 草稿保留，明确重试的 200 才清理 account-a 前缀草稿并执行真实 window.location.assign('/')；同源重新加载后 account-b 前缀及无关项仍保留，随后清理本次精确合成键。该导航目的页为测试装配首页，不将它当作生产匿名首页/真实 cookie 验收。
+- 第二项新增回归：身份替换期间原请求被取消，迟到 200 不导航、迟到 503 不向 Bob 弹提示；在 CSRF 暂挂时以真实链接离开个人页，旧响应不发 logout POST，仍在复习入口。最初的 toast 断言误选不存在的 role=alert，已改为实际 toast 的 hidden 状态并补迟到 503 场景后通过，未将原断言计作提示证明。
+- 新生产 SSR handler 回归确认个人页按服务端身份显示资料/退出或匿名登录入口，匿名页面不含合成用户邮箱，保持 private/no-store，转发仅会话 Cookie，渲染全过程只有 GET。HTTP 后端为受控适配器，不代替 PostgreSQL 会话撤销或跨标签实际 cookie 检查。
+- 全 34 项 Chromium 通过（446.57s），27 Web/9 SSR、TS7、client/SSR build、定向格式/diff 检查通过；独立随机 Vite/浏览器自动关闭，没有访问真实账号或操作部署。取消已经发出的 POST 不表示服务端回滚，身份仍由服务器重新确认；真实 iPhone/辅助技术、人工内容审校、正式素材/录音授权与生产门槛继续待完成。
+- 上一提交 8c55050 的 Check 37451038196/job112227392494 本轮实际确认 completed/success；本轮新提交 CI 另行确认。
