@@ -108,9 +108,44 @@ pub enum Exercise {
         tokens: Vec<OptionItem>,
     },
 }
-#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, TS)]
-#[serde(tag = "type", rename_all = "lowercase")]
-pub enum Block {
+// Declare regular block fields once for both the public contract and strict wire parser.
+// Serde does not support deny_unknown_fields on a container with flattened fields.
+// The exercise branch therefore removes only its envelope before parsing Exercise.
+macro_rules! blocks {
+    ($($(#[$meta:meta])* $variant:ident { $($field:ident: $ty:ty),* $(,)? }),* $(,)?) => {
+        #[derive(Clone, Debug, Serialize, JsonSchema, TS)]
+        #[serde(tag = "type", rename_all = "lowercase")]
+        #[schemars(deny_unknown_fields)]
+        pub enum Block {
+            $($(#[$meta])* $variant { $($field: $ty),* },)*
+            Exercise { id: String, #[serde(flatten)] exercise: Exercise },
+        }
+        #[derive(Deserialize)]
+        #[serde(tag = "type", rename_all = "lowercase", deny_unknown_fields)]
+        enum RegularBlock {
+            $($(#[$meta])* $variant { $($field: $ty),* },)*
+        }
+        impl<'de> Deserialize<'de> for Block {
+            fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+                use serde::de::Error;
+                let mut value = serde_json::Value::deserialize(deserializer)?;
+                if value.get("type").and_then(serde_json::Value::as_str) == Some("exercise") {
+                    let fields = value.as_object_mut().ok_or_else(|| D::Error::custom("expected block object"))?;
+                    fields.remove("type");
+                    let id = fields.remove("id").ok_or_else(|| D::Error::missing_field("id"))?;
+                    let id = serde_json::from_value(id).map_err(D::Error::custom)?;
+                    let exercise = serde_json::from_value(value).map_err(D::Error::custom)?;
+                    return Ok(Self::Exercise { id, exercise });
+                }
+                let block = serde_json::from_value(value).map_err(D::Error::custom)?;
+                Ok(match block {
+                    $(RegularBlock::$variant { $($field),* } => Self::$variant { $($field),* },)*
+                })
+            }
+        }
+    };
+}
+blocks! {
     #[serde(rename_all = "camelCase")]
     Scene {
         id: String,
@@ -150,11 +185,6 @@ pub enum Block {
     Vocabulary { id: String, entry_ids: Vec<String> },
     #[serde(rename_all = "camelCase")]
     Grammar { id: String, entry_ids: Vec<String> },
-    Exercise {
-        id: String,
-        #[serde(flatten)]
-        exercise: Exercise,
-    },
     #[serde(rename_all = "camelCase")]
     Habit {
         id: String,
@@ -627,6 +657,28 @@ mod tests {
     #[test]
     fn unknown_block_rejected() {
         assert!(serde_json::from_str::<Block>(r#"{"type":"script","id":"x"}"#).is_err());
+    }
+    #[test]
+    fn unknown_fields_rejected_in_every_block() {
+        for block in fixture().blocks {
+            let mut value = serde_json::to_value(&block).unwrap();
+            // Every legal block must still round-trip, including all flattened exercises.
+            let decoded: Block = serde_json::from_value(value.clone()).unwrap();
+            assert_eq!(serde_json::to_value(decoded).unwrap(), value);
+            value["unexpectedAuthorField"] = serde_json::json!("拼错的内容");
+            let result = serde_json::from_value::<Block>(value);
+            assert!(
+                result.is_err(),
+                "{} silently accepted an unknown field",
+                block.id()
+            );
+            assert!(
+                result
+                    .unwrap_err()
+                    .to_string()
+                    .contains("unexpectedAuthorField")
+            );
+        }
     }
     #[test]
     fn dto_excludes_private_fields() {

@@ -870,3 +870,45 @@ fn character_locale_rejection_is_located_before_any_registration() {
     }
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn unknown_block_fields_fail_check_and_import_before_database_access() {
+    let path = std::env::temp_dir().join(format!("brioche-block-fields-{}.json", random_id()));
+    let original = brioche_server::development_source().unwrap();
+    for index in 0..original["blocks"].as_array().unwrap().len() {
+        let mut source = original.clone();
+        source["blocks"][index]["unexpectedAuthorField"] = serde_json::json!("拼错的内容");
+        let text = serde_json::to_string_pretty(&source)
+            .unwrap()
+            .replace('\n', "\r\n");
+        let block_text = serde_json::to_string_pretty(&source["blocks"][index])
+            .unwrap()
+            .lines()
+            .map(|line| format!("    {line}"))
+            .collect::<Vec<_>>()
+            .join("\r\n");
+        assert_eq!(text.matches(&block_text).count(), 1);
+        let offset = text.find(&block_text).unwrap() + 4;
+        let before = &text[..offset];
+        let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+        std::fs::write(&path, text).unwrap();
+        for command in ["check", "import"] {
+            let output = run(command, &path);
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(!output.status.success(), "{command} accepted block {index}");
+            assert!(error.contains(&format!("/blocks/{index}:")), "{error}");
+            assert!(
+                error.contains("unknown field `unexpectedAuthorField`"),
+                "{error}"
+            );
+            assert!(
+                error.contains(&format!("{}:{line}:{column}:", path.display())),
+                "{error}"
+            );
+            assert!(!error.contains("database connection"), "{error}");
+            assert!(output.stdout.is_empty());
+        }
+    }
+    std::fs::remove_file(path).unwrap();
+}

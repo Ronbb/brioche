@@ -251,6 +251,7 @@
               "const": "scene"
             }
           },
+          "additionalProperties": false,
           "required": [
             "type",
             "id",
@@ -285,6 +286,7 @@
               "const": "dialogue"
             }
           },
+          "additionalProperties": false,
           "required": [
             "type",
             "id",
@@ -316,6 +318,7 @@
               "const": "article"
             }
           },
+          "additionalProperties": false,
           "required": [
             "type",
             "id",
@@ -347,6 +350,7 @@
               "const": "explanation"
             }
           },
+          "additionalProperties": false,
           "required": [
             "type",
             "id",
@@ -375,6 +379,7 @@
               "const": "culture"
             }
           },
+          "additionalProperties": false,
           "required": [
             "type",
             "id",
@@ -400,6 +405,7 @@
               "const": "vocabulary"
             }
           },
+          "additionalProperties": false,
           "required": [
             "type",
             "id",
@@ -423,10 +429,60 @@
               "const": "grammar"
             }
           },
+          "additionalProperties": false,
           "required": [
             "type",
             "id",
             "entryIds"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "alternativeZh": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "taskZh": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "habit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "id",
+            "taskZh",
+            "alternativeZh"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "takeawaysZh": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "type": {
+              "type": "string",
+              "const": "summary"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "id",
+            "takeawaysZh"
           ]
         },
         {
@@ -515,54 +571,8 @@
           "required": [
             "type",
             "id"
-          ]
-        },
-        {
-          "type": "object",
-          "properties": {
-            "alternativeZh": {
-              "type": "string"
-            },
-            "id": {
-              "type": "string"
-            },
-            "taskZh": {
-              "type": "string"
-            },
-            "type": {
-              "type": "string",
-              "const": "habit"
-            }
-          },
-          "required": [
-            "type",
-            "id",
-            "taskZh",
-            "alternativeZh"
-          ]
-        },
-        {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "takeawaysZh": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "type": {
-              "type": "string",
-              "const": "summary"
-            }
-          },
-          "required": [
-            "type",
-            "id",
-            "takeawaysZh"
-          ]
+          ],
+          "unevaluatedProperties": false
         }
       ]
     },
