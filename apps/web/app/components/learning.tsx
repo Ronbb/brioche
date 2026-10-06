@@ -159,9 +159,16 @@ export function LearningProvider({
             );
             if (recoveryGeneration !== saveGeneration.current) return false;
             acceptProfile(latest);
-          } catch {
+          } catch (recoveryError) {
             if (recoveryGeneration !== saveGeneration.current) return false;
-            acceptProfile(savedProfile.current);
+            if (
+              recoveryError instanceof ApiRequestError &&
+              recoveryError.phase === "request" &&
+              recoveryError.status === 401
+            ) {
+              acceptProfile(null);
+              error = recoveryError;
+            } else acceptProfile(savedProfile.current);
           }
         }
         setSaveStatus("error");

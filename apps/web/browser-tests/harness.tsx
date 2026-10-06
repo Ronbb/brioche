@@ -210,7 +210,9 @@ const reading = kind === "reading";
 const router = createMemoryRouter(
   [
     {
+      id: "root",
       path: "/",
+      loader: () => ({ user: null, enabled: kind === "profile" }),
       element: reading ? (
         <LearningProvider>
           <ReadingHarness />

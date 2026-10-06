@@ -531,3 +531,125 @@ test("failed profile saves retain blocked drafts and require explicit version-aw
     );
   }
 });
+
+test("unauthenticated recovery removes the old profile and releases its navigation guard", async () => {
+  for (const status of [503, 401]) {
+    await open("profile");
+    await browser("focus", 'button[aria-label="编辑个人资料与学习目标"]');
+    await press("Enter");
+    await browser("fill", ".profile-dialog input", "Private draft");
+    await browser("focus", ".profile-dialog button[type=submit]");
+    await press("Enter");
+    await browser("wait", "--fn", "qa.profileWrites.length===1");
+    await evaluate("qa.navigate('/login')");
+    await browser("wait", ".profile-dialog .profile-leave-status");
+    await evaluate("qa.profileRelease[0](" + status + ")");
+    if (status === 503) {
+      await browser("wait", "--fn", "qa.profileReads.length===1");
+      await evaluate("qa.profileReads[0](401)");
+    }
+    await browser(
+      "wait",
+      "--fn",
+      "!!document.querySelector('.profile-discard')||document.querySelector('.profile-summary h2')?.textContent==='法语学习者'",
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.profile-summary h2').textContent",
+      ),
+      "法语学习者",
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelectorAll('.profile-dialog[open]').length",
+      ),
+      0,
+    );
+    assert.equal(
+      await evaluate("document.querySelectorAll('.profile-edit').length"),
+      0,
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.profile-summary').textContent.includes('a@example.test')",
+      ),
+      false,
+    );
+    assert.equal(
+      await evaluate("qa.profileReads.length"),
+      status === 503 ? 1 : 0,
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.toast [role=status]').textContent",
+      ),
+      "登录已过期，请重新登录。",
+    );
+    await browser("focus", 'a.primary[href="/login"]');
+    await press("Enter");
+    await browser("wait", "--fn", "qa.route==='/login'");
+    assert.equal(await evaluate("qa.profileWrites.length"), 1);
+  }
+});
+
+test("failed recovery reads retain the profile draft and let the server resolve the old version on explicit retry", async () => {
+  await open("profile");
+  await browser("focus", 'button[aria-label="编辑个人资料与学习目标"]');
+  await press("Enter");
+  await browser("fill", ".profile-dialog input", "Retained draft");
+  await browser("focus", ".profile-dialog button[type=submit]");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.profileWrites.length===1");
+  await evaluate("qa.navigate('/login');qa.profileRelease[0](503)");
+  await browser("wait", "--fn", "qa.profileReads.length===1");
+  await evaluate("qa.profileReads[0](503)");
+  await browser("wait", ".profile-discard");
+  assert.equal(
+    await evaluate("document.querySelector('.profile-summary h2').textContent"),
+    "Alice",
+  );
+  assert.equal(await evaluate("qa.route"), "/");
+  assert.equal(await evaluate("qa.profileWrites.length"), 1);
+  await press("Escape");
+  assert.equal(
+    await evaluate("document.querySelector('.profile-dialog input').value"),
+    "Retained draft",
+  );
+  await browser("focus", ".profile-dialog button[type=submit]");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.profileWrites.length===2");
+  assert.equal(await evaluate("qa.profileWrites[1].version"), 1);
+  await evaluate("qa.profileRelease[1](409)");
+  await browser("wait", "--fn", "qa.profileReads.length===2");
+  await evaluate(
+    "qa.profileReads[1]({id:'account-a',email:'a@example.test',displayName:'Another device',role:'learner',version:7,settings:{timeZone:'Asia/Shanghai',weeklyDays:5,dailyMinutes:10,showTranslation:false,speechRate:1}})",
+  );
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('.profile-dialog button[type=submit]')?.getAttribute('aria-busy')==='false'",
+  );
+  assert.equal(
+    await evaluate("document.activeElement.matches('.error-message')"),
+    true,
+  );
+  assert.equal(
+    await evaluate("document.querySelector('.profile-dialog input').value"),
+    "Retained draft",
+  );
+  assert.equal(await evaluate("qa.profileWrites.length"), 2);
+  await browser("focus", ".profile-dialog button[type=submit]");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.profileWrites.length===3");
+  assert.equal(await evaluate("qa.profileWrites[2].version"), 7);
+  await evaluate(
+    "qa.profileRelease[2]({id:'account-a',email:'a@example.test',displayName:'Retained draft',role:'learner',version:8,settings:{timeZone:'Asia/Shanghai',weeklyDays:5,dailyMinutes:10,showTranslation:false,speechRate:1}})",
+  );
+  await browser(
+    "wait",
+    "--fn",
+    "!document.querySelector('.profile-dialog[open]')",
+  );
+  assert.equal(await evaluate("qa.route"), "/");
+  assert.equal(await evaluate("qa.profileWrites.length"), 3);
+});
