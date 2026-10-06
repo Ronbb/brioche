@@ -71,9 +71,17 @@ export default function Library({ loaderData }: Route.ComponentProps) {
         </Link>
       </nav>
       {loaderData.view === "saved" ? (
-        <SavedList key={"saved" + loaderData.cursor} page={loaderData.page} />
+        <SavedList
+          key={"saved" + loaderData.cursor}
+          page={loaderData.page}
+          continuation={loaderData.cursor !== null}
+        />
       ) : (
-        <Cards key={"reviews" + loaderData.cursor} page={loaderData.page} />
+        <Cards
+          key={"reviews" + loaderData.cursor}
+          page={loaderData.page}
+          continuation={loaderData.cursor !== null}
+        />
       )}
       <div className="review-summary-actions">
         <Link className="text-button" to="/review-history">
@@ -88,7 +96,13 @@ export default function Library({ loaderData }: Route.ComponentProps) {
     </section>
   );
 }
-function SavedList({ page }: { page: SavedPage }) {
+function SavedList({
+  page,
+  continuation,
+}: {
+  page: SavedPage;
+  continuation: boolean;
+}) {
   const [items, setItems] = useState(page.items);
   const headings = useRef(new Map<string, HTMLButtonElement>()),
     pendingFocus = useRef<string | null | undefined>(undefined),
@@ -111,9 +125,18 @@ function SavedList({ page }: { page: SavedPage }) {
   return (
     <>
       {!items.length && (
-        <p ref={empty} tabIndex={-1} role="status" className="profile-note">
-          阅读时收藏的表达会放在这里。
-        </p>
+        <>
+          <p ref={empty} tabIndex={-1} role="status" className="profile-note">
+            {continuation || page.nextCursor
+              ? "这一页没有收藏了。"
+              : "阅读时收藏的表达会放在这里。"}
+          </p>
+          {continuation && (
+            <Link className="text-button" to="/library">
+              返回收藏列表
+            </Link>
+          )}
+        </>
       )}
       <div className="library-list">
         {items.map((item) => (
@@ -213,13 +236,28 @@ function SavedRow({
     </article>
   );
 }
-function Cards({ page }: { page: ReviewCardsPage }) {
+function Cards({
+  page,
+  continuation,
+}: {
+  page: ReviewCardsPage;
+  continuation: boolean;
+}) {
   return (
     <>
       {!page.items.length && (
-        <p className="profile-note">
-          学完课程或加入表达后，可以在这里管理复习。
-        </p>
+        <>
+          <p className="profile-note">
+            {continuation
+              ? "这一页暂时没有复习表达。"
+              : "学完课程或加入表达后，可以在这里管理复习。"}
+          </p>
+          {continuation && (
+            <Link className="text-button" to="/library?view=reviews">
+              返回复习列表
+            </Link>
+          )}
+        </>
       )}
       <div className="library-list">
         {page.items.map((card) => (
@@ -303,14 +341,16 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
           <p>{card.vocabulary.noteZh}</p>
           <button
             className="text-button"
-            disabled={write.blocked || readFailed || refreshing}
-            onClick={() =>
+            aria-disabled={write.blocked || readFailed || refreshing}
+            aria-busy={write.saving}
+            onClick={() => {
+              if (write.blocked || readFailed || refreshing) return;
               write.write(
                 "/api/v1/me/reviews/" + card.id + "/preferences",
                 { cardVersion: card.version, suspended: !card.suspended },
                 setCard,
-              )
-            }
+              );
+            }}
           >
             {write.saving
               ? "正在保存"

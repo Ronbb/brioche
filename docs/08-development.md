@@ -296,3 +296,6 @@ Compose 所有五个服务使用 Docker local 日志驱动，配置 max-size=10m
 ### 媒体发布失败定位
 
 `release-stage` 的媒体错误定位到 release 原文件课程条目，并附上 `imported lesson /media/0/sha256` 等固定课程投影路径；后者不是原作者 JSON 文件的行列。图片文件缺失/不可读、哈希不匹配，角色版本未登记/快照不匹配，录音登记描述/来源/文件/解码不匹配分别提供受控消息。HTTP 及 activate 保留原有 AppError，不暴露这些本地作者诊断或数据库、文件系统错误详情。不能修改已登记 revision 来修复不匹配；应登记新版本、导入新课程 revision 并重新 staging。
+
+
+表达库分页空态现区分当前页和全库；继续页无记录时可返回对应收藏/复习列表。复习卡暂停/恢复按钮用 `aria-disabled` 保留键盘焦点，点击处理显式拒绝 saving、uncertain、未 ready、最新读取失败或读取期间操作；共用 owned-write 的 busy/pending 防重复门禁保持。不是只改变视觉禁用状态。

@@ -474,3 +474,11 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 - 首次测试尝试 UPDATE 登记描述，被不可变触发器正确拒绝；已改为新课程草稿，无关闭触发器或修改登记版本。首次角色草稿只改 cast 名称被正文一致性校验拒绝，已同步 speaker 后验证真正的发布快照门禁。
 - `cargo test -p brioche-server --test author_runtime --test recording -- --ignored`：2 项 PostgreSQL 集成测试通过；`cargo test -p brioche-server --lib --test author_cli`：32 + 9 项通过。诊断不复述底层 SQL、系统路径或私有答案。音频来源/解码元数据等分支保留实际门禁，但本轮没有对每个诊断分支单独做故障注入。
 - 临时数据库容器删除（含本次匿名卷），开发 API 恢复；无 production release 或公网配置变更。
+
+
+### 2026-10-06：真实表达库多页与保存焦点
+
+- 新建隔离 `brioche-library-pagination-qa` PostgreSQL（仅本机 55438），API 3002、React Router dev 5177；原开发 3001/5173 保留。独立原创协议词条加至测试课程，素材与课程的 ready/reviewed 声明只限隔离协议测试，不作为语言审校或正式发布证据。通过正式邀请、收藏、复习加入 API 创建 23 条收藏/卡片，两个列表 GET 的 20+3 共 23 个唯一 ID、无遗漏。
+- Chromium 实际页面键盘 Enter 翻页、浏览器返回，核对行数 20→3→20 和标题 H1 焦点。第二页暂停后返回再进入仍显示已暂停，恢复后卡片状态与实际 API 一致。三条第二页收藏依次取消，焦点转到下一条/最终 status；发现原提示误表示全库空，已改为当前页空态和返回收藏列表。重新加入一条再从新代码页面取消，验证 status 焦点与新文案、Tab 到返回入口、Enter 后第一页面仍 20 条且无下一页。收藏取消不移除 23 张复习卡。
+- 发现暂停/恢复 native disabled 期间焦点落到 BODY；用 aria-disabled/aria-busy + 点击门禁修复。对实际 fetch 注入 8 秒发送延迟，窗口记录一次 preferences 请求；保存期间重复 Enter 两次仍只有一次请求，按钮焦点保留；保存后仍聚焦“暂停复习”，实际 API 版本 6→7、suspended=false，排除重复更新。未对这项改动重新注入完整 409/401 故障组合，也未声称屏幕阅读器通过。
+- 320/390px 第二页复习与收藏第一页面无横向溢出；390px 复习展开和分页空态截图实际查看。`pnpm typecheck`、17 项 `pnpm test:web`、`pnpm build` 通过。专用 browser 关闭、API/Web 监听进程按已核对路径/启动参数停止，新建 PostgreSQL 含匿名卷删除；开发 API health 返回 ok。未改变用户/生产数据。
