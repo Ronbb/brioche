@@ -50,6 +50,7 @@
 - `/author-preview` 仅供 operator 查看已导入固定 revision；私有媒体也必须经过当前管理员身份与撤回检查。不得把预览素材放到公开路由、返回私有答案或以预览创建真实学习进度。
 - 录音先 `audio-check`，再 `audio-import <bundle.json> <source-directory> <actor>`；`audioRefs` 固定登记版本，登记不公开文件。发布必须重新验证登记描述、实际文件哈希/解码、来源授权与正文时间轴；音频公开路由和私有预览均保留撤回检查、no-store 与有界读取。
 - 权限、判分、事务、幂等、版本与恢复做风险对应的验证；文档/低风险样式不添加无意义测试。
+- 异步确认按钮在等待期间保留键盘焦点，用 aria-disabled/aria-busy 配合同步提交锁；未满足答题/步骤条件或恢复初始化未完成时仍原生 disabled，不能仅依赖 ARIA 阻止重复写入。
 - 实际命令：`pnpm dev:api`、`pnpm dev:web`、`pnpm contracts`、`pnpm typecheck`、`pnpm build`；Rust 使用 cargo fmt/check/clippy/test。PostgreSQL 集成测试显式设置专用 `TEST_DATABASE_URL` 后运行，禁止指向生产。TS 7 类型检查不能用 Vite build 代替。
 - `pnpm test:browser` 使用锁定的 agent-browser 和独立 Chromium 会话，对真实组件进行键盘/迟到响应/多正文回归；首次安装浏览器用 `pnpm exec agent-browser install`，Linux CI 使用 `--with-deps`。装配只连接自己的临时端口、合成课程与受控请求，自动清理；不连接用户浏览器/账号，也不替代数据库、真实法语声音、iPhone 或辅助技术验收。
 - 生产页面壳另用 `pnpm test:browser:ssr`；先运行 `pnpm build`，测试直接加载当前 server/client 构建、真实 Layout/客户端路由与 CSS。后端为受控公共课程 API，两台 HTTP 服务及 Chromium 均使用独立随机 loopback 端口/会话并自动关闭；不能将它当作实际 Rust/数据库/生产或 iPhone 验收。

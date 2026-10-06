@@ -748,3 +748,10 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - withdraw_author与既有withdraw现在共享withdraw_impl/ReleaseFailure，保留FOR UPDATE、乐观generation、发布标志更新、不可逆撤回插入、generation及审计的同一事务，运行时AppError状态不变。CLI明确lesson-id、revision、expected-generation（expected/current）、actor/reason或课程版本不存在/已撤回；包含课程ID/revision定位，没有SQL/连接信息。
 - 隔离PG实际CLI验证：冲突/revision0/不存在后withdrawals0、published1、generation1、audit2；合法撤回成功后withdrawals1、published0、generation2，重复撤回失败且generation/audit不再增加。撤回后原release激活继续被拒绝，新staging也拒绝，audit最终3。四项PG回归（作者CLI、迁移发布、录音、目录原子切换/回滚/硬撤回）、38server单元/25作者CLI/13课程、Clippy all-targets、fmt/diff通过；使用独立target/author-qa，本轮无Web变更和浏览器复跑。
 - 复用的隔离容器brioche-author-activate-1791288897837已docker stop，未改变用户开发/生产服务；沿用上一轮删除被自动审批拒绝后的保留策略，没有再次尝试删除。baseline新增失败schema author_runtime_1791289304716528400及其临时brioche-media目录仍保留，成功测试资源依现有teardown清理。完整作者语义、人工教学审校/正式录音、真实设备及生产门槛继续保留。
+
+## 2026-10-06：账号步骤确认与完成提交的等待焦点
+
+- 新增实际Learning/MemoryRouter/受控HTTP Chromium回归，覆盖steps/read PUT与complete POST两段503→原提交重试→确认成功。修复前步骤提交刚进入saving就因原生disabled失焦，实际焦点断言false!==true，后续流程未运行，不把未执行部分计入baseline证据。
+- 学习页步骤确认/完成按钮的等待状态现使用aria-disabled/aria-busy并保留焦点；未满足步骤/题目条件、初始草稿恢复未完成仍原生disabled。useLearningSession显式暴露restored供控件区分初始化和异步等待，原blocked/pending/busy/stale检查不变，完成按钮也显式核对blocked。重新读取/重试/已完成页待确认按钮保留等待焦点，仍由hook的同步busy锁保护。
+- 两项定向浏览器62.16s通过：每个初次提交重复Enter只有一请求，pending焦点/busy=true；503后原按钮保持聚焦，重试路径/方法/完整body含idempotencyKey均相同；完成返回成功后才显示本课已完成并标题聚焦，pending清空；既有学习离页/返回原请求恢复也通过。装配记录真实privateRequest目标路径及method，没有假装写入真实数据库。独立随机Vite/Chromium已自动清理，无未捕获页面错误。
+- 28Web/12SSR、TS7、SSR/client build及目标格式/diff通过，本轮未重跑现42项全组件浏览器或三项生产页面壳。固定b19b763的Check37463008841本轮读取in_progress，不能称终态成功。更多跨步骤恢复/冲突组合、真实数据库与设备、完整内容人工审校/正式录音和生产门槛继续保留。

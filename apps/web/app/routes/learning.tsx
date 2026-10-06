@@ -167,7 +167,8 @@ function Session({
                 <p>{session.error}</p>
                 <button
                   className="primary"
-                  disabled={session.saving}
+                  aria-disabled={session.saving}
+                  aria-busy={session.saving}
                   onClick={session.retry}
                 >
                   {session.saving ? "正在确认" : "确认上次保存"}
@@ -281,7 +282,8 @@ function Session({
               {session.readFailed ? (
                 <button
                   className="primary"
-                  disabled={session.saving}
+                  aria-disabled={session.saving}
+                  aria-busy={session.saving}
                   onClick={() => void session.refresh()}
                 >
                   {session.saving ? "正在读取" : "重新读取进度"}
@@ -290,7 +292,8 @@ function Session({
               ) : session.uncertain ? (
                 <button
                   className="primary"
-                  disabled={session.saving}
+                  aria-disabled={session.saving}
+                  aria-busy={session.saving}
                   onClick={session.retry}
                 >
                   {session.saving ? "正在确认" : "重试保存"}
@@ -300,10 +303,13 @@ function Session({
                 session.progress.confirmedStepIds.includes(step.id) ? (
                 <button
                   className="primary"
-                  disabled={session.blocked || !allRequired}
-                  onClick={() =>
-                    void session.write<LearningState>("/complete", "POST")
-                  }
+                  disabled={!session.restored || !allRequired}
+                  aria-disabled={session.blocked || !allRequired}
+                  aria-busy={session.saving}
+                  onClick={() => {
+                    if (!session.blocked)
+                      void session.write<LearningState>("/complete", "POST");
+                  }}
                 >
                   {session.saving ? "正在保存" : "完成本课"}
                   <Icon name="check" />
@@ -311,7 +317,9 @@ function Session({
               ) : (
                 <button
                   className="primary"
-                  disabled={session.blocked || !canContinue}
+                  disabled={!session.restored || !canContinue}
+                  aria-disabled={session.blocked || !canContinue}
+                  aria-busy={session.saving}
                   onClick={advance}
                 >
                   {session.saving

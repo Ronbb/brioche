@@ -106,6 +106,7 @@ const qa = {
   navigate: null as ((destination: string | number) => void) | null,
   learningWrites: [] as Record<string, unknown>[],
   learningRelease: [] as ((value: LearningState | number) => void)[],
+  learningPaths: [] as { path: string; method?: string }[],
   reviewWrites: [] as Record<string, unknown>[],
   reviewRelease: [] as ((value: ReviewAttemptResult | number) => void)[],
   queueReads: [] as ((value: ReviewQueue | number) => void)[],
@@ -291,6 +292,7 @@ window.fetch = async (input, init) => {
     });
   }
   if (String(input).startsWith("/api/v1/learning-sessions/qa-session/")) {
+    qa.learningPaths.push({ path: String(input), method: init?.method });
     const index = qa.learningWrites.push(JSON.parse(String(init?.body))) - 1;
     return new Promise<Response>((resolve) => {
       qa.learningRelease[index] = (value) =>

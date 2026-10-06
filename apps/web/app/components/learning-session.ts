@@ -234,6 +234,7 @@ export function useLearningSession(initial: LearningSession, scope: string) {
   return {
     progress,
     confirmedAttempts,
+    restored,
     saving,
     error,
     uncertain,

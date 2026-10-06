@@ -414,3 +414,5 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 激活作者诊断（2026-10-06）：release-activate现通过activate_author调用与运行时相同事务，错误给出release参数、generation expected/current、撤回课程或固定课程ID/revision的媒体字段；不泄露SQL/连接信息。四项隔离PostgreSQL回归验证失败原子性/正常CLI激活/回滚撤回/录音，38server单元、25作者CLI、13课程与Clippy/格式通过。独立target/author-qa避开开发服务exe锁；QA容器因自动审批拒绝删除已停止并保留，baseline临时媒体同样保留。完整人工/设备/生产门槛继续见验证记录。
 
 撤回作者诊断（2026-10-06）：content-withdraw通过withdraw_author共享运行时同一事务，给出参数、generation冲突或课程不存在/已撤回的定位，不输出SQL/连接信息。真实CLI故障不改变发布状态、generation及审计，成功撤回/重复拒绝实测；四项隔离PG、38单元/25作者CLI/13课程、Clippy/格式通过。复用QA容器已停止，baseline残留按此前删除被拒绝后的保留策略记录于验证文档；内容、设备及生产门槛仍待验。
+
+账号步骤/完成等待焦点（2026-10-06）：学习页把异步等待与未就绪条件分开，步骤确认/完成/重试/读取控件等待时aria-disabled/aria-busy保留焦点，初始化/必需题目未满足仍原生disabled，hook同步提交锁和原请求保留不变。两项定向Chromium62.16s覆盖步骤与完成503重试的完整方法/路径/body，以及离页返回；28Web/12SSR、TS7、build/格式通过。现42项组件测试未全量重跑，真实数据库/设备、其他组合及完整目标仍见验证记录。

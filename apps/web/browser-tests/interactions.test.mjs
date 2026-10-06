@@ -654,6 +654,91 @@ test("failed recovery reads retain the profile draft and let the server resolve 
   assert.equal(await evaluate("qa.profileWrites.length"), 3);
 });
 
+test("learning step and completion preserve waiting focus and retry their exact requests", async () => {
+  await open("session");
+  const state = {
+    id: "qa-session",
+    lessonId: "reading-protocol",
+    revision: 1,
+    version: 2,
+    lastStepId: "read",
+    confirmedStepIds: ["read"],
+    hintedExerciseIds: [],
+    attempts: [],
+    completedAt: null,
+    firstCompletedAt: null,
+  };
+  for (const [offset, result] of [
+    [0, state],
+    [
+      2,
+      {
+        ...state,
+        version: 3,
+        completedAt: "2026-10-06T00:00:00Z",
+        firstCompletedAt: "2026-10-06T00:00:00Z",
+      },
+    ],
+  ]) {
+    await browser("focus", ".learning-actions .primary");
+    await press("Enter");
+    await browser("wait", "--fn", `qa.learningWrites.length===${offset + 1}`);
+    assert.equal(
+      await evaluate(
+        "document.activeElement.matches('.learning-actions .primary')",
+      ),
+      true,
+    );
+    assert.equal(
+      await evaluate("document.activeElement.getAttribute('aria-busy')"),
+      "true",
+    );
+    await press("Enter");
+    assert.equal(await evaluate("qa.learningWrites.length"), offset + 1);
+    const body = await evaluate(`qa.learningWrites[${offset}]`);
+    const target = {
+      path:
+        "/api/v1/learning-sessions/qa-session/" +
+        (offset === 0 ? "steps/read" : "complete"),
+      method: offset === 0 ? "PUT" : "POST",
+    };
+    assert.deepEqual(await evaluate(`qa.learningPaths[${offset}]`), target);
+    await evaluate(`qa.learningRelease[${offset}](503)`);
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('.learning-actions .primary')?.textContent.includes('重试保存')",
+    );
+    assert.equal(
+      await evaluate(
+        "document.activeElement.matches('.learning-actions .primary')",
+      ),
+      true,
+    );
+    await press("Enter");
+    await browser("wait", "--fn", `qa.learningWrites.length===${offset + 2}`);
+    assert.deepEqual(await evaluate(`qa.learningWrites[${offset + 1}]`), body);
+    assert.deepEqual(await evaluate(`qa.learningPaths[${offset + 1}]`), target);
+    await evaluate(
+      `qa.learningRelease[${offset + 1}](${JSON.stringify(result)})`,
+    );
+    await browser(
+      "wait",
+      "--fn",
+      offset === 0
+        ? "document.querySelector('.learning-actions .primary')?.textContent.includes('完成本课')"
+        : "document.activeElement.textContent==='本课已完成'",
+    );
+  }
+  assert.equal(
+    await evaluate(
+      "sessionStorage.getItem('brioche.learning.v1:qa-account:qa-session:1:pending')",
+    ),
+    null,
+  );
+  assert.equal(await evaluate("qa.learningWrites.length"), 4);
+});
+
 test("learning navigation keeps the exact pending request across leaving and returning", async () => {
   await open("session");
   await browser("set", "viewport", "320", "700");
