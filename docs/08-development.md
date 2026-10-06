@@ -1,5 +1,7 @@
 # 第一轮工程实现
 
+练习步骤约束现由共享 Rust 语义校验执行：exercise 仅被 practice 引用，completion.requiredExerciseIds 必须属于至少一个必做 practice。`check` 与 `import` 数据库前预检报告原 steps/blockIds 或 requiredExerciseIds 项的行列；可选练习与其他 practice 中的再次回顾仍允许，完整登记媒体验证保留在 hydration 后。
+
 选择题作者检查拒绝归一化后相同的选项文字：NFC、空白和法语撇号等价，大小写与重音保留。`check` 与 `import` 均在数据库访问前给出第二个重复选项的 `/blocks/.../options/.../text` 和原文件行列；正式导入仍完整验证登记素材与课程语义。排序题允许重复显示语块，共用同一个 Rust 文本归一化函数，避免作者校验与判分规则漂移。
 
 更新日期：2026-10-06。这是工程基础与课程阅读链路，尚未完成多用户学习产品。

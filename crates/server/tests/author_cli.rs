@@ -39,6 +39,71 @@ fn checks_drafts_without_database_and_does_not_claim_publication() {
 }
 
 #[test]
+fn exercise_step_semantics_are_located_before_check_or_import_connects() {
+    let path = std::env::temp_dir().join(format!("brioche-exercise-step-{}.json", random_id()));
+    let original = brioche_server::development_source().unwrap();
+    let practice = original["steps"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .position(|step| step["kind"] == "practice")
+        .unwrap();
+    for misplaced in [true, false] {
+        let mut source = original.clone();
+        let (pointer, search_key, value, message) = if misplaced {
+            source["steps"][practice]["kind"] = serde_json::json!("read");
+            (
+                format!("/steps/{practice}/blockIds/0"),
+                "\"steps\"",
+                source["steps"][practice]["blockIds"][0].clone(),
+                "exercise requires a practice step",
+            )
+        } else {
+            let id = source["steps"][practice]["id"].clone();
+            source["completion"]["requiredStepIds"]
+                .as_array_mut()
+                .unwrap()
+                .retain(|value| *value != id);
+            (
+                "/completion/requiredExerciseIds/0".into(),
+                "\"requiredExerciseIds\"",
+                source["completion"]["requiredExerciseIds"][0].clone(),
+                "required practice step",
+            )
+        };
+        let text = serde_json::to_string_pretty(&source)
+            .unwrap()
+            .replace('\n', "\r\n");
+        let start = text.find(search_key).unwrap();
+        let token = serde_json::to_string(&value).unwrap();
+        let offset = start + text[start..].find(&token).unwrap();
+        let before = &text[..offset];
+        let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+        std::fs::write(&path, text).unwrap();
+        for command in ["check", "import"] {
+            let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+                .args([command, path.to_str().unwrap()])
+                .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+                .env("CONTENT_MODE", "database")
+                .env("APP_ENV", "production")
+                .output()
+                .unwrap();
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(!output.status.success());
+            assert!(
+                error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
+                "{error}"
+            );
+            assert!(error.contains(message), "{error}");
+            assert!(!error.contains("database connection"), "{error}");
+            assert!(output.stdout.is_empty());
+        }
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn duplicate_choice_text_is_located_before_check_or_import_connects() {
     let path = std::env::temp_dir().join(format!("brioche-choice-label-{}.json", random_id()));
     let original = brioche_server::development_source().unwrap();

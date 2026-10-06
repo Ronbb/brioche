@@ -1,5 +1,11 @@
 # 设计验证记录
 
+## 2026-10-06：练习步骤与完成策略一致性
+
+- 现有设计要求练习只进入 practice、必做题属于必做 practice，但原 validate 只验证引用存在与块可达。新增公共契约回归实际复现把 practice 改为 read 仍通过；修复后按原步骤 blockIds 项拒绝。移除 practice 的必做身份但保留必做题，按 completion.requiredExerciseIds 项拒绝；可选 practice/可选题和同题在其他 practice 再次回顾仍合法。
+- 离线 check 和 import 的数据库前预检共用该固有语义检查；不提前验证登记媒体占位描述，实际导入后仍完整验证。CLI 使用不可连接数据库、CRLF 和原中文课程源，证明两种错误在访问数据库前准确报告原字段行列；公开 DTO、运行提交/确认 API 和课源未修改。
+- 18 项公共契约、37 项 server 单元、21 项作者 CLI、13 项 curriculum 通过（48 课/144 题结构和正确/合法错误判分），Clippy -D warnings、cargo fmt 与 diff 检查通过。这是作者数据约束与离线验证，不替代 PostgreSQL 全链路、人工教学审校、设备或生产验收。
+
 ## 2026-10-06：选择题等价重复选项校验
 
 - 新增公共契约回归在修复前失败：不同 ID 的相同显示文字通过 validate。现在选择题经 NFC、空白和法语撇号归一化后的文字必须唯一；大小写和重音保留，排序重复语块继续合法。归一化从 Grader 移至公共 Rust 契约，原 grading::normalize_text 入口保留重导出，公开 DTO/答案字段未改变。

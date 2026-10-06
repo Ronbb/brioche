@@ -90,6 +90,8 @@ v1 只做线性流程。用户可以回到已访问步骤、预览目录和退�
 
 必做步骤确认条件：read 由用户明确点击“读完了”；practice 需提交该步骤所有必做题；recap 确认总结。服务端验证条件，再保存确认。completion.requiredExerciseIds 必须属于必做 practice 步骤，且每个 exercise 都有判分规则。
 
+共享语义校验和 import 数据库前预检均强制执行练习放置约定：非 practice 步骤引用练习时定位对应 blockIds 项；必做题没有必做 practice 步骤时定位 requiredExerciseIds 项。可选 practice 可包含可选题，同题可在其他 practice 中再次回顾；不因步骤分类新增评分或强制答对条件。登记素材仍在 hydration 后完整验证。
+
 `attempt-all` 表示所有必做题至少一次有效提交即可完成。错题可重试，结果保留；得分不强制卡住生活学习流程。正文中本就可能出现答案，不把“隐藏判题键”当作考试级反作弊措施。
 
 ## 判题规则

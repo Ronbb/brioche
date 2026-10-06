@@ -40,6 +40,42 @@ fn text_list(values: &[String], path: &str) -> Result<(), String> {
     Ok(())
 }
 impl PublicLesson {
+    /// Exercise placement and completion ownership do not depend on registered media.
+    pub fn validate_exercise_steps(&self) -> Result<(), String> {
+        let exercises: HashSet<_> = self
+            .blocks
+            .iter()
+            .filter_map(|block| match block {
+                Block::Exercise { id, .. } => Some(id.as_str()),
+                _ => None,
+            })
+            .collect();
+        let mut required_practice = HashSet::new();
+        for (si, step) in self.steps.iter().enumerate() {
+            for (bi, block_id) in step.block_ids.iter().enumerate() {
+                if !exercises.contains(block_id.as_str()) {
+                    continue;
+                }
+                if step.kind != "practice" {
+                    return Err(format!(
+                        "/steps/{si}/blockIds/{bi}: exercise requires a practice step"
+                    ));
+                }
+                if self.completion.required_step_ids.contains(&step.id) {
+                    required_practice.insert(block_id.as_str());
+                }
+            }
+        }
+        for (index, exercise) in self.completion.required_exercise_ids.iter().enumerate() {
+            if !required_practice.contains(exercise.as_str()) {
+                return Err(format!(
+                    "/completion/requiredExerciseIds/{index}: exercise must belong to a required practice step"
+                ));
+            }
+        }
+        Ok(())
+    }
+
     /// Intrinsic choice semantics can be checked before registered media hydration.
     pub fn validate_choice_labels(&self) -> Result<(), String> {
         for (index, block) in self.blocks.iter().enumerate() {
@@ -356,6 +392,7 @@ impl PublicLesson {
             )?;
             reachable.extend(step.block_ids.iter().map(String::as_str));
         }
+        self.validate_exercise_steps()?;
         if let Some(index) = self.blocks.iter().position(|b| !reachable.contains(b.id())) {
             return Err(format!("/blocks/{index}/id: unreachable teaching block"));
         }
@@ -381,6 +418,49 @@ mod tests {
     use crate::*;
     fn fixture() -> PublicLesson {
         super::super::tests::fixture()
+    }
+    #[test]
+    fn exercises_only_live_in_practice_and_required_exercises_have_required_steps() {
+        let mut lesson = fixture();
+        let practice = lesson
+            .steps
+            .iter()
+            .position(|s| s.kind == "practice")
+            .unwrap();
+        lesson.steps[practice].kind = "read".into();
+        let error = lesson.validate().unwrap_err();
+        assert!(
+            error.starts_with(&format!("/steps/{practice}/blockIds/0:")),
+            "{error}"
+        );
+        assert!(
+            error.contains("exercise requires a practice step"),
+            "{error}"
+        );
+
+        let mut lesson = fixture();
+        let practice_id = lesson.steps[practice].id.clone();
+        lesson
+            .completion
+            .required_step_ids
+            .retain(|id| id != &practice_id);
+        let error = lesson.validate().unwrap_err();
+        assert!(
+            error.starts_with("/completion/requiredExerciseIds/0:"),
+            "{error}"
+        );
+        assert!(error.contains("required practice step"), "{error}");
+
+        // Optional practice with optional exercises is valid.
+        lesson.completion.required_exercise_ids.clear();
+        lesson.validate().unwrap();
+
+        // A second optional practice reference does not invalidate required ownership.
+        let mut lesson = fixture();
+        let mut extra = lesson.steps[practice].clone();
+        extra.id = "optional-practice".into();
+        lesson.steps.push(extra);
+        lesson.validate().unwrap();
     }
     #[test]
     fn choice_labels_must_be_distinguishable_but_order_tokens_may_repeat() {
