@@ -20,6 +20,7 @@
 
 - 领域规则集中在服务端；课程解释器不执行作者代码，不接受任意 HTML/MDX/JS。
 - Rust/TS 共享生成的公共契约；Rust Serde 类型是实现期真源，Schema/TS/OpenAPI 生成物不得手改。Web 不导入答案、数据库代码和 secrets。
+- 填空输入限额由 Rust 公共契约生成 `answer-limits.ts`，HTML maxlength/JS 字符串长度采用 UTF-16 code units；不得各层重复硬编码。作者答案需有 NFC、空白和撇号归一化后符合限额的表示，大小写转换不参与表示长度检查；服务端仍验证实际输入，不能只依赖浏览器。
 - 内容 revision 发布后不可变，学习会话固定版本；跨账号访问、缓存和并发写入需要明确验证。
 - 使用当前稳定技术，核对官方资料和 peer dependencies；提交 lockfile，不用预发布版或浮动生产镜像。
 - 未知交互类型明确报错，不静默丢弃必需内容。

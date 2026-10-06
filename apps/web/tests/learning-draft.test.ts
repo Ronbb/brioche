@@ -22,6 +22,25 @@ const exercise = lesson.blocks.find(
   (block) =>
     block.type === "exercise" && block.exerciseType === "single-choice",
 )!;
+test("restorable text answers use the same UTF-16 units as browser maxlength", () => {
+  const block = lesson.blocks.find(
+    (block) => block.type === "exercise" && block.exerciseType === "fill-blank",
+  )!;
+  if (block.type !== "exercise") throw Error("fixture");
+  for (const text of [
+    "a".repeat(1024),
+    "é".repeat(1024),
+    "😀".repeat(512),
+    "İ".repeat(1024),
+  ])
+    assert.ok(validAnswer({ kind: "text", text }, block));
+  for (const text of [
+    "a".repeat(1025),
+    "😀".repeat(513),
+    "e\u0301".repeat(513),
+  ])
+    assert.equal(validAnswer({ kind: "text", text }, block), false);
+});
 test("pending recovery accepts only this fixed session's valid mutations", () => {
   assert.equal(exercise.type, "exercise");
   if (exercise.type !== "exercise" || exercise.exerciseType !== "single-choice")

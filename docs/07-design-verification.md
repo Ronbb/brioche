@@ -1,5 +1,12 @@
 # 设计验证记录
 
+## 2026-10-06：作者答案与网页填空的共享边界
+
+- 原作者 accepted 与运行判分仅限制 4096 UTF-8 字节，实际 ExerciseEditor、demo practice、validAnswer 则限制 1024 UTF-16 单位。两项新增 server 回归在修复前失败：1025 ASCII/513 个非 BMP 字符的 accepted 未被拒绝，运行输入也被当成普通错误答案。首次 Rust 测试断言错误地要求 GradeResult 实现 PartialEq，改为比较 GradeError 后才计入上述失败证据。
+- Rust 公共契约定义并生成 answer-limits.ts，两个输入框和草稿读取导入同一常量，服务端对实际输入按 encode_utf16 和字节上限检查。作者规则提前校验非空归一化答案、原 4096 字节上限与 canonical 表示的 UTF-16 上限；canonical 保留大小写，避免 İ 等 lowercase 扩展错误地使可输入答案被拒绝。NFC 可把组合重音转成可输入的等价表示，空白/撇号归一化规则不变，不移除法语重音。错误仍为作者字段诊断，HTTP 继续返回原不透明 GradeError。
+- 单元测试覆盖 ASCII/é 1024、非 BMP 512、组合重音的 NFC 表示、大小写扩展、带多余空白但短 canonical 的答案，以及过界运行输入与过界作者答案。实际 check/import 子进程在不可达 DATABASE_URL 下拒绝三种超界源，中文/CRLF 原文件 accepted/0 值行列正确、stdout 为空且无数据库连接错误。19 项作者 CLI、35 项 server 单元、16 项契约、13 项 curriculum（48 课/144 题正确/合法错误判分）通过，Clippy 无警告。
+- 27 项 Web、TS 7、client/SSR build、6 项 SSR 和格式检查通过。实际 ExerciseEditor 的 Chromium 原生 keyboard inserttext 将 1025 ASCII 截为 1024、513 非 BMP 截为完整 512，确认提交保留精确输入；另输入 e+组合重音，提交仍为原两单位字符串。定向浏览器 1 项通过（40 秒），完整 19 项 Chromium 回归通过（275 秒），teardown 已关闭专用浏览器与临时 Vite；此证据不代表人工教学审校、真实 iPhone 或正式录音验收，未修改课程状态或发布数据。
+
 ## 2026-10-06：课程不可用分支的独立原请求保护
 
 - 实际 Learning/LearningProvider/MemoryRouter 配合受控进度 PUT 与两个合法当前账号 owned 原提交。首轮定位用例用了不存在的 footer 选择器，修正为实际 learning-actions 后才取得应用失败证据：PUT 返回 410、标题聚焦“课程已撤回”、学习操作已移除，owned 存储仍为两项；qa.navigate('/login') 实际进入 /login，没有确认。

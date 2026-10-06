@@ -1193,3 +1193,36 @@ test("unavailable learning retains independent expression writes and only releas
   assert.equal(await evaluate("qa.learningWrites.length"), 1);
   assert.equal(await evaluate("qa.ownedWrites.length"), 0);
 });
+
+test("native fill-blank input bounds UTF-16 units and submits the exact text without removing accents", async () => {
+  await open("text-limit");
+  await browser("focus", ".exercise-sheet input");
+  assert.equal(await evaluate("document.activeElement.maxLength"), 1024);
+  await browser("keyboard", "inserttext", "a".repeat(1025));
+  assert.equal(await evaluate("document.activeElement.value.length"), 1024);
+  await browser("focus", ".exercise-sheet button.primary");
+  await press("Enter");
+  assert.deepEqual(await evaluate("qa.textAnswers[0]"), {
+    kind: "text",
+    text: "a".repeat(1024),
+  });
+  await browser("focus", ".exercise-sheet input");
+  await press("Control+a");
+  await browser("keyboard", "inserttext", "😀".repeat(513));
+  assert.equal(await evaluate("document.activeElement.value.length"), 1024);
+  await browser("focus", ".exercise-sheet button.primary");
+  await press("Enter");
+  assert.deepEqual(await evaluate("qa.textAnswers[1]"), {
+    kind: "text",
+    text: "😀".repeat(512),
+  });
+  await browser("focus", ".exercise-sheet input");
+  await press("Control+a");
+  await browser("keyboard", "inserttext", "e\u0301");
+  await browser("focus", ".exercise-sheet button.primary");
+  await press("Enter");
+  assert.deepEqual(await evaluate("qa.textAnswers[2]"), {
+    kind: "text",
+    text: "e\u0301",
+  });
+});

@@ -1,5 +1,6 @@
 import type { ExerciseAnswer } from "@brioche/contracts/ExerciseAnswer";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
+import { MAX_TEXT_ANSWER_UTF16_UNITS } from "@brioche/contracts/answer-limits";
 
 const prefix = "brioche.learning.v1:";
 // Only a change notification; account data and request bodies stay in storage.
@@ -90,7 +91,7 @@ export function validAnswer(
     return (
       answer.kind === "text" &&
       typeof answer.text === "string" &&
-      answer.text.length <= 1024
+      answer.text.length <= MAX_TEXT_ANSWER_UTF16_UNITS
     );
   return (
     answer.kind === "order" &&

@@ -39,6 +39,46 @@ fn checks_drafts_without_database_and_does_not_claim_publication() {
 }
 
 #[test]
+fn unrepresentable_text_answers_are_located_before_check_or_import_connects() {
+    let path = std::env::temp_dir().join(format!("brioche-answer-limit-{}.json", random_id()));
+    let original = brioche_server::development_source().unwrap();
+    let pointer = "/serverOnly/grading/exercise-article/accepted/0";
+    for invalid in ["a".repeat(1025), "😀".repeat(513), "e\u{301}".repeat(1025)] {
+        let mut source = original.clone();
+        *source.pointer_mut(pointer).unwrap() = serde_json::json!(invalid);
+        source["editorial"]["note"] = serde_json::json!("中文限额定位");
+        let text = serde_json::to_string_pretty(&source)
+            .unwrap()
+            .replace('\n', "\r\n");
+        let token = serde_json::to_string(&invalid).unwrap();
+        let offset = text.find(&token).unwrap();
+        let before = &text[..offset];
+        let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+        std::fs::write(&path, text).unwrap();
+        for command in ["check", "import"] {
+            let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+                .args([command, path.to_str().unwrap()])
+                .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+                .env("CONTENT_MODE", "database")
+                .env("APP_ENV", "production")
+                .output()
+                .unwrap();
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(!output.status.success());
+            assert!(
+                error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
+                "{error}"
+            );
+            assert!(error.contains("1024 UTF-16 code units"), "{error}");
+            assert!(!error.contains("database connection"), "{error}");
+            assert!(output.stdout.is_empty());
+        }
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn checks_visual_sources_without_database_or_registration() {
     use sha2::{Digest, Sha256};
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/content/a1/assets");

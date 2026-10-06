@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { MAX_TEXT_ANSWER_UTF16_UNITS } from "@brioche/contracts/answer-limits";
 import { Link, redirect } from "react-router";
 import type { ExerciseAnswer } from "@brioche/contracts/ExerciseAnswer";
 import type { GradeRequest } from "@brioche/contracts/GradeRequest";
@@ -230,7 +231,7 @@ function PracticeSession({ lesson }: Route.ComponentProps["loaderData"]) {
                 autoComplete="off"
                 autoCapitalize="none"
                 spellCheck={false}
-                maxLength={1024}
+                maxLength={MAX_TEXT_ANSWER_UTF16_UNITS}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
               />

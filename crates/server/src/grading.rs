@@ -1,5 +1,8 @@
 //! Answer keys stay in this crate. Validation precedes import and grading.
-use brioche_course_contract::{Block, Exercise, ExerciseAnswer, GradeResult, PublicLesson};
+use brioche_course_contract::{
+    Block, Exercise, ExerciseAnswer, GradeResult, MAX_TEXT_ANSWER_BYTES,
+    MAX_TEXT_ANSWER_UTF16_UNITS, PublicLesson, valid_text_answer_length,
+};
 use serde::Deserialize;
 use std::collections::{BTreeMap, HashSet};
 use unicode_normalization::UnicodeNormalization;
@@ -59,7 +62,7 @@ pub struct Grader {
 }
 impl Grader {
     fn author_rules(source: &serde_json::Value) -> anyhow::Result<PrivateRules> {
-        use anyhow::{Context, bail};
+        use anyhow::{Context, bail, ensure};
         // Internally tagged enums buffer their fields and lose nested serde error
         // paths. Decode each known shape directly for author-only diagnostics.
         #[derive(Deserialize)]
@@ -137,12 +140,31 @@ impl Grader {
                 }
                 _ => bail!("{path}/kind: unknown grading kind"),
             };
+            if let Rule::Text {
+                accepted,
+                case_sensitive,
+                ..
+            } = &rule
+            {
+                ensure!(
+                    !accepted.is_empty(),
+                    "{path}/accepted: at least one accepted answer is required"
+                );
+                for (index, answer) in accepted.iter().enumerate() {
+                    ensure!(
+                        !normalize_text(answer, *case_sensitive).is_empty()
+                            && answer.len() <= MAX_TEXT_ANSWER_BYTES
+                            && valid_text_answer_length(&normalize_text(answer, true)),
+                        "{path}/accepted/{index}: expected nonempty answer of at most {MAX_TEXT_ANSWER_BYTES} source bytes with a normalized representative of at most {MAX_TEXT_ANSWER_UTF16_UNITS} UTF-16 code units"
+                    );
+                }
+            }
             grading.insert(id, rule);
         }
         Ok(PrivateRules { grading })
     }
 
-    /// Check private field types before import connects or hydrates registered media.
+    /// Check private types and intrinsic text bounds before connecting or hydrating media.
     /// Exercise references still require the final hydrated public lesson.
     pub fn validate_author_schema(source: &serde_json::Value) -> anyhow::Result<()> {
         Self::author_rules(source).map(|_| ())
@@ -211,26 +233,7 @@ impl Grader {
                         "{pointer}/correctOptionId: unknown option reference"
                     );
                 }
-                (
-                    Exercise::FillBlank { .. },
-                    Rule::Text {
-                        accepted,
-                        case_sensitive,
-                        ..
-                    },
-                ) => {
-                    ensure!(
-                        !accepted.is_empty(),
-                        "{pointer}/accepted: at least one accepted answer is required"
-                    );
-                    for (index, answer) in accepted.iter().enumerate() {
-                        ensure!(
-                            !normalize_text(answer, *case_sensitive).is_empty()
-                                && answer.len() <= 4096,
-                            "{pointer}/accepted/{index}: expected nonempty normalized answer of at most 4096 bytes"
-                        );
-                    }
-                }
+                (Exercise::FillBlank { .. }, Rule::Text { .. }) => {}
                 (
                     Exercise::Order { tokens, .. },
                     Rule::Order {
@@ -298,7 +301,9 @@ impl Grader {
                 },
                 ExerciseAnswer::Text { text },
             ) => {
-                if text.len() > 4096 || normalize_text(text, *case_sensitive).is_empty() {
+                if !valid_text_answer_length(text)
+                    || normalize_text(text, *case_sensitive).is_empty()
+                {
                     return Err(GradeError::InvalidAnswer);
                 }
                 (
@@ -353,6 +358,59 @@ mod tests {
         assert_eq!(normalize_text("cafe\u{301}", false), "café");
         assert_ne!(normalize_text("cafe", false), normalize_text("café", false));
         assert_ne!(normalize_text("Une", true), normalize_text("une", true));
+    }
+    #[test]
+    fn author_text_answers_must_have_a_representative_within_the_web_input_limit() {
+        let (lesson, original) = fixture();
+        for (accepted, submitted) in [
+            ("a".repeat(1024), "a".repeat(1024)),
+            ("é".repeat(1024), "é".repeat(1024)),
+            ("😀".repeat(512), "😀".repeat(512)),
+            ("e\u{301}".repeat(1024), "é".repeat(1024)),
+            ("İ".repeat(1024), "İ".repeat(1024)),
+            (format!("{}une", " ".repeat(1500)), "une".into()),
+        ] {
+            let mut source = original.clone();
+            source["serverOnly"]["grading"]["exercise-article"]["accepted"] =
+                serde_json::json!([accepted]);
+            let grader = Grader::from_author_source(&lesson, &source).unwrap();
+            assert!(
+                grader
+                    .grade(
+                        &lesson,
+                        "exercise-article",
+                        &ExerciseAnswer::Text { text: submitted }
+                    )
+                    .unwrap()
+                    .correct
+            );
+        }
+        for accepted in ["a".repeat(1025), "😀".repeat(513)] {
+            let mut source = original.clone();
+            source["serverOnly"]["grading"]["exercise-article"]["accepted"] =
+                serde_json::json!([accepted]);
+            let error = Grader::from_author_source(&lesson, &source)
+                .err()
+                .expect("unreachable web answer must be rejected");
+            assert!(
+                error
+                    .to_string()
+                    .starts_with("/serverOnly/grading/exercise-article/accepted/0:")
+            );
+        }
+    }
+    #[test]
+    fn runtime_text_limit_matches_utf16_web_input_instead_of_only_utf8_bytes() {
+        let (lesson, source) = fixture();
+        let grader = Grader::from_source(&lesson, &source).unwrap();
+        for text in ["a".repeat(1025), "😀".repeat(513)] {
+            assert_eq!(
+                grader
+                    .grade(&lesson, "exercise-article", &ExerciseAnswer::Text { text })
+                    .err(),
+                Some(GradeError::InvalidAnswer)
+            );
+        }
     }
     #[test]
     fn grades_three_kinds_and_rejects_forged_inputs() {

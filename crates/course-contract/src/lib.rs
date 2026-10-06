@@ -9,6 +9,18 @@ mod validation;
 /// Current registered character voice policy; regional voices need an explicit content revision.
 pub const CHARACTER_SPEECH_LOCALE: &str = "fr-FR";
 
+/// HTML maxlength and JavaScript string length count UTF-16 code units.
+pub const MAX_TEXT_ANSWER_UTF16_UNITS: usize = 1024;
+pub const MAX_TEXT_ANSWER_BYTES: usize = 4096;
+pub fn valid_text_answer_length(text: &str) -> bool {
+    text.len() <= MAX_TEXT_ANSWER_BYTES
+        && text
+            .encode_utf16()
+            .take(MAX_TEXT_ANSWER_UTF16_UNITS + 1)
+            .count()
+            <= MAX_TEXT_ANSWER_UTF16_UNITS
+}
+
 /// Immutable revisions share the positive PostgreSQL INTEGER range.
 pub fn valid_content_revision(value: u32) -> bool {
     value > 0 && value <= i32::MAX as u32

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { StartLearning } from "../app/components/start-learning";
+import { ExerciseEditor } from "../app/components/exercise-editor";
+import type { ExerciseAnswer } from "@brioche/contracts/ExerciseAnswer";
 import { LearningProvider, useLearning } from "../app/components/learning";
 import Lesson from "../app/routes/lesson";
 import { lesson } from "./lesson";
@@ -53,6 +55,7 @@ const qa = {
   ownedRelease: [] as ((value: SavedItem | ReviewCard | number) => void)[],
   savedFixture: null as SavedItem | null,
   confirmExternal: null as ((index: number) => void) | null,
+  textAnswers: [] as ExerciseAnswer[],
 };
 Object.assign(window, { qa });
 class ControlledUtterance extends EventTarget {
@@ -511,6 +514,32 @@ function PendingHarness() {
     </LearningProvider>
   );
 }
+function TextLimitHarness() {
+  return (
+    <LearningProvider>
+      <main>
+        <h1>填空输入边界</h1>
+        <ExerciseEditor
+          block={{
+            type: "exercise",
+            id: "text-limit",
+            exerciseType: "fill-blank",
+            promptZh: "输入表达",
+            templateFr: "___",
+            hintZh: "边界测试",
+          }}
+          hinted={false}
+          blocked={false}
+          completed={false}
+          hint={() => {}}
+          submit={async (answer) => {
+            qa.textAnswers.push(answer);
+          }}
+        />
+      </main>
+    </LearningProvider>
+  );
+}
 const reading = kind === "reading";
 const router = createMemoryRouter(
   [
@@ -534,6 +563,8 @@ const router = createMemoryRouter(
         <LibraryHarness />
       ) : kind === "pending" ? (
         <PendingHarness />
+      ) : kind === "text-limit" ? (
+        <TextLimitHarness />
       ) : (
         <StartHarness />
       ),

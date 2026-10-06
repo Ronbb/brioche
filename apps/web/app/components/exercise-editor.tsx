@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
+import { MAX_TEXT_ANSWER_UTF16_UNITS } from "@brioche/contracts/answer-limits";
 import { readDraft, saveDraft, validAnswer } from "../lib/learning-draft";
 import type { Block } from "@brioche/contracts/Block";
 import type { AttemptRecord } from "@brioche/contracts/AttemptRecord";
@@ -183,7 +184,7 @@ export function ExerciseEditor({
               autoComplete="off"
               autoCapitalize="none"
               spellCheck={false}
-              maxLength={1024}
+              maxLength={MAX_TEXT_ANSWER_UTF16_UNITS}
               value={shownText}
               onChange={(event) => {
                 setText(event.target.value);
