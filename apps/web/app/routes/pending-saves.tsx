@@ -37,7 +37,7 @@ export default function PendingSaves({
     } catch (failure) {
       if (
         failure instanceof ApiRequestError &&
-        definitiveWriteFailure(failure.status)
+        definitiveWriteFailure(failure)
       ) {
         clearPending(item.key, item.job.body.idempotencyKey);
         setItems(pendingOwned(userId));

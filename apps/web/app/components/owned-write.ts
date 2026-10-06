@@ -104,7 +104,7 @@ export function useOwnedWrite<T>(
       if (!alive.current || gen !== generation.current) return;
       if (
         failure instanceof ApiRequestError &&
-        definitiveWriteFailure(failure.status)
+        definitiveWriteFailure(failure)
       ) {
         clearPending(key, (job.body as Record<string, unknown>).idempotencyKey);
         pending.current = null;

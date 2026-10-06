@@ -1,11 +1,25 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { definitiveWriteFailure } from "../app/lib/api.client.ts";
+import {
+  ApiRequestError,
+  definitiveWriteFailure,
+} from "../app/lib/api.client.ts";
 test("authentication, CSRF, throttling and transport failures keep the original request", () => {
   for (const status of [401, 403, 429, 500, 502, 503])
-    assert.equal(definitiveWriteFailure(status), false);
+    assert.equal(
+      definitiveWriteFailure(new ApiRequestError(status, "test")),
+      false,
+    );
   for (const status of [400, 404, 409, 410, 422])
-    assert.equal(definitiveWriteFailure(status), true);
+    assert.equal(
+      definitiveWriteFailure(new ApiRequestError(status, "test")),
+      true,
+    );
+  for (const status of [400, 401, 403, 404, 409, 410, 422, 429, 500])
+    assert.equal(
+      definitiveWriteFailure(new ApiRequestError(status, "test", "csrf")),
+      false,
+    );
 });
 import {
   ownedTargetKey,

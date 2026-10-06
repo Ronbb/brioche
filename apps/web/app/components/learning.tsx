@@ -141,7 +141,11 @@ export function LearningProvider({
         if (gen !== saveGeneration.current) return false;
         saveGeneration.current++;
         pendingChanges.current.clear();
-        if (error instanceof ApiRequestError && error.status === 401)
+        if (
+          error instanceof ApiRequestError &&
+          error.phase === "request" &&
+          error.status === 401
+        )
           acceptProfile(null);
         else {
           // A timed-out response may already have saved. Read the current state; never resend a write automatically.

@@ -170,7 +170,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
       if (!alive.current || gen !== generation.current) return;
       if (
         failure instanceof ApiRequestError &&
-        definitiveWriteFailure(failure.status)
+        definitiveWriteFailure(failure)
       ) {
         clearPending(storageKey, job.body.idempotencyKey);
         pending.current = null;

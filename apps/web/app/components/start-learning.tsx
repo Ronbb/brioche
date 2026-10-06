@@ -39,7 +39,9 @@ export function StartLearning({
     } catch (failure) {
       if (alive.current)
         setError(
-          failure instanceof ApiRequestError && failure.status === 409
+          failure instanceof ApiRequestError &&
+            failure.phase === "request" &&
+            failure.status === 409
             ? "课程暂时无法开始，请重新打开课程。"
             : failure instanceof ApiRequestError
               ? failure.message

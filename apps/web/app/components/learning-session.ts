@@ -88,6 +88,7 @@ export function useLearningSession(initial: LearningSession, scope: string) {
       if (
         alive.current &&
         failure instanceof ApiRequestError &&
+        failure.phase === "request" &&
         (failure.status === 404 || failure.status === 410)
       ) {
         removeUnavailable(failure.status);
@@ -161,6 +162,7 @@ export function useLearningSession(initial: LearningSession, scope: string) {
       if (!alive.current) return null;
       if (
         failure instanceof ApiRequestError &&
+        failure.phase === "request" &&
         (failure.status === 404 || failure.status === 410)
       ) {
         removeUnavailable(failure.status);
@@ -168,7 +170,7 @@ export function useLearningSession(initial: LearningSession, scope: string) {
       }
       if (
         failure instanceof ApiRequestError &&
-        definitiveWriteFailure(failure.status)
+        definitiveWriteFailure(failure)
       ) {
         clearPending(
           scope + ":pending",

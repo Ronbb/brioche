@@ -1,13 +1,20 @@
 import type { CsrfToken } from "@brioche/contracts/CsrfToken";
 export class ApiRequestError extends Error {
   status: number;
-  constructor(status: number, message: string) {
+  phase: "csrf" | "request";
+  constructor(
+    status: number,
+    message: string,
+    phase: "csrf" | "request" = "request",
+  ) {
     super(message);
     this.status = status;
+    this.phase = phase;
   }
 }
-export const definitiveWriteFailure = (status: number) =>
-  [400, 404, 409, 410, 422].includes(status);
+export const definitiveWriteFailure = (failure: ApiRequestError) =>
+  failure.phase === "request" &&
+  [400, 404, 409, 410, 422].includes(failure.status);
 export async function privateRequest<T>(
   path: string,
   method: "GET" | "PATCH" | "POST" | "PUT",
@@ -23,6 +30,7 @@ export async function privateRequest<T>(
       throw new ApiRequestError(
         bootstrap.status,
         "服务暂时不可用，请稍后重试。",
+        "csrf",
       );
     headers["X-CSRF-Token"] = ((await bootstrap.json()) as CsrfToken).csrfToken;
     headers["Content-Type"] = "application/json";
