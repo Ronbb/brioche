@@ -466,6 +466,7 @@ export function LearningProvider({
       {children}
       <dialog
         ref={dialog}
+        id="reading-rate-dialog"
         className="rate-dialog"
         aria-labelledby="speed-title"
         onClick={(e) => {

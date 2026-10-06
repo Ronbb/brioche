@@ -1,5 +1,13 @@
 # 设计验证记录
 
+## 2026-10-06：键盘入口、页签与减少动效
+
+- 补全局“跳到正文”链接，只有键盘聚焦时显示，不占内容空间；正文 main 可接收程序/片段焦点。独立 agent-browser 会话从 profile 页面首次 Tab 实际聚焦链接，Enter 后 activeElement 为 page-content/main。
+- 设置页语速按钮改为包含字段与当前值的可访问名称，声明弹窗及其控制目标；通用选择面板触发器名称同时包含当前选择。浏览器可访问树显示“朗读速度：1×”；键盘进入速度面板，End 选中 1.5×，Escape 关闭后焦点回到“朗读速度：1.5×”。
+- 公开阅读页对话/短文 tab 补 roving tabindex、ArrowLeft/Right 循环、Home/End 与 tabpanel/aria-controls/aria-labelledby。实测 ArrowRight 从对话切到短文，焦点/selected/唯一 Tab 入口和面板名称一致，正文为短文；Home/End 和末项循环返回对话正常。原切换停止朗读行为保留，未改变课程数据与学习记录。
+- 浏览器减少动效设置为 reduce 时，阅读页当前所有元素 animationName=none、transitionDuration=0；320px/390px 无横向溢出。这里只检查当前公开阅读/个人页，不代表整个产品所有状态或真实辅助技术/iPhone 已验收。
+- TS 7 typecheck、client/SSR build 和 15 项现有 Web 协议测试通过。未为这些可逆样式/标签修改添加镜像实现的单元测试；使用真实 DOM/键盘证据。完整屏幕阅读器、账号学习/复习/嵌套弹窗和真实 iPhone 仍继续待验收。
+
 ## 2026-10-06：素材/录音导入原文件诊断
 
 - `assets-import` / `audio-import` 在数据库连接前保留原作者 Document，严格类型解码和元数据校验映射原文件行/列。元数据规则与正式导入复用，覆盖 ID/revision/重复、状态与授权、来源/署名、SHA-256、MIME、文件路径、视觉尺寸/角色和录音时长。planned 素材仍拒绝；没有改写素材权利声明或发布内容。

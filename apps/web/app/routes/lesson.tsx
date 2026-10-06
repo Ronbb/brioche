@@ -1,4 +1,4 @@
-import { useState, type SyntheticEvent } from "react";
+import { useId, useState, type SyntheticEvent } from "react";
 import { Link } from "react-router";
 import type { Segment } from "@brioche/contracts/Segment";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
@@ -160,6 +160,10 @@ function LessonContent({
         ? article.paragraphs
         : [];
   const body = mode === "dialogue" ? dialogue : article;
+  const bodyId = useId();
+  const modes = (["dialogue", "article"] as const).filter((value) =>
+    lesson.blocks.some((block) => block.type === value),
+  );
   const units =
     body && (body.type === "dialogue" || body.type === "article")
       ? readingUnits(lesson, body)
@@ -186,85 +190,107 @@ function LessonContent({
       <div className="reading-layout">
         <div className="reading">
           <div className="reading-tabs" role="tablist" aria-label="正文">
-            {(["dialogue", "article"] as const)
-              .filter((value) => lesson.blocks.some((b) => b.type === value))
-              .map((value) => (
-                <button
-                  key={value}
-                  role="tab"
-                  aria-selected={mode === value}
-                  onClick={() => changeMode(value)}
-                >
-                  {value === "dialogue" ? "对话" : "短文"}
-                </button>
-              ))}
-          </div>
-          {mode === "dialogue" && dialogue?.type === "dialogue" && (
-            <ul className="reading-characters">
-              {dialogue.speakers.map((s) => (
-                <li key={s.id}>
-                  <img
-                    src={avatar(s.avatarId, lesson)}
-                    alt=""
-                    ref={avatarReady}
-                    onError={avatarFallback}
-                  />
-                  <div>
-                    <span lang="fr">{s.displayName}</span>
-                    <small>{s.labelZh}</small>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-          {entries.map((entry, index) => {
-            const speaker =
-              "speakerId" in entry && dialogue?.type === "dialogue"
-                ? dialogue.speakers.find((s) => s.id === entry.speakerId)
-                : null;
-            return (
-              <div
-                key={entry.id}
-                className={
-                  (speaker ? "dialogue-turn" : "article-paragraph") +
-                  (learning.player.id === units[index]?.id
-                    ? " is-speaking"
-                    : "")
-                }
+            {modes.map((value, index) => (
+              <button
+                key={value}
+                id={`${bodyId}-${value}`}
+                role="tab"
+                aria-selected={mode === value}
+                aria-controls={bodyId}
+                tabIndex={mode === value ? 0 : -1}
+                onKeyDown={(event) => {
+                  let next = index;
+                  if (event.key === "ArrowRight")
+                    next = (index + 1) % modes.length;
+                  else if (event.key === "ArrowLeft")
+                    next = (index + modes.length - 1) % modes.length;
+                  else if (event.key === "Home") next = 0;
+                  else if (event.key === "End") next = modes.length - 1;
+                  else return;
+                  event.preventDefault();
+                  changeMode(modes[next]);
+                  event.currentTarget.parentElement
+                    ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+                    [next]?.focus();
+                }}
+                onClick={() => changeMode(value)}
               >
-                {speaker && (
-                  <button
-                    className="speaker"
-                    aria-label={speaker.displayName + "：译文与朗读"}
-                    onClick={() => {
-                      setRevealed((old) => new Set([...old, entry.id]));
-                      learning.play([units[index]]);
-                    }}
-                  >
+                {value === "dialogue" ? "对话" : "短文"}
+              </button>
+            ))}
+          </div>
+          <div
+            id={bodyId}
+            role="tabpanel"
+            aria-labelledby={`${bodyId}-${mode}`}
+          >
+            {mode === "dialogue" && dialogue?.type === "dialogue" && (
+              <ul className="reading-characters">
+                {dialogue.speakers.map((s) => (
+                  <li key={s.id}>
                     <img
-                      src={avatar(speaker.avatarId, lesson)}
+                      src={avatar(s.avatarId, lesson)}
                       alt=""
                       ref={avatarReady}
                       onError={avatarFallback}
                     />
-                  </button>
-                )}
-                <div>
-                  <Sentence
-                    segments={entry.segments}
-                    lesson={lesson}
-                    blockId={body!.id}
-                    entryId={entry.id}
-                    onTerm={showTerm}
-                    onGrammar={showGrammar}
-                  />
-                  {(learning.translation || revealed.has(entry.id)) && (
-                    <p className="translation">{entry.translationZh}</p>
+                    <div>
+                      <span lang="fr">{s.displayName}</span>
+                      <small>{s.labelZh}</small>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {entries.map((entry, index) => {
+              const speaker =
+                "speakerId" in entry && dialogue?.type === "dialogue"
+                  ? dialogue.speakers.find((s) => s.id === entry.speakerId)
+                  : null;
+              return (
+                <div
+                  key={entry.id}
+                  className={
+                    (speaker ? "dialogue-turn" : "article-paragraph") +
+                    (learning.player.id === units[index]?.id
+                      ? " is-speaking"
+                      : "")
+                  }
+                >
+                  {speaker && (
+                    <button
+                      className="speaker"
+                      aria-label={speaker.displayName + "：译文与朗读"}
+                      onClick={() => {
+                        setRevealed((old) => new Set([...old, entry.id]));
+                        learning.play([units[index]]);
+                      }}
+                    >
+                      <img
+                        src={avatar(speaker.avatarId, lesson)}
+                        alt=""
+                        ref={avatarReady}
+                        onError={avatarFallback}
+                      />
+                    </button>
                   )}
+                  <div>
+                    <Sentence
+                      segments={entry.segments}
+                      lesson={lesson}
+                      blockId={body!.id}
+                      entryId={entry.id}
+                      onTerm={showTerm}
+                      onGrammar={showGrammar}
+                    />
+                    {(learning.translation || revealed.has(entry.id)) && (
+                      <p className="translation">{entry.translationZh}</p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
           <div className="lesson-explore">
             {lesson.steps
               .filter((s) => s.kind === "explore")

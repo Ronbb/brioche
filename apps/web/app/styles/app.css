@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: max(12px, env(safe-area-inset-left));
+  z-index: 30;
+  padding: 10px 18px;
+  border-radius: 12px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  transform: translateY(-100%);
+}
+.skip-link:focus {
+  top: max(12px, env(safe-area-inset-top));
+  transform: none;
+}
+
 :root {
   --paper: #f7f4ec;
   --surface: #fffefa;

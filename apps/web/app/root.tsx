@@ -40,6 +40,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <a className="skip-link" href="#page-content">
+          跳到正文
+        </a>
         <LearningProvider user={identity?.user ?? null}>
           <IdentitySync
             user={identity?.user ?? null}
@@ -71,7 +74,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 />
               </Link>
             </header>
-            <main id="page-content">{children}</main>
+            <main id="page-content" tabIndex={-1}>
+              {children}
+            </main>
           </div>
           <Scrollbar />
         </LearningProvider>

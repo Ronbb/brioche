@@ -165,7 +165,13 @@ export default function Profile() {
         </div>
         <div className="setting-row">
           <span>朗读速度</span>
-          <button className="speed-trigger" onClick={learning.openRate}>
+          <button
+            className="speed-trigger"
+            aria-label={`朗读速度：${learning.rate}×`}
+            aria-haspopup="dialog"
+            aria-controls="reading-rate-dialog"
+            onClick={learning.openRate}
+          >
             {learning.rate}×<Icon name="chevron" />
           </button>
         </div>

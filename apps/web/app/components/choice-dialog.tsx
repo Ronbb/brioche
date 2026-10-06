@@ -38,7 +38,7 @@ export function ChoiceDialog({
         className="speed-trigger"
         disabled={disabled}
         aria-haspopup="dialog"
-        aria-label={title}
+        aria-label={`${title}：${choices.find((choice) => choice.value === value)?.label ?? value}`}
         onClick={() => {
           setSearch("");
           dialog.current?.showModal();
