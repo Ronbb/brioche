@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import type { LearningSession } from "@brioche/contracts/LearningSession";
 import { ApiRequestError, privateRequest } from "../lib/api.client";
 import { operationKey } from "../lib/operation-key";
@@ -16,7 +16,8 @@ export function StartLearning({
     alive = useRef(true),
     key = useRef<string | null>(null);
   const [pending, setPending] = useState(false),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [expired, setExpired] = useState(false);
   useEffect(() => {
     alive.current = true;
     return () => {
@@ -28,6 +29,7 @@ export function StartLearning({
     busy.current = true;
     setPending(true);
     setError("");
+    setExpired(false);
     key.current ??= operationKey();
     try {
       const session = await privateRequest<LearningSession>(
@@ -37,16 +39,24 @@ export function StartLearning({
       );
       if (alive.current) void navigate("/learning/" + session.progress.id);
     } catch (failure) {
-      if (alive.current)
+      if (alive.current) {
+        const status =
+          failure instanceof ApiRequestError && failure.phase === "request"
+            ? failure.status
+            : null;
+        setExpired(status === 401);
         setError(
-          failure instanceof ApiRequestError &&
-            failure.phase === "request" &&
-            failure.status === 409
+          status === 409
             ? "课程暂时无法开始，请重新打开课程。"
-            : failure instanceof ApiRequestError
-              ? failure.message
-              : "学习尚未打开，请重试。",
+            : status === 410
+              ? "课程已撤回，暂时无法开始学习。"
+              : status === 404
+                ? "没有找到这堂课程，请重新选择。"
+                : failure instanceof ApiRequestError
+                  ? failure.message
+                  : "学习尚未打开，请重试。",
         );
+      }
     } finally {
       busy.current = false;
       if (alive.current) setPending(false);
@@ -56,7 +66,9 @@ export function StartLearning({
     <div className="start-learning">
       <button
         className="primary"
-        disabled={pending}
+        type="button"
+        aria-disabled={pending}
+        aria-busy={pending}
         onClick={() => void start()}
       >
         {pending ? "正在打开" : children}
@@ -66,6 +78,14 @@ export function StartLearning({
         <p className="error-message" role="alert">
           {error}
         </p>
+      )}
+      {expired && (
+        <Link
+          className="text-button"
+          to={"/login?next=" + encodeURIComponent("/lessons/" + lessonId)}
+        >
+          重新登录
+        </Link>
       )}
     </div>
   );
