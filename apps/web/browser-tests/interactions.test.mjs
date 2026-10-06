@@ -221,3 +221,82 @@ test("late speech callbacks cannot interrupt newer playback, while current failu
     { id: currentId, last: "Bonsoir !", count: 3 },
   );
 });
+
+test("custom settings dialogs remain in the viewport and restore keyboard focus and search", async () => {
+  await open("choices");
+  const rate = 'button[aria-label^="朗读速度："]';
+  for (const width of [320, 390, 900]) {
+    await browser("set", "viewport", String(width), "700");
+    await browser("focus", rate);
+    await press("Enter");
+    await browser("wait", "dialog[open]");
+    assert.equal(
+      await evaluate("document.activeElement.getAttribute('aria-checked')"),
+      "true",
+    );
+    assert.equal(
+      await evaluate(
+        "(()=>{const r=document.querySelector('dialog[open]').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight})()",
+      ),
+      true,
+    );
+    await press("End");
+    assert.equal(
+      await evaluate("document.activeElement.textContent.trim()"),
+      "1.5×",
+    );
+    await press("Enter");
+    assert.equal(
+      await evaluate("document.querySelectorAll('dialog[open]').length"),
+      0,
+    );
+    assert.equal(
+      await evaluate(
+        "document.activeElement.matches('button[aria-label^=\"朗读速度：\"]')",
+      ),
+      true,
+    );
+    await press("Enter");
+    await press("Escape");
+    assert.equal(
+      await evaluate(
+        "document.activeElement.matches('button[aria-label^=\"朗读速度：\"]')",
+      ),
+      true,
+    );
+  }
+  const zone = 'button[aria-label^="时区："]';
+  await browser("focus", zone);
+  await press("Enter");
+  await browser("fill", "dialog[open] input", "no-matching-city");
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('dialog[open] [role=radio]').length",
+    ),
+    0,
+  );
+  await press("Escape");
+  await press("Enter");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('dialog[open] input')?.value===''",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('dialog[open] [role=radio]').length",
+    ),
+    2,
+  );
+  assert.equal(
+    await evaluate("document.activeElement.matches('input[type=search]')"),
+    true,
+  );
+  await browser("fill", "dialog[open] input", "Paris");
+  await press("Tab");
+  await press("Enter");
+  assert.equal(
+    await evaluate("document.activeElement.getAttribute('aria-label')"),
+    "时区：巴黎",
+  );
+});

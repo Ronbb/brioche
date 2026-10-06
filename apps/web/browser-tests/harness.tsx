@@ -5,6 +5,7 @@ import { StartLearning } from "../app/components/start-learning";
 import { LearningProvider, useLearning } from "../app/components/learning";
 import Lesson from "../app/routes/lesson";
 import { lesson } from "./lesson";
+import { ChoiceDialog } from "../app/components/choice-dialog";
 import "../app/styles/app.css";
 
 const qa = {
@@ -116,7 +117,36 @@ function ReadingHarness() {
     </div>
   );
 }
-const reading = new URL(location.href).searchParams.get("case") === "reading";
+function ChoicesHarness() {
+  const [rate, setRate] = useState("1"),
+    [zone, setZone] = useState("Asia/Shanghai");
+  return (
+    <main>
+      <h1>个人设置</h1>
+      <ChoiceDialog
+        title="朗读速度"
+        value={rate}
+        onChange={setRate}
+        choices={["0.75", "1", "1.25", "1.5"].map((value) => ({
+          value,
+          label: value + "×",
+        }))}
+      />
+      <ChoiceDialog
+        title="时区"
+        value={zone}
+        onChange={setZone}
+        searchable
+        choices={[
+          { value: "Asia/Shanghai", label: "上海" },
+          { value: "Europe/Paris", label: "巴黎" },
+        ]}
+      />
+    </main>
+  );
+}
+const kind = new URL(location.href).searchParams.get("case");
+const reading = kind === "reading";
 const router = createMemoryRouter([
   {
     path: "/",
@@ -124,6 +154,8 @@ const router = createMemoryRouter([
       <LearningProvider>
         <ReadingHarness />
       </LearningProvider>
+    ) : kind === "choices" ? (
+      <ChoicesHarness />
     ) : (
       <StartHarness />
     ),
