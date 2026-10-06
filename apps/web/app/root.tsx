@@ -35,6 +35,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
           content="width=device-width,initial-scale=1,viewport-fit=cover"
         />
         <meta name="theme-color" content="#fffaef" />
+        <meta name="application-name" content="Brioche" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="Brioche" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <link rel="icon" href="/icons/app.svg" type="image/svg+xml" />
+        <link
+          rel="icon"
+          href="/icons/favicon-32.png"
+          type="image/png"
+          sizes="32x32"
+        />
+        <link
+          rel="apple-touch-icon"
+          href="/apple-touch-icon.png"
+          sizes="180x180"
+        />
         <title>Brioche · 一点法语，一点生活</title>
         <Meta />
         <Links />

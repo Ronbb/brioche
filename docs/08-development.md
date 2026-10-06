@@ -4,6 +4,8 @@
 
 ## 已实现
 
+- 主屏幕入口：`public/manifest.webmanifest`、Apple 主屏幕名称及 180px PNG、192/512px manifest 图标与 SVG/32px favicon；源文件与维护约定见 `apps/web/public/icons/README.md`。standalone 启动仍保持在线学习，不注册 service worker 或缓存私人数据。实际 iPhone 添加和启动效果待设备验收。
+
 - pnpm / Cargo workspace、锁文件、Rust 1.99.0 工具链、TypeScript 7 独立类型检查。
 - React Router Framework Mode + Vite SSR；正式客户端路由 `/`、`/lessons/:lessonId`、`/review/:lessonId`、`/profile`。
 - 迁移确认过的视觉与主要阅读交互：角色介绍、头像整句、点词朗读和词汇解释、短文、全文播放/暂停/长按调速、复习卡片、统一设置、toast、动效和覆盖式滚动条。
