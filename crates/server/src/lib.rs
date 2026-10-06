@@ -18,9 +18,11 @@ pub mod media;
 pub mod observability;
 pub mod password;
 pub mod preview;
+pub mod qwen;
 pub mod recording;
 pub mod reviews;
 pub mod session_store;
+mod voice_jobs;
 mod voice_references;
 use axum::{
     Json, Router,

@@ -22,6 +22,7 @@ pub fn router(root: std::path::PathBuf) -> Router<Backend> {
         .merge(crate::admin_assets::router())
         .merge(crate::admin_recordings::router())
         .merge(crate::voice_references::router())
+        .merge(crate::voice_jobs::router())
         .route("/api/v1/operator/overview", get(overview))
         .route("/api/v1/operator/history", get(history))
         .route("/api/v1/operator/accounts", get(accounts))
@@ -494,6 +495,10 @@ async fn history(
             SELECT 'reference:'||id, 'referenceGrant', character_id||' v'||character_revision||' / voice v'||voice_revision, 'user:'||actor_id, reason, created_at FROM voice_reference_grants
             UNION ALL
             SELECT 'referenceRevoked:'||grant_id, 'referenceRevoke', grant_id, 'user:'||actor_id, reason, created_at FROM voice_reference_revocations
+            UNION ALL
+            SELECT 'voiceJob:'||id, 'voiceJobCreated', id, 'user:'||actor_id, reason, created_at FROM voice_clone_jobs
+            UNION ALL
+            SELECT 'voiceCheck:'||job_id||':'||version, 'voiceJobCheck', job_id, 'user:'||actor_id, reason, created_at FROM voice_clone_events WHERE status='checking' AND actor_id IS NOT NULL
         )
         SELECT key,action,target,actor,reason,to_char(created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at
         FROM events WHERE $1::timestamptz IS NULL OR (created_at,key COLLATE "C") < ($1::timestamptz,$2::text COLLATE "C")

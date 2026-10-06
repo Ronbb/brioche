@@ -1,9 +1,16 @@
-import { Link, data, useLocation, useRevalidator } from "react-router";
+import {
+  Link,
+  data,
+  useLocation,
+  useRevalidator,
+  useNavigate,
+} from "react-router";
 import { useEffect, useRef, useState } from "react";
 import type { AdminCharacterVoice } from "@brioche/contracts/AdminCharacterVoice";
 import type { AdminReferenceGrant } from "@brioche/contracts/AdminReferenceGrant";
 import type { AdminReferenceGrants } from "@brioche/contracts/AdminReferenceGrants";
 import type { AdminReferenceGrantResult } from "@brioche/contracts/AdminReferenceGrantResult";
+import type { AdminVoiceJob } from "@brioche/contracts/AdminVoiceJob";
 import { getIdentity, getPrivate } from "../lib/api.server";
 import { adminWrite } from "../lib/admin.client";
 import { usePageCursorFocus } from "../components/page-cursor-focus";
@@ -48,6 +55,8 @@ export function headers() {
   return { "Cache-Control": "private, no-store", Vary: "Cookie" };
 }
 export default function ReferenceGrants({ loaderData }: Route.ComponentProps) {
+  const navigate = useNavigate();
+  const [costConfirmed, setCostConfirmed] = useState(false);
   const location = useLocation(),
     heading = usePageCursorFocus(location.search),
     refresh = useRevalidator();
@@ -73,7 +82,39 @@ export default function ReferenceGrants({ loaderData }: Route.ComponentProps) {
     setUrl("");
     setReason("");
     setConfirmed(false);
+    setCostConfirmed(false);
   }, [selectionKey]);
+  async function createVoice(e: React.FormEvent) {
+    e.preventDefault();
+    if (busy.current || !result || !costConfirmed) return;
+    busy.current = true;
+    setPending(true);
+    setError("");
+    const controller = new AbortController();
+    write.current = controller;
+    try {
+      const job = await adminWrite<AdminVoiceJob>(
+        "voice-jobs",
+        {
+          grantId: result.grant.id,
+          token: result.path.split("/").at(-1),
+          costConfirmed,
+          reason,
+        },
+        controller.signal,
+      );
+      controller.signal.throwIfAborted();
+      navigate(`/admin/voice-jobs?jobId=${job.id}`);
+    } catch (e) {
+      if (!controller.signal.aborted)
+        setError(
+          `${e instanceof Error ? e.message : "创建结果未确认。"} 请先查看音色创建任务，核对后再操作。`,
+        );
+    } finally {
+      busy.current = false;
+      if (!controller.signal.aborted) setPending(false);
+    }
+  }
   async function issue(event: React.FormEvent) {
     event.preventDefault();
     if (busy.current || !selected || !confirmed || !reason.trim()) return;
@@ -96,6 +137,7 @@ export default function ReferenceGrants({ loaderData }: Route.ComponentProps) {
       );
       controller.signal.throwIfAborted();
       setResult(saved);
+      setCostConfirmed(false);
       setUrl(new URL(saved.path, window.location.origin).href);
       setNotice("限时交付已授权。尚未创建提供方音色。");
       refresh.revalidate();
@@ -228,6 +270,32 @@ export default function ReferenceGrants({ loaderData }: Route.ComponentProps) {
               >
                 复制限时地址
               </button>
+              <form className="reference-delivery-form" onSubmit={createVoice}>
+                <label>
+                  <input
+                    name="voiceCreationConsent"
+                    type="checkbox"
+                    required
+                    checked={costConfirmed}
+                    aria-disabled={pending}
+                    onChange={(e) => {
+                      if (!busy.current) setCostConfirmed(e.target.checked);
+                    }}
+                  />
+                  确认向 Qwen 创建音色，此操作可能产生费用。
+                </label>
+                <button
+                  className="primary"
+                  type="submit"
+                  aria-disabled={pending}
+                  aria-busy={pending}
+                >
+                  {pending ? "正在提交…" : "创建角色音色"}
+                </button>
+              </form>
+              <Link className="text-button" to="/admin/voice-jobs">
+                查看音色创建任务
+              </Link>
             </div>
           )}
         </article>

@@ -27,7 +27,7 @@ pub fn router() -> Router<Backend> {
         )
         .route("/api/v1/voice-references/{id}/{token}", get(download))
 }
-fn hex(value: &str, length: usize) -> bool {
+pub(crate) fn hex(value: &str, length: usize) -> bool {
     value.len() == length
         && value
             .bytes()
@@ -86,7 +86,10 @@ async fn list(
     };
     Ok(Json(AdminReferenceGrants { items, next }))
 }
-async fn lock_operator(tx: &sea_orm::DatabaseTransaction, actor: i64) -> Result<(), AppError> {
+pub(crate) async fn lock_operator(
+    tx: &sea_orm::DatabaseTransaction,
+    actor: i64,
+) -> Result<(), AppError> {
     exec(
         tx,
         "SELECT pg_advisory_xact_lock(hashtextextended('account-admin',0))",
@@ -103,7 +106,7 @@ async fn lock_operator(tx: &sea_orm::DatabaseTransaction, actor: i64) -> Result<
 }
 
 /// Hash, full decode and provider limits are checked against actual bytes, not just client metadata.
-async fn inspect(
+pub(crate) async fn inspect(
     root: PathBuf,
     descriptor: AudioAsset,
     permits: Arc<Semaphore>,

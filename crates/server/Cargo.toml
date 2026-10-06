@@ -29,6 +29,8 @@ sha2 = "0.10"
 getrandom = "0.4.3"
 subtle = "2.6"
 url = "2.5"
+reqwest = { version = "0.13.5", default-features = false, features = ["rustls-no-provider", "json"] }
+rustls = { version = "0.23.45", default-features = false, features = ["ring", "std", "tls12"] }
 argon2 = { version = "0.6.0", features = ["getrandom"] }
 quick-xml = "0.42.0"
 image = { version = "0.25.10", default-features = false, features = ["png", "jpeg", "webp"] }

@@ -36,6 +36,8 @@ const labels: Record<string, string> = {
   audioImport: "登记录音",
   referenceGrant: "授权参考录音交付",
   referenceRevoke: "撤销参考录音交付",
+  voiceJobCreated: "创建角色音色",
+  voiceJobCheck: "核对已有音色",
   approve: "批准课程",
   reject: "退回课程",
   import: "导入课程",

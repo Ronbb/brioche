@@ -3806,3 +3806,6 @@ h2[tabindex="-1"]:focus {
 .reference-recording-option > button:first-child { display:grid; gap:6px; min-width:0; text-align:left; padding:14px; border:1px solid var(--line); border-radius:16px; overflow-wrap:anywhere; }
 .reference-recording-option > button[aria-pressed=true] { border-color:var(--accent); background:var(--soft); }
 .reference-recording-option span { font-size:12px; color:var(--muted); }
+
+.voice-job-card { min-width: 0; }
+.voice-job-card p { overflow-wrap: anywhere; }

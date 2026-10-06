@@ -1,0 +1,6 @@
+# Private opt-in credentials for the Rust Qwen enrollment client; never used by Web or migrations.
+services:
+  server:
+    env_file:
+      - path: .local/tts.env
+        required: true

@@ -78,6 +78,7 @@ let managedRole = "learner";
 let managedSessionRevoked = false;
 let pendingTokenRevoked = false;
 let referenceGrant = null;
+let voiceJob = null;
 const voiceSeed = JSON.parse(
   await readFile(
     new URL("../../../docs/characters/voices.json", import.meta.url),
@@ -321,6 +322,90 @@ const api = createServer((request, response) => {
         profile: null,
       };
       response.end(JSON.stringify(characterVoice));
+    });
+    return;
+  }
+  if (
+    request.url === "/api/v1/operator/voice-jobs" &&
+    request.method === "GET"
+  ) {
+    response.end(
+      JSON.stringify({
+        items: voiceJob ? [voiceJob] : [],
+        next: null,
+        configured: true,
+      }),
+    );
+    return;
+  }
+  if (
+    request.url === `/api/v1/operator/voice-jobs/${"e".repeat(32)}` &&
+    request.method === "GET"
+  ) {
+    response.end(JSON.stringify(voiceJob));
+    return;
+  }
+  if (
+    request.url === "/api/v1/operator/voice-jobs" &&
+    request.method === "POST"
+  ) {
+    let body = "";
+    request.on("data", (chunk) => (body += chunk));
+    request.on("end", () => {
+      const change = JSON.parse(body);
+      adminWrites.push({ operation: request.url, ...change });
+      voiceJob = {
+        id: "e".repeat(32),
+        grantId: change.grantId,
+        characterId: "character-camille",
+        characterRevision: 1,
+        voiceRevision: 1,
+        model: "qwen-audio-3.1-tts-flash",
+        prefix: "b123456789",
+        version: 1,
+        status: "submitted",
+        voiceId: null,
+        requestId: null,
+        createdAt: "2026-10-07T00:00:00Z",
+        updatedAt: "2026-10-07T00:00:01Z",
+      };
+      response.end(JSON.stringify(voiceJob));
+      setTimeout(() => {
+        voiceJob = {
+          ...voiceJob,
+          version: 2,
+          status: "processing",
+          voiceId: "qwen-audio-3.1-tts-flash-b123456789-" + "x".repeat(100),
+          requestId: "synthetic-create",
+        };
+      }, 2500);
+    });
+    return;
+  }
+  if (
+    request.url === `/api/v1/operator/voice-jobs/${"e".repeat(32)}/check` &&
+    request.method === "POST"
+  ) {
+    let body = "";
+    request.on("data", (chunk) => (body += chunk));
+    request.on("end", () => {
+      const change = JSON.parse(body);
+      adminWrites.push({ operation: request.url, ...change });
+      voiceJob = {
+        ...voiceJob,
+        version: voiceJob.version + 1,
+        status: "checking",
+        voiceId: voiceJob.voiceId ?? change.voiceId,
+        requestId: "synthetic-query",
+      };
+      response.end(JSON.stringify(voiceJob));
+      setTimeout(() => {
+        voiceJob = {
+          ...voiceJob,
+          version: voiceJob.version + 1,
+          status: "ready",
+        };
+      }, 2500);
     });
     return;
   }
@@ -1129,6 +1214,98 @@ test("operator authorizes and revokes ephemeral reference delivery on the mobile
     accounts = false;
     operatorAccount = false;
     referenceGrant = null;
+  }
+});
+
+test("operator creates and reconciles a voice enrollment without exposing the reference capability", async () => {
+  accounts = true;
+  operatorAccount = true;
+  referenceGrant = null;
+  voiceJob = null;
+  adminWrites = [];
+  characterVoice = structuredClone(voiceSeed.items[0]);
+  characterVoice.profile.referenceAudio = {
+    assetId: "qa-reference",
+    revision: 2,
+    transcript: "Bonjour !",
+    cloningPermission: "Synthetic fixture only",
+  };
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("set", "viewport", "390", "844");
+    await browser(
+      "open",
+      origin +
+        "/admin/voice-references?characterId=character-camille&characterRevision=1&voiceRevision=1",
+    );
+    await browser("wait", ".reference-delivery-form");
+    await browser("check", ".reference-delivery-form input[type=checkbox]");
+    await browser("fill", "input[name=deliveryReason]", "isolated creation");
+    await browser("press", "Tab");
+    await browser("press", "Enter");
+    await browser("wait", ".reference-delivery-url");
+    await browser("check", "input[name=voiceCreationConsent]");
+    await browser("focus", "input[name=voiceCreationConsent]");
+    await browser("press", "Tab");
+    await browser("press", "Enter");
+    await browser("wait", ".voice-job-state");
+    await browser("wait", "--text", "音色正在处理");
+    assert.equal(adminWrites.length, 2);
+    assert.equal(adminWrites[1].grantId, "c".repeat(32));
+    assert.equal(adminWrites[1].token, "d".repeat(64));
+    assert.equal(adminWrites[1].costConfirmed, true);
+    assert.equal(await evaluate("location.pathname"), "/admin/voice-jobs");
+    assert.equal(
+      await evaluate("document.body.textContent.includes('d'.repeat(64))"),
+      false,
+    );
+    for (const width of [320, 390]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+        true,
+      );
+    }
+    await browser("scrollintoview", ".admin-list button");
+    await browser("click", ".admin-list button");
+    await browser("wait", ".admin-dialog[open]");
+    await browser("fill", "input[name=voiceCheckReason]", "isolated query");
+    await browser("press", "Tab");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "音色可用，尚未试听或应用");
+    assert.equal(adminWrites[2].expectedVersion, 2);
+    assert.equal(adminWrites[2].voiceId, null);
+    voiceJob = { ...voiceJob, status: "unknown", voiceId: null, version: 5 };
+    await browser("open", origin + "/admin/voice-jobs?jobId=" + "e".repeat(32));
+    await browser("wait", ".voice-job-state");
+    await browser("scrollintoview", ".admin-list button");
+    await browser("click", ".admin-list button");
+    await browser("wait", ".admin-dialog[open]");
+    await browser(
+      "fill",
+      "input[name=recoveryVoice]",
+      "qwen-audio-3.1-tts-flash-b123456789-found",
+    );
+    await browser("fill", "input[name=voiceCheckReason]", "isolated recovery");
+    await browser("press", "Tab");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "音色可用，尚未试听或应用");
+    assert.equal(adminWrites[3].expectedVersion, 5);
+    assert.equal(
+      adminWrites[3].voiceId,
+      "qwen-audio-3.1-tts-flash-b123456789-found",
+    );
+    assert.equal(
+      adminWrites.filter((w) => w.operation === "/api/v1/operator/voice-jobs")
+        .length,
+      1,
+    );
+  } finally {
+    accounts = false;
+    operatorAccount = false;
+    referenceGrant = null;
+    voiceJob = null;
   }
 });
 

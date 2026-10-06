@@ -355,3 +355,56 @@ pub struct AdminReferenceGrantResult {
     pub grant: AdminReferenceGrant,
     pub path: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminVoiceJobRequest {
+    pub grant_id: String,
+    pub token: String,
+    pub cost_confirmed: bool,
+    pub reason: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminVoiceJobCheck {
+    pub expected_version: u32,
+    pub voice_id: Option<String>,
+    pub reason: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
+pub enum VoiceJobStatus {
+    Submitted,
+    Unknown,
+    Failed,
+    Processing,
+    Checking,
+    Ready,
+    Unavailable,
+    ModelMismatch,
+    CheckFailed,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminVoiceJob {
+    pub id: String,
+    pub grant_id: String,
+    pub character_id: String,
+    pub character_revision: u32,
+    pub voice_revision: u32,
+    pub model: String,
+    pub prefix: String,
+    pub version: u32,
+    pub status: VoiceJobStatus,
+    pub voice_id: Option<String>,
+    pub request_id: Option<String>,
+    pub created_at: String,
+    pub updated_at: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminVoiceJobs {
+    pub items: Vec<AdminVoiceJob>,
+    pub next: Option<String>,
+    pub configured: bool,
+}

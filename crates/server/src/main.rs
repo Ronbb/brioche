@@ -433,6 +433,8 @@ async fn main() -> Result<()> {
             }
         }
     }));
+    let qwen = brioche_server::qwen::Service::from_env()
+        .map_err(|_| anyhow::anyhow!("Invalid private Qwen configuration"))?;
     let listener = tokio::net::TcpListener::bind(
         std::env::var("API_BIND").unwrap_or_else(|_| "0.0.0.0:3001".into()),
     )
@@ -459,6 +461,9 @@ async fn main() -> Result<()> {
             db,
             brioche_server::media::media_root(),
         ));
+    }
+    if let Some(qwen) = qwen {
+        app = app.layer(axum::Extension(qwen));
     }
     axum::serve(listener, brioche_server::observability::observe(app))
         .with_graceful_shutdown(shutdown())

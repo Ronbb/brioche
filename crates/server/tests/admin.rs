@@ -16,6 +16,64 @@ struct Browser {
     cookie: String,
     csrf: String,
 }
+#[derive(Default)]
+struct MockQwen {
+    calls: std::sync::Mutex<Vec<Value>>,
+    status: std::sync::Mutex<String>,
+    unknown: std::sync::atomic::AtomicBool,
+}
+#[async_trait::async_trait]
+impl brioche_server::qwen::Transport for MockQwen {
+    async fn create(
+        &self,
+        prefix: &str,
+        url: &str,
+    ) -> Result<brioche_server::qwen::Receipt, brioche_server::qwen::ProviderError> {
+        self.calls
+            .lock()
+            .unwrap()
+            .push(json!({"create":prefix,"url":url}));
+        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+        if self.unknown.load(std::sync::atomic::Ordering::SeqCst) {
+            return Err(brioche_server::qwen::ProviderError::Unknown);
+        }
+        Ok(brioche_server::qwen::Receipt {
+            voice_id: format!("{}-{prefix}-test", brioche_server::qwen::MODEL),
+            request_id: "create-test".into(),
+        })
+    }
+    async fn query(
+        &self,
+        voice: &str,
+    ) -> Result<brioche_server::qwen::Details, brioche_server::qwen::ProviderError> {
+        self.calls.lock().unwrap().push(json!({"query":voice}));
+        let status = self.status.lock().unwrap().clone();
+        Ok(brioche_server::qwen::Details {
+            model: if status == "mismatch" {
+                "other-model".into()
+            } else {
+                brioche_server::qwen::MODEL.into()
+            },
+            status: if status == "mismatch" {
+                "OK".into()
+            } else {
+                status
+            },
+            request_id: "query-test".into(),
+        })
+    }
+}
+async fn settled(browser: &mut Browser, path: &str) -> Value {
+    for _ in 0..100 {
+        let read = browser.send("GET", path, None, true).await;
+        assert_eq!(read.0, 200);
+        if !["submitted", "checking"].contains(&read.1["status"].as_str().unwrap()) {
+            return read.1;
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
+    }
+    panic!("owned provider test worker did not settle");
+}
 
 #[tokio::test]
 #[ignore = "set TEST_DATABASE_URL to a dedicated PostgreSQL database"]
@@ -39,12 +97,17 @@ async fn voice_reference_delivery_is_bounded_revocable_private_and_audited() {
     brioche_migration::Migrator::up(&db, None).await.unwrap();
     let root = assets::fixture_assets(&db, &schema).await;
     let backend = Backend::new(db.clone()).await.unwrap();
-    let app = identity::router_with_media_root(
+    let base_app = identity::router_with_media_root(
         backend.clone(),
         CsrfPolicy::new(["http://localhost:5173".into()]).unwrap(),
         false,
         root.clone(),
     );
+    let qwen = std::sync::Arc::new(MockQwen::default());
+    *qwen.status.lock().unwrap() = "OK".into();
+    let app = base_app.clone().layer(axum::Extension(
+        brioche_server::qwen::Service::new(qwen.clone(), "https://example.test").unwrap(),
+    ));
     let mut visitor = Browser::new(app.clone()).await;
     let mut operator = Browser::new(app.clone()).await;
     operator
@@ -225,7 +288,11 @@ async fn voice_reference_delivery_is_bounded_revocable_private_and_audited() {
         409
     );
     assert!(
-        brioche_migration::Migrator::down(&db, Some(1))
+        brioche_migration::Migrator::migrations()
+            .into_iter()
+            .find(|m| m.name() == "m20261007_000018_voice_reference_grants")
+            .unwrap()
+            .down(&sea_orm_migration::SchemaManager::new(&db))
             .await
             .is_err()
     );
@@ -373,6 +440,186 @@ async fn voice_reference_delivery_is_bounded_revocable_private_and_audited() {
     );
     assert!(
         db.execute_unprepared("DELETE FROM voice_reference_reads")
+            .await
+            .is_err()
+    );
+    let jobs = "/api/v1/operator/voice-jobs";
+    let create = json!({"grantId":third.1["grant"]["id"],"token":third_path.rsplit('/').next().unwrap(),"costConfirmed":true,"reason":"isolated enrollment"});
+    assert_eq!(visitor.send("GET", jobs, None, true).await.0, 401);
+    assert_eq!(learner.send("GET", jobs, None, true).await.0, 403);
+    assert_eq!(
+        operator
+            .send("POST", jobs, Some(create.clone()), false)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        learner
+            .send("POST", jobs, Some(create.clone()), true)
+            .await
+            .0,
+        403
+    );
+    let mut disabled = Browser {
+        app: base_app,
+        cookie: operator.cookie.clone(),
+        csrf: operator.csrf.clone(),
+    };
+    assert_eq!(
+        disabled.send("GET", jobs, None, true).await.1["configured"],
+        false
+    );
+    assert_eq!(
+        disabled
+            .send("POST", jobs, Some(create.clone()), true)
+            .await
+            .0,
+        503
+    );
+    let mut unconfirmed = create.clone();
+    unconfirmed["costConfirmed"] = json!(false);
+    assert_eq!(
+        operator.send("POST", jobs, Some(unconfirmed), true).await.0,
+        400
+    );
+    let mut wrong = create.clone();
+    wrong["token"] = json!("0".repeat(64));
+    assert_eq!(operator.send("POST", jobs, Some(wrong), true).await.0, 404);
+    let created = operator
+        .send("POST", jobs, Some(create.clone()), true)
+        .await;
+    assert_eq!(created.0, 200);
+    assert_eq!(created.1["status"], "submitted");
+    let job_path = format!("{jobs}/{}", created.1["id"].as_str().unwrap());
+    let mut job = settled(&mut operator, &job_path).await;
+    assert_eq!(job["status"], "processing");
+    assert_eq!(
+        operator
+            .send("POST", jobs, Some(create.clone()), true)
+            .await
+            .0,
+        409
+    );
+    assert_eq!(qwen.calls.lock().unwrap().len(), 1);
+    let calls = qwen.calls.lock().unwrap().clone();
+    assert_eq!(calls[0]["url"], format!("https://example.test{third_path}"));
+    for status in ["DEPLOYING", "mismatch", "UNDEPLOYED", "OK"] {
+        *qwen.status.lock().unwrap() = status.into();
+        let request = json!({"expectedVersion":job["version"],"voiceId":null,"reason":"query fixed enrollment"});
+        let check_path = format!("{job_path}/check");
+        assert_eq!(
+            operator
+                .send("POST", &check_path, Some(request.clone()), true)
+                .await
+                .0,
+            200
+        );
+        job = settled(&mut operator, &job_path).await;
+        assert_eq!(
+            job["status"],
+            match status {
+                "DEPLOYING" => "processing",
+                "mismatch" => "modelMismatch",
+                "UNDEPLOYED" => "unavailable",
+                _ => "ready",
+            }
+        );
+        assert_eq!(
+            operator
+                .send("POST", &check_path, Some(request), true)
+                .await
+                .0,
+            409
+        );
+    }
+    let listed = operator.send("GET", jobs, None, true).await;
+    assert_eq!(listed.1["configured"], true);
+    assert!(!listed.1.to_string().contains(third_path));
+    assert!(
+        !listed
+            .1
+            .to_string()
+            .contains(create["token"].as_str().unwrap())
+    );
+    assert!(!listed.1.to_string().contains("resource_link"));
+    assert_eq!(visitor.send("GET", &job_path, None, true).await.0, 401);
+    assert_eq!(learner.send("GET", &job_path, None, true).await.0, 403);
+    // Ambiguous creation persists without a retry. Explicit recovery only queries the job's unique prefix.
+    let recovery_id = "a".repeat(32);
+    let recovery_token = "f".repeat(64);
+    db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO voice_reference_grants SELECT $1,$2,character_id,character_revision,voice_revision,asset_id,asset_revision,descriptor,reference,actor_id,reason,model,single_speaker_confirmed,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP+interval '15 minutes' FROM voice_reference_grants WHERE id=$3",vec![recovery_id.clone().into(),format!("{:x}",sha2::Sha256::digest(recovery_token.as_bytes())).into(),third.1["grant"]["id"].as_str().unwrap().into()])).await.unwrap();
+    qwen.unknown
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    let lost=operator.send("POST",jobs,Some(json!({"grantId":recovery_id,"token":recovery_token,"costConfirmed":true,"reason":"unknown test"})),true).await;
+    assert_eq!(lost.0, 200);
+    let lost_path = format!("{jobs}/{}", lost.1["id"].as_str().unwrap());
+    let lost = settled(&mut operator, &lost_path).await;
+    assert_eq!(lost["status"], "unknown");
+    let calls_before = qwen.calls.lock().unwrap().len();
+    assert_eq!(operator.send("POST",&format!("{lost_path}/check"),Some(json!({"expectedVersion":lost["version"],"voiceId":"wrong-prefix","reason":"recover"})),true).await.0,400);
+    let recovery_voice = format!(
+        "{}-{}-found",
+        brioche_server::qwen::MODEL,
+        lost["prefix"].as_str().unwrap()
+    );
+    assert_eq!(operator.send("POST",&format!("{lost_path}/check"),Some(json!({"expectedVersion":lost["version"],"voiceId":recovery_voice,"reason":"recover"})),true).await.0,200);
+    assert_eq!(settled(&mut operator, &lost_path).await["status"], "ready");
+    assert_eq!(qwen.calls.lock().unwrap().len(), calls_before + 1);
+    assert!(
+        qwen.calls
+            .lock()
+            .unwrap()
+            .last()
+            .unwrap()
+            .get("query")
+            .is_some()
+    );
+    assert!(
+        db.execute_unprepared("UPDATE voice_clone_jobs SET reason='overwrite'")
+            .await
+            .is_err()
+    );
+    let history = operator
+        .send("GET", "/api/v1/operator/history", None, true)
+        .await
+        .1;
+    assert!(history.to_string().contains("voiceJobCreated"));
+    assert!(history.to_string().contains("voiceJobCheck"));
+    assert!(!history.to_string().contains(third_path));
+    // Every job remains reachable with a bounded cursor; abandoned workers become unknown, never resent.
+    for i in 0..25u32 {
+        let id = format!("{i:032x}");
+        db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO voice_clone_jobs(id,grant_id,prefix,actor_id,reason) VALUES($1,$1,$2,$3,'pagination fixture')",vec![id.clone().into(),format!("t{i}").into(),actor.into()])).await.unwrap();
+        db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO voice_clone_events(job_id,version,status,reason,created_at) VALUES($1,1,'submitted','abandoned fixture',CURRENT_TIMESTAMP-interval '61 seconds')",vec![id.into()])).await.unwrap();
+    }
+    let first_jobs = operator.send("GET", jobs, None, true).await.1;
+    assert_eq!(first_jobs["items"].as_array().unwrap().len(), 20);
+    assert_eq!(first_jobs["items"][0]["status"], "unknown");
+    let next_jobs = operator
+        .send(
+            "GET",
+            &format!("{jobs}?afterId={}", first_jobs["next"].as_str().unwrap()),
+            None,
+            true,
+        )
+        .await
+        .1;
+    assert_eq!(next_jobs["items"].as_array().unwrap().len(), 7);
+    assert_eq!(
+        operator
+            .send("GET", &format!("{jobs}?afterId=invalid"), None, true)
+            .await
+            .0,
+        400
+    );
+    assert!(
+        db.execute_unprepared("DELETE FROM voice_clone_events")
+            .await
+            .is_err()
+    );
+    assert!(
+        brioche_migration::Migrator::down(&db, Some(1))
             .await
             .is_err()
     );
@@ -990,7 +1237,11 @@ async fn approvals_permissions_concurrency_and_publication() {
     outcomes.sort();
     assert_eq!(outcomes, [200, 409]);
     assert!(
-        brioche_migration::Migrator::down(&db, Some(2))
+        brioche_migration::Migrator::migrations()
+            .into_iter()
+            .find(|m| m.name() == "m20261007_000017_recording_admin")
+            .unwrap()
+            .down(&sea_orm_migration::SchemaManager::new(&db))
             .await
             .is_err(),
         "operator recording audit cannot be removed by rollback"
