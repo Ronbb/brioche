@@ -1236,11 +1236,7 @@ async fn voice_reference_delivery_is_bounded_revocable_private_and_audited() {
             .await
             .is_err()
     );
-    assert!(
-        brioche_migration::Migrator::down(&db, Some(1))
-            .await
-            .is_err()
-    );
+    assert!(brioche_migration::Migrator::down(&db, None).await.is_err());
     db.close().await.unwrap();
     admin
         .execute_unprepared(&format!("DROP SCHEMA {schema} CASCADE"))
@@ -3149,4 +3145,216 @@ async fn approvals_permissions_concurrency_and_publication() {
         .await
         .unwrap();
     std::fs::remove_dir_all(&root).unwrap();
+}
+
+#[tokio::test]
+#[ignore = "set TEST_DATABASE_URL to a dedicated PostgreSQL database"]
+async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
+    let url = std::env::var("TEST_DATABASE_URL").unwrap();
+    let admin = Database::connect(&url).await.unwrap();
+    let schema = format!(
+        "speech_plan_{}",
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    );
+    admin
+        .execute_unprepared(&format!("CREATE SCHEMA {schema}"))
+        .await
+        .unwrap();
+    let mut options = ConnectOptions::new(url);
+    options.set_schema_search_path(&schema);
+    let db = Database::connect(options).await.unwrap();
+    brioche_migration::Migrator::up(&db, None).await.unwrap();
+    let root = assets::fixture_assets(&db, &schema).await;
+    let backend = Backend::new(db.clone()).await.unwrap();
+    let app = identity::router_with_media_root(
+        backend.clone(),
+        CsrfPolicy::new(["http://localhost:5173".into()]).unwrap(),
+        false,
+        root.clone(),
+    );
+    let mut visitor = Browser::new(app.clone()).await;
+    let mut learner = Browser::new(app.clone()).await;
+    learner
+        .register(&backend, "speech-learner@example.test", false)
+        .await;
+    let mut operator = Browser::new(app.clone()).await;
+    operator
+        .register(&backend, "speech-operator@example.test", true)
+        .await;
+    let mut second = Browser::new(app.clone()).await;
+    second
+        .register(&backend, "speech-second@example.test", true)
+        .await;
+    let source: Value =
+        serde_json::from_str(include_str!("../../../docs/examples/a1-bakery.lesson.json")).unwrap();
+    let imported = brioche_server::author_import::import(
+        &db,
+        source,
+        "isolated-test",
+        "Synthetic plan fixture",
+    )
+    .await
+    .unwrap();
+    let lesson_id = imported.lesson_id;
+    let revision = imported.revision;
+    let path = "/api/v1/operator/speech-plans";
+    let options_path =
+        format!("/api/v1/operator/lessons/{lesson_id}/revisions/{revision}/speech-options");
+    assert_eq!(visitor.send("GET", &options_path, None, true).await.0, 401);
+    assert_eq!(learner.send("GET", &options_path, None, true).await.0, 403);
+    let seed: Value =
+        serde_json::from_str(include_str!("../../../docs/characters/voices.json")).unwrap();
+    let mut voices = vec![];
+    for id in ["character-camille", "character-luc", "character-lea"] {
+        let r=operator.send("POST","/api/v1/operator/characters",Some(json!({"characterId":id,"characterRevision":1,"expectedVoiceRevision":0,"profile":seed["items"][0]["profile"],"reason":"Synthetic fixed compiler test, not real voice approval"})),true).await;
+        assert_eq!(r.0, 200);
+        voices.push(json!({"characterId":id,"characterRevision":1,"voiceRevision":1}));
+    }
+    let preview_request = json!({"lessonId":lesson_id,"lessonRevision":revision,"selection":{"voices":voices,"knowledgeNarrator":voices[0],"emotions":{}}});
+    let preview = operator
+        .send(
+            "POST",
+            &format!("{path}/preview"),
+            Some(preview_request.clone()),
+            true,
+        )
+        .await;
+    assert_eq!(preview.0, 200);
+    assert!(preview.1["targets"].as_array().unwrap().len() > 11);
+    assert!(preview.1.get("serverOnly").is_none());
+    let id = "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+    let request = json!({"id":id,"preview":preview_request,"expectedPlanHash":preview.1["planHash"],"reason":"Fixed synthetic plan"});
+    assert_eq!(
+        learner
+            .send("POST", path, Some(request.clone()), true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", path, Some(request.clone()), false)
+            .await
+            .0,
+        403
+    );
+    let mut wrong = request.clone();
+    wrong["expectedPlanHash"] = json!("0".repeat(64));
+    assert_eq!(operator.send("POST", path, Some(wrong), true).await.0, 409);
+    let saved = operator
+        .send("POST", path, Some(request.clone()), true)
+        .await;
+    assert_eq!(saved.0, 200);
+    assert_eq!(saved.1["id"], id);
+    assert_eq!(
+        operator
+            .send("POST", path, Some(request.clone()), true)
+            .await
+            .1,
+        saved.1
+    );
+    assert_eq!(
+        second
+            .send("POST", path, Some(request.clone()), true)
+            .await
+            .0,
+        409
+    );
+    let mut changed = request.clone();
+    changed["reason"] = json!("different");
+    assert_eq!(
+        operator.send("POST", path, Some(changed), true).await.0,
+        409
+    );
+    assert_eq!(
+        visitor
+            .send("GET", &format!("{path}/{id}"), None, true)
+            .await
+            .0,
+        401
+    );
+    // Appending a newer voice never changes the persisted old plan or idempotent receipt.
+    assert_eq!(operator.send("POST","/api/v1/operator/characters",Some(json!({"characterId":"character-camille","characterRevision":1,"expectedVoiceRevision":1,"profile":seed["items"][0]["profile"],"reason":"New synthetic version"})),true).await.0,200);
+    assert_eq!(
+        operator
+            .send("GET", &format!("{path}/{id}"), None, true)
+            .await
+            .1,
+        saved.1
+    );
+    assert_eq!(
+        operator.send("POST", path, Some(request), true).await.1,
+        saved.1
+    );
+    let list = operator
+        .send(
+            "GET",
+            &format!("{path}?lessonId={lesson_id}&lessonRevision={revision}"),
+            None,
+            true,
+        )
+        .await;
+    assert_eq!(list.1["items"].as_array().unwrap().len(), 1);
+    assert!(
+        db.execute_unprepared("UPDATE course_speech_plans SET reason='rewrite'")
+            .await
+            .is_err()
+    );
+    assert!(
+        brioche_migration::Migrator::down(&db, Some(1))
+            .await
+            .is_err()
+    );
+    let row = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT actor_id,reason,plan->>'planHash' AS hash FROM course_speech_plans",
+        ))
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        row.try_get::<String>("", "reason").unwrap(),
+        "Fixed synthetic plan"
+    );
+    assert_eq!(
+        row.try_get::<String>("", "hash").unwrap(),
+        preview.1["planHash"].as_str().unwrap()
+    );
+    // Real withdrawal hides existing plan text and prevents further preview/creation.
+    db.execute_raw(Statement::from_sql_and_values(
+        DbBackend::Postgres,
+        "INSERT INTO content_withdrawals(lesson_id,revision) VALUES($1,$2)",
+        vec![lesson_id.clone().into(), (revision as i32).into()],
+    ))
+    .await
+    .unwrap();
+    assert_eq!(
+        operator
+            .send("GET", &format!("{path}/{id}"), None, true)
+            .await
+            .0,
+        404
+    );
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                &format!("{path}/preview"),
+                Some(preview_request),
+                true
+            )
+            .await
+            .0,
+        404
+    );
+    db.close().await.unwrap();
+    admin
+        .execute_unprepared(&format!("DROP SCHEMA {schema} CASCADE"))
+        .await
+        .unwrap();
+    std::fs::remove_dir_all(root).unwrap();
 }

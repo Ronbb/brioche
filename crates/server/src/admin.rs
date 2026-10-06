@@ -24,6 +24,7 @@ pub fn router(root: std::path::PathBuf) -> Router<Backend> {
         .merge(crate::voice_references::router())
         .merge(crate::voice_jobs::router())
         .merge(crate::voice_auditions::router())
+        .merge(crate::admin_speech_plans::router())
         .route("/api/v1/operator/overview", get(overview))
         .route("/api/v1/operator/history", get(history))
         .route("/api/v1/operator/accounts", get(accounts))
@@ -488,6 +489,8 @@ async fn history(
             SELECT 'account:'||id, CASE WHEN action='invite' AND details->>'role'='operator' THEN 'inviteOperator' ELSE action END, target_email, 'user:'||actor_id, reason, created_at FROM account_admin_audit
             UNION ALL
             SELECT 'voice:'||character_id||':'||character_revision||':'||revision, 'voiceProfile', character_id||' v'||character_revision||' / voice v'||revision, 'user:'||actor_id, reason, created_at FROM character_voice_profiles
+            UNION ALL
+            SELECT 'speechPlan:'||id, 'speechPlan', lesson_id||' v'||lesson_revision, 'user:'||actor_id, reason, created_at FROM course_speech_plans
             UNION ALL
             SELECT 'asset:'||id, 'assetImport', target, 'user:'||actor_id, reason, created_at FROM asset_import_audit WHERE actor_id IS NOT NULL
             UNION ALL

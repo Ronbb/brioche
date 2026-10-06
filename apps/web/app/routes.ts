@@ -19,6 +19,7 @@ export default [
   route("admin/voice-references", "routes/admin-voice-references.tsx"),
   route("admin/voice-jobs", "routes/admin-voice-jobs.tsx"),
   route("admin/voice-auditions", "routes/admin-voice-auditions.tsx"),
+  route("admin/speech-plans", "routes/admin-speech-plans.tsx"),
   route("admin/tokens", "routes/admin-tokens.tsx"),
   route("admin/accounts/:accountId/sessions", "routes/admin-sessions.tsx"),
   route("author-preview", "routes/author-preview.tsx"),

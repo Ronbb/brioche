@@ -7,13 +7,7 @@ use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use unicode_segmentation::UnicodeSegmentation;
 
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct VoiceKey {
-    pub character_id: String,
-    pub character_revision: u32,
-    pub voice_revision: u32,
-}
+pub use brioche_course_contract::AdminSpeechVoice as VoiceKey;
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Config {

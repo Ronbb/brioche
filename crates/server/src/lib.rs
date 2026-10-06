@@ -1,6 +1,7 @@
 pub mod admin;
 mod admin_assets;
 mod admin_recordings;
+mod admin_speech_plans;
 pub mod audio;
 pub mod author_import;
 pub mod author_json;

@@ -294,6 +294,14 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
                     打开预览
                   </Link>
                 )}
+                {!lesson.withdrawn && (
+                  <Link
+                    className="text-button"
+                    to={`/admin/speech-plans?lessonId=${lesson.id}&revision=${lesson.revision}`}
+                  >
+                    课程配音
+                  </Link>
+                )}
                 {!lesson.withdrawn && !lesson.published && (
                   <>
                     <button

@@ -95,6 +95,13 @@ let voiceAuditions = [],
   auditionSynthCalls = 0,
   auditionLostReply = false;
 let lessonStatus = 200;
+let speechPlans = [],
+  speechLostReply = false;
+const speechVoices = lesson.cast.map((character) => ({
+  ...voiceSeed.items[0],
+  character,
+  voiceRevision: 1,
+}));
 const identityReads = [];
 let identityProof = null;
 const profile = (id) => ({
@@ -113,6 +120,82 @@ const profile = (id) => ({
 });
 const api = createServer((request, response) => {
   response.setHeader("Content-Type", "application/json");
+  if (request.url.endsWith("/speech-options")) {
+    response.end(JSON.stringify({ lesson, voices: speechVoices }));
+    return;
+  }
+  if (request.url.startsWith("/api/v1/operator/speech-plans")) {
+    if (request.method === "POST") {
+      let body = "";
+      request.on("data", (chunk) => (body += chunk));
+      request.on("end", () => {
+        const payload = JSON.parse(body);
+        adminWrites.push({ operation: request.url, ...payload });
+        const input = payload.preview ?? payload;
+        const plan = {
+          id: null,
+          lessonId: lesson.id,
+          lessonRevision: 1,
+          sourceHash: "b".repeat(64),
+          planHash: "a".repeat(64),
+          requestCount: 2,
+          totalRequestCharacters: 20,
+          selection: input.selection,
+          voices: speechVoices,
+          createdAt: null,
+          targets: [
+            {
+              pointer: "/blocks/1/turns/0",
+              entryId: "qa-0",
+              text: "Bonjour !",
+              voice: input.selection.voices[0],
+              emotion: input.selection.emotions["/blocks/1/turns/0"] ?? "Calm",
+              generationKey: "c".repeat(64),
+              wordCount: 1,
+            },
+            {
+              pointer: "/knowledge/vocabulary/0/lemma",
+              entryId: "qa-1",
+              text: "une baguette",
+              voice: input.selection.knowledgeNarrator,
+              emotion: "Calm",
+              generationKey: "d".repeat(64),
+              wordCount: 0,
+            },
+          ],
+        };
+        if (request.url.endsWith("/preview")) {
+          response.end(JSON.stringify(plan));
+          return;
+        }
+        let saved = speechPlans.find((p) => p.id === payload.id);
+        if (!saved) {
+          saved = {
+            ...plan,
+            id: payload.id,
+            createdAt: "2026-10-07T01:02:03.123456Z",
+          };
+          speechPlans.push(saved);
+        }
+        if (speechLostReply) {
+          speechLostReply = false;
+          response.writeHead(503).end("{}");
+          return;
+        }
+        response.end(JSON.stringify(saved));
+      });
+      return;
+    }
+    const id = request.url.match(/speech-plans\/([a-f0-9]{32})$/)?.[1];
+    response.end(
+      JSON.stringify(
+        id
+          ? speechPlans.find((p) => p.id === id)
+          : { items: speechPlans, next: null },
+      ),
+    );
+    return;
+  }
   if (request.url.startsWith("/api/v1/operator/recordings")) {
     if (request.method === "POST") {
       const chunks = [];
@@ -2624,5 +2707,111 @@ test("server-authorized identity replacement discards the old private page befor
   } finally {
     accounts = false;
     await browser("cookies", "clear");
+  }
+});
+
+test("operator previews and saves a fixed course speech plan with emotion editing and safe recovery", async () => {
+  accounts = true;
+  operatorAccount = true;
+  adminWrites = [];
+  speechPlans = [];
+  speechLostReply = true;
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("set", "viewport", "390", "844");
+    await browser(
+      "open",
+      origin + "/admin/speech-plans?lessonId=" + lesson.id + "&revision=1",
+    );
+    await browser("wait", "--text", "核对配音计划");
+    assert.equal(adminWrites.length, 0);
+    let snap = await browser("snapshot", "-i");
+    let ref = Object.entries(snap.refs).find(
+      ([, r]) => r.role === "button" && r.name === "核对配音计划",
+    )[0];
+    await browser("focus", "@" + ref);
+    await browser("press", "Enter");
+    await browser("wait", "--text", "配音计划预览");
+    snap = await browser("snapshot", "-i");
+    ref = Object.entries(snap.refs).find(
+      ([, r]) => r.role === "textbox" && r.name === "场景情绪",
+    )[0];
+    await browser("fill", "@" + ref, "Friendly and surprised");
+    assert.equal(
+      await evaluate(
+        "document.querySelectorAll('.speech-plans-page input').length",
+      ),
+      3,
+    );
+    assert.equal(
+      await evaluate(
+        "[...document.querySelectorAll('button')].find(b=>b.textContent==='保存配音计划').disabled",
+      ),
+      true,
+    );
+    snap = await browser("snapshot", "-i");
+    ref = Object.entries(snap.refs).find(
+      ([, r]) => r.role === "button" && r.name === "核对配音计划",
+    )[0];
+    await browser("click", "@" + ref);
+    await browser("wait", "--text", "Friendly and surprised");
+    snap = await browser("snapshot", "-i");
+    ref = Object.entries(snap.refs).find(
+      ([, r]) => r.role === "textbox" && r.name === "保存理由",
+    )[0];
+    await browser("fill", "@" + ref, "Fixed course voice plan");
+    for (const width of [320, 390, 678]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+        true,
+      );
+    }
+    snap = await browser("snapshot", "-i");
+    ref = Object.entries(snap.refs).find(
+      ([, r]) => r.role === "button" && r.name === "保存配音计划",
+    )[0];
+    await browser("click", "@" + ref);
+    await browser("wait", "--text", "重试保存同一计划");
+    assert.equal(
+      await evaluate("document.querySelector('input').disabled"),
+      true,
+    );
+    snap = await browser("snapshot", "-i");
+    ref = Object.entries(snap.refs).find(
+      ([, r]) => r.role === "button" && r.name === "重试保存同一计划",
+    )[0];
+    await browser("click", "@" + ref);
+    await browser("wait", "--text", "配音计划已保存，尚未生成音频。");
+    const writes = adminWrites.filter(
+      (w) => w.operation === "/api/v1/operator/speech-plans",
+    );
+    assert.equal(writes.length, 2);
+    assert.deepEqual(writes[0], writes[1]);
+    assert.equal(speechPlans.length, 1);
+    assert.equal(
+      writes[0].preview.selection.emotions["/blocks/1/turns/0"],
+      "Friendly and surprised",
+    );
+    assert.ok(!Object.hasOwn(writes[0].preview.selection, "items"));
+    assert.equal(serverErrors.length, 0);
+  } catch (error) {
+    console.log("Controlled plan client errors", await browser("errors"));
+    console.log(
+      "Controlled speech-plan page:",
+      await evaluate("document.body.innerText"),
+    );
+    console.log(
+      "Controlled speech-plan operations:",
+      adminWrites.map((w) => w.operation),
+    );
+    throw error;
+  } finally {
+    accounts = false;
+    operatorAccount = false;
+    await browser("cookies", "clear");
+    speechPlans = [];
+    speechLostReply = false;
   }
 });

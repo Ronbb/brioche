@@ -202,6 +202,74 @@ pub struct AdminCharacterVoice {
     pub voice_revision: u32,
     pub profile: Option<CharacterVoiceProfile>,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSpeechVoice {
+    pub character_id: String,
+    pub character_revision: u32,
+    pub voice_revision: u32,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSpeechSelection {
+    pub voices: Vec<AdminSpeechVoice>,
+    pub knowledge_narrator: AdminSpeechVoice,
+    pub emotions: std::collections::BTreeMap<String, String>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSpeechPreviewRequest {
+    pub lesson_id: String,
+    pub lesson_revision: u32,
+    pub selection: AdminSpeechSelection,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSpeechPlanRequest {
+    pub id: String,
+    pub preview: AdminSpeechPreviewRequest,
+    pub expected_plan_hash: String,
+    pub reason: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSpeechTarget {
+    pub pointer: String,
+    pub entry_id: String,
+    pub text: String,
+    pub voice: AdminSpeechVoice,
+    pub emotion: String,
+    pub generation_key: String,
+    pub word_count: u32,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSpeechPlan {
+    pub id: Option<String>,
+    pub lesson_id: String,
+    pub lesson_revision: u32,
+    pub source_hash: String,
+    pub plan_hash: String,
+    pub request_count: u32,
+    pub total_request_characters: u32,
+    pub selection: AdminSpeechSelection,
+    pub voices: Vec<AdminCharacterVoice>,
+    pub targets: Vec<AdminSpeechTarget>,
+    pub created_at: Option<String>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSpeechPlans {
+    pub items: Vec<AdminSpeechPlan>,
+    pub next: Option<String>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSpeechOptions {
+    pub lesson: crate::PublicLesson,
+    pub voices: Vec<AdminCharacterVoice>,
+}
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct AdminCharacterVoiceRequest {

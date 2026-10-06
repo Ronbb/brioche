@@ -65,6 +65,28 @@ const server = createServer((request, response) => {
     response.statusCode = authenticated ? 200 : fixture ? 404 : 401;
     response.end(JSON.stringify(authenticated ? profile : {}));
   } else if (
+    request.url.endsWith("/speech-options") &&
+    authenticated &&
+    profile.role === "operator"
+  ) {
+    response.end(
+      JSON.stringify({
+        lesson,
+        voices: lesson.cast.map((character) => ({
+          character,
+          avatarRevision: 1,
+          voiceRevision: 0,
+          profile: null,
+        })),
+      }),
+    );
+  } else if (
+    request.url.startsWith("/api/v1/operator/speech-plans") &&
+    authenticated &&
+    profile.role === "operator"
+  ) {
+    response.end(JSON.stringify({ items: [], next: null }));
+  } else if (
     request.url.startsWith("/api/v1/operator/accounts/pending-tokens") &&
     authenticated &&
     profile.role === "operator"
@@ -1117,5 +1139,60 @@ test("public reading exposes every body, including multiple dialogues", async ()
     lesson.blocks = originalBlocks;
     lesson.steps = originalSteps;
     fixture = false;
+  }
+});
+
+test("course speech plan SSR authorizes fixed versions without generating or saving", async () => {
+  fixture = false;
+  authenticated = false;
+  requests.length = 0;
+  const path = `/admin/speech-plans?lessonId=${lesson.id}&revision=1`;
+  try {
+    assert.equal((await request(path)).status, 401);
+    assert.equal(
+      requests.some((r) => r.path.includes("/operator/")),
+      false,
+    );
+    authenticated = true;
+    profile.role = "learner";
+    requests.length = 0;
+    assert.equal((await request(path)).status, 403);
+    assert.equal(
+      requests.some((r) => r.path.includes("/operator/")),
+      false,
+    );
+    profile.role = "operator";
+    requests.length = 0;
+    const valid = await request(path);
+    assert.equal(valid.status, 200);
+    assert.equal(valid.headers.get("Cache-Control"), "private, no-store");
+    const html = await valid.text();
+    assert.ok(html.includes("课程配音"));
+    assert.ok(html.includes("尚无声音档案"));
+    assert.equal(
+      requests.filter((r) => r.path.includes("/operator/")).length,
+      2,
+    );
+    assert.ok(requests.every((r) => r.method === "GET"));
+    for (const invalid of [
+      "revision=0",
+      "revision=2147483648",
+      "revision=1&planId=invalid",
+      "revision=1&afterId=invalid",
+    ]) {
+      requests.length = 0;
+      assert.equal(
+        (await request(`/admin/speech-plans?lessonId=${lesson.id}&${invalid}`))
+          .status,
+        400,
+      );
+      assert.equal(
+        requests.some((r) => r.path.includes("/operator/")),
+        false,
+      );
+    }
+  } finally {
+    authenticated = false;
+    profile.role = "learner";
   }
 });
