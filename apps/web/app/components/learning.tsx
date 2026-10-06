@@ -648,12 +648,11 @@ export function Player({ units }: { units: SpeechUnit[] }) {
             learning.openRate();
           }
         }}
-        onClick={() => {
+        onClick={(event) => {
           cancel();
-          if (long.current) {
-            long.current = false;
-            return;
-          }
+          const held = long.current;
+          long.current = false;
+          if (held && event.detail > 0) return;
           learning.toggle(units);
         }}
       >
