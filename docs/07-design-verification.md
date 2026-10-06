@@ -376,6 +376,15 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 
 这些证据仅证明作者结构与判分规则一致，不能证明教学内容正确、素材授权或可发布。课程全部保持 draft；未导入数据库、未执行 release-stage/activate，development fixture 未替换。此时新增插图引用尚无资产文件，角色与旧插图授权仍待确认，正式录音尚未制作。逐课人工审校与来源记录见 `content/a1/README.md`；完整 A1/A2、真实 iPhone 和生产公网验收继续待完成。
 
+## 2026-10-06：Compose 资源预算与 HTTP 网关验证
+
+- Compose 入口保持 Traefik，仅映射 `30075:8080`，监听所有宿主机接口；API/Web/PostgreSQL 没有宿主机端口，未配置 TLS、证书或公开 dashboard。HTTPS 由用户外部处理。
+- 为 PostgreSQL、迁移、API、Web、Traefik 配置可由环境变量覆盖的 CPU/内存/PID 上限，实际 Docker inspect 核对全部生效。四个常驻容器健康，迁移退出 0；整个演练没有 OOM 或重启。迁移上限不限制镜像构建过程。
+- 使用 bcc40ff 应用代码完成 Linux Docker 构建。API 镜像 ID 为 `sha256:c79bbe6ab99dd82f5324cfa7439a0455f0ed458ce35439d927c3fc66d0c190eb`，Web 为 `sha256:b03b7402a160290d4dc952649f2afc72ec35ba0c7e3df4d0722fe4436cf307d5`，仅为本机隔离验证镜像，未发布生产镜像。
+- 独立项目 `brioche-resource-qa` 验证空生产目录、Origin 拒绝、一次性邀请、HTTP session cookie、登录/退出、认证 SSR 与静态资源。将已有隔离样本恢复到新数据库和新媒体卷，核对进度、收藏、复习记录/版本、学习概览、续学、提交幂等重放、媒体完整哈希及 206 分段读取。
+- 先执行 1200 次请求的短突发，再对恢复后的账号及实际发布课程进行 12 并发、15 秒小样本读取负载。Traefik 最初 128 MiB 上限下采样约 98 MiB，因此默认提高到 256 MiB。最终重复负载 6049 次请求全部成功，p50 27 ms、p95 69 ms、最大 140 ms；实际 Traefik 内存上限 268435456 字节。Web 在这组负载中接近一个 CPU 配额。
+- 这不是生产容量结论：没有覆盖长时间、多账号写入、大内容目录或完整音频流量。生产容量、监控告警、异盘加密备份及 RPO/RTO、公网 HTTPS 和真实 iPhone 仍待验收。演练资源按项目范围清理，开发服务保留。
+
 ## 2026-10-06：新场景插图与离线素材检查
 
 - 制作初次交谈/城市出行两张 640×470 SVG，复用现有品牌配色与 Camille/Léa 外观；源文件仅在 `docs/content/a1/assets`，没有添加 Web public 路由或公开未登记素材。新清单包含实际哈希、尺寸、替代文本、来源与待确认授权，仍 planned/rightsConfirmed=false；没有导入数据库、伪造授权或激活课程。

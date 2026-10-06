@@ -58,7 +58,23 @@ Traefik/Web/API 共享应用内部网络，API/PostgreSQL 共享数据库网络�
 
 使用 Linux 容器。如果生产宿主机是 Windows，Docker Desktop/WSL2 的服务自启、网络转发和磁盘权限需要单独验证；不能把 `restart: unless-stopped` 当作 Docker 引擎本身会在开机后启动。媒体卷与 DB 卷路径必须确定，备份目录与 live volume 分开。
 
-多阶段构建、非 root 应用进程、生产依赖、frozen lockfile、healthcheck 和日志轮转已配置；应用已有 body/pool/hash/media 并发限制，容器 CPU/内存配额仍需结合生产容量验证配置。在 Compose 中 readiness 和迁移顺序显式配置，不能只靠 depends_on 的启动顺序猜测数据库已就绪。应用支持 SIGTERM 优雅停止。
+多阶段构建、非 root 应用进程、生产依赖、frozen lockfile、healthcheck 和日志轮转已配置；应用已有 body/pool/hash/media 并发限制，Compose 另有可调 CPU、内存与进程上限。在 Compose 中 readiness 和迁移顺序显式配置，不能只靠 depends_on 的启动顺序猜测数据库已就绪。应用支持 SIGTERM 优雅停止。
+
+### 容器初始资源预算
+
+| 服务 | CPU 上限 | 内存上限 | 进程/线程上限 | `.env` 前缀 |
+| --- | --- | --- | --- | --- |
+| PostgreSQL | 1.0 | 512 MiB | 128 | POSTGRES |
+| 一次性迁移 | 1.0 | 256 MiB | 128 | MIGRATE |
+| Rust API | 1.0 | 512 MiB | 256 | API |
+| Web SSR | 1.0 | 384 MiB | 128 | WEB |
+| Traefik | 0.5 | 256 MiB | 128 | TRAEFIK |
+
+每项通过 `<前缀>_CPUS`、`<前缀>_MEMORY_LIMIT`、`<前缀>_PIDS_LIMIT` 调整，默认值与 `infra/production.env.example` 一致。使用服务级 [cpus](https://docs.docker.com/reference/compose-file/services/#cpus)、[mem_limit](https://docs.docker.com/reference/compose-file/services/#mem_limit)、[pids_limit](https://docs.docker.com/reference/compose-file/services/#pids_limit)，适用于本机 Compose；没有固定 CPU 核编号。CPU 配额是上限，不是保留宿主机核心；内存 swap 沿用运行时设置，未把这些值宣称为含 swap 的总内存预算。镜像构建由 BuildKit 执行，不受这些运行容器配额限制。
+
+这是初始约束，不是生产容量承诺。四个常驻容器的内存上限合计 1664 MiB，迁移在 API 启动前退出；宿主机仍需为 Docker、操作系统、页面缓存、构建、备份和其他应用预留资源。不要只按容器上限之和判断宿主机容量。
+
+准备上线时，先 `docker compose config --quiet` 验证最终参数，再启动隔离项目并通过 inspect 核对实际 Memory/NanoCpus/PidsLimit；同时测真实课程、登录哈希、并发 SSR/学习提交、媒体读取、备份和恢复负载。记录延迟分布、健康检查、OOMKilled、重启次数、CPU 节流和内存压力。达到预算时先查瓶颈，再在 `.env` 调整并重新创建对应服务，不关闭应用本身的并发/文件限制；上线负载和 RPO/RTO 仍需单独验收。
 
 Web 使用 React Router 官方 Node 部署方式运行 Vite 生成的 client/server bundle，正确复制 assets 和生产依赖；不使用 `vite preview` 作为生产服务器。Rust 单独多阶段构建 release 二进制，固定 target/libc/TLS 配套环境，避免在 Windows 直接构建的 exe 放进 Linux 容器。Cargo.lock 和 pnpm-lock.yaml 均保留；SeaORM 迁移随版本构建为一次性工具，应用启动不自动 schema sync。
 

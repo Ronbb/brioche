@@ -7,6 +7,9 @@ x-logging: &default-logging
 services:
   postgres:
     logging: *default-logging
+    cpus: ${POSTGRES_CPUS:-1.0}
+    mem_limit: ${POSTGRES_MEMORY_LIMIT:-512m}
+    pids_limit: ${POSTGRES_PIDS_LIMIT:-128}
     image: postgres:18.6-bookworm@sha256:3725f4e2499eef5134592b3b4ab79a543ed7f8e533b05b5b637af926630f6650
     environment:
       POSTGRES_DB: brioche
@@ -22,6 +25,9 @@ services:
     restart: unless-stopped
   migrate:
     logging: *default-logging
+    cpus: ${MIGRATE_CPUS:-1.0}
+    mem_limit: ${MIGRATE_MEMORY_LIMIT:-256m}
+    pids_limit: ${MIGRATE_PIDS_LIMIT:-128}
     image: brioche-api:local
     build: { context: ., dockerfile: infra/Dockerfile.api }
     command: [migrate]
@@ -33,6 +39,9 @@ services:
     restart: "no"
   server:
     logging: *default-logging
+    cpus: ${API_CPUS:-1.0}
+    mem_limit: ${API_MEMORY_LIMIT:-512m}
+    pids_limit: ${API_PIDS_LIMIT:-256}
     image: brioche-api:local
     build: { context: ., dockerfile: infra/Dockerfile.api }
     environment:
@@ -55,6 +64,9 @@ services:
     restart: unless-stopped
   web:
     logging: *default-logging
+    cpus: ${WEB_CPUS:-1.0}
+    mem_limit: ${WEB_MEMORY_LIMIT:-384m}
+    pids_limit: ${WEB_PIDS_LIMIT:-128}
     build: { context: ., dockerfile: infra/Dockerfile.web }
     environment:
       INTERNAL_API_URL: http://server:3001
@@ -75,6 +87,9 @@ services:
     restart: unless-stopped
   traefik:
     logging: *default-logging
+    cpus: ${TRAEFIK_CPUS:-0.5}
+    mem_limit: ${TRAEFIK_MEMORY_LIMIT:-256m}
+    pids_limit: ${TRAEFIK_PIDS_LIMIT:-128}
     image: traefik:v3.7.13@sha256:24841fe2de7304c149343d877d2923b4c8800a38ba015dea9174c23b20e344a0
     user: "10001:10001"
     command: ["--configFile=/etc/traefik/traefik.yaml"]
