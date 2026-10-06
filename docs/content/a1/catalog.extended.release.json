@@ -1,0 +1,100 @@
+{
+  "id": "a1-four-units-draft-v1",
+  "schemaVersion": "1.0",
+  "levels": [
+    {
+      "id": "a1",
+      "label": "A1 入门",
+      "units": [
+        {
+          "id": "a1-first-conversations",
+          "titleZh": "打开法语的一天",
+          "lessons": [
+            {
+              "lessonId": "a1-greetings-meet",
+              "revision": 1
+            },
+            {
+              "lessonId": "a1-greetings-introduce",
+              "revision": 1
+            },
+            {
+              "lessonId": "a1-greetings-repeat",
+              "revision": 1
+            },
+            {
+              "lessonId": "a1-greetings-spell-name",
+              "revision": 1
+            }
+          ]
+        },
+        {
+          "id": "a1-breakfast-bakery",
+          "titleZh": "早餐与面包店",
+          "lessons": [
+            {
+              "lessonId": "a1-bakery-buy-breakfast",
+              "revision": 1
+            },
+            {
+              "lessonId": "a1-bakery-order-coffee",
+              "revision": 1
+            },
+            {
+              "lessonId": "a1-bakery-choose-quantity",
+              "revision": 1
+            },
+            {
+              "lessonId": "a1-bakery-pay",
+              "revision": 1
+            }
+          ]
+        },
+        {
+          "id": "a1-city-travel",
+          "titleZh": "在城市里移动",
+          "lessons": [
+            {
+              "lessonId": "a1-city-find-metro",
+              "revision": 1
+            },
+            {
+              "lessonId": "a1-city-buy-tickets",
+              "revision": 1
+            },
+            {
+              "lessonId": "a1-city-confirm-direction",
+              "revision": 1
+            },
+            {
+              "lessonId": "a1-city-read-departure",
+              "revision": 1
+            }
+          ]
+        },
+        {
+          "id": "a1-home-routine",
+          "titleZh": "家与日常安排",
+          "lessons": [
+            {
+              "lessonId": "a1-home-describe-room",
+              "revision": 1
+            },
+            {
+              "lessonId": "a1-home-wake-up",
+              "revision": 1
+            },
+            {
+              "lessonId": "a1-home-work-study",
+              "revision": 1
+            },
+            {
+              "lessonId": "a1-home-weekly-routine",
+              "revision": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -11,7 +11,7 @@ fn scene_inventory_matches_actual_svg_sources() {
     let bundle: brioche_server::media::AssetBundle =
         serde_json::from_value(document.value).unwrap();
     assert_eq!(bundle.schema_version, "1.0");
-    assert_eq!(bundle.assets.len(), 2);
+    assert_eq!(bundle.assets.len(), 3);
     for asset in bundle.assets {
         let info = brioche_server::media::inspect_file(
             &root.join("assets").join(&asset.file),
@@ -29,12 +29,42 @@ fn scene_inventory_matches_actual_svg_sources() {
 
 #[test]
 fn pilot_sources_match_catalog_and_shared_knowledge_and_grade_all_exercises() {
+    check_catalog(
+        "catalog.release.json",
+        &[
+            "a1-first-conversations",
+            "a1-breakfast-bakery",
+            "a1-city-travel",
+        ],
+    );
+}
+
+#[test]
+fn extended_sources_match_catalog_and_shared_knowledge_and_grade_all_exercises() {
+    check_catalog(
+        "catalog.extended.release.json",
+        &[
+            "a1-first-conversations",
+            "a1-breakfast-bakery",
+            "a1-city-travel",
+            "a1-home-routine",
+        ],
+    );
+}
+
+fn check_catalog(file: &str, expected_units: &[&str]) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs");
-    let document = Document::load(root.join("content/a1/catalog.release.json")).unwrap();
+    let document = Document::load(root.join("content/a1").join(file)).unwrap();
     let manifest: ReleaseManifest = serde_json::from_value(document.value.clone()).unwrap();
     manifest.validate_author().unwrap();
     let units = document.value["levels"][0]["units"].as_array().unwrap();
-    assert_eq!(units.len(), 3);
+    assert_eq!(
+        units
+            .iter()
+            .map(|unit| unit["id"].as_str().unwrap())
+            .collect::<Vec<_>>(),
+        expected_units
+    );
     let mut knowledge = BTreeMap::<String, Value>::new();
     let mut checked = 0;
     for unit in units {
@@ -119,5 +149,5 @@ fn pilot_sources_match_catalog_and_shared_knowledge_and_grade_all_exercises() {
             checked += 1;
         }
     }
-    assert_eq!(checked, 12);
+    assert_eq!(checked, expected_units.len() * 4);
 }

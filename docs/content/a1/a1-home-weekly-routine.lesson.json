@@ -1,0 +1,522 @@
+{
+  "schemaVersion": "1.0",
+  "id": "a1-home-weekly-routine",
+  "revision": 1,
+  "levelId": "a1",
+  "unitId": "a1-home-routine",
+  "title": {
+    "fr": "La semaine de Léa",
+    "zh": "一周的日常习惯"
+  },
+  "summaryZh": "从一周安排中找出工作地点，并用否定表达休息日。",
+  "estimatedMinutes": 12,
+  "objectivesZh": [
+    "找到星期与对应安排",
+    "用 le + 星期说每周习惯",
+    "用 ne…pas 否定动作"
+  ],
+  "knowledge": {
+    "vocabulary": [
+      {
+        "id": "word-lundi",
+        "lemma": "lundi",
+        "partOfSpeech": "noun",
+        "meaningZh": "星期一",
+        "noteZh": "星期名称作名词时为阳性；描述每周习惯可在前面加 le。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-mardi",
+        "lemma": "mardi",
+        "partOfSpeech": "noun",
+        "meaningZh": "星期二",
+        "noteZh": "星期名称作名词时为阳性；描述每周习惯可在前面加 le。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-mercredi",
+        "lemma": "mercredi",
+        "partOfSpeech": "noun",
+        "meaningZh": "星期三",
+        "noteZh": "星期名称作名词时为阳性；描述每周习惯可在前面加 le。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-samedi",
+        "lemma": "samedi",
+        "partOfSpeech": "noun",
+        "meaningZh": "星期六",
+        "noteZh": "星期名称作名词时为阳性；描述每周习惯可在前面加 le。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-dimanche",
+        "lemma": "dimanche",
+        "partOfSpeech": "noun",
+        "meaningZh": "星期日",
+        "noteZh": "星期名称作名词时为阳性；描述每周习惯可在前面加 le。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-lire",
+        "lemma": "lire",
+        "partOfSpeech": "verb",
+        "meaningZh": "阅读",
+        "noteZh": "elle lit 表示她阅读。"
+      },
+      {
+        "id": "word-livre",
+        "lemma": "livre",
+        "partOfSpeech": "noun",
+        "meaningZh": "书",
+        "noteZh": "livre 的单数形式；搭配冠词学习。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-parc",
+        "lemma": "parc",
+        "partOfSpeech": "noun",
+        "meaningZh": "公园",
+        "noteZh": "parc 的单数形式；搭配冠词学习。",
+        "gender": "masculine"
+      }
+    ],
+    "grammar": [
+      {
+        "id": "grammar-negation-ne-pas",
+        "titleZh": "ne…pas：否定一个动作",
+        "bodyZh": "书面完整否定形式把 ne 放在变位动词前、pas 放在后：elle ne travaille pas。元音或哑音 h 前 ne 省音为 n’。",
+        "examples": [
+          {
+            "fr": "Elle ne travaille pas le dimanche.",
+            "zh": "她星期日不工作。"
+          }
+        ]
+      },
+      {
+        "id": "grammar-le-weekday-habit",
+        "titleZh": "le + 星期：每周的习惯",
+        "bodyZh": "本课 Le mercredi, elle travaille à la maison 表示每周三的安排。说某一次星期三可直接用 mercredi；本课练习重复的每周习惯。",
+        "examples": [
+          {
+            "fr": "Le mercredi, elle travaille à la maison.",
+            "zh": "她每周三在家工作。"
+          }
+        ]
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "id": "scene-main",
+      "type": "scene",
+      "placeZh": "Léa 的虚构一周日程",
+      "situationZh": "从一周安排中找出工作地点，并用否定表达休息日。",
+      "illustrationId": "art-home-morning"
+    },
+    {
+      "id": "article-main",
+      "type": "article",
+      "titleZh": "一周的日常习惯",
+      "narratorId": "character-lea",
+      "paragraphs": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Léa travaille à Lyon."
+            }
+          ],
+          "translationZh": "Léa 在里昂工作。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Le "
+            },
+            {
+              "id": "segment-2-2",
+              "text": "lundi",
+              "vocabularyId": "word-lundi",
+              "grammarId": "grammar-le-weekday-habit"
+            },
+            {
+              "id": "segment-2-3",
+              "text": " et le "
+            },
+            {
+              "id": "segment-2-4",
+              "text": "mardi",
+              "vocabularyId": "word-mardi"
+            },
+            {
+              "id": "segment-2-5",
+              "text": ", elle travaille au bureau."
+            }
+          ],
+          "translationZh": "她每周一和周二在办公室工作。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Le "
+            },
+            {
+              "id": "segment-3-2",
+              "text": "mercredi",
+              "vocabularyId": "word-mercredi",
+              "grammarId": "grammar-le-weekday-habit"
+            },
+            {
+              "id": "segment-3-3",
+              "text": ", elle travaille à la maison."
+            }
+          ],
+          "translationZh": "她每周三在家工作。"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Elle commence à huit heures trente et elle finit à dix-sept heures."
+            }
+          ],
+          "translationZh": "她八点半开始，十七点结束。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Le "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "samedi",
+              "vocabularyId": "word-samedi"
+            },
+            {
+              "id": "segment-5-3",
+              "text": ", elle fait les courses et elle prépare le repas."
+            }
+          ],
+          "translationZh": "每周六，她采购日用品并准备饭菜。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Le "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "dimanche",
+              "vocabularyId": "word-dimanche"
+            },
+            {
+              "id": "segment-6-3",
+              "text": ", elle "
+            },
+            {
+              "id": "segment-6-4",
+              "text": "ne travaille pas",
+              "grammarId": "grammar-negation-ne-pas"
+            },
+            {
+              "id": "segment-6-5",
+              "text": " : elle "
+            },
+            {
+              "id": "segment-6-6",
+              "text": "lit",
+              "vocabularyId": "word-lire"
+            },
+            {
+              "id": "segment-6-7",
+              "text": " un "
+            },
+            {
+              "id": "segment-6-8",
+              "text": "livre",
+              "vocabularyId": "word-livre"
+            },
+            {
+              "id": "segment-6-9",
+              "text": " et elle marche dans le "
+            },
+            {
+              "id": "segment-6-10",
+              "text": "parc",
+              "vocabularyId": "word-parc"
+            },
+            {
+              "id": "segment-6-11",
+              "text": "."
+            }
+          ],
+          "translationZh": "每周日，她不工作：她读书，还在公园散步。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Le soir, elle prépare son sac et regarde son agenda pour le lendemain."
+            }
+          ],
+          "translationZh": "晚上，她收拾包，并查看日程本上第二天的安排。"
+        }
+      ]
+    },
+    {
+      "id": "explanation-main",
+      "type": "explanation",
+      "titleZh": "这句话如何使用",
+      "bodyZh": "le + 星期在这里表示每周的习惯。ne 和 pas 放在变位动词的两边。au bureau 在这里表示在办公室，区别于前课 un bureau 的书桌。faire les courses 是采购日常用品；le lendemain 是第二天。",
+      "targets": [
+        {
+          "blockId": "article-main",
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4"
+        },
+        {
+          "blockId": "article-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2"
+        }
+      ]
+    },
+    {
+      "id": "culture-context",
+      "type": "culture",
+      "titleZh": "场景中的细节",
+      "bodyZh": "这是 Léa 个人的虚构安排，不据此推断法国人的工作日、周末或远程办公习惯。",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。"
+    },
+    {
+      "id": "vocabulary-targets",
+      "type": "vocabulary",
+      "entryIds": [
+        "word-lundi",
+        "word-mardi",
+        "word-mercredi",
+        "word-samedi",
+        "word-dimanche",
+        "word-lire",
+        "word-livre",
+        "word-parc"
+      ]
+    },
+    {
+      "id": "grammar-targets",
+      "type": "grammar",
+      "entryIds": [
+        "grammar-negation-ne-pas",
+        "grammar-le-weekday-habit"
+      ]
+    },
+    {
+      "id": "exercise-comprehension",
+      "type": "exercise",
+      "exerciseType": "single-choice",
+      "promptZh": "Léa 每周几在家工作？",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "星期一"
+        },
+        {
+          "id": "correct",
+          "text": "星期三"
+        },
+        {
+          "id": "distractor-b",
+          "text": "星期二"
+        }
+      ]
+    },
+    {
+      "id": "exercise-fill",
+      "type": "exercise",
+      "exerciseType": "fill-blank",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Le dimanche, elle ne travaille ___.",
+      "hintZh": "完整否定是 ne + 变位动词 + pas。"
+    },
+    {
+      "id": "exercise-order",
+      "type": "exercise",
+      "exerciseType": "order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "pas."
+        },
+        {
+          "id": "token-1",
+          "text": "Le dimanche,"
+        },
+        {
+          "id": "token-2",
+          "text": "je ne travaille"
+        }
+      ]
+    },
+    {
+      "id": "habit-main",
+      "type": "habit",
+      "taskZh": "选一个星期，用 Le… 说一句虚构的每周安排；也可以用 ne…pas 说不做的事情。",
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。"
+    },
+    {
+      "id": "summary-main",
+      "type": "summary",
+      "takeawaysZh": [
+        "我能找到星期与对应安排。",
+        "我能用 le + 星期说每周习惯。",
+        "我能用 ne…pas 否定动作。"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景",
+      "blockIds": [
+        "scene-main"
+      ]
+    },
+    {
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段短文",
+      "blockIds": [
+        "article-main"
+      ]
+    },
+    {
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达",
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ]
+    },
+    {
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用",
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ]
+    },
+    {
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常",
+      "blockIds": [
+        "habit-main"
+      ]
+    },
+    {
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课",
+      "blockIds": [
+        "summary-main"
+      ]
+    }
+  ],
+  "completion": {
+    "strategy": "attempt-all",
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ]
+  },
+  "reviewItemIds": [
+    "word-mercredi",
+    "word-dimanche",
+    "word-lire"
+  ],
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "kind": "choice",
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：星期三。"
+      },
+      "exercise-fill": {
+        "kind": "text",
+        "accepted": [
+          "pas"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "完整否定是 ne + 变位动词 + pas。"
+      },
+      "exercise-order": {
+        "kind": "order",
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Le dimanche, je ne travaille pas."
+      }
+    }
+  },
+  "editorial": {
+    "status": "draft",
+    "note": "项目原创课程草稿，未完成人工法语、译文和教学审校。场景、角色日程与住房为虚构设定。素材待来源授权确认及登记；无正式录音。审校记录见 docs/content/a1/README.md，禁止直接作为已审校课程发布。"
+  },
+  "assetRefs": [
+    {
+      "assetId": "art-home-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "cast": [
+    {
+      "characterId": "character-camille",
+      "revision": 1,
+      "displayName": "Camille",
+      "avatarId": "avatar-camille-v1",
+      "speechLocale": "fr-FR"
+    },
+    {
+      "characterId": "character-lea",
+      "revision": 1,
+      "displayName": "Léa",
+      "avatarId": "avatar-lea-v1",
+      "speechLocale": "fr-FR"
+    }
+  ]
+}

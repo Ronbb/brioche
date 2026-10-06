@@ -1,0 +1,604 @@
+{
+  "schemaVersion": "1.0",
+  "id": "a1-home-describe-room",
+  "revision": 1,
+  "levelId": "a1",
+  "unitId": "a1-home-routine",
+  "title": {
+    "fr": "Dans mon appartement",
+    "zh": "描述我的房间"
+  },
+  "summaryZh": "向朋友介绍公寓里的房间和书桌位置。",
+  "estimatedMinutes": 12,
+  "objectivesZh": [
+    "说出房间名称",
+    "用 il y a 描述某处有什么",
+    "用 j’ai 说自己有什么"
+  ],
+  "knowledge": {
+    "vocabulary": [
+      {
+        "id": "word-appartement",
+        "lemma": "appartement",
+        "partOfSpeech": "noun",
+        "meaningZh": "公寓",
+        "noteZh": "appartement 的单数形式；搭配冠词学习。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-chambre",
+        "lemma": "chambre",
+        "partOfSpeech": "noun",
+        "meaningZh": "卧室；房间",
+        "noteZh": "chambre 的单数形式；搭配冠词学习。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-cuisine",
+        "lemma": "cuisine",
+        "partOfSpeech": "noun",
+        "meaningZh": "厨房",
+        "noteZh": "cuisine 的单数形式；搭配冠词学习。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-bureau",
+        "lemma": "bureau",
+        "partOfSpeech": "noun",
+        "meaningZh": "书桌；办公室",
+        "noteZh": "un bureau 可指书桌；au bureau 在本单元的工作场景中表示在办公室。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-salon",
+        "lemma": "salon",
+        "partOfSpeech": "noun",
+        "meaningZh": "客厅",
+        "noteZh": "salon 的单数形式；搭配冠词学习。",
+        "gender": "masculine"
+      },
+      {
+        "id": "expr-il-y-a",
+        "lemma": "il y a",
+        "partOfSpeech": "phrase",
+        "meaningZh": "有……",
+        "noteZh": "用于说明某处存在什么。"
+      },
+      {
+        "id": "word-avoir",
+        "lemma": "avoir",
+        "partOfSpeech": "verb",
+        "meaningZh": "有",
+        "noteZh": "本课先学习 j’ai 和 tu as，分别表示“我有”“你有”。"
+      },
+      {
+        "id": "expr-a-cote-de",
+        "lemma": "à côté de",
+        "partOfSpeech": "phrase",
+        "meaningZh": "在……旁边",
+        "noteZh": "说明相邻的位置，后接地点。"
+      }
+    ],
+    "grammar": [
+      {
+        "id": "grammar-avoir-possession",
+        "titleZh": "avoir：说自己有什么",
+        "bodyZh": "avoir 的现在时随主语变化：je + ai 省音写作 j’ai，tu 搭配 as。J’ai un bureau 表示我有一张书桌。",
+        "examples": [
+          {
+            "fr": "J’ai un bureau.",
+            "zh": "我有一张书桌。"
+          }
+        ]
+      },
+      {
+        "id": "grammar-il-y-a-existence",
+        "titleZh": "Il y a：介绍房间里的东西",
+        "bodyZh": "Il y a 后接名词，说明某处有某物。本课用 une cuisine、une chambre；提问可保留语序，用问号和上扬语调。",
+        "examples": [
+          {
+            "fr": "Il y a une cuisine.",
+            "zh": "有一个厨房。"
+          }
+        ]
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "id": "scene-main",
+      "type": "scene",
+      "placeZh": "Camille 的虚构公寓",
+      "situationZh": "向朋友介绍公寓里的房间和书桌位置。",
+      "illustrationId": "art-home-morning"
+    },
+    {
+      "id": "dialogue-main",
+      "type": "dialogue",
+      "titleZh": "描述我的房间",
+      "speakers": [
+        {
+          "id": "speaker-1",
+          "labelZh": "公寓主人",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "avatarId": "avatar-camille-v1"
+        },
+        {
+          "id": "speaker-2",
+          "labelZh": "来访的朋友",
+          "characterId": "character-lea",
+          "displayName": "Léa",
+          "avatarId": "avatar-lea-v1"
+        }
+      ],
+      "turns": [
+        {
+          "id": "entry-1",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Voilà mon "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "appartement",
+              "vocabularyId": "word-appartement"
+            },
+            {
+              "id": "segment-1-3",
+              "text": "."
+            }
+          ],
+          "translationZh": "这是我的公寓。"
+        },
+        {
+          "id": "entry-2",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Il est petit, mais lumineux."
+            }
+          ],
+          "translationZh": "它不大，但很明亮。"
+        },
+        {
+          "id": "entry-3",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Il y a",
+              "vocabularyId": "expr-il-y-a",
+              "grammarId": "grammar-il-y-a-existence"
+            },
+            {
+              "id": "segment-3-2",
+              "text": " une "
+            },
+            {
+              "id": "segment-3-3",
+              "text": "cuisine",
+              "vocabularyId": "word-cuisine"
+            },
+            {
+              "id": "segment-3-4",
+              "text": " ?"
+            }
+          ],
+          "translationZh": "有厨房吗？"
+        },
+        {
+          "id": "entry-4",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Oui, "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "il y a",
+              "vocabularyId": "expr-il-y-a"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " une "
+            },
+            {
+              "id": "segment-4-4",
+              "text": "cuisine",
+              "vocabularyId": "word-cuisine"
+            },
+            {
+              "id": "segment-4-5",
+              "text": " et une "
+            },
+            {
+              "id": "segment-4-6",
+              "text": "chambre",
+              "vocabularyId": "word-chambre"
+            },
+            {
+              "id": "segment-4-7",
+              "text": "."
+            }
+          ],
+          "translationZh": "是的，有厨房和卧室。"
+        },
+        {
+          "id": "entry-5",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Tu "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "as",
+              "vocabularyId": "word-avoir",
+              "grammarId": "grammar-avoir-possession"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " un "
+            },
+            {
+              "id": "segment-5-4",
+              "text": "bureau",
+              "vocabularyId": "word-bureau"
+            },
+            {
+              "id": "segment-5-5",
+              "text": " ?"
+            }
+          ],
+          "translationZh": "你有书桌吗？"
+        },
+        {
+          "id": "entry-6",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Oui, "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "j’ai",
+              "vocabularyId": "word-avoir",
+              "grammarId": "grammar-avoir-possession"
+            },
+            {
+              "id": "segment-6-3",
+              "text": " un "
+            },
+            {
+              "id": "segment-6-4",
+              "text": "bureau",
+              "vocabularyId": "word-bureau"
+            },
+            {
+              "id": "segment-6-5",
+              "text": " dans ma "
+            },
+            {
+              "id": "segment-6-6",
+              "text": "chambre",
+              "vocabularyId": "word-chambre"
+            },
+            {
+              "id": "segment-6-7",
+              "text": "."
+            }
+          ],
+          "translationZh": "有，我的卧室里有一张书桌。"
+        },
+        {
+          "id": "entry-7",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Et le "
+            },
+            {
+              "id": "segment-7-2",
+              "text": "salon",
+              "vocabularyId": "word-salon"
+            },
+            {
+              "id": "segment-7-3",
+              "text": " ?"
+            }
+          ],
+          "translationZh": "那客厅呢？"
+        },
+        {
+          "id": "entry-8",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Le "
+            },
+            {
+              "id": "segment-8-2",
+              "text": "salon",
+              "vocabularyId": "word-salon"
+            },
+            {
+              "id": "segment-8-3",
+              "text": " est "
+            },
+            {
+              "id": "segment-8-4",
+              "text": "à côté de",
+              "vocabularyId": "expr-a-cote-de"
+            },
+            {
+              "id": "segment-8-5",
+              "text": " la "
+            },
+            {
+              "id": "segment-8-6",
+              "text": "cuisine",
+              "vocabularyId": "word-cuisine"
+            },
+            {
+              "id": "segment-8-7",
+              "text": "."
+            }
+          ],
+          "translationZh": "客厅在厨房旁边。"
+        }
+      ]
+    },
+    {
+      "id": "explanation-main",
+      "type": "explanation",
+      "titleZh": "这句话如何使用",
+      "bodyZh": "petit 和 lumineux 分别表示“小”和“明亮”。Il y a 用来介绍有什么；j’ai 说明我拥有什么。这里的 bureau 是书桌。朋友之间使用 tu。",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1"
+        }
+      ]
+    },
+    {
+      "id": "culture-context",
+      "type": "culture",
+      "titleZh": "场景中的细节",
+      "bodyZh": "房间和家具是虚构设定；本课不要求提供真实住址或住房信息。",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。"
+    },
+    {
+      "id": "vocabulary-targets",
+      "type": "vocabulary",
+      "entryIds": [
+        "word-appartement",
+        "word-chambre",
+        "word-cuisine",
+        "word-bureau",
+        "word-salon",
+        "expr-il-y-a",
+        "word-avoir",
+        "expr-a-cote-de"
+      ]
+    },
+    {
+      "id": "grammar-targets",
+      "type": "grammar",
+      "entryIds": [
+        "grammar-avoir-possession",
+        "grammar-il-y-a-existence"
+      ]
+    },
+    {
+      "id": "exercise-comprehension",
+      "type": "exercise",
+      "exerciseType": "single-choice",
+      "promptZh": "Camille 的书桌在哪里？",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "厨房"
+        },
+        {
+          "id": "correct",
+          "text": "卧室"
+        },
+        {
+          "id": "distractor-b",
+          "text": "客厅"
+        }
+      ]
+    },
+    {
+      "id": "exercise-fill",
+      "type": "exercise",
+      "exerciseType": "fill-blank",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Dans ma chambre, j’___ un bureau.",
+      "hintZh": "avoir 搭配 je 的形式是 ai；句子已经提供 j’。"
+    },
+    {
+      "id": "exercise-order",
+      "type": "exercise",
+      "exerciseType": "order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "dans l’appartement."
+        },
+        {
+          "id": "token-1",
+          "text": "Il y a"
+        },
+        {
+          "id": "token-2",
+          "text": "une cuisine"
+        }
+      ]
+    },
+    {
+      "id": "habit-main",
+      "type": "habit",
+      "taskZh": "用 Il y a… 介绍一个房间里的东西，可以描述想象中的房间。",
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。"
+    },
+    {
+      "id": "summary-main",
+      "type": "summary",
+      "takeawaysZh": [
+        "我能说出房间名称。",
+        "我能用 il y a 描述某处有什么。",
+        "我能用 j’ai 说自己有什么。"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景",
+      "blockIds": [
+        "scene-main"
+      ]
+    },
+    {
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话",
+      "blockIds": [
+        "dialogue-main"
+      ]
+    },
+    {
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达",
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ]
+    },
+    {
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用",
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ]
+    },
+    {
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常",
+      "blockIds": [
+        "habit-main"
+      ]
+    },
+    {
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课",
+      "blockIds": [
+        "summary-main"
+      ]
+    }
+  ],
+  "completion": {
+    "strategy": "attempt-all",
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ]
+  },
+  "reviewItemIds": [
+    "expr-il-y-a",
+    "word-bureau",
+    "expr-a-cote-de"
+  ],
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "kind": "choice",
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：卧室。"
+      },
+      "exercise-fill": {
+        "kind": "text",
+        "accepted": [
+          "ai"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "avoir 搭配 je 的形式是 ai；句子已经提供 j’。"
+      },
+      "exercise-order": {
+        "kind": "order",
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Il y a une cuisine dans l’appartement."
+      }
+    }
+  },
+  "editorial": {
+    "status": "draft",
+    "note": "项目原创课程草稿，未完成人工法语、译文和教学审校。场景、角色日程与住房为虚构设定。素材待来源授权确认及登记；无正式录音。审校记录见 docs/content/a1/README.md，禁止直接作为已审校课程发布。"
+  },
+  "assetRefs": [
+    {
+      "assetId": "art-home-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "cast": [
+    {
+      "characterId": "character-camille",
+      "revision": 1,
+      "displayName": "Camille",
+      "avatarId": "avatar-camille-v1",
+      "speechLocale": "fr-FR"
+    },
+    {
+      "characterId": "character-lea",
+      "revision": 1,
+      "displayName": "Léa",
+      "avatarId": "avatar-lea-v1",
+      "speechLocale": "fr-FR"
+    }
+  ]
+}

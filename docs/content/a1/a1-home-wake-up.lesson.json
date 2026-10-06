@@ -1,0 +1,547 @@
+{
+  "schemaVersion": "1.0",
+  "id": "a1-home-wake-up",
+  "revision": 1,
+  "levelId": "a1",
+  "unitId": "a1-home-routine",
+  "title": {
+    "fr": "Le matin de Camille",
+    "zh": "说说起床时间"
+  },
+  "summaryZh": "读懂一段早晨安排，分清起床、早餐和出门的时间。",
+  "estimatedMinutes": 12,
+  "objectivesZh": [
+    "理解早晨安排的顺序",
+    "说出起床时间",
+    "区分整点和半点"
+  ],
+  "knowledge": {
+    "vocabulary": [
+      {
+        "id": "word-se-lever",
+        "lemma": "se lever",
+        "partOfSpeech": "verb",
+        "meaningZh": "起床",
+        "noteZh": "正文 elle se lève；说自己时用 je me lève。"
+      },
+      {
+        "id": "word-douche",
+        "lemma": "douche",
+        "partOfSpeech": "noun",
+        "meaningZh": "淋浴",
+        "noteZh": "prendre une douche 表示洗淋浴。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-sept",
+        "lemma": "sept",
+        "partOfSpeech": "numeral",
+        "meaningZh": "七",
+        "noteZh": "sept heures 表示七点。"
+      },
+      {
+        "id": "word-trente",
+        "lemma": "trente",
+        "partOfSpeech": "numeral",
+        "meaningZh": "三十",
+        "noteZh": "sept heures trente 表示七点半。"
+      },
+      {
+        "id": "word-huit",
+        "lemma": "huit",
+        "partOfSpeech": "numeral",
+        "meaningZh": "八",
+        "noteZh": "huit heures 表示八点。"
+      },
+      {
+        "id": "word-preparer",
+        "lemma": "préparer",
+        "partOfSpeech": "verb",
+        "meaningZh": "准备",
+        "noteZh": "elle prépare 是第三人称单数现在时。"
+      },
+      {
+        "id": "word-matin",
+        "lemma": "matin",
+        "partOfSpeech": "noun",
+        "meaningZh": "早晨",
+        "noteZh": "le matin 可用于描述早晨的习惯。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-heure",
+        "lemma": "heure",
+        "partOfSpeech": "noun",
+        "meaningZh": "小时；时刻",
+        "noteZh": "neuf heures dix 表示九点十分。",
+        "gender": "feminine"
+      }
+    ],
+    "grammar": [
+      {
+        "id": "grammar-se-lever-present",
+        "titleZh": "se lever：说起床",
+        "bodyZh": "se lever 中的小代词随主语变化：je me lève、elle se lève。本课只练习这两种形式，注意 lève 的重音符号。",
+        "examples": [
+          {
+            "fr": "Je me lève à sept heures.",
+            "zh": "我七点起床。"
+          }
+        ]
+      },
+      {
+        "id": "grammar-time-a",
+        "titleZh": "à + 时刻：说明发生时间",
+        "bodyZh": "Le train part à neuf heures dix 说明列车九点十分发车。à 引出事件发生的时刻。",
+        "examples": [
+          {
+            "fr": "Le train part à neuf heures dix.",
+            "zh": "列车九点十分发车。"
+          }
+        ]
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "id": "scene-main",
+      "type": "scene",
+      "placeZh": "Camille 在家的一天早晨",
+      "situationZh": "读懂一段早晨安排，分清起床、早餐和出门的时间。",
+      "illustrationId": "art-home-morning"
+    },
+    {
+      "id": "article-main",
+      "type": "article",
+      "titleZh": "说说起床时间",
+      "narratorId": "character-camille",
+      "paragraphs": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Le "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "matin",
+              "vocabularyId": "word-matin"
+            },
+            {
+              "id": "segment-1-3",
+              "text": ", Camille "
+            },
+            {
+              "id": "segment-1-4",
+              "text": "se lève",
+              "vocabularyId": "word-se-lever",
+              "grammarId": "grammar-se-lever-present"
+            },
+            {
+              "id": "segment-1-5",
+              "text": " à "
+            },
+            {
+              "id": "segment-1-6",
+              "text": "sept",
+              "vocabularyId": "word-sept"
+            },
+            {
+              "id": "segment-1-7",
+              "text": " "
+            },
+            {
+              "id": "segment-1-8",
+              "text": "heures",
+              "vocabularyId": "word-heure",
+              "grammarId": "grammar-time-a"
+            },
+            {
+              "id": "segment-1-9",
+              "text": "."
+            }
+          ],
+          "translationZh": "早晨，Camille 七点起床。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Elle ouvre la fenêtre et regarde le ciel."
+            }
+          ],
+          "translationZh": "她打开窗户，看看天空。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Elle prend une "
+            },
+            {
+              "id": "segment-3-2",
+              "text": "douche",
+              "vocabularyId": "word-douche"
+            },
+            {
+              "id": "segment-3-3",
+              "text": ", puis elle s’habille."
+            }
+          ],
+          "translationZh": "她洗淋浴，然后穿衣服。"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "À "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "sept",
+              "vocabularyId": "word-sept"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " "
+            },
+            {
+              "id": "segment-4-4",
+              "text": "heures",
+              "vocabularyId": "word-heure",
+              "grammarId": "grammar-time-a"
+            },
+            {
+              "id": "segment-4-5",
+              "text": " "
+            },
+            {
+              "id": "segment-4-6",
+              "text": "trente",
+              "vocabularyId": "word-trente"
+            },
+            {
+              "id": "segment-4-7",
+              "text": ", elle "
+            },
+            {
+              "id": "segment-4-8",
+              "text": "prépare",
+              "vocabularyId": "word-preparer"
+            },
+            {
+              "id": "segment-4-9",
+              "text": " son petit-déjeuner."
+            }
+          ],
+          "translationZh": "七点半，她准备早餐。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Elle mange du pain et boit un café dans la cuisine."
+            }
+          ],
+          "translationZh": "她在厨房吃面包、喝咖啡。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Elle regarde l’"
+            },
+            {
+              "id": "segment-6-2",
+              "text": "heure",
+              "vocabularyId": "word-heure"
+            },
+            {
+              "id": "segment-6-3",
+              "text": " sur son téléphone."
+            }
+          ],
+          "translationZh": "她在手机上看时间。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "À "
+            },
+            {
+              "id": "segment-7-2",
+              "text": "huit",
+              "vocabularyId": "word-huit"
+            },
+            {
+              "id": "segment-7-3",
+              "text": " "
+            },
+            {
+              "id": "segment-7-4",
+              "text": "heures",
+              "vocabularyId": "word-heure",
+              "grammarId": "grammar-time-a"
+            },
+            {
+              "id": "segment-7-5",
+              "text": ", elle part de chez elle pour aller à l’université."
+            }
+          ],
+          "translationZh": "八点，她离开家去大学。"
+        }
+      ]
+    },
+    {
+      "id": "explanation-main",
+      "type": "explanation",
+      "titleZh": "这句话如何使用",
+      "bodyZh": "à 引出事情发生的时刻：à sept heures 是七点，à sept heures trente 是七点半。短文中 elle se lève 说她起床；换成自己时用 je me lève。puis 表示“然后”，帮助串起早晨的动作。",
+      "targets": [
+        {
+          "blockId": "article-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4"
+        },
+        {
+          "blockId": "article-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-8"
+        }
+      ]
+    },
+    {
+      "id": "culture-context",
+      "type": "culture",
+      "titleZh": "场景中的细节",
+      "bodyZh": "这是一个虚构学生的早晨，不代表法国人的统一作息或早餐习惯。",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。"
+    },
+    {
+      "id": "vocabulary-targets",
+      "type": "vocabulary",
+      "entryIds": [
+        "word-se-lever",
+        "word-douche",
+        "word-sept",
+        "word-trente",
+        "word-huit",
+        "word-preparer",
+        "word-matin",
+        "word-heure"
+      ]
+    },
+    {
+      "id": "grammar-targets",
+      "type": "grammar",
+      "entryIds": [
+        "grammar-se-lever-present",
+        "grammar-time-a"
+      ]
+    },
+    {
+      "id": "exercise-comprehension",
+      "type": "exercise",
+      "exerciseType": "single-choice",
+      "promptZh": "Camille 几点起床？",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "七点半"
+        },
+        {
+          "id": "correct",
+          "text": "七点"
+        },
+        {
+          "id": "distractor-b",
+          "text": "八点"
+        }
+      ]
+    },
+    {
+      "id": "exercise-fill",
+      "type": "exercise",
+      "exerciseType": "fill-blank",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Elle se ___ à sept heures.",
+      "hintZh": "保留 lève 中的重音符号；se 已经给出。"
+    },
+    {
+      "id": "exercise-order",
+      "type": "exercise",
+      "exerciseType": "order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "le matin."
+        },
+        {
+          "id": "token-1",
+          "text": "Je me lève"
+        },
+        {
+          "id": "token-2",
+          "text": "à sept heures"
+        }
+      ]
+    },
+    {
+      "id": "habit-main",
+      "type": "habit",
+      "taskZh": "用 Je me lève à… 说一个起床时间，可以采用虚构作息。",
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。"
+    },
+    {
+      "id": "summary-main",
+      "type": "summary",
+      "takeawaysZh": [
+        "我能理解早晨安排的顺序。",
+        "我能说出起床时间。",
+        "我能区分整点和半点。"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景",
+      "blockIds": [
+        "scene-main"
+      ]
+    },
+    {
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段短文",
+      "blockIds": [
+        "article-main"
+      ]
+    },
+    {
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达",
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ]
+    },
+    {
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用",
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ]
+    },
+    {
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常",
+      "blockIds": [
+        "habit-main"
+      ]
+    },
+    {
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课",
+      "blockIds": [
+        "summary-main"
+      ]
+    }
+  ],
+  "completion": {
+    "strategy": "attempt-all",
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ]
+  },
+  "reviewItemIds": [
+    "word-se-lever",
+    "word-sept",
+    "word-trente"
+  ],
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "kind": "choice",
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：七点。"
+      },
+      "exercise-fill": {
+        "kind": "text",
+        "accepted": [
+          "lève"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "保留 lève 中的重音符号；se 已经给出。"
+      },
+      "exercise-order": {
+        "kind": "order",
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Je me lève à sept heures le matin."
+      }
+    }
+  },
+  "editorial": {
+    "status": "draft",
+    "note": "项目原创课程草稿，未完成人工法语、译文和教学审校。场景、角色日程与住房为虚构设定。素材待来源授权确认及登记；无正式录音。审校记录见 docs/content/a1/README.md，禁止直接作为已审校课程发布。"
+  },
+  "assetRefs": [
+    {
+      "assetId": "art-home-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "cast": [
+    {
+      "characterId": "character-camille",
+      "revision": 1,
+      "displayName": "Camille",
+      "avatarId": "avatar-camille-v1",
+      "speechLocale": "fr-FR"
+    },
+    {
+      "characterId": "character-lea",
+      "revision": 1,
+      "displayName": "Léa",
+      "avatarId": "avatar-lea-v1",
+      "speechLocale": "fr-FR"
+    }
+  ]
+}
