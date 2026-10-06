@@ -521,7 +521,7 @@ async fn hint(
             Block::Exercise {
                 id,
                 exercise: Exercise::FillBlank { hint_zh, .. },
-            } if id == &exercise => Some(hint_zh.clone()),
+            } if id == &exercise && !hint_zh.trim().is_empty() => Some(hint_zh.clone()),
             _ => None,
         })
         .ok_or(AppError::NotFound)?;

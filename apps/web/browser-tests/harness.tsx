@@ -56,6 +56,7 @@ const qa = {
   savedFixture: null as SavedItem | null,
   confirmExternal: null as ((index: number) => void) | null,
   textAnswers: [] as ExerciseAnswer[],
+  hintRequests: 0,
 };
 Object.assign(window, { qa });
 class ControlledUtterance extends EventTarget {
@@ -514,7 +515,8 @@ function PendingHarness() {
     </LearningProvider>
   );
 }
-function TextLimitHarness() {
+function TextLimitHarness({ hintText = "边界测试" }: { hintText?: string }) {
+  const [hinted, setHinted] = useState(false);
   return (
     <LearningProvider>
       <main>
@@ -526,12 +528,15 @@ function TextLimitHarness() {
             exerciseType: "fill-blank",
             promptZh: "输入表达",
             templateFr: "___",
-            hintZh: "边界测试",
+            hintZh: hintText,
           }}
-          hinted={false}
+          hinted={hinted}
           blocked={false}
           completed={false}
-          hint={() => {}}
+          hint={() => {
+            qa.hintRequests++;
+            setHinted(true);
+          }}
           submit={async (answer) => {
             qa.textAnswers.push(answer);
           }}
@@ -563,8 +568,10 @@ const router = createMemoryRouter(
         <LibraryHarness />
       ) : kind === "pending" ? (
         <PendingHarness />
-      ) : kind === "text-limit" ? (
-        <TextLimitHarness />
+      ) : kind === "text-limit" || kind === "text-no-hint" ? (
+        <TextLimitHarness
+          hintText={kind === "text-no-hint" ? "\u00a0\u202f" : "边界测试"}
+        />
       ) : (
         <StartHarness />
       ),

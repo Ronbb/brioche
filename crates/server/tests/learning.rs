@@ -132,6 +132,118 @@ fn start_body(lesson: &str, key: &str) -> Value {
 }
 #[tokio::test]
 #[ignore = "set TEST_DATABASE_URL to a dedicated PostgreSQL database"]
+async fn absent_hints_do_not_change_progress_or_attempt_hint_usage() {
+    let url = std::env::var("TEST_DATABASE_URL").expect("TEST_DATABASE_URL is required");
+    let admin = Database::connect(&url).await.unwrap();
+    let schema = format!(
+        "hint_test_{}",
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    );
+    admin
+        .execute_unprepared(&format!("CREATE SCHEMA {schema}"))
+        .await
+        .unwrap();
+    let mut options = ConnectOptions::new(url);
+    options.set_schema_search_path(&schema).sqlx_logging(false);
+    let db = Database::connect(options).await.unwrap();
+    brioche_migration::Migrator::up(&db, None).await.unwrap();
+    let mut source = development_source().unwrap();
+    let block = source["blocks"]
+        .as_array_mut()
+        .unwrap()
+        .iter_mut()
+        .find(|block| block["exerciseType"] == "fill-blank")
+        .unwrap();
+    block["hintZh"] = json!("\u{00a0}\u{202f}");
+    let exercise = block["id"].as_str().unwrap().to_owned();
+    let lesson = project_source(source.clone()).unwrap();
+    publish(&db, source).await;
+    let backend = Backend::new(db.clone()).await.unwrap();
+    let app = identity::router(
+        backend.clone(),
+        CsrfPolicy::new(["http://localhost:5173".into()]).unwrap(),
+        false,
+    );
+    let mut browser = Browser::new(app).await;
+    browser.account(&backend, "hintless@example.test").await;
+    let (status, mut state) = browser
+        .send(
+            "POST",
+            "/api/v1/learning-sessions",
+            Some(start_body(&lesson.id, "hintless-start-001")),
+            true,
+        )
+        .await;
+    assert_eq!(status, 200);
+    state = state["progress"].clone();
+    let id = state["id"].as_str().unwrap().to_owned();
+    let practice = lesson
+        .steps
+        .iter()
+        .position(|step| step.block_ids.contains(&exercise))
+        .unwrap();
+    for step in &lesson.steps[..practice] {
+        if lesson.completion.required_step_ids.contains(&step.id) {
+            let (status, next) = browser.send("PUT", &format!("/api/v1/learning-sessions/{id}/steps/{}", step.id),
+                Some(json!({"version":state["version"],"idempotencyKey":format!("hintless-step-{}",step.id)})), true).await;
+            assert_eq!(status, 200);
+            state = next;
+        }
+    }
+    let hint_path = format!("/api/v1/learning-sessions/{id}/hints/{exercise}");
+    for _ in 0..2 {
+        assert_eq!(
+            browser
+                .send(
+                    "POST",
+                    &hint_path,
+                    Some(
+                        json!({"version":state["version"],"idempotencyKey":"hintless-request-001"})
+                    ),
+                    true
+                )
+                .await
+                .0,
+            404
+        );
+    }
+    assert_eq!(
+        browser
+            .send(
+                "GET",
+                &format!("/api/v1/learning-sessions/{id}"),
+                None,
+                true
+            )
+            .await
+            .1["progress"],
+        state
+    );
+    assert_eq!(count(&db, "exercise_hints").await, 0);
+    let (status, attempt) = browser
+        .attempt(
+            &id,
+            &exercise,
+            json!({"kind":"text","text":"bonjour"}),
+            &state["version"],
+            "hintless-attempt-001",
+        )
+        .await;
+    assert_eq!(status, 200);
+    assert_eq!(attempt["progress"]["attempts"][0]["hintUsed"], false);
+    assert_eq!(count(&db, "exercise_hints").await, 0);
+    db.close().await.unwrap();
+    admin
+        .execute_unprepared(&format!("DROP SCHEMA {schema} CASCADE"))
+        .await
+        .unwrap();
+}
+
+#[tokio::test]
+#[ignore = "set TEST_DATABASE_URL to a dedicated PostgreSQL database"]
 async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
     use brioche_server::{AppError, content};
     let url = std::env::var("TEST_DATABASE_URL").unwrap();

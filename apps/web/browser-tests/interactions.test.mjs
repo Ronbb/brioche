@@ -1194,6 +1194,40 @@ test("unavailable learning retains independent expression writes and only releas
   assert.equal(await evaluate("qa.ownedWrites.length"), 0);
 });
 
+test("optional fill-blank hints omit empty actions and reveal meaningful hints once", async () => {
+  await open("text-no-hint");
+  assert.equal(
+    await evaluate("document.querySelectorAll('.practice-hint').length"),
+    0,
+  );
+  await browser("focus", ".exercise-sheet input");
+  await browser("keyboard", "inserttext", "bonjour");
+  await browser("focus", ".exercise-sheet button.primary");
+  await press("Enter");
+  assert.deepEqual(await evaluate("qa.textAnswers[0]"), {
+    kind: "text",
+    text: "bonjour",
+  });
+  assert.equal(await evaluate("qa.hintRequests"), 0);
+  await open("text-limit");
+  await browser("focus", ".exercise-sheet .practice-hint");
+  await press("Enter");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('.exercise-sheet .profile-note')?.textContent==='边界测试'",
+  );
+  assert.equal(await evaluate("qa.hintRequests"), 1);
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "边界测试",
+  );
+  assert.equal(
+    await evaluate("document.querySelectorAll('.practice-hint').length"),
+    0,
+  );
+});
+
 test("native fill-blank input bounds UTF-16 units and submits the exact text without removing accents", async () => {
   await open("text-limit");
   await browser("focus", ".exercise-sheet input");

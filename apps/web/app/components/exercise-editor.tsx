@@ -44,6 +44,8 @@ export function ExerciseEditor({
   const form = useRef<HTMLFormElement>(null),
     feedback = useRef<HTMLDivElement>(null),
     focusFeedback = useRef(false),
+    hintContent = useRef<HTMLParagraphElement>(null),
+    focusHint = useRef(false),
     answerId = useId();
   const audio = useLearning(),
     storageWarning = useRef(false);
@@ -102,6 +104,12 @@ export function ExerciseEditor({
       ? latest.answer.tokenIds
       : order;
   const result = !editing ? latest?.result : null;
+  useEffect(() => {
+    if (!hinted || !focusHint.current || !hintContent.current) return;
+    focusHint.current = false;
+    const frame = requestAnimationFrame(() => hintContent.current?.focus());
+    return () => cancelAnimationFrame(frame);
+  }, [hinted]);
   useEffect(() => {
     if (!result || !focusFeedback.current) return;
     focusFeedback.current = false;
@@ -205,14 +213,20 @@ export function ExerciseEditor({
         )}
       </fieldset>
       {block.exerciseType === "fill-blank" &&
+        !!block.hintZh.trim() &&
         (hinted ? (
-          <p className="profile-note">{block.hintZh}</p>
+          <p className="profile-note" ref={hintContent} tabIndex={-1}>
+            {block.hintZh}
+          </p>
         ) : (
           <button
             className="text-button practice-hint"
             type="button"
             disabled={blocked || completed}
-            onClick={hint}
+            onClick={() => {
+              focusHint.current = true;
+              hint();
+            }}
           >
             提示
           </button>

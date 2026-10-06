@@ -1,5 +1,11 @@
 # 设计验证记录
 
+## 2026-10-06：可选填空提示与键盘焦点
+
+- 课程允许 hintZh 为空或只有 Unicode 空白，但实际 ExerciseEditor 和 demo practice 仍显示提示入口。新增真实组件 Chromium 回归先复现 NBSP/窄 NBSP 提示仍有按钮；现两种练习界面按 trim 后是否非空展示入口。有内容的提示仍可展开；键盘回归再复现按钮消失后焦点落 BODY，现仅在用户主动请求提示后将焦点移至展开内容，服务端预先记录的提示不会在初始渲染时抢焦点。
+- 独立 PostgreSQL 课程使用合法空白提示，明确确认前置必做步骤后直接请求提示。首次测试错误地把 LearningSession 当 LearningState 读取，修正 progress 包装后实际复现 HTTP 200（期望 404）。现空提示与无此提示统一 NotFound，重复请求不改变进度、不创建 exercise_hints，随后合法作答 hintUsed=false；正常提示/重放/版本/跨账号/完成仍通过现有完整学习集成测试。
+- 20 项独立 Chromium 回归全部通过（约 255 秒）、27 项 Web 协议、6 项 SSR、TypeScript 7、客户端/SSR 构建、两项真实 PostgreSQL 学习集成测试、Clippy -D warnings、格式检查通过。浏览器使用合成请求与独立会话，数据库使用专用临时容器/独立 schema，容器与其匿名卷已按精确身份清理；常用服务和用户浏览器未改动。真实 iPhone、辅助技术、教学内容及生产门槛继续待验。
+
 ## 2026-10-06：课程块嵌套类型错误定位
 
 - 扩展真实作者 CLI 回归先复现对话 turns/segments/text 类型为整数时仅报告 /blocks/1 及整个块位置。serde_path_to_error 包住 internally tagged enum 仍丢失内部路径，因此以同一字段宏生成严格 wire struct，显式拆 type/exerciseType 后解析。普通 Block Deserialize 与作者带前缀解析共用实现；未知字段继续拒绝，public DTO 仍保持原平铺形式。

@@ -235,10 +235,12 @@ function PracticeSession({ lesson }: Route.ComponentProps["loaderData"]) {
                 value={text}
                 onChange={(e) => setText(e.target.value)}
               />
-              <details className="practice-hint">
-                <summary>提示</summary>
-                <p>{current.hintZh}</p>
-              </details>
+              {!!current.hintZh.trim() && (
+                <details className="practice-hint">
+                  <summary>提示</summary>
+                  <p>{current.hintZh}</p>
+                </details>
+              )}
             </>
           )}
           {current.exerciseType === "order" && (

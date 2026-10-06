@@ -1,5 +1,7 @@
 # 第一轮工程实现
 
+填空提示可选：hintZh 为空或只有空白时，账号练习与演示练习都不显示提示入口。提示 API 对空提示返回 404，不记录 hintUsed 或改变学习进度；有内容的提示保持原幂等记录。键盘主动展开提示后焦点移至提示内容，初始已显示的提示不抢焦点。对应独立浏览器与 PostgreSQL 回归已补齐。
+
 作者文件中的块/练习先按显式类型分派到与公开 DTO 共用字段宏生成的严格结构，保留嵌套类型与未知字段 JSON Pointer。`check`/`import` 可定位对话语块、角色、选项/token 的实际字段行列；缺失字段定位最近存在父节点。公开课程/Schema/TS 形状保持不变，运行 API 的错误仍不暴露作者诊断。
 
 练习步骤约束现由共享 Rust 语义校验执行：exercise 仅被 practice 引用，completion.requiredExerciseIds 必须属于至少一个必做 practice。`check` 与 `import` 数据库前预检报告原 steps/blockIds 或 requiredExerciseIds 项的行列；可选练习与其他 practice 中的再次回顾仍允许，完整登记媒体验证保留在 hydration 后。
