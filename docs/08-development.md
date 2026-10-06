@@ -9,6 +9,7 @@
 - pnpm / Cargo workspace、锁文件、Rust 1.99.0 工具链、TypeScript 7 独立类型检查。
 - React Router Framework Mode + Vite SSR；正式客户端路由 `/`、`/lessons/:lessonId`、`/review/:lessonId`、`/profile`。
 - 迁移确认过的视觉与主要阅读交互：角色介绍、头像整句、点词朗读和词汇解释、短文、全文播放/暂停/长按调速、复习卡片、统一设置、toast、动效和覆盖式滚动条。
+- 录音失败转浏览器语音时保持用户暂停意图：暂停期间迟到的媒体错误不会开始语音等待或朗读，明确恢复才从当前句以最新倍速尝试；无语音仍保留实际失败提示。等待中的切词/离页取消旧监听与回调。
 - Axum 公共目录和课程 API、health/readiness、SIGINT/SIGTERM 优雅退出。
 - Rust Serde 公共 DTO，生成 TS 联合类型和公共课程 JSON Schema；Web 只导入公共契约。私有答案与编辑状态不进入课程响应。
 - 课程块拒绝未知字段：10 类块及三种练习均严格解析，现有平铺练习格式不变。`check`/`import` 在连接前拒绝额外字段，当前诊断定位原文件对应块的 JSON Pointer 与起始行列，并显示未知字段名；生成的公共/作者 Schema 同步约束额外属性。

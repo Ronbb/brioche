@@ -356,6 +356,14 @@ export function LearningProvider({
         if (whole && currentIndex >= 0) index.current = currentIndex;
         queue.current = queue.current.map(({ recording: _, ...unit }) => unit);
         generation.current++;
+        if (state.current.status === "paused") {
+          // A delayed media failure must not override the user's pause intent.
+          // Resolve a voice only on explicit resume, preserving that gesture too.
+          restartPaused.current = true;
+          update({ ...state.current, wordId: null });
+          notify("录音暂时不可用，恢复时将尝试浏览器语音。");
+          return;
+        }
         notify("录音暂时不可用，正在尝试浏览器语音。");
         speakCurrent();
       },
