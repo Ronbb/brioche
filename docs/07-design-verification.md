@@ -782,3 +782,9 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - 独立测试的beforeEach现清理本套件拥有的Chromium sessionStorage；新用例各结果之间也隔离草稿。同一用例内保持真正的离页/返回/原提交恢复，未放宽正文、焦点、请求body/key或账号隔离断言。四项顺序定向回归85.43s全部通过，包含恢复多步骤、冲突读取、新弹窗结果、待确认保存。
 - 格式化后的完整pnpm test:browser实际45/45通过（642.11s），没有未捕获页面错误，独立随机Vite/Chromium自动清理。共享弹窗的学习/复习离页、复习撤回、折叠收藏、独立表达待确认、身份替换等均在完整套件中通过。目标Prettier及diff检查通过。本轮最终只改测试和协作/验证文档，没有运行时改动，未重复构建、TS7、28Web/12SSR或三项生产页面壳；修复提交的完整Linux CI须另行确认。
 - 受控浏览器证据不替代实际数据库/多账号并发、真实iPhone/辅助技术、法语内容人工审校、正式录音及生产环境验收，完整目标仍未达成。
+
+## 2026-10-06：最终 Docker 启动要求与部署说明校正
+
+- 用户明确要求最终在Docker中启动，已写入AGENTS及部署/工程说明：收尾后实际Compose build/up，核对migrate退出0、四个长期服务healthy、HTTP30075和巡检，最终保留应用运行。此要求不授权修改外部HTTPS/DNS/路由器。
+- 对照当前main/config/Compose/.env示例移除部署文档的旧提案变量SESSION_COOKIE_KEY、CONTENT_SOURCE_ROOT、REGISTRATION_MODE，补实际APP_ENV/CONTENT_MODE/API_BIND/ADDITIONAL_APP_ORIGINS/POSTGRES_PASSWORD及origin用途。核对当前Compose up帮助支持wait/wait-timeout、巡检路径及.env忽略规则；生产空目录可启动供私有预览，不以启动代替内容审校。
+- 当前根.env不存在，docker ps未见brioche应用栈；本轮没有创建秘密或启动/停止容器，最终启动仍待执行，不用先前隔离演练冒充运行状态。文档/diff检查通过，未改运行代码、不追加应用测试。

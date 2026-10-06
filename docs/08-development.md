@@ -210,7 +210,7 @@ docker compose config --quiet
 docker compose build
 ```
 
-准备好生产参数和已审校课程后，启动方式为 `docker compose up -d`。访问 `http://<宿主机地址>:30075`；对外 HTTPS、域名和路由器由用户处理。Compose 内不申请证书，也不开放 HTTPS 端口。
+准备好部署参数、核对项目与端口占用后，启动方式为 `docker compose up -d --wait --wait-timeout 180`，再核对 `docker compose ps --all` 和 `pnpm health:check --project brioche`。用户要求工程收尾后实际启动并保留应用在 Docker 中运行；具体验收见 [部署说明](05-deployment.md#工程收尾后的实际启动)。未发布正式内容时支持空目录与管理员私有预览，不能为启动伪造人工审校。访问 `http://<宿主机地址>:30075`；对外 HTTPS、域名和路由器由用户处理。Compose 内不申请证书，也不开放 HTTPS 端口。
 
 Web 镜像用 `pnpm deploy --prod` 保留生产依赖，使用 React Router Node 服务，API 为 Linux release 二进制。入口使用官方 `traefik:v3.7.13` 镜像，固定发布 `30075:8080`。配置位于 `infra/traefik`，file provider 保留 API 路径前缀、页面走 SSR；没有 Docker socket、公开 dashboard 或证书卷。版本依据：[Traefik 3.7.13](https://github.com/traefik/traefik/releases/tag/v3.7.13)、[PostgreSQL 18.6](https://www.postgresql.org/docs/release/18.6/)。
 

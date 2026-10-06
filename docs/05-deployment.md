@@ -4,7 +4,7 @@
 
 用户已确定生产运行在本机 Docker Compose，域名由 Cloudflare DNS 管理，路由器做静态端口映射。开发时 Web、API 和数据库在本机直接运行，不要求 Docker。工程已提供 `compose.yaml` 与 `infra/` 镜像配置；实际命令和当前限制见 [工程说明](08-development.md)。
 
-本设计没有修改 DNS、路由器、防火墙，也没有启动生产服务。实际域名、公网地址、生产机器/系统和可映射外网端口仍待部署前补齐。
+本设计没有修改 DNS、路由器、防火墙，也没有启动生产服务。用户要求工程收尾后在 Docker Compose 中实际启动并验收本机入口；实际域名、公网地址、生产机器/系统和可映射外网端口仍待对接。
 
 2026-10-06 用户确认：入口网关使用 Traefik，Compose 对外仅映射 HTTP `30075`，HTTPS 由用户在外部处理。本项目不配置证书、ACME、HTTPS 端口或 HTTP→HTTPS 跳转。
 
@@ -24,23 +24,24 @@ server → postgres:5432（内部网络）
 
 ## 开发环境
 
-目标启动方式：本机 Rust stable（rustfmt/clippy）、Node.js LTS、pnpm、PostgreSQL，分别跑 Vite web/Axum API，统一通过 `http://localhost:5173` 使用。数据库只能本机访问；支持用户已经安装的 PostgreSQL，若尚未安装再确定安装方式。Vite 固定端口，代理 `/api` 至 3001；SSR loader 直接连接内部 API。
+当前启动方式：本机 Rust（rustfmt/clippy）、Node.js、pnpm，分别跑 Vite Web/Axum API，统一通过 `http://localhost:5173` 使用。版本以锁文件和工具链配置为准。账号持久化模式另需专用 PostgreSQL；开发 fixture 可无数据库运行，但不提供真实账号进度。数据库只能本机访问。Vite 固定端口，代理 `/api` 至 3001；SSR loader 直接连接内部 API。
 
-计划环境变量（未来 `.env.example` 只放占位值）：
+实际配置分别见根目录 `.env.example`（开发）与 `infra/production.env.example`（Compose）：
 
 | 变量 | 开发示例/用途 |
 | --- | --- |
 | DATABASE_URL | 指向本机 PostgreSQL 的专用开发数据库；禁止复制生产密码 |
+| APP_ENV / CONTENT_MODE | 开发 `development` / `fixture`；Compose 固定 `production` / `database`，生产禁止 fixture |
+| API_BIND | 开发和容器内均默认 `0.0.0.0:3001` |
 | PUBLIC_APP_URL | `http://localhost:5173`；生产需含实际端口 |
+| ADDITIONAL_APP_ORIGINS | 逗号分隔的明确额外 origin；手机登录时使用实际 LAN 地址和端口 |
 | INTERNAL_API_URL | 开发 `http://127.0.0.1:3001`；生产 `http://server:3001` |
-| SESSION_COOKIE_KEY | 每个环境独立随机秘密，供选定的 cookie 保护配置使用；绝不进入 VITE_ 公开变量 |
 | MEDIA_ROOT | 本机已发布媒体目录，生产为持久卷路径 |
-| CONTENT_SOURCE_ROOT | 内容源路径，仅 CLI 读取，不暴露给 Web |
-| REGISTRATION_MODE | 默认 invite；dev fixture 初始化属于独立工具 |
+| POSTGRES_PASSWORD | Compose 专用随机数据库秘密；Compose 组装内部 DATABASE_URL，禁止进入 Git 或公开日志 |
 
-`PUBLIC_APP_URL` 作为统一 origin 的项目配置，Rust 的 Origin/CSRF 校验和前端 SSR 据此配置；避免多个配置各写一套域名。变量名称是项目提案，并不假定认证库自动识别。若 cookie store 配置无需独立密钥，移除相应变量，不保留无实际用途的 secrets。
+`PUBLIC_APP_URL` 是浏览器实际访问的 origin，Rust 据此配置 CSRF allowlist、认证链接和 Secure Cookie；SSR 使用内部 API 地址连接服务端。会话采用数据库记录和随机 cookie ID，不需要旧提案中的 SESSION_COOKIE_KEY。账号邀请/恢复由 CLI 签发，课程与素材路径由 CLI 参数传入，不读取旧提案中的 REGISTRATION_MODE 或 CONTENT_SOURCE_ROOT。
 
-当前开发命令为 `pnpm dev:api`、`pnpm dev:web`；迁移使用 `cargo run -p brioche-server -- migrate`，课程导入使用 `import <file>` 子命令。离线 `check <lesson.json>` 与 `check-release <manifest.json>` 已实现；完整内容 Schema、staging 预览与媒体发布流程仍需补齐，详见 [工程说明](08-development.md)。
+当前开发命令为 `pnpm dev:api`、`pnpm dev:web`；迁移使用 `cargo run -p brioche-server -- migrate`，课程导入使用 `import <file>` 子命令。离线校验、固定版本/整批 staging 预览、判分预览和登记媒体发布已经接入；完整验收与内容人工审校的状态见 [工程说明](08-development.md) 和 [实现清单](09-implementation-tracker.md)。
 
 ## Docker 服务与网络
 
@@ -55,6 +56,22 @@ server → postgres:5432（内部网络）
 Traefik/Web/API 共享应用内部网络，API/PostgreSQL 共享数据库网络，Web 不直接连接数据库。仅 Traefik 入口发布宿主端口，数据库和业务进程保留在内部网络。Traefik 使用 file provider，不挂 Docker socket；dashboard/API 未启用，健康检查仅监听容器 loopback `8082`。
 
 基础镜像已固定 registry index digest；实际核对与更新约定见 [容器镜像说明](../infra/images.md)。Linux/amd64 的完整 Compose 构建、迁移/健康顺序与 HTTP 30075 的账号/SSR/学习/媒体链路已在隔离项目验证；这不是实际域名、用户数据或公网生产验收。
+
+### 工程收尾后的实际启动
+
+将 `infra/production.env.example` 复制为被 Git 忽略的根目录 `.env`，设置新随机数据库密码与实际浏览器 origin。不要覆盖已有部署秘密；启动前核对当前 Compose 项目和 30075 端口占用。
+
+```sh
+docker compose config --quiet
+docker compose build
+docker compose up -d --wait --wait-timeout 180
+docker compose ps --all
+pnpm health:check --project brioche --origin http://127.0.0.1:30075
+```
+
+验收要求：migrate 退出码为 0，PostgreSQL/API/Web/Traefik 四个长期服务 healthy，入口首页、Web health、API health/ready 成功，只有 HTTP 30075 对外映射。启动失败时读取该项目状态和日志定位，不能只重复执行 up 或以构建成功代替健康验收；不要输出完整含秘密的 Compose 渲染配置。
+
+未激活已审校 release 时，生产目录为空是明确支持的状态。可先启动以进行账号邀请与管理员私有审校预览，随后按发布流程激活正式内容；不能把启动成功或空目录当作完整教学内容已经交付。用户要求最终保留应用在 Docker 中运行，最终交付须报告实际入口和启动验收结果，不能沿用此前已清理的隔离演练作为证明。
 
 使用 Linux 容器。如果生产宿主机是 Windows，Docker Desktop/WSL2 的服务自启、网络转发和磁盘权限需要单独验证；不能把 `restart: unless-stopped` 当作 Docker 引擎本身会在开机后启动。媒体卷与 DB 卷路径必须确定，备份目录与 live volume 分开。
 
