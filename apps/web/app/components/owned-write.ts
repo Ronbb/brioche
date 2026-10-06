@@ -28,6 +28,7 @@ export function useOwnedWrite<T>(
     userId?: string;
     target: OwnedTarget;
     accept: (result: T) => void;
+    onUnavailable?: (status: 404 | 410) => void;
   },
 ) {
   const storageKey = recovery.userId
@@ -109,6 +110,8 @@ export function useOwnedWrite<T>(
         clearPending(key, (job.body as Record<string, unknown>).idempotencyKey);
         pending.current = null;
         setUncertain(false);
+        if (failure.status === 404 || failure.status === 410)
+          recoveryRef.current.onUnavailable?.(failure.status);
         if (failure.status === 409) {
           try {
             await refresh?.();

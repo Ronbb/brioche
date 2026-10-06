@@ -5,7 +5,7 @@ import type { SavedPage } from "@brioche/contracts/SavedPage";
 import type { ReviewCard } from "@brioche/contracts/ReviewCard";
 import type { ReviewCardsPage } from "@brioche/contracts/ReviewCardsPage";
 import { getPrivate } from "../lib/api.server";
-import { privateRequest } from "../lib/api.client";
+import { ApiRequestError, privateRequest } from "../lib/api.client";
 import { useOwnedWrite } from "../components/owned-write";
 import { useLearning } from "../components/learning";
 import { Bookmark } from "../components/bookmark";
@@ -283,10 +283,21 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
   const [card, setCard] = useState(initial),
     [open, setOpen] = useState(false),
     [readFailed, setReadFailed] = useState(false),
+    [unavailable, setUnavailable] = useState<404 | 410 | null>(null),
     [refreshing, setRefreshing] = useState(false),
     audio = useLearning(),
     panelId = useId();
-  const mounted = useRef(true);
+  const mounted = useRef(true),
+    unavailableHeading = useRef<HTMLHeadingElement>(null);
+  useLayoutEffect(() => {
+    if (unavailable) unavailableHeading.current?.focus();
+  }, [unavailable]);
+  function removeUnavailable(status: 404 | 410) {
+    if (!mounted.current) return;
+    audio.stop();
+    setUnavailable(status);
+    setReadFailed(false);
+  }
   useEffect(() => {
     mounted.current = true;
     return () => {
@@ -305,7 +316,13 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
         setReadFailed(false);
       }
     } catch (error) {
-      if (mounted.current) setReadFailed(true);
+      if (
+        error instanceof ApiRequestError &&
+        error.phase === "request" &&
+        (error.status === 404 || error.status === 410)
+      )
+        removeUnavailable(error.status);
+      else if (mounted.current) setReadFailed(true);
       throw error;
     } finally {
       if (mounted.current) setRefreshing(false);
@@ -315,7 +332,17 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
     userId: audio.profile?.id,
     target: { kind: "preference", cardId: initial.id },
     accept: setCard,
+    onUnavailable: removeUnavailable,
   });
+  if (unavailable)
+    return (
+      <article className="library-entry">
+        <h2 ref={unavailableHeading} tabIndex={-1}>
+          {unavailable === 410 ? "来源内容已撤回" : "复习记录已不可用"}
+        </h2>
+        <p className="profile-note">这条表达暂时无法继续复习。</p>
+      </article>
+    );
   return (
     <article className="library-entry">
       <button
