@@ -6,12 +6,23 @@ use std::{collections::BTreeMap, path::Path};
 
 #[test]
 fn scene_inventory_matches_actual_svg_sources() {
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/content/a1");
+    check_scene_inventory("a1", 6);
+}
+
+#[test]
+fn a2_scene_inventory_matches_actual_svg_sources() {
+    check_scene_inventory("a2", 1);
+}
+
+fn check_scene_inventory(level: &str, expected_count: usize) {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../docs/content")
+        .join(level);
     let document = Document::load(root.join("scene-assets.bundle.json")).unwrap();
     let bundle: brioche_server::media::AssetBundle =
         serde_json::from_value(document.value).unwrap();
     assert_eq!(bundle.schema_version, "1.0");
-    assert_eq!(bundle.assets.len(), 6);
+    assert_eq!(bundle.assets.len(), expected_count);
     for asset in bundle.assets {
         let info = brioche_server::media::inspect_file(
             &root.join("assets").join(&asset.file),
@@ -146,6 +157,31 @@ fn a2_daily_services_matches_cross_level_catalog_and_grades_all_exercises() {
             "a2-weekend-travel",
             "a2-shared-living",
             "a2-daily-services",
+        ],
+    );
+}
+
+#[test]
+fn a2_body_wellbeing_matches_cross_level_catalog_and_grades_all_exercises() {
+    check_a2_readings(&[
+        ("a2-health-describe-discomfort", "dialogue"),
+        ("a2-health-book-consultation", "dialogue"),
+        ("a2-health-talk-feelings", "article"),
+        ("a2-health-read-instructions", "article"),
+    ]);
+    check_catalog(
+        "../a2/catalog.four-units.release.json",
+        &[
+            "a1-first-conversations",
+            "a1-breakfast-bakery",
+            "a1-city-travel",
+            "a1-home-routine",
+            "a1-food-shopping",
+            "a1-social-meetings",
+            "a2-weekend-travel",
+            "a2-shared-living",
+            "a2-daily-services",
+            "a2-body-wellbeing",
         ],
     );
 }

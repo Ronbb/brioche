@@ -15,7 +15,7 @@
 | [实现与验收清单](09-implementation-tracker.md) | 完整功能目标的状态、缺口与验收证据 |
 | [决策记录](decisions/0001-foundation.md) | 关键选择的依据、代价及重新评估条件 |
 | [示例课程](examples/a1-bakery.lesson.json) | 用一堂面包店课程检验数据设计 |
-| [A2 课程草稿包](content/a2/README.md) | 周末与出行、一起生活、日常事务十二课草稿，两级联合目录与审校边界 |
+| [A2 课程草稿包](content/a2/README.md) | 出行、合住、日常事务、身体状态十六课草稿，两级联合目录与审校边界 |
 | [A1 六个单元草稿包](content/a1/README.md) | 24 课作者源文件、固定顺序、结构检查与待审校/素材记录 |
 | [目录 release 示例](examples/catalog.release.json) | 显式名称、课程 revision 与教学顺序；引用未审校示例，不能直接发布 |
 | [素材与角色清单示例](examples/asset-bundle.json) | 图片哈希、尺寸、来源/授权与角色快照；保持 planned/未确认授权，不能直接导入 |

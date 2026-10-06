@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "1.0",
+  "assets": [
+    {
+      "assetId": "art-clinic-reception",
+      "revision": 1,
+      "sha256": "bc9f8b9fc00c17faade6b0682ea5c371940ebe7165471325c1d0f789202e60fe",
+      "mimeType": "image/svg+xml",
+      "width": 640,
+      "height": 470,
+      "altZh": "虚构接待室里，工作人员坐在橙色接待桌后，旁边有两张等候椅、窗户、时钟与绿植",
+      "creditZh": "Brioche · 场景插图草稿",
+      "file": "clinic-reception.svg",
+      "status": "planned",
+      "source": "Brioche 项目内以 SVG 独立绘制，2026-10-06；未使用外部位图或字体",
+      "license": "待确认素材分发授权",
+      "creator": "Brioche 项目（Codex 绘制 SVG）",
+      "rightsConfirmed": false
+    }
+  ],
+  "characters": []
+}
