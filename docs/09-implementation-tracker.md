@@ -303,3 +303,5 @@ A1语法辅助审阅（2026-10-06）：读取24课48条grammar说明/例句，�
 A2语法辅助审阅（2026-10-06）：读取24课48条grammar说明/例句，修正三课共享顺序词说明对过去叙述/操作步骤的不适配，以及两课共享devoir说明的家务范围；共改四课，仍draft。四份作者check、带sources的完整48课release检查、13课程测试与JSON格式/diff通过；初次重复sources flag调用错误已修正。报告见content/a2/grammar-review.md。ea4f99e完整LinuxCI37470856262/job112293640020本轮已实际确认completed/success，不作为后续内容提交CI证明。当前Docker继续运行；管理员邮箱、完整人工审校/正式录音、真实设备及生产门槛仍待完成。
 
 导入前语义定位补齐（2026-10-06）：新增回归实际复现必需教学文本等非法内容在check可定位、import却先进入环境检查；现PublicLesson.validate_intrinsic统一课程自身的ID/引用/教学文本/步骤/练习等检查，import连接数据库前复用。audio/登记描述仍延后补齐，完整validate与发布媒体校验保留。38server单元、25作者CLI、13课程、19公共契约及Clippy/fmt通过，生成契约无差异；未改HTTP契约或审校/发布数据。Docker API/migrate已按当前源构建并up --wait更新，迁移exit0、四服务healthy，loopback/LAN HTTP30075巡检均通过、零重启；设备、正式内容/录音与生产门槛继续保留。
+
+导入前私有规则引用校验（2026-10-06）：回归复现check可定位未知正确选项/排序语块，import却先报环境错误；现import前置语义检查对原课源调用同一Grader::from_author_source，核对规则与真实练习块及非空反馈，不输出私有答案。补三项import字段场景，38server单元、25作者CLI、13课程与Clippy/fmt通过；完整48课离线目录通过。本轮未改公开契约/Web/课程数据，未重跑此前19契约/浏览器或PG事务；实际Docker API/migrate已构建并up --wait更新，迁移exit0、四服务healthy，loopback/LAN HTTP30075健康、零重启。eb7fd8f固定提交CI37473650814本轮实际in_progress；完整人工内容/录音、真实设备及生产门槛继续保留。

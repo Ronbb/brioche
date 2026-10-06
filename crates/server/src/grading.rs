@@ -148,7 +148,7 @@ impl Grader {
     }
 
     /// Check private types and intrinsic text bounds before connecting or hydrating media.
-    /// Exercise references still require the final hydrated public lesson.
+    /// References are checked against course blocks during import preflight and again after hydration.
     pub fn validate_author_schema(source: &serde_json::Value) -> anyhow::Result<()> {
         Self::author_rules(source).map(|_| ())
     }

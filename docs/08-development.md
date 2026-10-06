@@ -426,3 +426,5 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 本机Docker已实际启动（2026-10-06）：本次使用被忽略的.local/docker.env，维护命令为docker compose --env-file .local/docker.env --project-name brioche ...；未覆盖开发.env。迁移exit0、四常驻服务healthy，HTTP30075的loopback/LAN巡检成功，栈保持运行。正式目录为空，管理员邀请待用户邮箱，未发布未审校内容；实际手机/公网与完整业务验收继续保留。知识点已统一分类笔记卡片，操作入口移除长箭头，详见验证记录。
 
 导入前语义定位补齐（2026-10-06）：新增回归实际复现必需教学文本等非法内容在check可定位、import却先进入环境检查；现PublicLesson.validate_intrinsic统一课程自身的ID/引用/教学文本/步骤/练习等检查，import连接数据库前复用。audio/登记描述仍延后补齐，完整validate与发布媒体校验保留。38server单元、25作者CLI、13课程、19公共契约及Clippy/fmt通过，生成契约无差异；未改HTTP契约或审校/发布数据。Docker API/migrate已按当前源构建并up --wait更新，迁移exit0、四服务healthy，loopback/LAN HTTP30075巡检均通过、零重启；设备、正式内容/录音与生产门槛继续保留。
+
+导入前私有规则引用校验（2026-10-06）：回归复现check可定位未知正确选项/排序语块，import却先报环境错误；现import前置语义检查对原课源调用同一Grader::from_author_source，核对规则与真实练习块及非空反馈，不输出私有答案。补三项import字段场景，38server单元、25作者CLI、13课程与Clippy/fmt通过；完整48课离线目录通过。本轮未改公开契约/Web/课程数据，未重跑此前19契约/浏览器或PG事务；实际Docker API/migrate已构建并up --wait更新，迁移exit0、四服务healthy，loopback/LAN HTTP30075健康、零重启。eb7fd8f固定提交CI37473650814本轮实际in_progress；完整人工内容/录音、真实设备及生产门槛继续保留。

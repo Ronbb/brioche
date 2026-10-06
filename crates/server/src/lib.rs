@@ -308,8 +308,9 @@ pub fn validate_source_schema(mut source: serde_json::Value) -> anyhow::Result<(
     if source.get("audioRefs").is_some() {
         source.as_object_mut().unwrap().remove("audio");
     }
-    let lesson = project_source_types(source)?;
-    lesson.validate_intrinsic().map_err(anyhow::Error::msg)
+    let lesson = project_source_types(source.clone())?;
+    lesson.validate_intrinsic().map_err(anyhow::Error::msg)?;
+    grading::Grader::from_author_source(&lesson, &source).map(|_| ())
 }
 
 pub fn project_source(source: serde_json::Value) -> anyhow::Result<PublicLesson> {

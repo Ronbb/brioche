@@ -779,6 +779,24 @@ fn private_rules_and_release_semantics_report_exact_source_fields() {
             "private-unknown-token",
         ),
         (
+            "import",
+            &lesson,
+            "/serverOnly/grading/exercise-intention/correctOptionId",
+            "private-unknown-option",
+        ),
+        (
+            "import",
+            &lesson,
+            "/serverOnly/grading/exercise-order/correctTokenIds/1",
+            "private-unknown-token",
+        ),
+        (
+            "import",
+            &lesson,
+            "/serverOnly/grading/exercise-intention/feedbackZh",
+            "\u{00a0}",
+        ),
+        (
             "check",
             &lesson,
             "/serverOnly/grading/exercise-article/accepted/0",
@@ -819,7 +837,7 @@ fn private_rules_and_release_semantics_report_exact_source_fields() {
             error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
             "{error}"
         );
-        if command == "check" {
+        if command != "check-release" {
             assert!(!error.contains(marker));
         }
         assert!(!error.contains("database connection"));
