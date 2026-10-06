@@ -465,3 +465,12 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 认识与约见内容进展（2026-10-06）：补齐第六单元四份原创草稿（三位角色介绍朋友、咖啡邀约、约见确认短文、拒绝与改期），A1 六个规划单元共 24 课；新增六单元目录，原 12/16/20 课清单保持不变。新增公园场景 SVG 与真实哈希/尺寸清单；五项 curriculum 测试核对四个目录、共享知识、固定角色快照、私有字段剥离及全部 72 题的正确/合法错误答案。所有课程仍为 draft，素材 planned/rightsConfirmed=false，无正式录音或目录激活；不宣称完成官方 A1 等级。A2 与人工法语/译文/教学审校继续待完成。
 
 补充：公园和室内插图在独立离线浏览器页核对 320/390/900px 按比例缩放与无溢出，390px 实际截图已查看。未通过公共媒体路由或 Web public 绕过登记；不替代人物/素材正式审校与真实 iPhone 验收。专用浏览器已关闭，开发服务保留。
+
+
+### 2026-10-06：媒体发布诊断与失败原子性
+
+- 隔离 PostgreSQL 容器 `brioche-publication-diagnostics-qa`，仅本机 55437；author_runtime 和 recording 各用专用 schema，与生产和开发数据库无关。真实 CLI 的 CRLF release 文件核对课程条目的准确行列；图片损坏/移除后分别得到 `/media/0/sha256` 哈希不匹配与缺失/不可读消息。新导入的测试课程改变角色名（同时更新正文 speaker）或引用未登记角色 revision，分别定位 `/cast/0` 与 `/cast/0/revision`。每次失败均无 release、entries、audit 新增；恢复后 staging 正常且不激活。
+- 录音集成测试在正常 staging 前损坏/移除实际 MP3 文件，核对 `/audio/0` 两类消息和三个表不新增；恢复后继续既有登记、发布、授权、撤回、范围与腐坏测试并通过。
+- 首次测试尝试 UPDATE 登记描述，被不可变触发器正确拒绝；已改为新课程草稿，无关闭触发器或修改登记版本。首次角色草稿只改 cast 名称被正文一致性校验拒绝，已同步 speaker 后验证真正的发布快照门禁。
+- `cargo test -p brioche-server --test author_runtime --test recording -- --ignored`：2 项 PostgreSQL 集成测试通过；`cargo test -p brioche-server --lib --test author_cli`：32 + 9 项通过。诊断不复述底层 SQL、系统路径或私有答案。音频来源/解码元数据等分支保留实际门禁，但本轮没有对每个诊断分支单独做故障注入。
+- 临时数据库容器删除（含本次匿名卷），开发 API 恢复；无 production release 或公网配置变更。

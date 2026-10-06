@@ -302,7 +302,9 @@ async fn stage_impl(
                         &format!("imported lesson grading validation failed: {error}"),
                     )
                 })?;
-                crate::media::validate_lesson(&tx, &lesson, media_root).await.map_err(|error| StageFailure::at(error, &path, "registered visual/audio media failed publication validation; verify registration, rights and stored files"))?;
+                crate::media::validate_lesson_detailed(&tx, &lesson, media_root)
+                    .await
+                    .map_err(|error| StageFailure::at(error.runtime, &path, &error.diagnostic))?;
                 source_hashes.push(hash(&source)?);
                 entries.push(entry);
             }

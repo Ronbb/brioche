@@ -238,12 +238,25 @@ pub async fn validate_lesson<C: ConnectionTrait>(
     lesson: &PublicLesson,
     root: &Path,
 ) -> Result<(), crate::AppError> {
-    for asset in &lesson.audio {
-        let row = one(db, "SELECT descriptor,provenance,byte_size,sample_rate,channels FROM audio_assets WHERE asset_id=$1 AND revision=$2", vec![asset.asset_id.clone().into(), (asset.revision as i32).into()]).await?.ok_or(crate::AppError::InvalidInput)?;
+    validate_lesson_detailed(db, lesson, root)
+        .await
+        .map_err(|error| error.runtime)
+}
+pub(crate) async fn validate_lesson_detailed<C: ConnectionTrait>(
+    db: &C,
+    lesson: &PublicLesson,
+    root: &Path,
+) -> Result<(), media::PublicationFailure> {
+    for (index, asset) in lesson.audio.iter().enumerate() {
+        let pointer = format!("/audio/{index}");
+        let row = one(db, "SELECT descriptor,provenance,byte_size,sample_rate,channels FROM audio_assets WHERE asset_id=$1 AND revision=$2", vec![asset.asset_id.clone().into(), (asset.revision as i32).into()]).await?.ok_or_else(|| media::PublicationFailure::at(&format!("{pointer}/revision"), "recording revision is not registered"))?;
         if field::<serde_json::Value>(&row, "descriptor")?
             != serde_json::to_value(asset).map_err(|_| crate::AppError::Unavailable)?
         {
-            return Err(crate::AppError::InvalidInput);
+            return Err(media::PublicationFailure::at(
+                &pointer,
+                "recording descriptor does not match registered revision",
+            ));
         }
         let spec: AudioSpec = serde_json::from_value(field(&row, "provenance")?)
             .map_err(|_| crate::AppError::Unavailable)?;
@@ -252,31 +265,38 @@ pub async fn validate_lesson<C: ConnectionTrait>(
             assets: vec![spec],
         }
         .validate_author("publication-validation")
-        .map_err(|_| crate::AppError::InvalidInput)?;
+        .map_err(|_| {
+            media::PublicationFailure::at(
+                &pointer,
+                "registered recording provenance fails publication validation",
+            )
+        })?;
         let expected_size = field::<i64>(&row, "byte_size")?;
         let expected_rate = field::<i32>(&row, "sample_rate")?;
         let expected_channels = field::<i32>(&row, "channels")?;
         let root = root.to_path_buf();
         let asset = asset.clone();
-        tokio::task::spawn_blocking(move || -> Result<()> {
-            let bytes =
-                media::stored_bytes(&root, &asset.sha256, audio::extension(&asset.mime_type)?)?;
-            ensure!(
-                media::digest(&bytes) == asset.sha256 && bytes.len() as i64 == expected_size,
-                "registered recording bytes mismatch"
-            );
-            let info = audio::inspect(&bytes, &asset.mime_type)?;
-            ensure!(
-                info.duration_ms == asset.duration_ms
-                    && info.sample_rate as i32 == expected_rate
-                    && info.channels as i32 == expected_channels,
-                "registered recording decode mismatch"
-            );
+        tokio::task::spawn_blocking(move || -> std::result::Result<(), &'static str> {
+            let ext =
+                audio::extension(&asset.mime_type).map_err(|_| "unsupported recording format")?;
+            let bytes = media::stored_bytes(&root, &asset.sha256, ext)
+                .map_err(|_| "stored recording object is missing or unreadable")?;
+            if media::digest(&bytes) != asset.sha256 || bytes.len() as i64 != expected_size {
+                return Err("stored recording bytes do not match registered revision");
+            }
+            let info = audio::inspect(&bytes, &asset.mime_type)
+                .map_err(|_| "stored recording cannot be decoded")?;
+            if info.duration_ms != asset.duration_ms
+                || info.sample_rate as i32 != expected_rate
+                || info.channels as i32 != expected_channels
+            {
+                return Err("stored recording decode metadata does not match registered revision");
+            }
             Ok(())
         })
         .await
         .map_err(|_| crate::AppError::Unavailable)?
-        .map_err(|_| crate::AppError::InvalidInput)?;
+        .map_err(|message| media::PublicationFailure::at(&pointer, message))?;
     }
     Ok(())
 }

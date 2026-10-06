@@ -665,17 +665,62 @@ pub async fn hydrate_source<C: ConnectionTrait>(
     source["media"] = serde_json::Value::Array(descriptors);
     Ok(source)
 }
+/// Publication diagnostics are local-author only; HTTP callers keep AppError.
+#[derive(Debug)]
+pub(crate) struct PublicationFailure {
+    pub runtime: AppError,
+    pub diagnostic: String,
+}
+impl From<AppError> for PublicationFailure {
+    fn from(runtime: AppError) -> Self {
+        Self {
+            runtime,
+            diagnostic:
+                "publication registry operation failed; verify storage and database availability"
+                    .into(),
+        }
+    }
+}
+impl PublicationFailure {
+    pub(crate) fn at(pointer: &str, message: &str) -> Self {
+        Self {
+            runtime: AppError::InvalidInput,
+            diagnostic: format!("imported lesson {pointer}: {message}"),
+        }
+    }
+}
 pub async fn validate_lesson<C: ConnectionTrait>(
     db: &C,
     lesson: &PublicLesson,
     root: &Path,
 ) -> Result<(), AppError> {
-    lesson.validate().map_err(|_| AppError::InvalidInput)?;
-    crate::recording::validate_lesson(db, lesson, root).await?;
+    validate_lesson_detailed(db, lesson, root)
+        .await
+        .map_err(|error| error.runtime)
+}
+pub(crate) async fn validate_lesson_detailed<C: ConnectionTrait>(
+    db: &C,
+    lesson: &PublicLesson,
+    root: &Path,
+) -> Result<(), PublicationFailure> {
+    lesson
+        .validate()
+        .map_err(|_| PublicationFailure::at("/", "public lesson validation failed"))?;
+    crate::recording::validate_lesson_detailed(db, lesson, root).await?;
     let mut ids = BTreeSet::new();
-    for asset in &lesson.media {
-        if !ids.insert(&asset.asset_id) || asset.revision == 0 || asset.revision > i32::MAX as u32 {
-            return Err(AppError::InvalidInput);
+    for (index, asset) in lesson.media.iter().enumerate() {
+        let pointer = format!("/media/{index}");
+        if !ids.insert(&asset.asset_id) {
+            return Err(PublicationFailure::at(
+                &format!("{pointer}/assetId"),
+                "duplicate visual asset ID",
+            ));
+        }
+        if asset.revision == 0 || asset.revision > i32::MAX as u32 {
+            return Err(PublicationFailure::at(
+                &format!("{pointer}/revision"),
+                "visual asset revision outside database range",
+            ));
         }
         let row = one(
             db,
@@ -686,46 +731,73 @@ pub async fn validate_lesson<C: ConnectionTrait>(
             ],
         )
         .await?
-        .ok_or(AppError::InvalidInput)?;
+        .ok_or_else(|| {
+            PublicationFailure::at(
+                &format!("{pointer}/revision"),
+                "visual asset revision is not registered",
+            )
+        })?;
         if field::<serde_json::Value>(&row, "descriptor")?
             != serde_json::to_value(asset).map_err(|_| AppError::Unavailable)?
         {
-            return Err(AppError::InvalidInput);
+            return Err(PublicationFailure::at(
+                &pointer,
+                "visual descriptor does not match registered revision",
+            ));
         }
         let root = root.to_path_buf();
         let asset = asset.clone();
-        tokio::task::spawn_blocking(move || -> Result<()> {
-            let ext = extension(&asset.mime_type)?;
-            let bytes = stored_bytes(&root, &asset.sha256, ext)?;
-            ensure!(digest(&bytes) == asset.sha256, "stored media hash mismatch");
+        tokio::task::spawn_blocking(move || -> std::result::Result<(), &'static str> {
+            let ext = extension(&asset.mime_type).map_err(|_| "unsupported visual format")?;
+            let bytes = stored_bytes(&root, &asset.sha256, ext)
+                .map_err(|_| "stored visual object is missing or unreadable")?;
+            if digest(&bytes) != asset.sha256 {
+                return Err("stored visual object hash does not match registered revision");
+            }
             Ok(())
         })
         .await
         .map_err(|_| AppError::Unavailable)?
-        .map_err(|_| AppError::InvalidInput)?;
+        .map_err(|message| PublicationFailure::at(&format!("{pointer}/sha256"), message))?;
     }
-    for block in &lesson.blocks {
+    for (index, block) in lesson.blocks.iter().enumerate() {
         if let Block::Scene {
             illustration_id, ..
         } = block
             && !ids.contains(illustration_id)
         {
-            return Err(AppError::InvalidInput);
+            return Err(PublicationFailure::at(
+                &format!("/blocks/{index}/illustrationId"),
+                "scene illustration is absent from registered lesson media",
+            ));
         }
     }
-    for character in &lesson.cast {
+    for (index, character) in lesson.cast.iter().enumerate() {
+        let pointer = format!("/cast/{index}");
         if character.revision == 0 || character.revision > i32::MAX as u32 {
-            return Err(AppError::InvalidInput);
+            return Err(PublicationFailure::at(
+                &format!("{pointer}/revision"),
+                "character revision outside database range",
+            ));
         }
-        let row=one(db,"SELECT snapshot,avatar_revision FROM character_revisions WHERE character_id=$1 AND revision=$2",vec![character.character_id.clone().into(),(character.revision as i32).into()]).await?.ok_or(AppError::InvalidInput)?;
+        let row=one(db,"SELECT snapshot,avatar_revision FROM character_revisions WHERE character_id=$1 AND revision=$2",vec![character.character_id.clone().into(),(character.revision as i32).into()]).await?
+            .ok_or_else(|| PublicationFailure::at(&format!("{pointer}/revision"), "character revision is not registered"))?;
         let avatar_revision = field::<i32>(&row, "avatar_revision")?;
         if field::<serde_json::Value>(&row, "snapshot")?
             != serde_json::to_value(character).map_err(|_| AppError::Unavailable)?
-            || !lesson.media.iter().any(|asset| {
-                asset.asset_id == character.avatar_id && asset.revision == avatar_revision as u32
-            })
         {
-            return Err(AppError::InvalidInput);
+            return Err(PublicationFailure::at(
+                &pointer,
+                "character snapshot does not match registered revision",
+            ));
+        }
+        if !lesson.media.iter().any(|asset| {
+            asset.asset_id == character.avatar_id && asset.revision == avatar_revision as u32
+        }) {
+            return Err(PublicationFailure::at(
+                &format!("{pointer}/avatarId"),
+                "registered character avatar revision is absent from lesson media",
+            ));
         }
     }
     Ok(())

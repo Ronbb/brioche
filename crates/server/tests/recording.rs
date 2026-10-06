@@ -350,6 +350,39 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
         404,
         "private audio belongs to the selected course"
     );
+    let stored_audio = store.join(format!("{}.mp3", lesson.audio[0].sha256));
+    let original_audio = std::fs::read(&stored_audio).unwrap();
+    for missing in [false, true] {
+        if missing {
+            std::fs::remove_file(&stored_audio).unwrap();
+        } else {
+            std::fs::write(&stored_audio, b"corrupt protocol fixture").unwrap();
+        }
+        let error = brioche_server::content::stage_author(
+            &db,
+            &manifest,
+            "protocol-test",
+            "audio diagnostic gate",
+            &store,
+        )
+        .await
+        .unwrap_err()
+        .to_string();
+        std::fs::write(&stored_audio, &original_audio).unwrap();
+        assert!(
+            error.contains("/levels/0/units/0/lessons/0: imported lesson /audio/0:"),
+            "{error}"
+        );
+        let message = if missing {
+            "stored recording object is missing or unreadable"
+        } else {
+            "stored recording bytes do not match registered revision"
+        };
+        assert!(error.contains(message), "{error}");
+        assert_eq!(count("content_releases").await, 0);
+        assert_eq!(count("release_entries").await, 0);
+        assert_eq!(count("content_audit").await, 0);
+    }
     brioche_server::content::stage(&db, &manifest, "protocol-test", "audio gate", &store)
         .await
         .unwrap();

@@ -448,10 +448,76 @@ async fn import_and_stage_cli_locate_original_source_and_preserve_atomicity() {
         &text,
         "/levels/0/units/0/lessons/0",
         offset,
-        "media failed publication validation",
+        "imported lesson /media/0/sha256: stored visual object hash does not match registered revision",
     );
     assert_eq!(count(&db, "content_releases").await, 0);
     assert_eq!(count(&db, "content_audit").await, 0);
+    let original_bytes = std::fs::read(&stored).unwrap();
+    std::fs::remove_file(&stored).unwrap();
+    let rejected = invoke(url.as_str(), &root, "release-stage", &release_file);
+    std::fs::write(&stored, original_bytes).unwrap();
+    located(
+        rejected,
+        &release_file,
+        &text,
+        "/levels/0/units/0/lessons/0",
+        offset,
+        "imported lesson /media/0/sha256: stored visual object is missing or unreadable",
+    );
+    assert_eq!(count(&db, "content_releases").await, 0);
+    assert_eq!(count(&db, "release_entries").await, 0);
+    assert_eq!(count(&db, "content_audit").await, 0);
+    // Import permits author drafts; staging must reject unregistered or divergent cast snapshots.
+    for (index, field, value, pointer, reason) in [
+        (
+            0,
+            "displayName",
+            json!("Camille draft variant"),
+            "/cast/0",
+            "character snapshot does not match registered revision",
+        ),
+        (
+            1,
+            "revision",
+            json!(2),
+            "/cast/0/revision",
+            "character revision is not registered",
+        ),
+    ] {
+        let mut changed = reviewed.clone();
+        let id = format!("author-character-failure-{index}");
+        changed["id"] = json!(id);
+        changed["cast"][0][field] = value.clone();
+        if field == "displayName" {
+            changed["blocks"][1]["speakers"][0][field] = value;
+        }
+        write(&lesson_file, &changed);
+        let imported = invoke(url.as_str(), &root, "import", &lesson_file);
+        assert!(
+            imported.status.success(),
+            "{}",
+            String::from_utf8_lossy(&imported.stderr)
+        );
+        let mut rejected_manifest = valid.clone();
+        rejected_manifest["levels"][0]["units"][0]["lessons"][0]["lessonId"] = json!(id);
+        let failure_text = write(&release_file, &rejected_manifest);
+        let marker = failure_text
+            .find(&format!("\"lessonId\": \"{id}\""))
+            .unwrap();
+        let failure_offset = failure_text[..marker].rfind('{').unwrap();
+        located(
+            invoke(url.as_str(), &root, "release-stage", &release_file),
+            &release_file,
+            &failure_text,
+            "/levels/0/units/0/lessons/0",
+            failure_offset,
+            &format!("imported lesson {pointer}: {reason}"),
+        );
+        assert_eq!(count(&db, "content_releases").await, 0);
+        assert_eq!(count(&db, "release_entries").await, 0);
+        assert_eq!(count(&db, "content_audit").await, 0);
+    }
+    write(&release_file, &valid);
     let output = invoke(url.as_str(), &root, "release-stage", &release_file);
     assert!(
         output.status.success(),

@@ -291,3 +291,8 @@ Compose 所有五个服务使用 Docker local 日志驱动，配置 max-size=10m
 ## 部署运行巡检
 
 `pnpm health:check --project <Compose 项目名>` 检查指定项目的五个服务与 HTTP 入口，默认访问 `http://127.0.0.1:30075`。`--origin` 可指定实际入口，`--disk-path` 和 `--minimum-free-gib` 可检查指定宿主文件系统空间。Node CLI 的退出码为 0（健康）、1（检出故障）、2（参数/脚本失败），stdout 为一行 JSON；不读取环境秘密到报告，不发送通知或自动修复。完整参数、范围与定时执行边界见 [部署巡检说明](05-deployment.md#运行巡检)。`pnpm test:ops` 会执行巡检单元和真实 HTTP 协议测试，已有 CI 命令自动包含它们；Docker 生产演练与外部告警另行验收。
+
+
+### 媒体发布失败定位
+
+`release-stage` 的媒体错误定位到 release 原文件课程条目，并附上 `imported lesson /media/0/sha256` 等固定课程投影路径；后者不是原作者 JSON 文件的行列。图片文件缺失/不可读、哈希不匹配，角色版本未登记/快照不匹配，录音登记描述/来源/文件/解码不匹配分别提供受控消息。HTTP 及 activate 保留原有 AppError，不暴露这些本地作者诊断或数据库、文件系统错误详情。不能修改已登记 revision 来修复不匹配；应登记新版本、导入新课程 revision 并重新 staging。
