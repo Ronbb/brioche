@@ -58,6 +58,96 @@ pub struct Grader {
     rules: BTreeMap<String, Rule>,
 }
 impl Grader {
+    fn author_rules(source: &serde_json::Value) -> anyhow::Result<PrivateRules> {
+        use anyhow::{Context, bail};
+        // Internally tagged enums buffer their fields and lose nested serde error
+        // paths. Decode each known shape directly for author-only diagnostics.
+        #[derive(Deserialize)]
+        #[serde(deny_unknown_fields)]
+        struct Sources {
+            grading: BTreeMap<String, serde_json::Value>,
+        }
+        #[derive(Deserialize)]
+        #[serde(rename_all = "camelCase", deny_unknown_fields)]
+        struct ChoiceFields {
+            #[serde(rename = "kind")]
+            _kind: String,
+            correct_option_id: String,
+            feedback_zh: String,
+        }
+        #[derive(Deserialize)]
+        #[serde(rename_all = "camelCase", deny_unknown_fields)]
+        struct TextFields {
+            #[serde(rename = "kind")]
+            _kind: String,
+            accepted: Vec<String>,
+            case_sensitive: bool,
+            feedback_zh: String,
+        }
+        #[derive(Deserialize)]
+        #[serde(rename_all = "camelCase", deny_unknown_fields)]
+        struct OrderFields {
+            #[serde(rename = "kind")]
+            _kind: String,
+            correct_token_ids: Vec<String>,
+            feedback_zh: String,
+        }
+        let sources: Sources = crate::author_json::from_value(
+            source
+                .get("serverOnly")
+                .cloned()
+                .context("/serverOnly: missing private rules")?,
+            "/serverOnly",
+        )?;
+        let mut grading = BTreeMap::new();
+        for (id, value) in sources.grading {
+            let path = format!(
+                "/serverOnly/grading/{}",
+                id.replace('~', "~0").replace('/', "~1")
+            );
+            let kind: String = crate::author_json::from_value(
+                value
+                    .get("kind")
+                    .cloned()
+                    .with_context(|| format!("{path}/kind: missing grading kind"))?,
+                &format!("{path}/kind"),
+            )?;
+            let rule = match kind.as_str() {
+                "choice" => {
+                    let fields: ChoiceFields = crate::author_json::from_value(value, &path)?;
+                    Rule::Choice {
+                        correct_option_id: fields.correct_option_id,
+                        feedback_zh: fields.feedback_zh,
+                    }
+                }
+                "text" => {
+                    let fields: TextFields = crate::author_json::from_value(value, &path)?;
+                    Rule::Text {
+                        accepted: fields.accepted,
+                        case_sensitive: fields.case_sensitive,
+                        feedback_zh: fields.feedback_zh,
+                    }
+                }
+                "order" => {
+                    let fields: OrderFields = crate::author_json::from_value(value, &path)?;
+                    Rule::Order {
+                        correct_token_ids: fields.correct_token_ids,
+                        feedback_zh: fields.feedback_zh,
+                    }
+                }
+                _ => bail!("{path}/kind: unknown grading kind"),
+            };
+            grading.insert(id, rule);
+        }
+        Ok(PrivateRules { grading })
+    }
+
+    /// Check private field types before import connects or hydrates registered media.
+    /// Exercise references still require the final hydrated public lesson.
+    pub fn validate_author_schema(source: &serde_json::Value) -> anyhow::Result<()> {
+        Self::author_rules(source).map(|_| ())
+    }
+
     pub fn from_source(
         lesson: &PublicLesson,
         source: &serde_json::Value,
@@ -71,13 +161,7 @@ impl Grader {
         source: &serde_json::Value,
     ) -> anyhow::Result<Self> {
         use anyhow::{Context, bail, ensure};
-        let rules: PrivateRules = crate::author_json::from_value(
-            source
-                .get("serverOnly")
-                .cloned()
-                .context("/serverOnly: missing private rules")?,
-            "/serverOnly",
-        )?;
+        let rules = Self::author_rules(source)?;
         let mut exercises = BTreeMap::new();
         for (index, block) in lesson.blocks.iter().enumerate() {
             if let Block::Exercise { id, exercise } = block {
@@ -386,6 +470,26 @@ mod tests {
     fn author_diagnostics_locate_rules_and_runtime_errors_remain_opaque() {
         let (lesson, original) = fixture();
         for (pointer, value, expected) in [
+            (
+                "/serverOnly/grading/exercise-intention/correctOptionId",
+                serde_json::json!(123),
+                "/serverOnly/grading/exercise-intention/correctOptionId",
+            ),
+            (
+                "/serverOnly/grading/exercise-article/caseSensitive",
+                serde_json::json!(123),
+                "/serverOnly/grading/exercise-article/caseSensitive",
+            ),
+            (
+                "/serverOnly/grading/exercise-article/accepted/0",
+                serde_json::json!(false),
+                "/serverOnly/grading/exercise-article/accepted/0",
+            ),
+            (
+                "/serverOnly/grading/exercise-order/correctTokenIds/1",
+                serde_json::json!(42),
+                "/serverOnly/grading/exercise-order/correctTokenIds/1",
+            ),
             (
                 "/serverOnly/grading/exercise-intention/correctOptionId",
                 serde_json::json!("private-missing-option"),

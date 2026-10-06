@@ -328,6 +328,72 @@ fn private_rules_and_release_semantics_report_exact_source_fields() {
 }
 
 #[test]
+fn import_private_rule_types_fail_before_connecting_with_exact_positions() {
+    let path = std::env::temp_dir().join(format!("brioche-rule-preflight-{}.json", random_id()));
+    let original = brioche_server::development_source().unwrap();
+    for (pointer, invalid) in [
+        (
+            "/serverOnly/grading/exercise-intention/correctOptionId",
+            serde_json::json!(123),
+        ),
+        (
+            "/serverOnly/grading/exercise-article/caseSensitive",
+            serde_json::json!("private-invalid-boolean"),
+        ),
+        (
+            "/serverOnly/grading/exercise-article/accepted/0",
+            serde_json::json!(false),
+        ),
+        (
+            "/serverOnly/grading/exercise-order/correctTokenIds/1",
+            serde_json::json!(42),
+        ),
+    ] {
+        let mut source = original.clone();
+        *source.pointer_mut(pointer).unwrap() = invalid.clone();
+        // Keep Unicode and CRLF in the original input to verify source positions.
+        source["editorial"]["note"] = serde_json::json!("仅测试字段定位");
+        let text = serde_json::to_string_pretty(&source)
+            .unwrap()
+            .replace('\n', "\r\n");
+        let token = serde_json::to_string(&invalid).unwrap();
+        let offset = text.find(&token).unwrap();
+        let before = &text[..offset];
+        let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+        std::fs::write(&path, text).unwrap();
+        let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+            .args(["import", path.to_str().unwrap()])
+            .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+            .env("CONTENT_MODE", "database")
+            .env("APP_ENV", "production")
+            .output()
+            .unwrap();
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success());
+        assert!(
+            error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
+            "{error}"
+        );
+        assert!(!error.contains("database connection"), "{error}");
+        assert!(output.stdout.is_empty());
+    }
+    // A valid source passes preflight and still requires the real database import path.
+    std::fs::write(&path, serde_json::to_vec(&original).unwrap()).unwrap();
+    let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+        .args(["import", path.to_str().unwrap()])
+        .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+        .env("CONTENT_MODE", "database")
+        .env("APP_ENV", "production")
+        .output()
+        .unwrap();
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("database connection failed"));
+    assert!(output.stdout.is_empty());
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn import_and_stage_preflight_locate_invalid_source_before_database_connection() {
     let path = std::env::temp_dir().join(format!("brioche-preflight-{}.json", random_id()));
     for (command, source, pointer) in [
