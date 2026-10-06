@@ -1,5 +1,11 @@
 # 设计验证记录
 
+## 2026-10-06：排序题的等价重复语块
+
+- 真实 Grader/公开投影的合成排序题为 la porte de la maison，两个 la 使用不同稳定 ID。新增回归在修复前失败：交换两个 la 后输出文字相同，但 result.correct=false。前端 OrderEditor 显示文字，内部 ID 仅用于选择/去重，学习者无法区分此种隐藏身份。
+- 保留原 ID 集合、个数、重复/遗漏/未知检查；目标 correctTokenIds 仍在作者校验中要求每个原 token 恰好一次。实际判分将每个 ID 映射为 NFC/空白/撇号归一化文字，保持大小写与重音，逐位置比较提交/目标向量，不拼接文本或接受客户端分数。既有 private rules/公共 DTO 不变；异常目标引用保留 InvalidContent，异常输入保留 InvalidAnswer。
+- 修复后原顺序与重复 la 互换均正确，porte/de 互换仍错误，重复同一 ID、未知 ID、缺失语块仍 InvalidAnswer。组合重音/NFC、空白与弯/直撇号等价通过；去掉重音和改变大小写不等价。37 项 server 单元、19 项作者 CLI、13 项 curriculum 通过（含最新 48 课/144 题正确与合法错误判分），Clippy -D warnings、cargo fmt 和 diff 检查通过。未新增数据库写入、作者源变更或课程发布；此为判分实现与离线课包验证，不代替真实账号新场景的数据库/浏览器、设备或人工教学审校。
+
 ## 2026-10-06：作者答案与网页填空的共享边界
 
 - 原作者 accepted 与运行判分仅限制 4096 UTF-8 字节，实际 ExerciseEditor、demo practice、validAnswer 则限制 1024 UTF-16 单位。两项新增 server 回归在修复前失败：1025 ASCII/513 个非 BMP 字符的 accepted 未被拒绝，运行输入也被当成普通错误答案。首次 Rust 测试断言错误地要求 GradeResult 实现 PartialEq，改为比较 GradeError 后才计入上述失败证据。

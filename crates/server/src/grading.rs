@@ -328,7 +328,21 @@ impl Grader {
                 {
                     return Err(GradeError::InvalidAnswer);
                 }
-                (token_ids == correct_token_ids, feedback_zh)
+                // Equal displayed words are interchangeable; hidden token IDs
+                // still prove that every original token was used exactly once.
+                let displayed: BTreeMap<_, _> = tokens
+                    .iter()
+                    .map(|token| (token.id.as_str(), normalize_text(&token.text, true)))
+                    .collect();
+                let submitted = token_ids
+                    .iter()
+                    .map(|id| displayed.get(id.as_str()).ok_or(GradeError::InvalidAnswer))
+                    .collect::<Result<Vec<_>, _>>()?;
+                let expected = correct_token_ids
+                    .iter()
+                    .map(|id| displayed.get(id.as_str()).ok_or(GradeError::InvalidContent))
+                    .collect::<Result<Vec<_>, _>>()?;
+                (submitted == expected, feedback_zh)
             }
             _ => return Err(GradeError::InvalidAnswer),
         };
@@ -504,6 +518,92 @@ mod tests {
                 grader.grade(&lesson, id, &answer).unwrap_err(),
                 GradeError::InvalidAnswer
             );
+        }
+    }
+
+    #[test]
+    fn order_grades_displayed_words_not_hidden_identity_of_repeated_tokens() {
+        let (_, mut source) = fixture();
+        let block = source["blocks"]
+            .as_array_mut()
+            .unwrap()
+            .iter_mut()
+            .find(|block| block["id"] == "exercise-order")
+            .unwrap();
+        block["tokens"] = serde_json::json!([
+            {"id":"la-first","text":"la"},
+            {"id":"door","text":"porte"},
+            {"id":"of","text":"de"},
+            {"id":"la-second","text":"la"},
+            {"id":"house","text":"maison"}
+        ]);
+        let correct = vec!["la-first", "door", "of", "la-second", "house"];
+        source["serverOnly"]["grading"]["exercise-order"]["correctTokenIds"] =
+            serde_json::json!(correct);
+        let lesson = crate::project_source(source.clone()).unwrap();
+        let grader = Grader::from_source(&lesson, &source).unwrap();
+        let grade = |ids: Vec<&str>| {
+            grader.grade(
+                &lesson,
+                "exercise-order",
+                &ExerciseAnswer::Order {
+                    token_ids: ids.into_iter().map(String::from).collect(),
+                },
+            )
+        };
+        assert!(grade(correct).unwrap().correct);
+        assert!(
+            grade(vec!["la-second", "door", "of", "la-first", "house"])
+                .unwrap()
+                .correct
+        );
+        assert!(
+            !grade(vec!["la-first", "of", "door", "la-second", "house"])
+                .unwrap()
+                .correct
+        );
+        for invalid in [
+            vec!["la-first", "door", "of", "la-first", "house"],
+            vec!["la-first", "door", "of", "la-second", "unknown"],
+            vec!["la-first", "door", "of", "house"],
+        ] {
+            assert_eq!(grade(invalid).err(), Some(GradeError::InvalidAnswer));
+        }
+    }
+    #[test]
+    fn order_equivalence_preserves_accents_and_case_but_normalizes_unicode_and_spacing() {
+        let (_, original) = fixture();
+        for (first, second, equivalent) in [
+            ("café", "cafe\u{301}", true),
+            ("la", "  la\u{00a0}", true),
+            ("l’eau", "l'eau", true),
+            ("café", "cafe", false),
+            ("la", "La", false),
+        ] {
+            let mut source = original.clone();
+            let block = source["blocks"]
+                .as_array_mut()
+                .unwrap()
+                .iter_mut()
+                .find(|block| block["id"] == "exercise-order")
+                .unwrap();
+            block["tokens"] = serde_json::json!([
+                {"id":"request","text":first},
+                {"id":"bread","text":"et"},
+                {"id":"please","text":second}
+            ]);
+            let lesson = crate::project_source(source.clone()).unwrap();
+            let grader = Grader::from_source(&lesson, &source).unwrap();
+            let result = grader
+                .grade(
+                    &lesson,
+                    "exercise-order",
+                    &ExerciseAnswer::Order {
+                        token_ids: vec!["please".into(), "bread".into(), "request".into()],
+                    },
+                )
+                .unwrap();
+            assert_eq!(result.correct, equivalent, "{first:?} / {second:?}");
         }
     }
     #[test]

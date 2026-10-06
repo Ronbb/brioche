@@ -100,7 +100,7 @@ v1 只做线性流程。用户可以回到已访问步骤、预览目录和退�
 | fill-blank | text | `kind: text` + accepted 数组 + caseSensitive + feedbackZh |
 | order | tokenIds 数组 | `kind: order` + correctTokenIds + feedbackZh |
 
-填空 v1 只支持一个空，避免在未设计多空反馈前偷加约定。字符串比较先 NFC、首尾 trim、连续空白合并、弯撇号统一，再按 caseSensitive 比较；保留重音和连字符。可接受的变体在 accepted 中显式列出。排序以 token ID 校验重复/缺失与顺序，不靠显示字符串拼接判定。
+填空 v1 只支持一个空，避免在未设计多空反馈前偷加约定。字符串比较先 NFC、首尾 trim、连续空白合并、弯撇号统一，再按 caseSensitive 比较；保留重音和连字符。可接受的变体在 accepted 中显式列出。排序先用 token ID 验证全部原语块各用一次，再逐位置比较该 ID 对应的文字序列：使用 NFC、空白和撇号归一化，保留大小写与重音。重复的等价显示语块可互换，避免学习者被不可见的内部 ID 判错；不同文字的位置仍须正确，不把所有文字拼接成一句来判定。
 
 普通重试保存不同 attempt；网络重发返回同一结果。服务端只给已提交的题目返回反馈/正确形式，不返回整课判题集合。公开 hintZh 不属于答案键；usedHint 是 UX 记录，浏览器可以伪造，不用于认证/高风险评分。
 
