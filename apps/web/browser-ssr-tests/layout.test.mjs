@@ -67,6 +67,7 @@ const serverErrors = [];
 let origin,
   opened = false;
 let accounts = false;
+let lessonStatus = 200;
 const identityReads = [];
 let identityProof = null;
 const profile = (id) => ({
@@ -106,7 +107,8 @@ const api = createServer((request, response) => {
     return;
   }
   if (request.url.startsWith("/api/lessons/")) {
-    response.end(JSON.stringify(lesson));
+    response.statusCode = lessonStatus;
+    response.end(JSON.stringify(lessonStatus === 200 ? lesson : {}));
     return;
   }
   response.writeHead(404).end("{}");
@@ -306,6 +308,76 @@ test("production SSR hydrates its real shell, preserves mobile widths, routes fo
   assert.deepEqual(serverErrors, []);
   const { errors } = await browser("errors");
   assert.deepEqual(errors, [], "hydration and route errors must fail");
+});
+
+test("lesson errors recover through native keyboard reload and catalog navigation", async () => {
+  try {
+    accounts = false;
+    lessonStatus = 200;
+    opened = true;
+    await browser("open", origin);
+    await browser("wait", "a[href^='/lessons/']");
+    lessonStatus = 503;
+    await browser("focus", "a[href^='/lessons/']");
+    await browser("press", "Enter");
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('main h1')?.textContent==='服务暂时不可用'",
+    );
+    assert.equal(
+      await evaluate("document.querySelectorAll('.reading').length"),
+      0,
+    );
+    lessonStatus = 200;
+    await browser("focus", ".error-recovery button.primary");
+    await browser("press", "Enter");
+    await browser("wait", ".reading");
+    assert.ok(
+      (await evaluate("document.querySelector('main').textContent")).includes(
+        lesson.title.fr,
+      ),
+    );
+    for (const [status, title] of [
+      [404, "没有找到这页内容"],
+      [410, "课程已撤回"],
+    ]) {
+      lessonStatus = status;
+      await browser("open", `${origin}/lessons/${lesson.id}`);
+      await browser(
+        "wait",
+        "--fn",
+        `document.querySelector('main h1')?.textContent===${JSON.stringify(title)}`,
+      );
+      await browser(
+        "wait",
+        "--fn",
+        "Object.keys(document.querySelector('.error-recovery a')).some(key=>key.startsWith('__reactFiber$'))",
+      );
+      assert.equal(
+        await evaluate("document.querySelectorAll('.reading').length"),
+        0,
+      );
+      await browser("focus", ".error-recovery a[href='/courses']");
+      await browser("press", "Enter");
+      await browser(
+        "wait",
+        "--fn",
+        "location.pathname==='/courses' && document.activeElement.matches('main h1')",
+      );
+      assert.equal(
+        await evaluate(
+          "document.activeElement.tagName + ':' + document.activeElement.textContent",
+        ),
+        "H1:课程",
+      );
+    }
+    assert.deepEqual(serverErrors, []);
+    const { errors } = await browser("errors");
+    assert.deepEqual(errors, []);
+  } finally {
+    lessonStatus = 200;
+  }
 });
 
 test("server-authorized identity replacement discards the old private page before reload warnings", async () => {

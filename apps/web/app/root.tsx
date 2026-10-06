@@ -134,17 +134,53 @@ export default function App() {
 }
 export function ErrorBoundary() {
   const error = useRouteError();
+  const status = isRouteErrorResponse(error) ? error.status : 500;
+  const retryable = status >= 500;
+  const [title, message] =
+    status === 404
+      ? ["没有找到这页内容", "这页内容可能已经移除，请回到课程目录查看。"]
+      : status === 410
+        ? ["课程已撤回", "这堂课程暂时无法继续学习，请选择其他课程。"]
+        : status === 401
+          ? ["请先登录", "登录后可以继续查看你的学习记录。"]
+          : status === 403
+            ? ["暂时无法访问", "当前账号没有访问这页内容的权限。"]
+            : status === 400
+              ? [
+                  "请检查输入信息",
+                  isRouteErrorResponse(error) && typeof error.data === "string"
+                    ? error.data
+                    : "输入信息无效，请检查后重试。",
+                ]
+              : status === 503
+                ? ["服务暂时不可用", "请稍后重新加载。"]
+                : ["暂时无法打开", "页面暂时遇到问题，请稍后重试。"];
   return (
     <section className="home">
-      <h1>暂时无法打开</h1>
-      <p className="error-message">
-        {isRouteErrorResponse(error)
-          ? String(error.data)
-          : "页面暂时遇到问题，请刷新重试。"}
-      </p>
-      <Link className="primary" to="/">
-        返回首页
-      </Link>
+      <h1 tabIndex={-1}>{title}</h1>
+      <p className="error-message">{message}</p>
+      <div className="error-recovery">
+        {retryable && (
+          <button
+            type="button"
+            className="primary"
+            onClick={() => window.location.reload()}
+          >
+            重新加载
+          </button>
+        )}
+        {status === 401 && (
+          <Link className="primary" to="/login">
+            登录
+          </Link>
+        )}
+        <Link
+          className={retryable || status === 401 ? "text-button" : "primary"}
+          to="/courses"
+        >
+          返回课程目录
+        </Link>
+      </div>
     </section>
   );
 }

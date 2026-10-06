@@ -1,9 +1,14 @@
 import { useEffect, useRef } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigationType } from "react-router";
 
 export function RouteFocus() {
   const { pathname } = useLocation();
-  const previous = useRef(pathname);
+  const navigationType = useNavigationType();
+  // Recovering a root error can remount Layout after the PUSH/REPLACE.
+  // Treat that destination as a navigation, while leaving first-load focus alone.
+  const previous = useRef<string | null>(
+    navigationType === "POP" ? pathname : null,
+  );
   useEffect(() => {
     if (previous.current === pathname) return;
     previous.current = pathname;

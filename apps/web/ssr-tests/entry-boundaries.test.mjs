@@ -36,6 +36,7 @@ const lesson = {
 };
 let fixture = false;
 let authenticated = false;
+let lessonStatus = 200;
 const profile = {
   id: "00000000-0000-0000-0000-000000000001",
   email: "learner@example.test",
@@ -149,7 +150,8 @@ const server = createServer((request, response) => {
       }),
     );
   } else if (request.url.startsWith("/api/lessons/")) {
-    response.end(JSON.stringify(lesson));
+    response.statusCode = lessonStatus;
+    response.end(JSON.stringify(lessonStatus === 200 ? lesson : {}));
   } else {
     response.statusCode = 401;
     response.end("{}");
@@ -173,6 +175,30 @@ const request = (path) =>
         : {},
     }),
   );
+
+test("lesson SSR separates missing, withdrawn and unavailable states with useful recovery entries", async () => {
+  fixture = true;
+  authenticated = false;
+  try {
+    for (const [status, title] of [
+      [404, "没有找到这页内容"],
+      [410, "课程已撤回"],
+      [503, "服务暂时不可用"],
+    ]) {
+      lessonStatus = status;
+      const response = await request(`/lessons/${lesson.id}`);
+      assert.equal(response.status, status);
+      const html = await response.text();
+      assert.ok(html.includes(title));
+      assert.match(html, /href="\/courses"/);
+      assert.equal(html.includes("重新加载"), status === 503);
+      assert.ok(!html.includes(lesson.title.fr));
+    }
+  } finally {
+    lessonStatus = 200;
+    fixture = false;
+  }
+});
 
 test("SSR activates overlay scrollbars in the initial document for anonymous and private pages", async () => {
   fixture = false;
@@ -244,6 +270,10 @@ test("author SSR requires an operator and reads only the selected release member
     requests.length = 0;
     response = await request("/author-preview?releaseId=invalid%2Fbatch");
     assert.equal(response.status, 400);
+    assert.match(
+      await response.text(),
+      /<p class="error-message">发布批次编号无效。<\/p>/,
+    );
     assert.equal(
       requests.filter((entry) => entry.path.startsWith("/api/v1/operator/"))
         .length,
