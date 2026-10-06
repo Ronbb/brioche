@@ -734,3 +734,10 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - 现在根 ErrorBoundary 退出后在下一动画帧对已提交页面执行共用焦点恢复；RouteFocus 恢复普通首次挂载不抢焦点的策略。共用函数仍优先保留目标页面已有焦点及打开的 modal，使用 preventScroll。错误恢复不再依赖导航类型；没有改变服务端授权、内容状态或课程请求。
 - 最终三项生产 SSR/client/Layout Chromium 66.43s 全部通过：404和410各自直接打开→链接返回目录、从目录打开故障课程→实际 browser back，均恢复目录标题焦点；503重载、既有首页多宽度/语速modal与身份失效收敛继续通过，未捕获浏览器错误为零。28 Web、12 SSR、TS7、build、目标格式/diff通过；独立会话/随机端口自动清理。本轮未重跑全41组件浏览器；测试仍为受控后端，不证明真实数据库撤回、iPhone或辅助技术验收。
 - 固定73b8c5e的 Check37459238918 本轮已实际读取 completed/success；该状态不证明最新1024479或本轮改动的远端CI。人工内容/正式录音、真实设备与生产门槛继续保留。
+
+## 2026-10-06：批次激活的本地作者诊断
+
+- 新增真实 CLI/隔离 PostgreSQL 回归，期望 generation 冲突能指出参数与当前值；修复前 release-activate 仅输出 Error: request failed，诊断断言实际失败。首次默认 target 构建也因运行中的 brioche-server.exe 无法替换而失败，不计功能证据；随后复用独立 target/author-qa 完成构建，没有停止用户开发服务。
+- content::activate_author 与既有运行时 activate 现在共用 activate_impl 和 ReleaseFailure，事务锁、版本核对、媒体再验证、发布标志/active release/audit 的更新及 commit 顺序不变。CLI 能定位 release-id 不存在或含撤回版本（含课程ID/revision）、expected-generation 冲突（含 expected/current）、非法操作参数，以及固定课程ID/revision的媒体字段诊断。DB故障仍只给验证状态后重试的通用信息，不输出 SQL/连接秘密；运行时接口仍仅返回原 AppError。
+- 真实隔离 QA：generation 9 vs0、缺批次、篡改媒体对象、硬撤回四类CLI失败分别有准确诊断；失败后 active_release 为null、generation0、published0、audit保持1。恢复媒体后CLI成功激活原批次，active release/generation1/audit2；随后的撤回和拒绝再激活保持audit3。既有目录原子切换/回滚/硬撤回、迁移发布及录音登记三项PostgreSQL回归也通过，共四项。38服务端单元、25作者CLI、13课程测试（48草稿/144题）、Clippy全部target及格式/diff通过。本轮没有修改课程审校状态、正式素材授权或生产数据，也未改Web，未重复浏览器检查。
+- 隔离资源：容器 brioche-author-activate-1791288897837 仅随机loopback58722的临时PG，测试成功的schema/媒体按既有teardown清理；baseline失败遗留schema和临时媒体。自动审批拒绝含删除临时目录/容器的清理命令，原因仅返回 blocked by policy；未绕过，随后 docker stop 成功，保留停止容器和失败测试媒体目录用于恢复。该清理限制不阻止代码验证或提交。真实设备、内容人工审校/正式录音及生产门槛继续保留。

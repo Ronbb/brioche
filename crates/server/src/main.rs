@@ -272,7 +272,7 @@ async fn main() -> Result<()> {
                         "usage: release-activate <release-id> <expected-generation> <actor> <reason>"
                     );
                 }
-                brioche_server::content::activate(
+                brioche_server::content::activate_author(
                     db.as_ref().unwrap(),
                     &args[0],
                     args[1].parse()?,

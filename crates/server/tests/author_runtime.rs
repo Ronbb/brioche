@@ -73,6 +73,32 @@ async fn count(db: &sea_orm::DatabaseConnection, table: &str) -> i64 {
     .unwrap()
 }
 
+fn activate(url: &str, root: &Path, id: &str, expected: &str) -> Output {
+    Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+        .args([
+            "release-activate",
+            id,
+            expected,
+            "protocol-test",
+            "isolated activation diagnostic",
+        ])
+        .env("DATABASE_URL", url)
+        .env("CONTENT_MODE", "database")
+        .env("APP_ENV", "production")
+        .env("MEDIA_ROOT", root)
+        .output()
+        .unwrap()
+}
+fn activation_failure(output: Output, reason: &str) {
+    let error = String::from_utf8_lossy(&output.stderr);
+    assert!(!output.status.success());
+    assert!(error.contains(reason), "{error}");
+    assert!(
+        !error.contains("SELECT ") && !error.contains("UPDATE "),
+        "{error}"
+    );
+}
+
 #[tokio::test]
 #[ignore = "set TEST_DATABASE_URL to a dedicated PostgreSQL database"]
 async fn import_and_stage_cli_locate_original_source_and_preserve_atomicity() {
@@ -603,6 +629,28 @@ async fn import_and_stage_cli_locate_original_source_and_preserve_atomicity() {
         text.find("\"author-release\"").unwrap(),
         "already exists",
     );
+    activation_failure(
+        activate(url.as_str(), &root, "author-release", "9"),
+        "expected-generation: content generation changed",
+    );
+    activation_failure(
+        activate(url.as_str(), &root, "missing-release", "0"),
+        "release-id: release is not staged",
+    );
+    let document: Value = db.query_one_raw(Statement::from_string(DbBackend::Postgres, "SELECT public_document FROM lesson_revisions WHERE lesson_id='author-reviewed' AND revision=1"))
+        .await.unwrap().unwrap().try_get("", "public_document").unwrap();
+    let asset = &document["media"][0];
+    assert_eq!(asset["mimeType"], "image/svg+xml");
+    let object = root.join(format!("{}.svg", asset["sha256"].as_str().unwrap()));
+    let original = std::fs::read(&object).unwrap();
+    std::fs::write(&object, b"corrupt synthetic object").unwrap();
+    let output = activate(url.as_str(), &root, "author-release", "0");
+    std::fs::write(&object, original).unwrap();
+    activation_failure(
+        output,
+        "lesson author-reviewed@1: imported lesson /media/0/sha256: stored visual object hash does not match registered revision",
+    );
+    assert_eq!(count(&db, "content_audit").await, 1);
     let state = db
         .query_one_raw(Statement::from_string(
             DbBackend::Postgres,
@@ -631,16 +679,40 @@ async fn import_and_stage_cli_locate_original_source_and_preserve_atomicity() {
         0
     );
 
+    let activated = activate(url.as_str(), &root, "author-release", "0");
+    assert!(
+        activated.status.success(),
+        "{}",
+        String::from_utf8_lossy(&activated.stderr)
+    );
+    let state = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT active_release,generation FROM content_state WHERE singleton",
+        ))
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        state.try_get::<String>("", "active_release").unwrap(),
+        "author-release"
+    );
+    assert_eq!(state.try_get::<i64>("", "generation").unwrap(), 1);
+    assert_eq!(count(&db, "content_audit").await, 2);
     brioche_server::content::withdraw(
         &db,
         "author-reviewed",
         1,
-        0,
+        1,
         "tester",
         "protocol withdrawal",
     )
     .await
     .unwrap();
+    activation_failure(
+        activate(url.as_str(), &root, "author-release", "2"),
+        "release-id: release contains a withdrawn lesson revision",
+    );
     valid["id"] = json!("withdrawn-release");
     let text = write(&release_file, &valid);
     let marker = text.find("\"revision\": 1").unwrap() + "\"revision\": ".len();
@@ -653,7 +725,7 @@ async fn import_and_stage_cli_locate_original_source_and_preserve_atomicity() {
         "was withdrawn",
     );
     assert_eq!(count(&db, "content_releases").await, 1);
-    assert_eq!(count(&db, "content_audit").await, 2);
+    assert_eq!(count(&db, "content_audit").await, 3);
     brioche_migration::Migrator::down(&db, None).await.unwrap();
     drop(db);
     admin
