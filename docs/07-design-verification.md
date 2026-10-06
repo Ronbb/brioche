@@ -711,3 +711,12 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - 390px真实语速dialog在视口内、焦点在modal、根覆盖滚动条隐藏；Escape返回原速度按钮。核对未捕获浏览器异常与测试服务器异常均为空。不是纯组件装配，但API为受控fixture，这只补代表性公共页面壳/路由证据，不声称全部页面四档宽度、真实SSR服务部署、Rust/database、iPhone/屏幕阅读器或原生声音全部完成。
 - 定向Prettier/diff通过，浏览器与两台随机loopback服务器自动清理；未触及用户5173/3001、Docker或浏览器。此轮只增加测试/CI/协作说明，应用源未改，不重新运行无关Rust/Web或完整41组件浏览器。
 - 固定155b3b0的 Check37456413593/job112245009700 本轮先确认运行，后读取已至pnpm test:browser步骤（26），无失败，仍in_progress；正式终态和最新提交CI另行确认。完整内容/录音、真实设备/辅助技术与生产门槛仍待完成。
+
+## 2026-10-06：身份失效时先卸载私有页面再刷新
+
+- 增强生产SSR/client页面壳装配，受控HTTP API按本次专用浏览器的合成shell-a/shell-b Cookie返回Alice/Bob，真实IdentitySync走同源HTTP读取；不接真实认证/数据库。实际资料编辑器输入Unsaved Alice后切合成Cookie并派发可见窗口focus通知，后端确实收到浏览器身份读取shell-b。
+- 初始Cookie操作未先打开所属页面导致Invalid cookie fields，已显式关闭那一个专用会话，并将opened设置提前保证失败也清理；编辑按钮/输入定位器也按真实DOM更正。随后等待新页面/尝试dialog状态存在时序超时，未把这些工具等待计作应用缺陷。最终用实际location.reload触发的beforeunload监听发送仅含三个布尔/计数值的同源测试beacon，从Node侧读取：修复前实际得到guarded=true、oldProfile=true、dialogs=1，新增断言明确失败（35.49s）。不依赖浏览器在原生离页确认期间能执行eval，也不声称该证据证明原生提示的视觉或手势验收。
+- IdentitySync现先沿用停止播放/旧owner草稿清理，再flushSync通知Layout。Layout卸载旧路由children并重建匿名LearningProvider，旧资料modal、播放器/上下文与其离页监听同步清理；中性账号更新标题获得焦点，提供重新加载入口，再发起真实reload。仍由SSR重新验证会话，不采用刚收到的客户端身份直接授权；网络读取失败和原通知/检查协议不变，客户端清理不等于服务器写入回滚。
+- 最终两项生产页面壳Chromium通过（51.44s）：原首页四档宽度/SPA焦点/速度modal保持；新身份用例beforeunload beacon为guarded=false、oldProfile=false、dialogs=0，真实重新加载后Bob可见、旧输入不存在、零打开资料modal、零浏览器/测试服务器异常。临时Cookie/证据存储、专用Chromium和两台随机loopback服务清理；没有操作用户服务或生产。
+- TS7、client/SSR build、28Web、11SSR、定向Prettier/diff通过。本轮未重跑全41组件浏览器；此用例是实际生产页面构建加受控HTTP身份/人为focus事件，不冒充实际登录/双标签cookie轮换、数据库、iPhone或辅助技术。更多失效场景及正式教学/录音/生产门槛继续保留。
+- 155b3b0 的 Check37456413593/job112245009700 与4b95aeb的 Check37457007400/job112246969535 本轮均实际确认completed/success；后者包含新生产SSR浏览器步骤。绿色对应这两个固定提交，本轮身份修复的新CI另行确认。

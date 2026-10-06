@@ -17,6 +17,7 @@ import { Scrollbar } from "./components/scrollbar";
 import { RouteFocus } from "./components/route-focus";
 import { getIdentity } from "./lib/api.server";
 import type { Route } from "./+types/root";
+import { useCallback, useState } from "react";
 export async function loader({ request }: Route.LoaderArgs) {
   return data(await getIdentity(request), {
     headers: { "Cache-Control": "private, no-store", Vary: "Cookie" },
@@ -27,6 +28,11 @@ export function headers() {
 }
 export function Layout({ children }: { children: React.ReactNode }) {
   const identity = useRouteLoaderData<typeof loader>("root");
+  const [identityInvalidated, setIdentityInvalidated] = useState(false);
+  const invalidateIdentity = useCallback(
+    () => setIdentityInvalidated(true),
+    [],
+  );
   return (
     <html lang="zh-CN" className="overlay-scroll">
       <head>
@@ -62,10 +68,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <a className="skip-link" href="#page-content">
           跳到正文
         </a>
-        <LearningProvider user={identity?.user ?? null}>
+        <LearningProvider
+          key={identityInvalidated ? "invalidated" : "active"}
+          user={identityInvalidated ? null : (identity?.user ?? null)}
+        >
           <IdentitySync
-            user={identity?.user ?? null}
-            enabled={identity?.enabled ?? false}
+            user={identityInvalidated ? null : (identity?.user ?? null)}
+            enabled={!identityInvalidated && (identity?.enabled ?? false)}
+            onInvalidate={invalidateIdentity}
           />
           <div className="app">
             <header className="topbar">
@@ -94,7 +104,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </Link>
             </header>
             <main id="page-content" tabIndex={-1}>
-              {children}
+              {identityInvalidated ? (
+                <section className="home">
+                  <h1 tabIndex={-1}>账号状态已更新</h1>
+                  <p role="status">正在重新确认账号。</p>
+                  <button
+                    className="primary"
+                    onClick={() => window.location.reload()}
+                  >
+                    重新加载
+                  </button>
+                </section>
+              ) : (
+                children
+              )}
             </main>
           </div>
           <Scrollbar />

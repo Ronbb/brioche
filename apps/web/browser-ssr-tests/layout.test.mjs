@@ -66,14 +66,43 @@ const originalBase = process.env.INTERNAL_API_URL;
 const serverErrors = [];
 let origin,
   opened = false;
+let accounts = false;
+const identityReads = [];
+let identityProof = null;
+const profile = (id) => ({
+  id,
+  email: `${id}@example.test`,
+  displayName: id === "shell-a" ? "Alice" : "Bob",
+  role: "learner",
+  version: 1,
+  settings: {
+    timeZone: "Asia/Shanghai",
+    weeklyDays: 3,
+    dailyMinutes: 10,
+    showTranslation: false,
+    speechRate: 1,
+  },
+});
 const api = createServer((request, response) => {
   response.setHeader("Content-Type", "application/json");
   if (request.url === "/api/v1/me") {
+    if (accounts) {
+      const id = /(?:^|;\s*)brioche\.sid=(shell-[ab])(?:;|$)/.exec(
+        request.headers.cookie ?? "",
+      )?.[1];
+      identityReads.push({
+        id: id ?? null,
+        channel: request.headers["x-shell-channel"] ?? "ssr",
+      });
+      if (id) response.end(JSON.stringify(profile(id)));
+      else response.writeHead(401).end("{}");
+      return;
+    }
     response.writeHead(404).end("{}");
     return;
   }
   if (request.url.startsWith("/api/catalog")) {
-    response.end(JSON.stringify(catalog));
+    response.end(JSON.stringify({ ...catalog, developmentFixture: !accounts }));
     return;
   }
   if (request.url.startsWith("/api/lessons/")) {
@@ -92,6 +121,32 @@ const types = {
 const web = createServer(async (request, response) => {
   try {
     const url = new URL(request.url, origin);
+    if (url.pathname === "/__identity-proof" && request.method === "POST") {
+      let body = "";
+      for await (const chunk of request) body += chunk;
+      identityProof = JSON.parse(body);
+      response.writeHead(204).end();
+      return;
+    }
+    if (url.pathname.startsWith("/api/")) {
+      const proxied = await fetch(
+        process.env.INTERNAL_API_URL + url.pathname + url.search,
+        {
+          headers: {
+            "X-Shell-Channel": "browser",
+            ...(request.headers.cookie
+              ? { cookie: request.headers.cookie }
+              : {}),
+          },
+        },
+      );
+      response.writeHead(proxied.status, {
+        "Content-Type": "application/json",
+        "Cache-Control": "private, no-store",
+      });
+      response.end(Buffer.from(await proxied.arrayBuffer()));
+      return;
+    }
     if (
       url.pathname.startsWith("/assets/") ||
       url.pathname.startsWith("/icons/") ||
@@ -251,4 +306,76 @@ test("production SSR hydrates its real shell, preserves mobile widths, routes fo
   assert.deepEqual(serverErrors, []);
   const { errors } = await browser("errors");
   assert.deepEqual(errors, [], "hydration and route errors must fail");
+});
+
+test("server-authorized identity replacement discards the old private page before reload warnings", async () => {
+  accounts = true;
+  identityReads.length = 0;
+  identityProof = null;
+  try {
+    opened = true;
+    await browser("open", origin + "/profile");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("open", origin + "/profile");
+    opened = true;
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('.profile-summary h2')?.textContent==='Alice'",
+    );
+    await browser("focus", ".profile-edit");
+    await browser("press", "Enter");
+    await browser("wait", ".profile-dialog[open]");
+    await browser("focus", ".profile-dialog input");
+    await browser("press", "Control+a");
+    await browser("keyboard", "inserttext", "Unsaved Alice");
+    await evaluate(
+      `window.addEventListener('beforeunload', e => {const proof=JSON.stringify({guarded:e.defaultPrevented,oldProfile:document.querySelector('.profile-summary h2')?.textContent==='Alice',dialogs:document.querySelectorAll('.profile-dialog[open]').length});sessionStorage.setItem('shell-invalidation-proof',proof);navigator.sendBeacon('/__identity-proof',proof)}, {once:true})`,
+    );
+    await browser("cookies", "set", "brioche.sid", "shell-b");
+    assert.equal(await evaluate("document.visibilityState"), "visible");
+    // Controlled focus notification exercises the real IdentitySync HTTP read.
+    await evaluate("window.dispatchEvent(new Event('focus'))");
+    for (let attempt = 0; attempt < 100 && !identityProof; attempt++)
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    assert.ok(
+      identityReads.some(
+        (read) => read.id === "shell-b" && read.channel === "browser",
+      ),
+    );
+    assert.deepEqual(identityProof, {
+      guarded: false,
+      oldProfile: false,
+      dialogs: 0,
+    });
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('.profile-summary h2')?.textContent==='Bob'",
+    );
+    assert.deepEqual(
+      await evaluate(
+        "JSON.parse(sessionStorage.getItem('shell-invalidation-proof'))",
+      ),
+      { guarded: false, oldProfile: false, dialogs: 0 },
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelectorAll('.profile-dialog[open]').length",
+      ),
+      0,
+    );
+    assert.ok(
+      !(await evaluate("document.querySelector('main').textContent")).includes(
+        "Unsaved Alice",
+      ),
+    );
+    await evaluate("sessionStorage.removeItem('shell-invalidation-proof')");
+    assert.deepEqual(serverErrors, []);
+    const { errors } = await browser("errors");
+    assert.deepEqual(errors, []);
+  } finally {
+    accounts = false;
+    await browser("cookies", "clear");
+  }
 });

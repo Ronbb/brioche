@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { flushSync } from "react-dom";
 import type { UserProfile } from "@brioche/contracts/UserProfile";
 import { watchIdentity } from "../lib/identity-sync";
 import { clearLearningDrafts } from "../lib/learning-draft";
@@ -7,9 +8,11 @@ import { useLearning } from "./learning";
 export function IdentitySync({
   user,
   enabled,
+  onInvalidate,
 }: {
   user: UserProfile | null;
   enabled: boolean;
+  onInvalidate: () => void;
 }) {
   const learning = useLearning();
   const current = useRef(learning);
@@ -33,6 +36,9 @@ export function IdentitySync({
       stopPlayback: () => current.current.stop(),
       invalidate: () => {
         if (user) clearLearningDrafts(user.id);
+        // Dispose private routes and their leave guards before a full reload.
+        flushSync(onInvalidate);
+        document.getElementById("page-content")?.querySelector("h1")?.focus();
         window.location.reload();
       },
       every: (callback) => {
@@ -40,6 +46,6 @@ export function IdentitySync({
         return () => window.clearInterval(timer);
       },
     });
-  }, [enabled, user?.id, user?.role]);
+  }, [enabled, user?.id, user?.role, onInvalidate]);
   return null;
 }

@@ -121,6 +121,8 @@ SeaORM Entity 对应持久化表，API 公共 DTO 和课程 AST 独立于 ORM；
 
 React Router server loader 调用 `INTERNAL_API_URL`。公共目录可以按 release ID 缓存；涉及用户的 SSR 请求显式转发该请求的 session cookie，Rust 重新验证会话；HTML、loader data 和 API 响应 `private, no-store`，不进入共享/Cloudflare 缓存。只转发明确需要的 cookie 和受信 header，不转发浏览器伪造的代理身份。登录/退出/邀请通过浏览器同源 `/api/v1/auth/*`，Set-Cookie 由反向代理透传。
 
+实现补充（2026-10-06）：跨标签身份通知或可见性读取确认身份已变化时，停止播放、清理旧 owner 草稿，随后同步卸载旧私有路由及 LearningProvider，再 reload 服务器页面；旧资料编辑器的 beforeunload 不得阻止身份切换。重新读取未完成时仅保留中性状态与重新加载入口，不继续渲染旧 loader 内容。读取网络失败仍按未确认处理，不擅自判为退出；此客户端清理不代替服务端权限/会话撤销或事务回滚。
+
 生产使用 HttpOnly、Secure、SameSite=Lax cookie，不将会话 token 写进 localStorage。tower-sessions 用 SeaORM PostgreSQL SessionStore，axum-login 管理登录态；cookie 生命周期、session ID 轮换、到期清理和撤销均显式配置。用户 session auth hash 随密码重置更新，以废止旧会话；身份中间件不等于业务访问控制。
 
 现有 `tower-sessions-seaorm-store` 可作为候选，尚未证明它与选定 SeaORM 2/session 版本兼容。实现身份模块时先检查依赖并跑存取/过期/并发验证；若不兼容，只按 tower-sessions 的 SessionStore trait 实现薄 SeaORM 存储适配层，复用成熟会话机制，不为此另建 SQLx connection pool 或改造会话协议。
