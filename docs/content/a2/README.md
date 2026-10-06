@@ -1,6 +1,6 @@
 # A2 课程草稿包
 
-状态：2026-10-06，「周末与出行」「一起生活」「办理日常事务」「身体与状态」「工作学习与经历」五个单元二十课作者草稿，均 `editorial.status=draft`。未导入、未人工审校、无正式录音，未 staging 或激活正式目录；最后一个 A2 规划单元「表达与协商」继续待制作。
+状态：2026-10-06，六个规划单元二十四课作者草稿，均 `editorial.status=draft`。未导入、未人工审校、无正式录音，未 staging 或激活正式目录。最新 [完整 A1–A2 联合草稿目录](catalog.full.release.json) 包含十二单元 48 课、144 道题；草稿覆盖规划不代表教学或发布验收完成。
 
 | 顺序 | 作者源文件 | 正文 | 交际目标 | 正文词数（空白分词） |
 | --- | --- | --- | --- | --- |
@@ -24,6 +24,10 @@
 | 18 | [安排一次协作](a2-work-plan-collaboration.lesson.json) | 分工对话，8 轮 | si + 现在时条件、近期将来、文件与时刻 | 210 |
 | 19 | [说明项目进度](a2-work-report-progress.lesson.json) | 进度消息，6 段 | déjà / pas encore、已完成与计划区分 | 171 |
 | 20 | [讲述昨天的一天](a2-work-tell-yesterday.lesson.json) | 一天回顾，7 段 | être 复合过去时、主语配合、叙事顺序 | 191 |
+| 21 | [评价一次体验](a2-express-evaluate-experience.lesson.json) | 体验短文，6 段 | à mon avis、个人评价与原因、推荐范围 | 179 |
+| 22 | [说明自己的偏好](a2-express-explain-preference.lesson.json) | 朋友对话，6 轮 | préférer + 原形、环境比较、不同选择 | 168 |
+| 23 | [提出替代方案](a2-express-propose-alternative.lesson.json) | 改约对话，6 轮 | proposer de、nous pourrions、双方确认 | 166 |
+| 24 | [澄清一次误会](a2-express-clear-misunderstanding.lesson.json) | 消息对话，6 轮 | je voulais dire、donc、日期/时间/入口核对 | 171 |
 
 这四课是独立的虚构场景，不是一份贯穿四课的真实行程：住宿日期、周末往返时刻与一天出游经历分别供练习。每课有八个目标词汇/语块、两个语法点、解释和有范围的场景说明、单选/填空/排序各一题、可选生活任务与回顾。日期未指定年份，住宿正文星期几是虚构日历设定；价格、票程、直达、早餐与座位不是市场信息或运营方条款。A1 知识点复用原有固定条目，新增知识跨课使用同一 ID 和释义。
 
@@ -36,6 +40,8 @@
 [四个 A2 单元的联合目录](catalog.four-units.release.json) 使用独立 ID `a1-a2-four-units-draft-v1`，包含 A1 24 + A2 16 课、120 道题，保留前三份目录。「身体与状态」各课是独立语言场景，目标是描述感觉、核对预约与理解接待文字；不解释症状原因或严重程度，不给出诊断、治疗、用药、分诊或等待时限判断。情绪为主观表达，接待指令只涉及报到/填表/等候的虚构流程；习惯任务使用虚构人物，不要求提供真实健康资料。
 
 [五个 A2 单元的联合目录](catalog.five-units.release.json) 使用独立 ID `a1-a2-five-units-draft-v1`，包含 A1 24 + A2 20 课、132 道题，之前目录保持不变。「工作学习与经历」用虚构图书馆项目讲经历、分工、进度和昨天的活动；四课可独立阅读，没有要求同一篇里的相对日期与另一篇强行对应。练习只评价所述事实与目标表达，不评价劳动效率或要求提供真实雇主/项目资料。
+
+[完整 A1–A2 联合目录](catalog.full.release.json) 使用独立 ID `a1-a2-full-draft-v1`，合计 48 课、144 道题；所有阶段目录保持不变。「表达与协商」四课每课八个目标词条、两个语法点、三类练习与可选任务。评价、偏好、改约和澄清为独立虚构场景；评价不宣称店铺品质，比较不评判个人爱好，提议不等于对方接受，误会通过具体信息和明确回复澄清。
 
 ## 素材与角色
 
@@ -64,6 +70,8 @@
 
 作者文件含 `serverOnly.grading`，不能直接发送给公共 API 或作为静态资源。正式预览需要先登记素材，再导入课程，由 operator 查看固定版本；当前不宣称完成四课的浏览器预览或教学审校。人工法语、中文译文、难度、文化范围、练习有效性、插图适配与录音仍待审校。正式发布继续受 reviewed 元数据、注册快照、授权与实际文件校验约束。
 
+「表达与协商」复用 Camille/Luc revision 1 与 `art-home-morning` revision 1，表示在家整理评价或商量安排，不把室内图宣称为咖啡馆/公园现场。没有新增素材登记或公开媒体。
+
 ## 语言来源与待审校项
 
 正文、译文、解释与练习为项目新写草稿，未复制第三方教材/题目/例句。参考资料只用于核对语言结构，不表示资料提供方认可或授权本课：
@@ -91,3 +99,7 @@
 「工作学习与经历」待审校项：appris、accueilli、relu 等不规则过去分词；depuis 不用于本单元已结束的实践时长；si 条件用法与间接疑问的 si 区分。arrivée / rentrée 与 Camille 配合，arrivé 与 Luc 配合，partis 指两人；不是所有移动动词都使用 être，rentrer 的带直接宾语用法也不能套用本课规则。n’était pas、ne connaissais pas、vérifiait 是过去背景的未完成过去时，有支持解释但尚未系统教学，仍需人工确认是否降低阅读难度或增补练习。déjà 与 pas encore 练习须保持书单完成、摘要尚未发送的事实区分。
 
 本单元不是完整过去时教程：prendre → pris、faire → fait 作为正文例形；明确不能把全部动词的助动词都设为 avoir。pas de souvenirs 的数量宾语否定和 comprend-il 的正式提问有随文解释，系统练习后续补充。待人工审校确认这些支持说明是否足够、八轮较长电话/售票正文是否适合目标学习者。
+
+「表达与协商」语言核对来源（2026-10-06）：[Larousse préférer](https://www.larousse.fr/fr/conjugaison/francais/pr%C3%A9f%C3%A9rer/6998) 核对 je préfère / nous préférons；[OQLF 条件式情态用法](https://vitrinelinguistique.oqlf.gouv.qc.ca/24148/la-grammaire/le-verbe/temps-grammaticaux/conditionnel/valeur-modale-du-conditionnel) 核对缓和建议；[Larousse proposer](https://www.larousse.fr/dictionnaires/francais/proposer/64403) 核对提议词义并区分 proposer que 的虚拟式结构。本课仅练 proposer de + 原形，正文及例句原创。
+
+待审校项：个人评价与事实分开；bruyant、accueillante 的配合；je voulais dire 与 je voudrais 区别；nous pourrions 只练目标语块，不假定完整条件式教学已完成。a été、est devenu、était、accueillis、je suis resté、celle、pour que tout soit plus clair 等支持表达有随文说明，仍需人工判断难度和是否拆分补练。三段对话六轮、短文六段，正文 179/168/166/171 空白分隔词。最新目录的 144 道题正确及合法错误输入、跨级知识一致、固定角色/素材引用和公开投影通过结构测试，不等于内容语言正确或可直接发布。

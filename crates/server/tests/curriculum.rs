@@ -212,6 +212,33 @@ fn a2_work_study_matches_cross_level_catalog_and_grades_all_exercises() {
     );
 }
 
+#[test]
+fn full_a1_a2_catalog_matches_sources_and_grades_all_exercises() {
+    check_a2_readings(&[
+        ("a2-express-evaluate-experience", "article"),
+        ("a2-express-explain-preference", "dialogue"),
+        ("a2-express-propose-alternative", "dialogue"),
+        ("a2-express-clear-misunderstanding", "dialogue"),
+    ]);
+    check_catalog(
+        "../a2/catalog.full.release.json",
+        &[
+            "a1-first-conversations",
+            "a1-breakfast-bakery",
+            "a1-city-travel",
+            "a1-home-routine",
+            "a1-food-shopping",
+            "a1-social-meetings",
+            "a2-weekend-travel",
+            "a2-shared-living",
+            "a2-daily-services",
+            "a2-body-wellbeing",
+            "a2-work-study-experience",
+            "a2-expression-negotiation",
+        ],
+    );
+}
+
 fn check_a2_readings(readings: &[(&str, &str)]) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/content/a2");
     for &(id, mode) in readings {

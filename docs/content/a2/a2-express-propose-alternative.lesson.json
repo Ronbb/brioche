@@ -1,0 +1,526 @@
+{
+  "schemaVersion": "1.0",
+  "id": "a2-express-propose-alternative",
+  "revision": 1,
+  "levelId": "a2",
+  "unitId": "a2-expression-negotiation",
+  "title": {
+    "fr": "Une autre solution pour samedi",
+    "zh": "提出替代方案"
+  },
+  "summaryZh": "拒绝一个不合适时段，提出替代方案并明确确认。",
+  "estimatedMinutes": 16,
+  "objectivesZh": [
+    "说明不能接受的时段",
+    "提出可能的替代方案",
+    "区分建议与已确认约定"
+  ],
+  "knowledge": {
+    "vocabulary": [
+      {
+        "id": "word-proposer",
+        "lemma": "proposer",
+        "partOfSpeech": "verb",
+        "meaningZh": "提议",
+        "noteZh": "proposer de + 原形提出做某事的方案。"
+      },
+      {
+        "id": "word-solution",
+        "lemma": "solution",
+        "partOfSpeech": "noun",
+        "meaningZh": "解决办法；方案",
+        "noteZh": "搭配冠词学习 solution。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-changer",
+        "lemma": "changer",
+        "partOfSpeech": "verb",
+        "meaningZh": "改变；更换",
+        "noteZh": "本课 changer l’heure 表示改时间。"
+      },
+      {
+        "id": "word-disponible",
+        "lemma": "disponible",
+        "partOfSpeech": "adjective",
+        "meaningZh": "可用的；有空的",
+        "noteZh": "本课指可安排的时间。"
+      },
+      {
+        "id": "word-accepter",
+        "lemma": "accepter",
+        "partOfSpeech": "verb",
+        "meaningZh": "接受",
+        "noteZh": "接受提议后还需明确时间地点。"
+      },
+      {
+        "id": "word-refuser",
+        "lemma": "refuser",
+        "partOfSpeech": "verb",
+        "meaningZh": "拒绝",
+        "noteZh": "说明自身限制，不要求学习者总是接受。"
+      },
+      {
+        "id": "word-attendre",
+        "lemma": "attendre",
+        "partOfSpeech": "verb",
+        "meaningZh": "等待",
+        "noteZh": "elle attend 是第三人称单数现在时。"
+      },
+      {
+        "id": "word-verifier",
+        "lemma": "vérifier",
+        "partOfSpeech": "verb",
+        "meaningZh": "核对；检查",
+        "noteZh": "本课 vérifier les informations 表示核对信息。"
+      }
+    ],
+    "grammar": [
+      {
+        "id": "grammar-a2-proposer-de",
+        "titleZh": "proposer de + 原形：提出方案",
+        "bodyZh": "je propose de 后接动词原形，提出做某事的方案，不代表对方已经接受。本课用 je propose de changer；对方随后明确确认，方案才成为双方约定。",
+        "examples": [
+          {
+            "fr": "Je propose de changer l’heure.",
+            "zh": "我提议改时间。"
+          }
+        ]
+      },
+      {
+        "id": "grammar-a2-conditionnel-polite",
+        "titleZh": "pourrions：用条件式商量可能方案",
+        "bodyZh": "nous pourrions + 原形表示我们可以考虑做某事，比确定的 nous allons 更缓和。本课只练习 pouvoir 的 nous pourrions，不把建议误读为已经确定的安排，也不展开完整条件式变位。",
+        "examples": [
+          {
+            "fr": "Nous pourrions partir plus tard.",
+            "zh": "我们可以考虑晚一点出发。"
+          }
+        ]
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "id": "scene-main",
+      "type": "scene",
+      "placeZh": "两位朋友在家确认周末见面计划",
+      "situationZh": "拒绝一个不合适时段，提出替代方案并明确确认。",
+      "illustrationId": "art-home-morning"
+    },
+    {
+      "id": "dialogue-main",
+      "type": "dialogue",
+      "titleZh": "提出替代方案",
+      "speakers": [
+        {
+          "id": "speaker-1",
+          "labelZh": "需要调整时间的朋友",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "avatarId": "avatar-camille-v1"
+        },
+        {
+          "id": "speaker-2",
+          "labelZh": "讨论新方案的朋友",
+          "characterId": "character-luc",
+          "displayName": "Luc",
+          "avatarId": "avatar-luc-v1"
+        }
+      ],
+      "turns": [
+        {
+          "id": "entry-1",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Pour samedi, nous avons parlé d’une rencontre à neuf heures. Je dois "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "refuser",
+              "vocabularyId": "word-refuser"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " cet horaire parce que j’ai un autre rendez-vous le matin. Je suis "
+            },
+            {
+              "id": "segment-1-4",
+              "text": "disponible",
+              "vocabularyId": "word-disponible"
+            },
+            {
+              "id": "segment-1-5",
+              "text": " à partir de quatorze heures."
+            }
+          ],
+          "translationZh": "星期六，我们之前说九点见面。我需要拒绝这个时段，因为上午另有约。我从十四点开始有空。"
+        },
+        {
+          "id": "entry-2",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Merci de me prévenir. Nous "
+            },
+            {
+              "id": "segment-2-2",
+              "text": "pourrions",
+              "grammarId": "grammar-a2-conditionnel-polite"
+            },
+            {
+              "id": "segment-2-3",
+              "text": " partir plus tard et garder la même promenade. Est-ce que quatorze heures te convient, ou préfères-tu changer aussi le lieu ?"
+            }
+          ],
+          "translationZh": "谢谢你提前告诉我。我们可以考虑晚点出发，保留同样的散步计划。十四点合适吗，还是你也想换地点？"
+        },
+        {
+          "id": "entry-3",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Je "
+            },
+            {
+              "id": "segment-3-2",
+              "text": "propose",
+              "vocabularyId": "word-proposer",
+              "grammarId": "grammar-a2-proposer-de"
+            },
+            {
+              "id": "segment-3-3",
+              "text": " de "
+            },
+            {
+              "id": "segment-3-4",
+              "text": "changer",
+              "vocabularyId": "word-changer"
+            },
+            {
+              "id": "segment-3-5",
+              "text": " l’heure, mais pas le lieu. L’entrée du parc reste pratique pour moi. Cette "
+            },
+            {
+              "id": "segment-3-6",
+              "text": "solution",
+              "vocabularyId": "word-solution"
+            },
+            {
+              "id": "segment-3-7",
+              "text": " nous permet de garder une partie du programme."
+            }
+          ],
+          "translationZh": "我提议改时间，不换地点。公园入口对我仍方便。这个方案让我们保留一部分安排。"
+        },
+        {
+          "id": "entry-4",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Je peux "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "accepter",
+              "vocabularyId": "word-accepter"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " quatorze heures. Nous pouvons marcher pendant une heure et rentrer ensuite. Je ne suis pas disponible le soir, donc je préfère une sortie assez courte."
+            }
+          ],
+          "translationZh": "我能接受十四点。我们可以走一小时，然后回家。我晚上没空，所以更想短暂出门。"
+        },
+        {
+          "id": "entry-5",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "D’accord, nous nous retrouvons samedi à quatorze heures à l’entrée du parc. Je vais "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "vérifier",
+              "vocabularyId": "word-verifier"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " mon trajet pour arriver à l’heure et éviter de te faire "
+            },
+            {
+              "id": "segment-5-4",
+              "text": "attendre",
+              "vocabularyId": "word-attendre"
+            },
+            {
+              "id": "segment-5-5",
+              "text": "."
+            }
+          ],
+          "translationZh": "好，我们星期六十四点在公园入口见。我会核对路线，准时到，避免让你等。"
+        },
+        {
+          "id": "entry-6",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Oui, je confirme ce nouvel horaire et ce lieu. Je vais noter les deux informations dans mon agenda. Notre ancienne proposition de neuf heures est donc remplacée."
+            }
+          ],
+          "translationZh": "对，我确认这个新时间和地点。我会把两条信息记在日程本。原来的九点方案就替换了。"
+        }
+      ]
+    },
+    {
+      "id": "explanation-main",
+      "type": "explanation",
+      "titleZh": "这句话如何使用",
+      "bodyZh": "proposer de 接原形；nous pourrions 是可商量的方案，不等于确认。只有最后两轮双方同意后，十四点才是新约定。te convient 是对你合适，prévenir 是提前告知，éviter de 接原形表示避免做某事；本课作为支持表达理解。",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2"
+        }
+      ]
+    },
+    {
+      "id": "culture-context",
+      "type": "culture",
+      "titleZh": "场景中的细节",
+      "bodyZh": "拒绝和改约不要求编造理由；本课人物时间只是虚构安排，不概括社交礼仪。",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。"
+    },
+    {
+      "id": "vocabulary-targets",
+      "type": "vocabulary",
+      "entryIds": [
+        "word-proposer",
+        "word-solution",
+        "word-changer",
+        "word-disponible",
+        "word-accepter",
+        "word-refuser",
+        "word-attendre",
+        "word-verifier"
+      ]
+    },
+    {
+      "id": "grammar-targets",
+      "type": "grammar",
+      "entryIds": [
+        "grammar-a2-proposer-de",
+        "grammar-a2-conditionnel-polite"
+      ]
+    },
+    {
+      "id": "exercise-comprehension",
+      "type": "exercise",
+      "exerciseType": "single-choice",
+      "promptZh": "最终双方确认几点见面？",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "星期六九点"
+        },
+        {
+          "id": "correct",
+          "text": "星期六十四点"
+        },
+        {
+          "id": "distractor-b",
+          "text": "星期六晚上"
+        }
+      ]
+    },
+    {
+      "id": "exercise-fill",
+      "type": "exercise",
+      "exerciseType": "fill-blank",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Nous ___ partir plus tard.",
+      "hintZh": "pouvoir 的 nous 条件式为 pourrions；这里提出可能方案。"
+    },
+    {
+      "id": "exercise-order",
+      "type": "exercise",
+      "exerciseType": "order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "l’heure."
+        },
+        {
+          "id": "token-1",
+          "text": "Je propose"
+        },
+        {
+          "id": "token-2",
+          "text": "de changer"
+        }
+      ]
+    },
+    {
+      "id": "habit-main",
+      "type": "habit",
+      "taskZh": "为虚构约会提出一个替代时段，并写一句明确确认。",
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。"
+    },
+    {
+      "id": "summary-main",
+      "type": "summary",
+      "takeawaysZh": [
+        "我能说明不能接受的时段。",
+        "我能提出可能的替代方案。",
+        "我能区分建议与已确认约定。"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景",
+      "blockIds": [
+        "scene-main"
+      ]
+    },
+    {
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话",
+      "blockIds": [
+        "dialogue-main"
+      ]
+    },
+    {
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达",
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ]
+    },
+    {
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用",
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ]
+    },
+    {
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常",
+      "blockIds": [
+        "habit-main"
+      ]
+    },
+    {
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课",
+      "blockIds": [
+        "summary-main"
+      ]
+    }
+  ],
+  "completion": {
+    "strategy": "attempt-all",
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ]
+  },
+  "reviewItemIds": [
+    "word-proposer",
+    "word-solution",
+    "word-accepter"
+  ],
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "kind": "choice",
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：星期六十四点。"
+      },
+      "exercise-fill": {
+        "kind": "text",
+        "accepted": [
+          "pourrions"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "pouvoir 的 nous 条件式为 pourrions；这里提出可能方案。"
+      },
+      "exercise-order": {
+        "kind": "order",
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Je propose de changer l’heure."
+      }
+    }
+  },
+  "editorial": {
+    "status": "draft",
+    "note": "项目原创课程草稿，未完成人工法语、译文和教学审校。个人评价、偏好、改约与误会为虚构语言练习。素材待来源授权确认及登记；无正式录音。审校记录见 docs/content/a2/README.md，禁止直接作为已审校课程发布。"
+  },
+  "assetRefs": [
+    {
+      "assetId": "art-home-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    }
+  ],
+  "cast": [
+    {
+      "characterId": "character-camille",
+      "revision": 1,
+      "displayName": "Camille",
+      "avatarId": "avatar-camille-v1",
+      "speechLocale": "fr-FR"
+    },
+    {
+      "characterId": "character-luc",
+      "revision": 1,
+      "displayName": "Luc",
+      "avatarId": "avatar-luc-v1",
+      "speechLocale": "fr-FR"
+    }
+  ]
+}
