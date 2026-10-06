@@ -53,3 +53,5 @@ jobs:
           BRIOCHE_BACKUP_DOCKER_TEST: "1"
       - run: pnpm build
       - run: pnpm test:ssr
+      - run: pnpm exec agent-browser install --with-deps
+      - run: pnpm test:browser

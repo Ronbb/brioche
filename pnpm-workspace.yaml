@@ -3,5 +3,6 @@ packages:
   - packages/*
 injectWorkspacePackages: true
 onlyBuiltDependencies:
+  - agent-browser
   - "@tailwindcss/oxide"
   - esbuild

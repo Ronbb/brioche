@@ -1,6 +1,8 @@
 {
   "include": [
     "app/**/*",
+    "browser-tests/**/*.ts",
+    "browser-tests/**/*.tsx",
     ".react-router/types/**/*",
     "vite.config.ts",
     "react-router.config.ts"
