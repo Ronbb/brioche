@@ -108,6 +108,65 @@ const profile = (id) => ({
 });
 const api = createServer((request, response) => {
   response.setHeader("Content-Type", "application/json");
+  if (request.url.startsWith("/api/v1/operator/recordings")) {
+    if (!accounts || !operatorAccount) {
+      response.statusCode = 401;
+      response.end("{}");
+      return;
+    }
+    if (request.url.endsWith("/file")) {
+      const bytes = Buffer.alloc(44 + 8000 * 4 * 2);
+      bytes.write("RIFF");
+      bytes.writeUInt32LE(bytes.length - 8, 4);
+      bytes.write("WAVEfmt ", 8);
+      bytes.writeUInt32LE(16, 16);
+      bytes.writeUInt16LE(1, 20);
+      bytes.writeUInt16LE(1, 22);
+      bytes.writeUInt32LE(8000, 24);
+      bytes.writeUInt32LE(16000, 28);
+      bytes.writeUInt16LE(2, 32);
+      bytes.writeUInt16LE(16, 34);
+      bytes.write("data", 36);
+      bytes.writeUInt32LE(bytes.length - 44, 40);
+      for (let i = 0; i < 32000; i++)
+        bytes.writeInt16LE(
+          Math.round(Math.sin((i * Math.PI * 2 * 220) / 8000) * 1200),
+          44 + i * 2,
+        );
+      response.setHeader("Content-Type", "audio/wav");
+      response.end(bytes);
+      return;
+    }
+    const query = new URL(request.url, "http://fixture").searchParams.get("q");
+    response.end(
+      JSON.stringify({
+        items: query
+          ? []
+          : [
+              {
+                asset: {
+                  assetId: "qa-recording-" + "a".repeat(88),
+                  revision: 1,
+                  sha256: "a".repeat(64),
+                  mimeType: "audio/wav",
+                  durationMs: 4000,
+                  creditZh: "隔离合成测试",
+                  url: "/api/v1/operator/recordings/qa-recording/1/file",
+                },
+                source: "test:synthetic/" + "long-source-".repeat(20),
+                license: "LicenseRef-TestOnly",
+                creator: "protocol fixture",
+                rightsConfirmed: true,
+                byteSize: 64044,
+                sampleRate: 8000,
+                channels: 1,
+              },
+            ],
+        next: null,
+      }),
+    );
+    return;
+  }
   if (request.url.startsWith("/api/v1/operator/assets")) {
     if (request.method === "POST") {
       const chunks = [];
@@ -594,6 +653,59 @@ const web = createServer(async (request, response) => {
     serverErrors.push(String(error));
     if (!response.headersSent) response.writeHead(500);
     response.end();
+  }
+});
+
+test("recording registry plays real media and searches without mobile overflow", async () => {
+  accounts = true;
+  operatorAccount = true;
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("open", origin + "/admin/recordings");
+    await browser("wait", ".recording-preview");
+    for (const width of [320, 390, 678, 1024]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+        true,
+      );
+      assert.equal(
+        await evaluate(
+          "document.querySelector('.admin-recording').scrollWidth <= document.querySelector('.admin-recording').clientWidth",
+        ),
+        true,
+      );
+    }
+    await browser("click", ".recording-preview");
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('.recording-preview').getAttribute('aria-label').startsWith('暂停')",
+    );
+    await browser("click", ".recording-preview");
+    assert.match(
+      await evaluate(
+        "document.querySelector('.recording-preview').getAttribute('aria-label')",
+      ),
+      /^试听/,
+    );
+    await browser("click", ".recording-preview");
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('.recording-preview-track > span').style.width !== '0%'",
+    );
+    await browser("fill", "input[name=q]", "missing");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "没有符合条件的录音。");
+    assert.equal(
+      await evaluate("new URL(location.href).searchParams.get('q')"),
+      "missing",
+    );
+  } finally {
+    accounts = false;
+    operatorAccount = false;
   }
 });
 

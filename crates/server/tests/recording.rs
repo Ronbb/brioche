@@ -277,6 +277,91 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
     assert_eq!(response(&app, &private_url, "GET", &[]).await.status(), 401);
     let learner = account(&app, &backend, "audio-learner@example.test", false).await;
     let operator = account(&app, &backend, "audio-operator@example.test", true).await;
+    let registry = "/api/v1/operator/recordings";
+    let recording_file = "/api/v1/operator/recordings/audio-protocol/1/file";
+    for path in [registry, recording_file] {
+        assert_eq!(response(&app, path, "GET", &[]).await.status(), 401);
+        assert_eq!(
+            response(&app, path, "GET", &[("cookie", &learner)])
+                .await
+                .status(),
+            403
+        );
+    }
+    let listed = response(&app, registry, "GET", &[("cookie", &operator)]).await;
+    assert_eq!(listed.status(), 200);
+    assert_eq!(listed.headers()["cache-control"], "private, no-store");
+    let listed: Value =
+        serde_json::from_slice(&listed.into_body().collect().await.unwrap().to_bytes()).unwrap();
+    assert_eq!(listed["items"].as_array().unwrap().len(), 2);
+    assert_eq!(listed["items"][0]["asset"]["url"], recording_file);
+    assert_eq!(listed["items"][0]["sampleRate"], 24000);
+    assert_eq!(listed["items"][0]["channels"], 1);
+    assert!(listed["items"][0].get("provenance").is_none());
+    assert!(!listed.to_string().contains("synthetic.mp3"));
+    for path in [
+        "/api/v1/operator/recordings?afterId=audio-protocol",
+        "/api/v1/operator/recordings?afterRevision=1",
+        "/api/v1/operator/recordings?afterId=audio-protocol&afterRevision=0",
+        "/api/v1/operator/recordings?unknown=yes",
+    ] {
+        assert_eq!(
+            response(&app, path, "GET", &[("cookie", &operator)])
+                .await
+                .status(),
+            400
+        );
+    }
+    db.execute_unprepared(r#"INSERT INTO audio_assets(asset_id,revision,descriptor,provenance,sha256,extension,byte_size,duration_ms,sample_rate,channels)
+        SELECT 'qa-recording',n,jsonb_set(jsonb_set(descriptor,'{assetId}','"qa-recording"'),'{revision}',to_jsonb(n)),provenance,sha256,extension,byte_size,duration_ms,sample_rate,channels
+        FROM audio_assets CROSS JOIN generate_series(1,25) n WHERE asset_id='audio-protocol' AND revision=1"#).await.unwrap();
+    let page = response(
+        &app,
+        "/api/v1/operator/recordings?q=qa-recording",
+        "GET",
+        &[("cookie", &operator)],
+    )
+    .await;
+    let page: Value =
+        serde_json::from_slice(&page.into_body().collect().await.unwrap().to_bytes()).unwrap();
+    assert_eq!(page["items"].as_array().unwrap().len(), 20);
+    assert_eq!(page["next"]["revision"], 20);
+    let page = response(
+        &app,
+        "/api/v1/operator/recordings?q=qa-recording&afterId=qa-recording&afterRevision=20",
+        "GET",
+        &[("cookie", &operator)],
+    )
+    .await;
+    let page: Value =
+        serde_json::from_slice(&page.into_body().collect().await.unwrap().to_bytes()).unwrap();
+    assert_eq!(page["items"].as_array().unwrap().len(), 5);
+    assert_eq!(page["items"][0]["asset"]["revision"], 21);
+    assert!(page["next"].is_null());
+    let literal = response(
+        &app,
+        "/api/v1/operator/recordings?q=%25",
+        "GET",
+        &[("cookie", &operator)],
+    )
+    .await;
+    let literal: Value =
+        serde_json::from_slice(&literal.into_body().collect().await.unwrap().to_bytes()).unwrap();
+    assert_eq!(literal["items"], json!([]));
+    let file = response(
+        &app,
+        recording_file,
+        "GET",
+        &[("cookie", &operator), ("range", "bytes=0-9")],
+    )
+    .await;
+    assert_eq!(file.status(), 206);
+    assert_eq!(file.headers()["content-type"], "audio/mpeg");
+    assert_eq!(file.headers()["cache-control"], "private, no-store");
+    assert_eq!(
+        file.into_body().collect().await.unwrap().to_bytes().len(),
+        10
+    );
     assert_eq!(
         response(&app, &private_url, "GET", &[("cookie", &learner)])
             .await
@@ -324,6 +409,14 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
         403,
         "role is rechecked on each audio request"
     );
+    for path in [registry, recording_file] {
+        assert_eq!(
+            response(&app, path, "GET", &[("cookie", &operator)])
+                .await
+                .status(),
+            403
+        );
+    }
     db.execute_unprepared(
         "UPDATE users SET role='operator' WHERE email='audio-operator@example.test'",
     )
@@ -517,7 +610,7 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
             .await
             .is_err()
     );
-    assert_eq!(count("audio_assets").await, 2);
+    assert_eq!(count("audio_assets").await, 27);
     assert_eq!(count("audio_import_audit").await, 2);
     std::fs::write(&object, &bytes).unwrap();
     assert_eq!(response(&app, &url, "GET", &[]).await.status(), 200);

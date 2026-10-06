@@ -283,3 +283,23 @@ pub struct AdminCharacterRequest {
     pub avatar_revision: u32,
     pub reason: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminRecordings {
+    pub items: Vec<AdminRecording>,
+    pub next: Option<AdminAssetCursor>,
+}
+/// Private projection deliberately excludes source filesystem paths.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminRecording {
+    pub asset: crate::AudioAsset,
+    pub source: String,
+    pub license: String,
+    pub creator: String,
+    pub rights_confirmed: bool,
+    pub byte_size: u32,
+    pub sample_rate: u32,
+    pub channels: u32,
+}

@@ -20,6 +20,7 @@ pub fn router(root: std::path::PathBuf) -> Router<Backend> {
     Router::new()
         .merge(crate::character_voices::router())
         .merge(crate::admin_assets::router())
+        .merge(crate::admin_recordings::router())
         .route("/api/v1/operator/overview", get(overview))
         .route("/api/v1/operator/history", get(history))
         .route("/api/v1/operator/accounts", get(accounts))

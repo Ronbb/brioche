@@ -71,7 +71,8 @@ const server = createServer((request, response) => {
   ) {
     response.end(JSON.stringify({ items: [], nextId: null }));
   } else if (
-    request.url.startsWith("/api/v1/operator/assets") &&
+    (request.url.startsWith("/api/v1/operator/assets") ||
+      request.url.startsWith("/api/v1/operator/recordings")) &&
     authenticated &&
     profile.role === "operator"
   ) {
@@ -807,6 +808,43 @@ test("visual registry SSR protects metadata and allowlists the composite cursor"
   } finally {
     profile.role = "learner";
     authenticated = false;
+  }
+});
+
+test("recording registry SSR authorizes before fetching and keeps its cursor private", async () => {
+  authenticated = false;
+  requests.length = 0;
+  assert.equal((await request("/admin/recordings")).status, 401);
+  assert.ok(
+    !requests.some((r) => r.path.startsWith("/api/v1/operator/recordings")),
+  );
+  authenticated = true;
+  profile.role = "learner";
+  requests.length = 0;
+  assert.equal((await request("/admin/recordings")).status, 403);
+  assert.ok(
+    !requests.some((r) => r.path.startsWith("/api/v1/operator/recordings")),
+  );
+  profile.role = "operator";
+  try {
+    requests.length = 0;
+    const response = await request(
+      "/admin/recordings?afterId=qa-recording&afterRevision=20&q=bonjour&file=discard",
+    );
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get("cache-control"), /private, no-store/);
+    assert.match(await response.text(), /录音管理/);
+    assert.ok(
+      requests.some(
+        (r) =>
+          r.path ===
+          "/api/v1/operator/recordings?afterId=qa-recording&afterRevision=20&q=bonjour",
+      ),
+    );
+    assert.ok(!requests.some((r) => r.method !== "GET"));
+  } finally {
+    authenticated = false;
+    profile.role = "learner";
   }
 });
 
