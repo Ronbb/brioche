@@ -705,3 +705,73 @@ fn registered_reference_semantics_locate_the_exact_field_before_connection() {
     }
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn required_teaching_text_reports_original_source_values_without_database() {
+    use serde_json::json;
+    let path = std::env::temp_dir().join(format!("brioche-teaching-text-{}.json", random_id()));
+    let original = brioche_server::development_source().unwrap();
+    let block = |kind: &str| {
+        original["blocks"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .position(|b| b["type"] == kind)
+            .unwrap()
+    };
+    for (pointer, value) in [
+        ("/summaryZh".to_owned(), json!("\u{00a0}")),
+        ("/objectivesZh".to_owned(), json!([])),
+        ("/estimatedMinutes".to_owned(), json!(0)),
+        (
+            format!("/blocks/{}/turns/0/translationZh", block("dialogue")),
+            json!("\u{00a0}"),
+        ),
+        (
+            format!("/blocks/{}/paragraphs/0/translationZh", block("article")),
+            json!("\u{00a0}"),
+        ),
+        (
+            "/knowledge/vocabulary/0/meaningZh".to_owned(),
+            json!("\u{00a0}"),
+        ),
+        ("/knowledge/grammar/0/bodyZh".to_owned(), json!("\u{00a0}")),
+        (
+            format!("/blocks/{}/bodyZh", block("explanation")),
+            json!("\u{00a0}"),
+        ),
+        (
+            format!("/blocks/{}/scopeZh", block("culture")),
+            json!("\u{00a0}"),
+        ),
+        (
+            format!("/blocks/{}/takeawaysZh", block("summary")),
+            json!([]),
+        ),
+    ] {
+        let mut source = original.clone();
+        *source.pointer_mut(&pointer).unwrap() = value.clone();
+        let text = serde_json::to_string_pretty(&source)
+            .unwrap()
+            .replace('\n', "\r\n");
+        std::fs::write(&path, &text).unwrap();
+        let field = pointer.rsplit('/').next().unwrap();
+        let prefix = format!("\"{field}\": ");
+        let marker = format!("{prefix}{}", serde_json::to_string(&value).unwrap());
+        assert_eq!(text.matches(&marker).count(), 1);
+        let offset = text.find(&marker).unwrap() + prefix.len();
+        let before = &text[..offset];
+        let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+        let output = run("check", &path);
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success());
+        assert!(
+            error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
+            "{error}"
+        );
+        assert!(!error.contains("database connection"), "{error}");
+        assert!(output.stdout.is_empty());
+    }
+    std::fs::remove_file(path).unwrap();
+}

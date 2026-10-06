@@ -20,6 +20,15 @@ fn nonempty(value: &str, path: &str) -> Result<(), String> {
     }
     Ok(())
 }
+fn text_list(values: &[String], path: &str) -> Result<(), String> {
+    if values.is_empty() {
+        return Err(format!("{path}: expected at least one text item"));
+    }
+    for (index, value) in values.iter().enumerate() {
+        nonempty(value, &format!("{path}/{index}"))?;
+    }
+    Ok(())
+}
 impl PublicLesson {
     pub(crate) fn validate_flow(&self) -> Result<(), String> {
         for (value, path) in [
@@ -28,8 +37,31 @@ impl PublicLesson {
             (self.unit_id.as_str(), "/unitId"),
             (self.title.fr.as_str(), "/title/fr"),
             (self.title.zh.as_str(), "/title/zh"),
+            (self.summary_zh.as_str(), "/summaryZh"),
         ] {
             nonempty(value, path)?;
+        }
+        if !(1..=60).contains(&self.estimated_minutes) {
+            return Err("/estimatedMinutes: expected duration from 1 to 60 minutes".into());
+        }
+        text_list(&self.objectives_zh, "/objectivesZh")?;
+        for (index, vocabulary) in self.knowledge.vocabulary.iter().enumerate() {
+            for (field, value) in [
+                ("lemma", &vocabulary.lemma),
+                ("partOfSpeech", &vocabulary.part_of_speech),
+                ("meaningZh", &vocabulary.meaning_zh),
+            ] {
+                nonempty(value, &format!("/knowledge/vocabulary/{index}/{field}"))?;
+            }
+        }
+        for (index, grammar) in self.knowledge.grammar.iter().enumerate() {
+            let path = format!("/knowledge/grammar/{index}");
+            nonempty(&grammar.title_zh, &format!("{path}/titleZh"))?;
+            nonempty(&grammar.body_zh, &format!("{path}/bodyZh"))?;
+            for (example_index, example) in grammar.examples.iter().enumerate() {
+                nonempty(&example.fr, &format!("{path}/examples/{example_index}/fr"))?;
+                nonempty(&example.zh, &format!("{path}/examples/{example_index}/zh"))?;
+            }
         }
         if self.steps.is_empty() {
             return Err("/steps: expected at least one step".into());
@@ -66,8 +98,12 @@ impl PublicLesson {
             let mut entry_field = "";
             let entries: Vec<_> = match block {
                 Block::Dialogue {
-                    turns, speakers, ..
+                    title_zh,
+                    turns,
+                    speakers,
+                    ..
                 } => {
+                    nonempty(title_zh, &format!("{path}/titleZh"))?;
                     entry_field = "turns";
                     reading_blocks.insert(block.id());
                     if turns.is_empty() {
@@ -77,6 +113,7 @@ impl PublicLesson {
                         return Err(format!("{path}/speakers: empty dialogue"));
                     }
                     for (si, speaker) in speakers.iter().enumerate() {
+                        nonempty(&speaker.label_zh, &format!("{path}/speakers/{si}/labelZh"))?;
                         let cast = self
                             .cast
                             .iter()
@@ -95,15 +132,72 @@ impl PublicLesson {
                             ));
                         }
                     }
+                    for (index, turn) in turns.iter().enumerate() {
+                        nonempty(
+                            &turn.translation_zh,
+                            &format!("{path}/turns/{index}/translationZh"),
+                        )?;
+                    }
                     turns.iter().map(|e| (&e.id, &e.segments)).collect()
                 }
-                Block::Article { paragraphs, .. } => {
+                Block::Article {
+                    title_zh,
+                    paragraphs,
+                    ..
+                } => {
+                    nonempty(title_zh, &format!("{path}/titleZh"))?;
                     entry_field = "paragraphs";
                     reading_blocks.insert(block.id());
                     if paragraphs.is_empty() {
                         return Err(format!("{path}/paragraphs: empty article"));
                     }
+                    for (index, paragraph) in paragraphs.iter().enumerate() {
+                        nonempty(
+                            &paragraph.translation_zh,
+                            &format!("{path}/paragraphs/{index}/translationZh"),
+                        )?;
+                    }
                     paragraphs.iter().map(|e| (&e.id, &e.segments)).collect()
+                }
+                Block::Scene {
+                    place_zh,
+                    situation_zh,
+                    ..
+                } => {
+                    nonempty(place_zh, &format!("{path}/placeZh"))?;
+                    nonempty(situation_zh, &format!("{path}/situationZh"))?;
+                    vec![]
+                }
+                Block::Explanation {
+                    title_zh, body_zh, ..
+                } => {
+                    nonempty(title_zh, &format!("{path}/titleZh"))?;
+                    nonempty(body_zh, &format!("{path}/bodyZh"))?;
+                    vec![]
+                }
+                Block::Culture {
+                    title_zh,
+                    body_zh,
+                    scope_zh,
+                    ..
+                } => {
+                    nonempty(title_zh, &format!("{path}/titleZh"))?;
+                    nonempty(body_zh, &format!("{path}/bodyZh"))?;
+                    nonempty(scope_zh, &format!("{path}/scopeZh"))?;
+                    vec![]
+                }
+                Block::Habit {
+                    task_zh,
+                    alternative_zh,
+                    ..
+                } => {
+                    nonempty(task_zh, &format!("{path}/taskZh"))?;
+                    nonempty(alternative_zh, &format!("{path}/alternativeZh"))?;
+                    vec![]
+                }
+                Block::Summary { takeaways_zh, .. } => {
+                    text_list(takeaways_zh, &format!("{path}/takeawaysZh"))?;
+                    vec![]
                 }
                 Block::Exercise { exercise, .. } => {
                     match exercise {
@@ -162,7 +256,6 @@ impl PublicLesson {
                     )?;
                     vec![]
                 }
-                _ => vec![],
             };
             let entry_path = format!("{path}/{entry_field}");
             unique(
@@ -252,6 +345,70 @@ mod tests {
     use crate::*;
     fn fixture() -> PublicLesson {
         super::super::tests::fixture()
+    }
+    #[test]
+    fn requires_readable_teaching_text_and_duration() {
+        let original = serde_json::to_value(fixture()).unwrap();
+        let block = |kind: &str| {
+            original["blocks"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .position(|b| b["type"] == kind)
+                .unwrap()
+        };
+        let mut cases = vec![
+            ("/summaryZh".to_owned(), serde_json::json!("\u{00a0}")),
+            ("/objectivesZh".to_owned(), serde_json::json!([])),
+            ("/objectivesZh/0".to_owned(), serde_json::json!("\u{00a0}")),
+            ("/estimatedMinutes".to_owned(), serde_json::json!(0)),
+            ("/estimatedMinutes".to_owned(), serde_json::json!(61)),
+        ];
+        for (kind, fields) in [
+            ("scene", vec!["placeZh", "situationZh"]),
+            (
+                "dialogue",
+                vec!["titleZh", "turns/0/translationZh", "speakers/0/labelZh"],
+            ),
+            ("article", vec!["titleZh", "paragraphs/0/translationZh"]),
+            ("explanation", vec!["titleZh", "bodyZh"]),
+            ("culture", vec!["titleZh", "bodyZh", "scopeZh"]),
+            ("habit", vec!["taskZh", "alternativeZh"]),
+            ("summary", vec!["takeawaysZh/0"]),
+        ] {
+            for field in fields {
+                cases.push((
+                    format!("/blocks/{}/{field}", block(kind)),
+                    serde_json::json!("\u{00a0}"),
+                ));
+            }
+        }
+        cases.push((
+            format!("/blocks/{}/takeawaysZh", block("summary")),
+            serde_json::json!([]),
+        ));
+        for field in ["lemma", "partOfSpeech", "meaningZh"] {
+            cases.push((
+                format!("/knowledge/vocabulary/0/{field}"),
+                serde_json::json!("\u{00a0}"),
+            ));
+        }
+        for field in ["titleZh", "bodyZh", "examples/0/fr", "examples/0/zh"] {
+            cases.push((
+                format!("/knowledge/grammar/0/{field}"),
+                serde_json::json!("\u{00a0}"),
+            ));
+        }
+        for (pointer, value) in cases {
+            let mut source = original.clone();
+            *source.pointer_mut(&pointer).unwrap() = value;
+            let lesson: PublicLesson = serde_json::from_value(source).unwrap();
+            let error = lesson.validate().expect_err(&pointer);
+            assert!(
+                error.starts_with(&format!("{pointer}:")),
+                "{pointer}: {error}"
+            );
+        }
     }
     #[test]
     fn rejects_broken_targets_duplicate_tokens_and_unknown_steps() {
