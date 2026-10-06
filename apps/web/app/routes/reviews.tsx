@@ -55,7 +55,10 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
     alive = useRef(true),
     cardButton = useRef<HTMLButtonElement>(null),
     heading = useRef<HTMLHeadingElement>(null),
+    uncertainHeading = useRef<HTMLHeadingElement>(null),
     staleHeading = useRef<HTMLHeadingElement>(null),
+    saveFailure = useRef<HTMLParagraphElement>(null),
+    focusFailure = useRef(false),
     unavailable = useRef(new Set<string>()),
     animation = useRef<Animation | null>(null);
   const audio = useLearning(),
@@ -69,6 +72,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
     pending.current = null;
     unavailable.current.clear();
     busy.current = false;
+    focusFailure.current = false;
     setUncertain(false);
     setQueueStale(false);
     setSaving(false);
@@ -101,8 +105,15 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
     };
   }, [storageKey]);
   useLayoutEffect(() => {
-    if (queueStale) staleHeading.current?.focus();
-  }, [queueStale]);
+    if (uncertain) uncertainHeading.current?.focus();
+    else if (queueStale) staleHeading.current?.focus();
+  }, [uncertain, queueStale]);
+  useLayoutEffect(() => {
+    if (!saving && error && focusFailure.current) {
+      focusFailure.current = false;
+      saveFailure.current?.focus();
+    }
+  }, [saving, error]);
   function acceptQueue(fresh: ReviewQueue) {
     if (fresh.items.some((card) => unavailable.current.has(card.id))) {
       setQueueStale(true);
@@ -219,8 +230,12 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
           if (!alive.current || gen !== generation.current) return;
           if (accepted) setError("复习记录已变化，请确认最新队列后继续。");
           else setError("复习记录已变化，请重新读取有效队列后继续。");
-        } else setError(failure.message);
+        } else {
+          focusFailure.current = true;
+          setError(failure.message);
+        }
       } else {
+        audio.stop();
         setUncertain(true);
         setError("这次保存尚未确认，请重试确认原提交。");
       }
@@ -258,6 +273,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
     }
   }
   function reveal() {
+    if (busy.current || uncertain || queueStale || !ready) return;
     const height = cardButton.current?.getBoundingClientRect().height;
     animation.current?.cancel();
     setRevealed(!revealed);
@@ -324,7 +340,9 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
       </div>
       {uncertain ? (
         <div className="empty-state">
-          <h2>确认上次复习</h2>
+          <h2 ref={uncertainHeading} tabIndex={-1}>
+            确认上次复习
+          </h2>
           <p>确认原提交后，再继续今天的表达。</p>
         </div>
       ) : queueStale ? (
@@ -346,7 +364,8 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
             ref={cardButton}
             className="review-flashcard"
             aria-expanded={revealed}
-            disabled={saving || uncertain || queueStale || !ready}
+            aria-disabled={saving || uncertain || queueStale || !ready}
+            aria-busy={saving}
             onClick={reveal}
           >
             <span className="review-kind">
@@ -383,8 +402,11 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
                 <button
                   key={rating.value}
                   data-grade={grade}
-                  disabled={saving || queueStale || !ready}
-                  onClick={() =>
+                  aria-disabled={saving || queueStale || !ready}
+                  aria-busy={saving}
+                  onClick={() => {
+                    if (busy.current || uncertain || queueStale || !ready)
+                      return;
                     void submit({
                       cardId: term.id,
                       body: {
@@ -392,8 +414,8 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
                         idempotencyKey: operationKey(),
                         rating: rating.value,
                       },
-                    })
-                  }
+                    });
+                  }}
                 >
                   <span className="rating-dot" aria-hidden="true" />
                   <span>{rating.label}</span>
@@ -444,7 +466,8 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
             {queue.dueCount > queue.items.length && (
               <button
                 className="primary summary-main"
-                disabled={saving}
+                aria-disabled={saving}
+                aria-busy={saving}
                 onClick={() => void nextBatch()}
               >
                 查看下一组
@@ -458,14 +481,20 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
         </div>
       )}
       {error && (
-        <p className="error-message" role="alert">
+        <p
+          ref={saveFailure}
+          className="error-message"
+          role="alert"
+          tabIndex={-1}
+        >
           {error}
         </p>
       )}
       {queueStale && (
         <button
           className="text-button"
-          disabled={saving}
+          aria-disabled={saving}
+          aria-busy={saving}
           onClick={() => void nextBatch()}
         >
           重新读取复习队列
@@ -474,7 +503,8 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
       {uncertain && (
         <button
           className="primary"
-          disabled={saving}
+          aria-disabled={saving}
+          aria-busy={saving}
           onClick={() => {
             if (pending.current) void submit(pending.current);
           }}
