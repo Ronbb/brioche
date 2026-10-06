@@ -14,6 +14,19 @@ async fn main() -> Result<()> {
         )
         .init();
     let command = std::env::args().nth(1).unwrap_or_else(|| "serve".into());
+    if command == "speech-plan" {
+        let args: Vec<String> = std::env::args().skip(2).collect();
+        if args.len() != 2 {
+            bail!("usage: brioche-server speech-plan <lesson.json> <voice-plan.json>");
+        }
+        let document = brioche_server::author_json::Document::load(&args[0])?;
+        let lesson = brioche_server::author_source::check_lesson(&document)?;
+        let config: brioche_server::speech_plan::Config =
+            brioche_server::author_json::load(&args[1])?;
+        let plan = brioche_server::speech_plan::compile(&lesson, &document.value, &config)?;
+        println!("{}", serde_json::to_string_pretty(&plan)?);
+        return Ok(());
+    }
     if matches!(command.as_str(), "assets-check" | "audio-bundle-check") {
         let args: Vec<String> = std::env::args().skip(2).collect();
         if args.len() != 2 {

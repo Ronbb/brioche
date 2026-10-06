@@ -131,3 +131,14 @@ Rust公共契约生成 `tts-voices.ts`，服务端和网页共享四个法语系
 复用私有原始/修复WAV、哈希和解码检查、当前operator文件权限、共用录音播放器、后台历史与备份。系统音色不伪造复刻核对回执；克隆音色仍必须有模型/OK查询收据。SSR只读取固定角色/试听，不创建任务。正式课程录音仍需另行生成、审听、登记、真实时间轴和新课程/release发布。本批使用受控提供方和合成PCM验证协议，不调用真实付费合成，也不为Léa自动接受未经审听的新声音。
 
 系统候选试听验证与部署（2026-10-07）：最终固定构建16项SSR浏览器262.75秒全部通过，含自定义音色选择/候选冻结/回执丢失重试/首次v0→v1、旧克隆流程及其他页面回归；新流程定向49.43秒通过。25SSR/24Web/TS7/Rust工作区常规/Clippy/格式与隔离PG管理员3项、完整迁移上下、作者CLI事务通过。修复子选项弹层关闭事件误清空外层表单，实际浏览器复验通过。Docker已重建server/web，以HTTPS+TTS覆盖实际启动，迁移21成功、四长期服务healthy，两HTTPS巡检healthy；新角色候选页面/列表/固定角色API匿名401且private/no-store。Traefik无宿主映射、30075零监听；预部署数据库及5媒体备份verify，生产0试听/0正式录音/2声音档案/6已发布课程/generation1保持。没有真实付费合成、角色试听接受或课程录音发布，首六课正式语音覆盖继续待完成。
+
+
+## 通用离线课程配音清单
+
+`cargo run -p brioche-server -- speech-plan <lesson.json> <voice-plan.json>` 不连接数据库、不调用提供方、不收费。先执行完整作者课源校验，再输出私有 JSON；请将输出保存到 `.local/private`，不要作为公开课程或提交到 Git。
+
+配置严格包含 `items`（后台导出的固定 AdminCharacterVoice 快照）、`knowledgeNarrator`（characterId / characterRevision / voiceRevision 三重版本）及 `emotions`（目标 JSON Pointer 到场景情绪字符串的映射，可为空对象）。所有选择须匹配课程固定 cast 快照，声音版本须为正数且档案非空；重复、未使用声音和未知情绪目标拒绝。知识点讲解声音须明确选择，短文始终使用其 narratorId，不用讲解声音替代旁白。现有 voices.json 只有 Camille、Luc，缺少 Léa 的课程会明确失败；测试中的合成角色档案不构成真实声音批准。
+
+清单覆盖每个对话 turn、短文 paragraph、词汇 lemma 和全部语法例句 fr，保留源指针和身份，不读取中文解释。每个请求使用现有 Qwen 参数验证，包括每段最多600个 Unicode 字符；超限明确失败，不截断。相同固定角色/声音版本、完整档案、文本、情绪和参数的请求按 SHA-256 去重，保留每个目标映射及去重后的字符总量。完整课源哈希包含作者私有内容；planHash 按 planHash 为空字符串的完整清单计算，清单本身不是登记或授权证明。
+
+正文逐词范围按 Unicode UAX #29（unicode-segmentation 1.13.3）生成，记录 segment 内和 entry 内的 Unicode scalar 起止，不是 UTF-16 或字节位置。范围保留原始重音、组合字符、撇号和标点间隔，不做文本归一化；法语样例已对比前端 Intl.Segmenter。输出没有时间戳，不能作为可播放 AudioCue；还需实际音频生成、真实对齐、审听、登记及新课程/release 发布。离线成功不证明档案在数据库存在、复刻音色当前可用或参考授权已核验。
