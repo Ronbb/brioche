@@ -4,7 +4,9 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use ts_rs::TS;
 use unicode_normalization::UnicodeNormalization;
+mod admin;
 mod audio;
+pub use admin::*;
 mod validation;
 
 /// NFC, whitespace and French apostrophe variants are equivalent; accents remain meaningful.

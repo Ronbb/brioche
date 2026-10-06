@@ -67,6 +67,9 @@ const serverErrors = [];
 let origin,
   opened = false;
 let accounts = false;
+let operatorAccount = false;
+let adminApproved = false;
+let adminWrites = [];
 let lessonStatus = 200;
 const identityReads = [];
 let identityProof = null;
@@ -74,7 +77,7 @@ const profile = (id) => ({
   id,
   email: `${id}@example.test`,
   displayName: id === "shell-a" ? "Alice" : "Bob",
-  role: "learner",
+  role: operatorAccount ? "operator" : "learner",
   version: 1,
   settings: {
     timeZone: "Asia/Shanghai",
@@ -86,6 +89,47 @@ const profile = (id) => ({
 });
 const api = createServer((request, response) => {
   response.setHeader("Content-Type", "application/json");
+  if (request.url === "/api/v1/auth/csrf") {
+    response.end(JSON.stringify({ csrfToken: "controlled-admin-csrf" }));
+    return;
+  }
+  if (request.url === "/api/v1/operator/overview") {
+    response.end(
+      JSON.stringify({
+        generation: "0",
+        activeRelease: null,
+        releases: [],
+        lessons: [
+          {
+            id: lesson.id,
+            revision: 1,
+            title: "在面包店买早餐",
+            level: "a1",
+            unit: lesson.unitId,
+            published: false,
+            withdrawn: false,
+            approved: adminApproved,
+            reviewVersion: adminApproved ? 1 : 0,
+            reviewNote: "隔离管理员界面测试",
+          },
+        ],
+      }),
+    );
+    return;
+  }
+  if (request.url.endsWith("/review") && request.method === "POST") {
+    let body = "";
+    request.on("data", (chunk) => {
+      body += chunk;
+    });
+    request.on("end", () => {
+      const decision = JSON.parse(body);
+      adminWrites.push(decision);
+      adminApproved = decision.approved;
+      response.end(JSON.stringify({ ...decision, version: 1 }));
+    });
+    return;
+  }
   if (request.url === "/api/v1/me") {
     if (accounts) {
       const id = /(?:^|;\s*)brioche\.sid=(shell-[ab])(?:;|$)/.exec(
@@ -131,11 +175,18 @@ const web = createServer(async (request, response) => {
       return;
     }
     if (url.pathname.startsWith("/api/")) {
+      let body = "";
+      for await (const chunk of request) body += chunk;
       const proxied = await fetch(
         process.env.INTERNAL_API_URL + url.pathname + url.search,
         {
+          method: request.method,
+          ...(body ? { body } : {}),
           headers: {
             "X-Shell-Channel": "browser",
+            ...(request.headers["content-type"]
+              ? { "Content-Type": request.headers["content-type"] }
+              : {}),
             ...(request.headers.cookie
               ? { cookie: request.headers.cookie }
               : {}),
@@ -185,6 +236,78 @@ const web = createServer(async (request, response) => {
     serverErrors.push(String(error));
     if (!response.headersSent) response.writeHead(500);
     response.end();
+  }
+});
+
+test("operator enters admin from profile and approves using the centered dialog", async () => {
+  accounts = true;
+  operatorAccount = true;
+  adminApproved = false;
+  adminWrites = [];
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("set", "viewport", "390", "844");
+    await browser("open", origin + "/profile");
+    await browser("wait", ".setting-link[href='/admin']");
+    const gap = await evaluate(
+      `(() => { const heading=[...document.querySelectorAll('.settings-page > h2')].find(el=>el.textContent==='阅读');return heading.getBoundingClientRect().top-heading.previousElementSibling.getBoundingClientRect().bottom; })()`,
+    );
+    assert.equal(gap, 32);
+    await browser("click", ".setting-link[href='/admin']");
+    await browser("wait", ".admin-card");
+    await browser(
+      "find",
+      "role",
+      "button",
+      "click",
+      "--name",
+      "批准课程",
+      "--exact",
+    );
+    await browser("wait", ".admin-dialog[open]");
+    const geometry = await evaluate(
+      `(() => { const r=document.querySelector('.admin-dialog').getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:innerWidth,height:innerHeight}; })()`,
+    );
+    assert.ok(
+      geometry.left >= 0 &&
+        geometry.right <= geometry.width &&
+        geometry.top >= 0 &&
+        geometry.bottom <= geometry.height,
+    );
+    await browser("fill", "#admin-reason", "界面协议测试批准");
+    await browser("focus", ".admin-dialog .primary");
+    await browser("press", "Enter");
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('.admin-card-heading')?.textContent.includes('已批准')",
+    );
+    assert.deepEqual(adminWrites, [
+      { version: 0, approved: true, reason: "界面协议测试批准" },
+    ]);
+    assert.equal(
+      await evaluate("document.querySelectorAll('.admin-dialog[open]').length"),
+      0,
+    );
+    assert.equal(
+      await evaluate("document.documentElement.scrollWidth > innerWidth"),
+      false,
+    );
+    await browser(
+      "find",
+      "role",
+      "button",
+      "click",
+      "--name",
+      "发布目录",
+      "--exact",
+    );
+    await browser("wait", "--text", "还没有发布目录");
+  } finally {
+    accounts = false;
+    operatorAccount = false;
+    await browser("cookies", "clear");
   }
 });
 async function browser(...args) {

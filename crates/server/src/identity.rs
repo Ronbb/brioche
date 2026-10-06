@@ -503,6 +503,7 @@ pub fn router_with_media_root(
         .merge(crate::reviews::router())
         .merge(crate::library::router())
         .merge(crate::dashboard::router())
+        .merge(crate::admin::router(root.clone()))
         .merge(crate::preview::router(root))
         .layer(axum::middleware::from_fn_with_state(
             Arc::new(policy),

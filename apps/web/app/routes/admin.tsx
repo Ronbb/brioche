@@ -1,0 +1,280 @@
+import { Link, data, useRevalidator } from "react-router";
+import { useRef, useState } from "react";
+import type { AdminOverview } from "@brioche/contracts/AdminOverview";
+import type { AdminLesson } from "@brioche/contracts/AdminLesson";
+import { getIdentity, getPrivate } from "../lib/api.server";
+import { adminWrite } from "../lib/admin.client";
+import type { Route } from "./+types/admin";
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const { user } = await getIdentity(request);
+  if (!user) throw new Response("请先登录。", { status: 401 });
+  if (user.role !== "operator")
+    throw new Response("仅管理员可以进入。", { status: 403 });
+  return data(
+    await getPrivate<AdminOverview>(request, "/api/v1/operator/overview"),
+    {
+      headers: { "Cache-Control": "private, no-store", Vary: "Cookie" },
+    },
+  );
+}
+export function headers() {
+  return { "Cache-Control": "private, no-store", Vary: "Cookie" };
+}
+
+export default function Admin({ loaderData: overview }: Route.ComponentProps) {
+  const refresh = useRevalidator();
+  const [tab, setTab] = useState<"lessons" | "releases">("lessons");
+  const [target, setTarget] = useState<{
+    lesson?: AdminLesson;
+    release?: string;
+    operation: "approve" | "reject" | "withdraw" | "activate";
+  } | null>(null);
+  const [reason, setReason] = useState("");
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const busy = useRef(false);
+  const dialog = useRef<HTMLDialogElement>(null);
+  function open(next: NonNullable<typeof target>) {
+    setTarget(next);
+    setReason("");
+    setError("");
+    dialog.current?.showModal();
+  }
+  async function submit() {
+    if (busy.current || !target || !reason.trim()) return;
+    busy.current = true;
+    setPending(true);
+    setError("");
+    try {
+      const lesson = target.lesson;
+      if (target.operation === "activate") {
+        await adminWrite("releases/activate", {
+          releaseId: target.release,
+          generation: overview.generation,
+          reason,
+        });
+      } else if (lesson) {
+        const path = `lessons/${encodeURIComponent(lesson.id)}/revisions/${lesson.revision}`;
+        if (target.operation === "withdraw")
+          await adminWrite(`${path}/withdraw`, {
+            generation: overview.generation,
+            reason,
+          });
+        else
+          await adminWrite(`${path}/review`, {
+            version: lesson.reviewVersion,
+            approved: target.operation === "approve",
+            reason,
+          });
+      }
+      setNotice("操作已保存。");
+      dialog.current?.close();
+      refresh.revalidate();
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "操作未确认，请刷新核对。",
+      );
+    } finally {
+      busy.current = false;
+      setPending(false);
+    }
+  }
+  const labels = {
+    approve: "批准课程",
+    reject: "退回课程",
+    withdraw: "撤回课程版本",
+    activate: "切换发布目录",
+  };
+  return (
+    <section className="admin-page page-arrive">
+      <div className="admin-heading">
+        <div>
+          <p className="eyebrow">BRIOCHE STUDIO</p>
+          <h1>管理员后台</h1>
+        </div>
+        <Link className="text-button" to="/profile">
+          个人页
+        </Link>
+      </div>
+      <div className="admin-status">
+        <span>当前发布</span>
+        <strong>{overview.activeRelease ?? "尚未发布课程"}</strong>
+        <span>版本 {overview.generation}</span>
+      </div>
+      <div className="reader-mode" role="group" aria-label="管理内容">
+        <button
+          aria-pressed={tab === "lessons"}
+          onClick={() => setTab("lessons")}
+        >
+          课程审批
+        </button>
+        <button
+          aria-pressed={tab === "releases"}
+          onClick={() => setTab("releases")}
+        >
+          发布目录
+        </button>
+      </div>
+      <p role="status">{notice}</p>
+      {tab === "lessons" ? (
+        <div className="admin-list">
+          {!overview.lessons.length && (
+            <div className="admin-empty">
+              <h2>还没有导入的课程</h2>
+              <p>课程导入后会出现在这里，批准和发布分别管理。</p>
+            </div>
+          )}
+          {overview.lessons.map((lesson) => (
+            <article
+              className="admin-card"
+              key={`${lesson.id}:${lesson.revision}`}
+            >
+              <div className="admin-card-heading">
+                <span className="profile-level">
+                  {lesson.level.toUpperCase()} · v{lesson.revision}
+                </span>
+                <span>
+                  {lesson.withdrawn
+                    ? "已撤回"
+                    : lesson.published
+                      ? "曾发布"
+                      : lesson.approved
+                        ? "已批准"
+                        : "待批准"}
+                </span>
+              </div>
+              <h2>{lesson.title}</h2>
+              <p className="admin-note">{lesson.reviewNote}</p>
+              <div className="admin-card-actions">
+                {!lesson.withdrawn && (
+                  <Link
+                    className="text-button"
+                    to={`/author-preview?lessonId=${lesson.id}&revision=${lesson.revision}`}
+                  >
+                    打开预览
+                  </Link>
+                )}
+                {!lesson.withdrawn && !lesson.published && (
+                  <>
+                    <button
+                      className="text-button"
+                      onClick={() =>
+                        open({
+                          lesson,
+                          operation: lesson.approved ? "reject" : "approve",
+                        })
+                      }
+                    >
+                      {lesson.approved ? "退回修改" : "批准课程"}
+                    </button>
+                  </>
+                )}
+                {!lesson.withdrawn && lesson.published && (
+                  <button
+                    className="text-button"
+                    onClick={() => open({ lesson, operation: "withdraw" })}
+                  >
+                    撤回版本
+                  </button>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div className="admin-list">
+          {!overview.releases.length && (
+            <div className="admin-empty">
+              <h2>还没有发布目录</h2>
+              <p>通过 staging 检查的目录会显示在这里。</p>
+            </div>
+          )}
+          {overview.releases.map((release) => (
+            <article className="admin-card" key={release.id}>
+              <h2>{release.id}</h2>
+              <p>
+                {release.lessonCount} 课 ·{" "}
+                {release.id === overview.activeRelease
+                  ? "当前目录"
+                  : "可切换目录"}
+              </p>
+              <div className="admin-card-actions">
+                <Link
+                  className="text-button"
+                  to={`/author-preview?releaseId=${release.id}`}
+                >
+                  预览目录
+                </Link>
+                {release.id !== overview.activeRelease && (
+                  <button
+                    className="text-button"
+                    onClick={() =>
+                      open({ release: release.id, operation: "activate" })
+                    }
+                  >
+                    切换到此目录
+                  </button>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+      <dialog
+        ref={dialog}
+        className="choice-dialog admin-dialog"
+        onCancel={(event) => {
+          if (busy.current) event.preventDefault();
+        }}
+      >
+        <h2>{target && labels[target.operation]}</h2>
+        <p>{target?.lesson?.title ?? target?.release}</p>
+        {target?.operation === "withdraw" && (
+          <p>此版本会永久停止访问，已有学习记录保留。恢复内容需要新版本。</p>
+        )}
+        {target?.operation === "activate" && (
+          <p>
+            学习目录将整体切换，系统会重新检查审批和素材。旧学习会话继续固定原版本。
+          </p>
+        )}
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            void submit();
+          }}
+        >
+          <label htmlFor="admin-reason">操作理由</label>
+          <textarea
+            id="admin-reason"
+            required
+            maxLength={300}
+            value={reason}
+            onChange={(event) => setReason(event.target.value)}
+            readOnly={pending}
+          />
+          <p role="alert">{error}</p>
+          <button
+            className="primary"
+            aria-disabled={pending}
+            aria-busy={pending}
+            disabled={!reason.trim()}
+          >
+            {pending ? "正在保存" : "确认操作"}
+          </button>
+          <button
+            type="button"
+            className="text-button"
+            aria-disabled={pending}
+            onClick={() => {
+              if (!busy.current) dialog.current?.close();
+            }}
+          >
+            取消
+          </button>
+        </form>
+      </dialog>
+    </section>
+  );
+}

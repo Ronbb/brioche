@@ -255,16 +255,7 @@ async fn stage_impl(
                     ));
                 }
                 let source: serde_json::Value = field(&row, "server_document")?;
-                if !matches!(
-                    crate::author_source::editorial(&source)
-                        .map_err(|_| ReleaseFailure::at(
-                            AppError::InvalidInput,
-                            &path,
-                            "imported lesson has invalid editorial metadata"
-                        ))?
-                        .status,
-                    crate::author_source::EditorialStatus::Reviewed
-                ) {
+                if !crate::admin::approved(&tx, &entry.lesson_id, entry.revision, &source).await? {
                     return Err(ReleaseFailure::at(
                         AppError::InvalidInput,
                         &path,
@@ -413,10 +404,24 @@ async fn activate_impl(
         return Err(ReleaseFailure::at(AppError::Gone, "release-id", &format!("release contains a withdrawn lesson revision: {}@{}", field::<String>(&row,"lesson_id")?,field::<i32>(&row,"revision")?)));
     }
     let next = generation.checked_add(1).ok_or(AppError::Unavailable)?;
-    let rows=tx.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT r.public_document FROM release_entries e JOIN lesson_revisions r USING(lesson_id,revision) WHERE e.release_id=$1 ORDER BY e.position",[id.into()])).await.map_err(|_|AppError::Unavailable)?;
+    let rows=tx.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT r.public_document,r.server_document FROM release_entries e JOIN lesson_revisions r USING(lesson_id,revision) WHERE e.release_id=$1 ORDER BY e.position",[id.into()])).await.map_err(|_|AppError::Unavailable)?;
     for row in rows {
         let lesson: PublicLesson = serde_json::from_value(field(&row, "public_document")?)
             .map_err(|_| AppError::Unavailable)?;
+        if !crate::admin::approved(
+            &tx,
+            &lesson.id,
+            lesson.revision,
+            &field(&row, "server_document")?,
+        )
+        .await?
+        {
+            return Err(ReleaseFailure::at(
+                AppError::Conflict,
+                "release-id",
+                "release contains a lesson that is no longer approved",
+            ));
+        }
         crate::media::validate_lesson_detailed(&tx, &lesson, media_root)
             .await
             .map_err(|error| ReleaseFailure {

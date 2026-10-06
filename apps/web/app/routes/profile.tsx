@@ -207,8 +207,8 @@ function ProfileContent() {
           <h2>学习日常</h2>
           <div className="settings-group">
             {profile.role === "operator" && (
-              <Link className="setting-row setting-link" to="/author-preview">
-                <span>课程预览</span>
+              <Link className="setting-row setting-link" to="/admin">
+                <span>管理员后台</span>
                 <Icon name="chevron" />
               </Link>
             )}

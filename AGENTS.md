@@ -52,6 +52,7 @@
 - 图片可先运行 `asset-check <file> <image/svg+xml|image/png|image/jpeg|image/webp>`，不访问数据库，输出实际哈希/字节数/尺寸；复用正式导入的大小、格式与安全 SVG 校验，不表示素材已经登记或获得授权。
 - 登记用素材包可先运行 `assets-check <bundle.json> <source-directory>`，录音包用 `audio-bundle-check` 同参数；只读、不连接 DB/写媒体，复用导入的元数据、目录边界、哈希、解码与尺寸/时长检查。ready/授权元数据不得伪造；角色登记引用、重复版本、课程时间轴与发布状态仍须正式导入/release 验证，检查后正式导入重新读取文件。
 - `/author-preview` 仅供 operator 查看已导入固定 revision；私有媒体也必须经过当前管理员身份与撤回检查。不得把预览素材放到公开路由、返回私有答案或以预览创建真实学习进度。
+- `/admin` 是实际后台入口，首批含审批、目录切换和版本撤回。网页审批追加不可变 editorial_reviews，当前用户为 actor、版本控制防止覆盖；未有网页决定时沿用作者源 editorial。stage 与 activate 都检查最新决定，并与撤回共用 content_state→revision 锁顺序。不要修改不可变 server_document 来实现审批，或把后台首批能力当作全部管理功能完成。
 - 录音先 `audio-check`，再 `audio-import <bundle.json> <source-directory> <actor>`；`audioRefs` 固定登记版本，登记不公开文件。发布必须重新验证登记描述、实际文件哈希/解码、来源授权与正文时间轴；音频公开路由和私有预览均保留撤回检查、no-store 与有界读取。
 - 权限、判分、事务、幂等、版本与恢复做风险对应的验证；文档/低风险样式不添加无意义测试。
 - 异步确认按钮在等待期间保留键盘焦点，用 aria-disabled/aria-busy 配合同步提交锁；未满足答题/步骤条件或恢复初始化未完成时仍原生 disabled，不能仅依赖 ARIA 阻止重复写入。

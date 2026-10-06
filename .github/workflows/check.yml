@@ -44,6 +44,9 @@ jobs:
       - run: cargo test -p brioche-server --test author_runtime --locked -- --ignored
         env:
           TEST_DATABASE_URL: postgres://postgres@localhost:5432/brioche_test
+      - run: cargo test -p brioche-server --test admin --locked -- --ignored
+        env:
+          TEST_DATABASE_URL: postgres://postgres@localhost:5432/brioche_test
       - run: pnpm contracts
       - run: git diff --exit-code -- packages/contracts/src/generated docs/generated
       - run: pnpm typecheck

@@ -1982,6 +1982,20 @@ button.primary {
 .settings-group + h2 {
   margin-top: 32px;
 }
+.admin-page { max-width: 1000px; margin: 0 auto; padding: 36px 24px 80px; }
+.admin-heading, .admin-card-heading, .admin-card-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.admin-heading { margin-bottom: 28px; }
+.admin-status { padding: 20px; background: var(--soft); border-radius: 20px; display: grid; gap: 8px; margin-bottom: 24px; overflow-wrap: anywhere; }
+.admin-list { display: grid; gap: 18px; }
+.admin-card { border: 1px solid var(--line); border-radius: 24px; padding: 24px; background: var(--paper); }
+.admin-card h2 { font-size: 22px; margin: 20px 0 12px; }
+.admin-note { color: var(--muted); line-height: 1.8; white-space: pre-wrap; }
+.admin-card-actions { flex-wrap: wrap; margin-top: 24px; }
+.admin-empty { padding: 32px 0; color: var(--muted); }
+.admin-dialog { position: fixed; inset: 0; margin: auto; width: min(440px, calc(100% - 32px)); max-height: calc(100dvh - 48px); padding: 24px; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); color: var(--ink); }
+.admin-dialog::backdrop { background: rgb(50 35 20 / .3); backdrop-filter: blur(8px); }
+.admin-dialog form { display: grid; gap: 14px; margin-top: 24px; }
+.admin-dialog textarea { width: 100%; min-height: 100px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); resize: vertical; }
 .setting-row {
   display: flex;
   align-items: center;
