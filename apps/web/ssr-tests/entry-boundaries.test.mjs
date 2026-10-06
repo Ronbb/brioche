@@ -81,7 +81,18 @@ const server = createServer((request, response) => {
     authenticated &&
     profile.role === "operator"
   ) {
-    response.end(JSON.stringify({ items: [], nextId: null }));
+    response.end(
+      JSON.stringify(
+        request.url === "/api/v1/operator/characters/character-camille/1"
+          ? {
+              character: source.cast[0],
+              avatarRevision: 1,
+              voiceRevision: 0,
+              profile: null,
+            }
+          : { items: [], nextId: null },
+      ),
+    );
   } else if (
     request.url.startsWith("/api/v1/operator/history") &&
     authenticated &&
@@ -796,6 +807,37 @@ test("visual registry SSR protects metadata and allowlists the composite cursor"
   } finally {
     profile.role = "learner";
     authenticated = false;
+  }
+});
+
+test("fixed character SSR works without a voice profile and bounds revisions", async () => {
+  authenticated = true;
+  profile.role = "operator";
+  try {
+    requests.length = 0;
+    const response = await request(
+      "/admin/characters?characterId=character-camille&characterRevision=1&secret=discard",
+    );
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get("cache-control"), /no-store/);
+    assert.match(await response.text(), /Camille/);
+    assert.ok(
+      requests.some(
+        (r) => r.path === "/api/v1/operator/characters/character-camille/1",
+      ),
+    );
+    assert.ok(!requests.some((r) => r.path.includes("secret=")));
+    assert.equal(
+      (
+        await request(
+          "/admin/characters?characterId=character-camille&characterRevision=2147483648",
+        )
+      ).status,
+      400,
+    );
+  } finally {
+    authenticated = false;
+    profile.role = "learner";
   }
 });
 

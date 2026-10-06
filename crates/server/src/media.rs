@@ -503,7 +503,46 @@ pub(crate) async fn import_operator_bundle(
         source_root,
         store,
         &format!("user:{actor}"),
-        Some((actor, reason)),
+        Some(OperatorImport {
+            actor,
+            reason,
+            expected_character: None,
+        }),
+    )
+    .await
+}
+#[derive(Clone, Copy)]
+struct OperatorImport<'a> {
+    actor: i64,
+    reason: &'a str,
+    expected_character: Option<(&'a str, u32)>,
+}
+pub(crate) async fn import_operator_character(
+    db: &DatabaseConnection,
+    character: CharacterSpec,
+    root: &Path,
+    actor: i64,
+    expected_revision: u32,
+    reason: &str,
+) -> Result<()> {
+    crate::admin::reason(reason)?;
+    let id = character.snapshot.character_id.clone();
+    let bundle = AssetBundle {
+        schema_version: "1.0".into(),
+        assets: vec![],
+        characters: vec![character],
+    };
+    import_bundle_impl(
+        db,
+        bundle,
+        root,
+        root,
+        &format!("user:{actor}"),
+        Some(OperatorImport {
+            actor,
+            reason,
+            expected_character: Some((&id, expected_revision)),
+        }),
     )
     .await
 }
@@ -513,7 +552,7 @@ async fn import_bundle_impl(
     source_root: &Path,
     store: &Path,
     actor: &str,
-    operator: Option<(i64, &str)>,
+    operator: Option<OperatorImport<'_>>,
 ) -> Result<()> {
     bundle.validate_author(actor)?;
     ensure!(
@@ -587,7 +626,7 @@ async fn import_bundle_impl(
         })
         .await??;
     let tx = db.begin().await?;
-    if let Some((actor, _)) = operator {
+    if let Some(OperatorImport { actor, .. }) = operator {
         exec(
             &tx,
             "SELECT pg_advisory_xact_lock(hashtextextended('account-admin',0))",
@@ -613,6 +652,12 @@ async fn import_bundle_impl(
     .await
     .map_err(anyhow::Error::msg)?
     .context("content state missing")?;
+    if let Some((id, expected)) = operator.and_then(|o| o.expected_character) {
+        let row=one(&tx,"SELECT COALESCE(max(revision),0) AS revision FROM character_revisions WHERE character_id=$1",vec![id.into()]).await?.ok_or(AppError::Unavailable)?;
+        if field::<i32>(&row, "revision")? as u32 != expected {
+            return Err(AppError::Conflict.into());
+        }
+    }
     // Official imports share this lock, so duplicate diagnostics remain stable under concurrency.
     // Check every revision before registering any member of the batch.
     for (index, spec) in bundle.assets.iter().enumerate() {
@@ -694,7 +739,7 @@ async fn import_bundle_impl(
             .collect::<Vec<_>>()
             .join(", ")
     });
-    exec(&tx,"INSERT INTO asset_import_audit(actor,bundle_hash,asset_count,character_count,actor_id,reason,target) VALUES($1,$2,$3,$4,$5,$6,$7)",vec![actor.into(),bundle_hash.into(),(bundle.assets.len() as i32).into(),(bundle.characters.len() as i32).into(),operator.map(|(id,_)|id).into(),operator.map(|(_,reason)|reason.to_owned()).into(),target.into()]).await.map_err(anyhow::Error::msg)?;
+    exec(&tx,"INSERT INTO asset_import_audit(actor,bundle_hash,asset_count,character_count,actor_id,reason,target) VALUES($1,$2,$3,$4,$5,$6,$7)",vec![actor.into(),bundle_hash.into(),(bundle.assets.len() as i32).into(),(bundle.characters.len() as i32).into(),operator.map(|o|o.actor).into(),operator.map(|o|o.reason.to_owned()).into(),target.into()]).await.map_err(anyhow::Error::msg)?;
     tx.commit().await?;
     Ok(())
 }

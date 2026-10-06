@@ -16,6 +16,14 @@ use sea_orm::{ConnectionTrait, DbBackend, Statement, TransactionTrait};
 
 pub fn router() -> Router<Backend> {
     Router::new()
+        .route(
+            "/api/v1/operator/characters/revisions",
+            axum::routing::post(append_character),
+        )
+        .route(
+            "/api/v1/operator/characters/{id}/{revision}",
+            get(character_version),
+        )
         .route("/api/v1/operator/characters", get(list).post(append))
         .route(
             "/api/v1/operator/characters/{id}/{character_revision}/avatar",
@@ -25,6 +33,62 @@ pub fn router() -> Router<Backend> {
             "/api/v1/operator/characters/{id}/{character_revision}/voices/{voice_revision}",
             get(version),
         )
+}
+async fn character_version(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    Path((id, revision)): Path<(String, u32)>,
+) -> Result<Json<AdminCharacterVoice>, AppError> {
+    require_operator(&auth)?;
+    id_revision(&id, revision)?;
+    let row=one(&backend.db,"SELECT c.snapshot,c.avatar_revision,COALESCE(v.revision,0) AS voice_revision,v.profile FROM character_revisions c LEFT JOIN LATERAL (SELECT revision,profile FROM character_voice_profiles WHERE character_id=c.character_id AND character_revision=c.revision ORDER BY revision DESC LIMIT 1) v ON true WHERE c.character_id=$1 AND c.revision=$2",vec![id.into(),(revision as i32).into()]).await?.ok_or(AppError::NotFound)?;
+    Ok(Json(item(&row)?))
+}
+async fn append_character(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    axum::Extension(root): axum::Extension<std::path::PathBuf>,
+    Json(request): Json<brioche_course_contract::AdminCharacterRequest>,
+) -> Result<Json<AdminCharacterVoice>, AppError> {
+    require_operator(&auth)?;
+    crate::admin::reason(&request.reason)?;
+    let revision = request
+        .expected_revision
+        .checked_add(1)
+        .ok_or(AppError::InvalidInput)?;
+    id_revision(&request.character_id, revision)?;
+    id_revision(&request.avatar_id, request.avatar_revision)?;
+    let character = brioche_course_contract::Character {
+        character_id: request.character_id,
+        revision,
+        display_name: request.display_name,
+        avatar_id: request.avatar_id,
+        speech_locale: brioche_course_contract::CHARACTER_SPEECH_LOCALE.into(),
+    };
+    crate::media::import_operator_character(
+        &backend.db,
+        crate::media::CharacterSpec {
+            snapshot: character.clone(),
+            avatar_revision: request.avatar_revision,
+        },
+        &root,
+        owner(&auth)?,
+        request.expected_revision,
+        &request.reason,
+    )
+    .await
+    .map_err(|e| match e.downcast_ref::<AppError>() {
+        Some(AppError::Forbidden) => AppError::Forbidden,
+        Some(AppError::Conflict) => AppError::Conflict,
+        Some(_) => AppError::Unavailable,
+        None => AppError::InvalidInput,
+    })?;
+    Ok(Json(AdminCharacterVoice {
+        character,
+        avatar_revision: request.avatar_revision,
+        voice_revision: 0,
+        profile: None,
+    }))
 }
 async fn avatar(
     auth: AuthSession,

@@ -5,6 +5,7 @@ import type { AdminCharacterVoice } from "@brioche/contracts/AdminCharacterVoice
 import type { CharacterVoiceProfile } from "@brioche/contracts/CharacterVoiceProfile";
 import { getIdentity, getPrivate } from "../lib/api.server";
 import { adminWrite } from "../lib/admin.client";
+import { CharacterEditor } from "../components/admin-character-editor";
 import type { Route } from "./+types/admin-characters";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -29,14 +30,15 @@ export async function loader({ request }: Route.LoaderArgs) {
       !id ||
       !/^[a-z0-9][a-z0-9-]{0,99}$/.test(id) ||
       !cr ||
-      !vr ||
-      !/^[1-9][0-9]{0,8}$/.test(cr) ||
-      !/^[1-9][0-9]{0,8}$/.test(vr)
+      !/^[1-9][0-9]{0,9}$/.test(cr) ||
+      Number(cr) > 2147483647 ||
+      (vr !== null &&
+        (!/^[1-9][0-9]{0,9}$/.test(vr) || Number(vr) > 2147483647))
     )
       throw new Response("版本无效。", { status: 400 });
     selected = await getPrivate<AdminCharacterVoice>(
       request,
-      `/api/v1/operator/characters/${id}/${cr}/voices/${vr}`,
+      `/api/v1/operator/characters/${id}/${cr}${vr ? `/voices/${vr}` : ""}`,
     );
   }
   return data({ ...result, selected }, { headers: headers() });
@@ -190,6 +192,24 @@ export default function Characters({ loaderData }: Route.ComponentProps) {
             </dl>
           </>
         )}
+        {!historical && <CharacterEditor initial={item} />}
+        {!historical && item.character.revision > 1 && (
+          <details>
+            <summary>历史角色版本</summary>
+            {Array.from(
+              { length: Math.min(item.character.revision - 1, 20) },
+              (_, i) => item.character.revision - i - 1,
+            ).map((revision) => (
+              <Link
+                key={revision}
+                className="text-button"
+                to={`/admin/characters?characterId=${item.character.characterId}&characterRevision=${revision}`}
+              >
+                角色 v{revision}
+              </Link>
+            ))}
+          </details>
+        )}
         {!historical && (
           <button className="text-button" onClick={() => open(item)}>
             {item.profile ? "创建新声音版本" : "配置声音档案"}
@@ -226,6 +246,7 @@ export default function Characters({ loaderData }: Route.ComponentProps) {
         管理员后台
       </Link>
       <h1>角色库</h1>
+      <CharacterEditor />
       <button
         className="text-button"
         onClick={() =>
@@ -234,7 +255,7 @@ export default function Characters({ loaderData }: Route.ComponentProps) {
       >
         导出本页声音档案
       </button>
-      <p>姓名与头像沿用固定角色版本；调整配音会创建新的声音档案。</p>
+      <p>姓名、头像与配音各自保留固定版本，已发布课程不会随修改改变。</p>
       <p role="status">{notice}</p>
       {loaderData.selected && (
         <>
@@ -247,7 +268,7 @@ export default function Characters({ loaderData }: Route.ComponentProps) {
         {loaderData.items.map((item) => card(item))}
       </div>
       {!loaderData.items.length && (
-        <p>尚未登记角色。请先通过素材包登记姓名、头像和角色版本。</p>
+        <p>尚未登记角色。选择已登记的头像，新建第一个角色。</p>
       )}
       {loaderData.nextId && (
         <Link to={`/admin/characters?afterId=${loaderData.nextId}`}>

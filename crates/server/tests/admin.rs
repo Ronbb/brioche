@@ -370,6 +370,146 @@ async fn approvals_permissions_concurrency_and_publication() {
         .register(&backend, "operator@example.test", true)
         .await;
     let voices_path = "/api/v1/operator/characters";
+    let revisions_path = "/api/v1/operator/characters/revisions";
+    let character_request = json!({"characterId":"character-qa","expectedRevision":0,"displayName":"Test original","avatarId":"avatar-camille-v1","avatarRevision":1,"reason":"isolated character creation"});
+    assert_eq!(
+        visitor
+            .send(
+                "POST",
+                revisions_path,
+                Some(character_request.clone()),
+                true
+            )
+            .await
+            .0,
+        401
+    );
+    assert_eq!(
+        learner
+            .send(
+                "POST",
+                revisions_path,
+                Some(character_request.clone()),
+                true
+            )
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                revisions_path,
+                Some(character_request.clone()),
+                false
+            )
+            .await
+            .0,
+        403
+    );
+    let created = operator
+        .send(
+            "POST",
+            revisions_path,
+            Some(character_request.clone()),
+            true,
+        )
+        .await;
+    assert_eq!(created.0, 200);
+    assert_eq!(created.1["character"]["revision"], 1);
+    assert_eq!(created.1["voiceRevision"], 0);
+    assert!(created.1["profile"].is_null());
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                revisions_path,
+                Some(character_request.clone()),
+                true
+            )
+            .await
+            .0,
+        409
+    );
+    let mut update = character_request.clone();
+    update["expectedRevision"] = json!(1);
+    update["displayName"] = json!("Test new");
+    update["avatarId"] = json!("avatar-luc-v1");
+    let mut peer = Browser {
+        app: operator.app.clone(),
+        cookie: operator.cookie.clone(),
+        csrf: operator.csrf.clone(),
+    };
+    let (left, right) = tokio::join!(
+        operator.send("POST", revisions_path, Some(update.clone()), true),
+        peer.send("POST", revisions_path, Some(update.clone()), true)
+    );
+    let mut statuses = vec![left.0, right.0];
+    statuses.sort();
+    assert_eq!(statuses, vec![200, 409]);
+    for path in [
+        "/api/v1/operator/characters/character-qa/1",
+        "/api/v1/operator/characters/character-qa/2",
+    ] {
+        assert_eq!(visitor.send("GET", path, None, true).await.0, 401);
+        assert_eq!(learner.send("GET", path, None, true).await.0, 403);
+    }
+    let old = operator
+        .send(
+            "GET",
+            "/api/v1/operator/characters/character-qa/1",
+            None,
+            true,
+        )
+        .await;
+    assert_eq!(old.0, 200);
+    assert_eq!(old.1["character"]["displayName"], "Test original");
+    assert_eq!(old.1["character"]["avatarId"], "avatar-camille-v1");
+    let latest = operator
+        .send(
+            "GET",
+            "/api/v1/operator/characters/character-qa/2",
+            None,
+            true,
+        )
+        .await;
+    assert_eq!(latest.1["character"]["displayName"], "Test new");
+    assert!(latest.1["profile"].is_null());
+    for (key, value) in [
+        ("avatarId", json!("art-bakery-morning")),
+        ("avatarId", json!("unregistered-avatar")),
+        ("displayName", json!("")),
+        ("reason", json!("")),
+    ] {
+        let mut invalid = update.clone();
+        invalid["expectedRevision"] = json!(2);
+        invalid[key] = value;
+        assert_eq!(
+            operator
+                .send("POST", revisions_path, Some(invalid), true)
+                .await
+                .0,
+            400
+        );
+    }
+    assert!(
+        db.execute_unprepared(
+            "UPDATE character_revisions SET snapshot='{}' WHERE character_id='character-qa'"
+        )
+        .await
+        .is_err()
+    );
+    let history = operator
+        .send("GET", "/api/v1/operator/history", None, true)
+        .await;
+    assert!(
+        history.1["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|i| i["target"] == "character-qa v2" && i["action"] == "assetImport")
+    );
     let upload = json!({"assetId":"qa-web-upload","revision":1,"mimeType":"image/svg+xml","altZh":"隔离上传","creditZh":"仅测试","source":"test:synthetic","license":"LicenseRef-TestOnly","creator":"test fixture","rightsConfirmed":true,"reason":"isolated asset upload"});
     let svg = format!(
         "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\"><!--{}--><rect width=\"96\" height=\"96\" fill=\"red\"/></svg>",

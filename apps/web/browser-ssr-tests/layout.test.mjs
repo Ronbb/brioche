@@ -181,6 +181,33 @@ const api = createServer((request, response) => {
     return;
   }
   if (
+    request.url === "/api/v1/operator/characters/revisions" &&
+    request.method === "POST"
+  ) {
+    let body = "";
+    request.on("data", (chunk) => {
+      body += chunk;
+    });
+    request.on("end", () => {
+      const change = JSON.parse(body);
+      adminWrites.push({ operation: request.url, ...change });
+      characterVoice = {
+        character: {
+          characterId: change.characterId,
+          revision: change.expectedRevision + 1,
+          displayName: change.displayName,
+          avatarId: change.avatarId,
+          speechLocale: "fr-FR",
+        },
+        avatarRevision: change.avatarRevision,
+        voiceRevision: 0,
+        profile: null,
+      };
+      response.end(JSON.stringify(characterVoice));
+    });
+    return;
+  }
+  if (
     request.url === "/api/v1/operator/characters" &&
     request.method === "GET"
   ) {
@@ -665,8 +692,8 @@ test("operator uploads an actual SVG and supplies provenance in the mobile dialo
     assert.equal(adminWrites[0].csrf, "controlled-admin-csrf");
     assert.equal(adminWrites[0].fileBytes, characterAvatar.length);
     assert.equal(
-      await evaluate("document.querySelector('.admin-dialog').open"),
-      false,
+      await evaluate("document.querySelector('.admin-dialog[open]') === null"),
+      true,
     );
     assert.equal(
       await evaluate("document.documentElement.scrollWidth<=innerWidth"),
@@ -712,6 +739,70 @@ test("operator revokes a pending invitation using the mobile admin page", async 
   }
 });
 
+test("operator creates a character using a private avatar picker", async () => {
+  accounts = true;
+  operatorAccount = true;
+  adminWrites = [];
+  characterVoice = { ...voiceSeed.items[0], voiceRevision: 0, profile: null };
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("set", "viewport", "390", "844");
+    await browser("open", origin + "/admin/characters");
+    await browser("wait", ".character-profile");
+    const snapshot = await browser("snapshot", "-i");
+    const ref = Object.entries(snapshot.refs).find(
+      ([, item]) => item.role === "button" && item.name === "新建角色",
+    )?.[0];
+    assert.ok(ref);
+    await browser("click", "@" + ref);
+    await browser("wait", ".avatar-picker button");
+    await browser(
+      "fill",
+      ".admin-dialog[open] input[name=characterId]",
+      "character-browser",
+    );
+    await browser(
+      "fill",
+      ".admin-dialog[open] input[name=displayName]",
+      "Émile",
+    );
+    await browser("click", ".avatar-picker button");
+    await browser(
+      "fill",
+      ".admin-dialog[open] textarea[name=reason]",
+      "隔离角色登记测试",
+    );
+    for (const width of [320, 390]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate(
+          "document.querySelector('.admin-dialog[open]').scrollWidth<=document.querySelector('.admin-dialog[open]').clientWidth",
+        ),
+        true,
+      );
+    }
+    await browser("focus", ".admin-dialog[open] .primary");
+    await browser("press", "Enter");
+    await browser(
+      "wait",
+      "--fn",
+      "!document.querySelector('.admin-dialog[open]')",
+    );
+    await browser("wait", "--text", "Émile");
+    assert.equal(adminWrites.length, 1);
+    assert.equal(adminWrites[0].expectedRevision, 0);
+    assert.equal(adminWrites[0].avatarId, "avatar-camille-v1");
+    assert.equal(adminWrites[0].avatarRevision, 1);
+    assert.equal(adminWrites[0].displayName, "Émile");
+    assert.equal(adminWrites[0].reason, "隔离角色登记测试");
+  } finally {
+    accounts = false;
+    operatorAccount = false;
+    characterVoice = { ...voiceSeed.items[0], voiceRevision: 0, profile: null };
+  }
+});
+
 test("operator versions a character voice profile through the real mobile page", async () => {
   accounts = true;
   operatorAccount = true;
@@ -727,16 +818,21 @@ test("operator versions a character voice profile through the real mobile page",
       await evaluate("document.documentElement.scrollWidth<=innerWidth"),
       true,
     );
-    await browser("click", ".character-profile button");
+    const voiceSnapshot = await browser("snapshot", "-i");
+    const voiceRef = Object.entries(voiceSnapshot.refs).find(
+      ([, item]) => item.role === "button" && item.name === "配置声音档案",
+    )?.[0];
+    assert.ok(voiceRef);
+    await browser("click", "@" + voiceRef);
     await browser("wait", ".admin-dialog[open]");
     await browser(
       "fill",
-      ".admin-dialog form > label:first-of-type textarea",
+      ".admin-dialog[open] form > label:first-of-type textarea",
       "Warm, curious and politely reserved.",
     );
     await browser(
       "fill",
-      ".admin-dialog form > label:last-of-type input",
+      ".admin-dialog[open] form > label:last-of-type input",
       "隔离声音档案测试",
     );
     await browser("press", "Tab");

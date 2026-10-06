@@ -272,3 +272,14 @@ pub struct AdminAssetUpload {
     pub rights_confirmed: bool,
     pub reason: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminCharacterRequest {
+    pub character_id: String,
+    pub expected_revision: u32,
+    pub display_name: String,
+    pub avatar_id: String,
+    pub avatar_revision: u32,
+    pub reason: String,
+}
