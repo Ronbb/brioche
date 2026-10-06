@@ -29,6 +29,12 @@ function ProfileContent() {
   const profile = learning.profile;
   const editor = useRef<HTMLDialogElement>(null);
   const editBusy = useRef(false);
+  const baseline = useRef({ name: "", zone: "", days: 5, minutes: 10 });
+  const discardHeading = useRef<HTMLHeadingElement>(null);
+  const retainedName = useRef<HTMLInputElement>(null);
+  const wasDiscarding = useRef(false);
+  const [editorOpen, setEditorOpen] = useState(false),
+    [discarding, setDiscarding] = useState(false);
   const saveFailure = useRef<HTMLParagraphElement>(null);
   const [failureSequence, setFailureSequence] = useState(0);
   const [draftName, setDraftName] = useState(""),
@@ -37,6 +43,31 @@ function ProfileContent() {
     [minutes, setMinutes] = useState(10),
     [editing, setEditing] = useState(false),
     [zones, setZones] = useState(commonZones);
+  const dirty =
+    draftName !== baseline.current.name ||
+    zone !== baseline.current.zone ||
+    days !== baseline.current.days ||
+    minutes !== baseline.current.minutes;
+  useEffect(() => {
+    if (!editorOpen || (!dirty && !editing)) return;
+    const warn = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [editorOpen, dirty, editing]);
+  useLayoutEffect(() => {
+    if (discarding) discardHeading.current?.focus();
+    else if (wasDiscarding.current) retainedName.current?.focus();
+    wasDiscarding.current = discarding;
+  }, [discarding]);
+  function requestClose() {
+    if (editBusy.current) return;
+    if (discarding) setDiscarding(false);
+    else if (dirty) setDiscarding(true);
+    else editor.current?.close();
+  }
   useEffect(() => {
     const known = new Set(commonZones.map((choice) => choice.value));
     const all =
@@ -55,6 +86,14 @@ function ProfileContent() {
   }, [failureSequence]);
   function openEditor() {
     if (!profile) return;
+    baseline.current = {
+      name: profile.displayName,
+      zone: profile.settings.timeZone,
+      days: profile.settings.weeklyDays,
+      minutes: profile.settings.dailyMinutes,
+    };
+    setDiscarding(false);
+    setEditorOpen(true);
     setDraftName(profile.displayName);
     setZone(profile.settings.timeZone);
     setDays(profile.settings.weeklyDays);
@@ -223,7 +262,12 @@ function ProfileContent() {
         className="profile-dialog"
         aria-labelledby="profile-edit-title"
         onCancel={(event) => {
-          if (editing) event.preventDefault();
+          event.preventDefault();
+          requestClose();
+        }}
+        onClose={() => {
+          setEditorOpen(false);
+          setDiscarding(false);
         }}
       >
         <div className="rate-heading">
@@ -233,12 +277,35 @@ function ProfileContent() {
             className="icon-button"
             disabled={editing}
             aria-label="关闭个人资料"
-            onClick={() => editor.current?.close()}
+            onClick={requestClose}
           >
             <Icon name="close" />
           </button>
         </div>
+        {discarding && (
+          <div className="profile-discard">
+            <h3 ref={discardHeading} tabIndex={-1}>
+              放弃这些修改？
+            </h3>
+            <p>昵称、学习目标和时区的修改尚未保存。</p>
+            <button
+              type="button"
+              className="primary"
+              onClick={() => setDiscarding(false)}
+            >
+              继续编辑
+            </button>
+            <button
+              type="button"
+              className="text-button"
+              onClick={() => editor.current?.close()}
+            >
+              放弃修改
+            </button>
+          </div>
+        )}
         <form
+          hidden={discarding}
           onSubmit={(event) => {
             event.preventDefault();
             void save();
@@ -247,6 +314,7 @@ function ProfileContent() {
           <label className="profile-field">
             怎么称呼你
             <input
+              ref={retainedName}
               required
               maxLength={80}
               autoComplete="nickname"

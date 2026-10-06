@@ -353,3 +353,64 @@ test("a profile identity change discards the previous editor and permits indepen
     "document.querySelector('.profile-summary h2')?.textContent==='Bob edited' && !document.querySelector('.profile-dialog[open]')",
   );
 });
+
+test("closing a changed profile asks before discarding and preserves the draft when retained", async () => {
+  await open("profile");
+  const edit = 'button[aria-label="编辑个人资料与学习目标"]';
+  await browser("focus", edit);
+  await press("Enter");
+  await browser("fill", ".profile-dialog input", "Unsaved name");
+  await press("Escape");
+  assert.equal(
+    await evaluate("document.querySelectorAll('.profile-dialog[open]').length"),
+    1,
+  );
+  await browser("wait", ".profile-discard");
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "放弃这些修改？",
+  );
+  await browser("focus", ".profile-discard .primary");
+  await press("Enter");
+  assert.equal(
+    await evaluate("document.querySelector('.profile-dialog input').value"),
+    "Unsaved name",
+  );
+  assert.equal(
+    await evaluate("document.activeElement.matches('.profile-dialog input')"),
+    true,
+  );
+  assert.equal(await evaluate("qa.profileWrites.length"), 0);
+  assert.equal(
+    await evaluate(
+      "(()=>{const e=new Event('beforeunload',{cancelable:true});window.dispatchEvent(e);return e.defaultPrevented})()",
+    ),
+    true,
+  );
+  await browser("focus", 'button[aria-label="关闭个人资料"]');
+  await press("Enter");
+  await browser("focus", ".profile-discard .text-button");
+  await press("Enter");
+  await browser(
+    "wait",
+    "--fn",
+    "!document.querySelector('.profile-dialog[open]')",
+  );
+  assert.equal(
+    await evaluate(
+      "(()=>{const e=new Event('beforeunload',{cancelable:true});window.dispatchEvent(e);return e.defaultPrevented})()",
+    ),
+    false,
+  );
+  await browser("focus", edit);
+  await press("Enter");
+  assert.equal(
+    await evaluate("document.querySelector('.profile-dialog input').value"),
+    "Alice",
+  );
+  await press("Escape");
+  assert.equal(
+    await evaluate("document.querySelectorAll('.profile-dialog[open]').length"),
+    0,
+  );
+});
