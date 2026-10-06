@@ -73,6 +73,32 @@ const server = createServer((request, response) => {
         timeZone: "Asia/Shanghai",
       }),
     );
+  } else if (
+    request.url.startsWith("/api/v1/me/review-history") &&
+    authenticated
+  ) {
+    response.end(
+      JSON.stringify({
+        items: request.url.includes("?cursor=")
+          ? []
+          : [
+              {
+                id: "ssr-history",
+                cardId: "ssr-card",
+                vocabulary: lesson.knowledge.vocabulary[0],
+                withdrawn: false,
+                rating: "familiar",
+                oldStage: 0,
+                newStage: 1,
+                reviewedAt: "2026-10-05T23:30:00Z",
+                dueAt: "2026-10-08T23:30:00Z",
+                timeZone: "Asia/Shanghai",
+                algorithmVersion: "ssr-fixture",
+              },
+            ],
+        nextCursor: request.url.includes("?cursor=") ? null : "older/qa?+",
+      }),
+    );
   } else if (request.url === "/api/catalog") {
     response.end(
       JSON.stringify({
@@ -113,6 +139,52 @@ const request = (path) =>
         : {},
     }),
   );
+
+test("production history SSR forwards encoded cursors privately and distinguishes empty older pages", async () => {
+  fixture = false;
+  authenticated = true;
+  requests.length = 0;
+  try {
+    let response = await request("/review-history");
+    assert.equal(response.status, 200);
+    let html = await response.text();
+    assert.match(html, /href="\/review-history\?cursor=older%2Fqa%3F%2B"/);
+    assert.ok(html.includes(lesson.knowledge.vocabulary[0].lemma));
+    assert.match(response.headers.get("Cache-Control"), /private, no-store/);
+    response = await request("/review-history?cursor=older%2Fqa%3F%2B");
+    assert.equal(response.status, 200);
+    html = await response.text();
+    assert.ok(html.includes("这一页没有更早的复习记录。"));
+    assert.match(html, /href="\/review-history"/);
+    assert.ok(!html.includes("完成一次复习后，记录会显示在这里。"));
+    const reads = requests.filter((entry) =>
+      entry.path.startsWith("/api/v1/me/review-history"),
+    );
+    assert.deepEqual(
+      reads.map((entry) => entry.path),
+      [
+        "/api/v1/me/review-history",
+        "/api/v1/me/review-history?cursor=older%2Fqa%3F%2B",
+      ],
+    );
+    assert.ok(
+      reads.every(
+        (entry) => entry.cookie === "brioche.sid=controlled-ssr-session",
+      ),
+    );
+    assert.ok(requests.every((entry) => entry.method === "GET"));
+    authenticated = false;
+    response = await request("/review-history");
+    assert.equal(response.status, 302);
+    assert.equal(
+      response.headers.get("Location"),
+      "/login?next=/review-history",
+    );
+  } finally {
+    authenticated = false;
+    fixture = false;
+  }
+});
 
 test("production legacy entries reach real learning and authenticated review without writes", async () => {
   fixture = false;

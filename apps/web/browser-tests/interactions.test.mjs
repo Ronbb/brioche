@@ -1643,3 +1643,121 @@ test("course search retains focus while pending and shows explicit empty results
     "bonjour demain",
   );
 });
+
+test("review history pagination focuses results, distinguishes empty continuations, and returns to latest records", async () => {
+  await open("history");
+  await browser("wait", ".review-result-list li");
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('.review-result-list li').length",
+    ),
+    2,
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('.result-expression')[1].textContent",
+    ),
+    "来源内容已撤回",
+  );
+  assert.equal(
+    await evaluate("document.querySelectorAll('.result-expression')[1].lang"),
+    "zh-CN",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.review-result-list small').textContent.includes('2026/10/6 07:30')",
+    ),
+    true,
+  );
+  await browser("focus", "a[href*='cursor=']");
+  await press("Enter");
+  await browser(
+    "wait",
+    "--fn",
+    "new URLSearchParams(qa.search).get('cursor')==='older/qa?+'",
+  );
+  assert.equal(
+    await evaluate("document.activeElement.textContent.trim()"),
+    "复习记录",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('.review-result-list li').length",
+    ),
+    1,
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.review-result-list small').textContent.includes('还不熟')",
+    ),
+    true,
+  );
+  await browser("focus", "a[href*='cursor=end']");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.search==='?cursor=end'");
+  assert.equal(
+    await evaluate("document.activeElement.textContent.trim()"),
+    "复习记录",
+  );
+  assert.equal(
+    await evaluate("document.querySelector('.profile-note').textContent"),
+    "这一页没有更早的复习记录。",
+  );
+  await browser("focus", "a[href='/review-history']");
+  await press("Enter");
+  await browser("wait", ".review-result-list li");
+  assert.equal(await evaluate("qa.search"), "");
+  assert.equal(
+    await evaluate("document.activeElement.textContent.trim()"),
+    "复习记录",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('.review-result-list li').length",
+    ),
+    2,
+  );
+  await open("history-empty");
+  await browser("wait", ".profile-note");
+  assert.equal(
+    await evaluate("document.querySelector('.profile-note').textContent"),
+    "完成一次复习后，记录会显示在这里。",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('a[href*=cursor],a[href=\"/review-history\"]').length",
+    ),
+    0,
+  );
+});
+
+test("review history keeps long expressions and recorded dates inside four viewport widths", async () => {
+  await open("history&stress=1");
+  await browser("wait", ".review-result-list li");
+  for (const width of [320, 390, 768, 1440]) {
+    await browser("set", "viewport", String(width), "844");
+    await browser(
+      "wait",
+      "--fn",
+      "document.getAnimations().every(a=>a.playState!=='running'||!Number.isFinite(a.effect.getComputedTiming().endTime))",
+    );
+    const overflow = await evaluate(`(() => {
+      return [...document.querySelectorAll('.result-expression,.review-result-list small,.review-result-grade')].flatMap(e => {
+        const r=e.getBoundingClientRect(),p=e.parentElement.getBoundingClientRect();
+        const range=document.createRange();range.selectNodeContents(e);const t=range.getBoundingClientRect();
+        return Math.min(r.left,t.left)<Math.max(0,p.left)-1 || Math.max(r.right,t.right)>Math.min(innerWidth,p.right)+1 ? [{text:e.textContent,right:r.right,textRight:t.right,parentRight:p.right}] : [];
+      });
+    })()`);
+    assert.deepEqual(overflow, [], "history at " + width + "px");
+    assert.equal(
+      await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+      true,
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.result-expression').textContent",
+      ),
+      "anticonstitutionnellement",
+    );
+  }
+});

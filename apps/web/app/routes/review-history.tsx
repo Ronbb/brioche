@@ -20,9 +20,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 export default function History({ loaderData }: Route.ComponentProps) {
   const location = useLocation();
-  const heading = usePageCursorFocus(
-    new URLSearchParams(location.search).get("cursor"),
-  );
+  const cursor = new URLSearchParams(location.search).get("cursor");
+  const heading = usePageCursorFocus(cursor);
   const labels = { again: "还不熟", remembered: "有印象", familiar: "记住了" };
   return (
     <section className="settings-page page-arrive">
@@ -35,7 +34,11 @@ export default function History({ loaderData }: Route.ComponentProps) {
         </Link>
       </div>
       {!loaderData.items.length && (
-        <p className="profile-note">完成一次复习后，记录会显示在这里。</p>
+        <p className="profile-note" role="status">
+          {cursor
+            ? "这一页没有更早的复习记录。"
+            : "完成一次复习后，记录会显示在这里。"}
+        </p>
       )}
       <ul className="review-result-list">
         {loaderData.items.map((item) => (
@@ -70,17 +73,25 @@ export default function History({ loaderData }: Route.ComponentProps) {
           </li>
         ))}
       </ul>
-      {loaderData.nextCursor && (
-        <Link
-          className="text-button"
-          to={
-            "/review-history?cursor=" +
-            encodeURIComponent(loaderData.nextCursor)
-          }
-        >
-          更早记录
-          <Icon name="chevron" />
-        </Link>
+      {(loaderData.nextCursor || cursor) && (
+        <nav className="history-pagination" aria-label="复习记录分页">
+          {loaderData.nextCursor && (
+            <Link
+              className="text-button"
+              to={
+                "/review-history?cursor=" +
+                encodeURIComponent(loaderData.nextCursor)
+              }
+            >
+              更早记录 <Icon name="chevron" />
+            </Link>
+          )}
+          {cursor && (
+            <Link className="text-button" to="/review-history">
+              返回最新记录
+            </Link>
+          )}
+        </nav>
       )}
     </section>
   );

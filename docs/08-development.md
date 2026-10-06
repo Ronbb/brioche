@@ -267,7 +267,7 @@ pnpm 11 使用 `pnpm-workspace.yaml` 的 `allowBuilds`，旧 `onlyBuiltDependenc
 
 `POST /api/v1/me/review-enrollments` 接受 knowledgeId、来源与幂等键，创建或读取已有复习卡，不重置档位/排期/暂停状态。`GET /api/v1/me/review-cards` 分页读取含暂停卡的所属列表；`PUT /api/v1/me/reviews/:id/preferences` 接受 cardVersion/suspended/idempotencyKey，暂停/恢复只改变标记和版本，保留 UTC 到期时间和档位。
 
-`GET /api/v1/me/review-history` 每页 20 条，显示原自评及提交时区的时间；数据库保留旧/新档位、排程和算法版本。撤回来源时隐藏词汇正文，仍保留历史事实。三个列表游标均以时间与随机 ID 排序，校验格式，绑定当前登录账号。读写受既有认证/Origin/CSRF/private-no-store 保护，写入与原幂等结果同事务保存。浏览器明确重试不确定请求，离开页面后的未确认操作恢复仍待补齐。
+`GET /api/v1/me/review-history` 每页 20 条，显示原自评及提交时区的时间；数据库保留旧/新档位、排程和算法版本。撤回来源时隐藏词汇正文，仍保留历史事实。旧记录页提供返回最新记录的入口；空旧页与尚无复习记录分别提示，分页后焦点回到标题。长表达按可用宽度换行，保留下次复习日期。三个列表游标均以时间与随机 ID 排序，校验格式，绑定当前登录账号。读写受既有认证/Origin/CSRF/private-no-store 保护，写入与原幂等结果同事务保存。未确认写入保留原请求，可从个人页的待确认记录恢复并明确重试；更多故障组合与真实设备仍须验收。
 
 ## 视觉素材与角色库
 

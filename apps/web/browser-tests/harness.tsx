@@ -20,6 +20,8 @@ import Library from "../app/routes/library";
 import PendingSaves from "../app/routes/pending-saves";
 import Home from "../app/routes/home";
 import Courses from "../app/routes/courses";
+import History from "../app/routes/review-history";
+import type { ReviewHistoryPage } from "@brioche/contracts/ReviewHistoryPage";
 import type { Catalog } from "@brioche/contracts/Catalog";
 import type { StudyDashboard } from "@brioche/contracts/StudyDashboard";
 import {
@@ -575,6 +577,46 @@ function CoursesHarness() {
     </main>
   );
 }
+const historyItem = {
+  id: "qa-history",
+  cardId: "qa-card",
+  vocabulary: reviewQueue.items[0].vocabulary,
+  withdrawn: false,
+  rating: "familiar" as const,
+  oldStage: 1,
+  newStage: 2,
+  reviewedAt: "2026-10-05T23:30:00Z",
+  dueAt: "2026-10-08T23:30:00Z",
+  timeZone: "Asia/Shanghai",
+  algorithmVersion: "qa-schedule",
+};
+function HistoryHarness() {
+  const loaderData = useLoaderData() as ReviewHistoryPage;
+  return (
+    <main>
+      <History
+        loaderData={loaderData}
+        params={{}}
+        matches={[
+          {
+            id: "root",
+            params: {},
+            pathname: "/",
+            loaderData: { user: reviewUser, enabled: true },
+            handle: undefined,
+          },
+          {
+            id: "routes/review-history",
+            params: {},
+            pathname: "/review-history",
+            loaderData,
+            handle: undefined,
+          },
+        ]}
+      />
+    </main>
+  );
+}
 const savedItem: SavedItem = {
   id: "qa-saved",
   knowledgeId: "qa-word",
@@ -795,6 +837,8 @@ const router = createMemoryRouter(
         <HomeHarness />
       ) : kind === "courses" ? (
         <Navigate to="/courses" replace />
+      ) : kind === "history" || kind === "history-empty" ? (
+        <Navigate to="/review-history" replace />
       ) : kind === "text-limit" || kind === "text-no-hint" ? (
         <TextLimitHarness
           hintText={kind === "text-no-hint" ? "\u00a0\u202f" : "边界测试"}
@@ -807,6 +851,33 @@ const router = createMemoryRouter(
     { path: "/login", element: <h1>登录入口</h1> },
     { path: "/previous", element: <h1>上一页</h1> },
     { path: "/reviews", element: <h1>账号复习入口</h1> },
+    {
+      path: "/review-history",
+      loader: ({ request }): ReviewHistoryPage => {
+        const cursor = new URL(request.url).searchParams.get("cursor");
+        if (kind === "history-empty" || cursor === "end")
+          return { items: [], nextCursor: null };
+        if (cursor)
+          return {
+            items: [{ ...historyItem, id: "qa-older", rating: "again" }],
+            nextCursor: "end",
+          };
+        return {
+          items: [
+            historyItem,
+            {
+              ...historyItem,
+              id: "qa-withdrawn",
+              vocabulary: null,
+              withdrawn: true,
+              rating: "remembered",
+            },
+          ],
+          nextCursor: "older/qa?+",
+        };
+      },
+      element: <HistoryHarness />,
+    },
     {
       path: "/courses",
       loader: ({ request }) => {

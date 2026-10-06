@@ -2717,6 +2717,11 @@ button.primary {
   font-family: var(--serif);
   font-size: 21px;
 }
+.review-result-list li > div {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
 .review-result-list small {
   display: block;
   margin-top: 3px;
@@ -2724,8 +2729,14 @@ button.primary {
 }
 .review-result-grade {
   font-size: 12px;
+  flex-shrink: 0;
   white-space: nowrap;
   color: var(--muted);
+}
+.history-pagination {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
 }
 .review-summary-actions {
   display: flex;
