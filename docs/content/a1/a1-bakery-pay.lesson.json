@@ -90,7 +90,7 @@
       {
         "id": "grammar-price-euros",
         "titleZh": "euros：金额中的复数",
-        "bodyZh": "本课 quatre euros 是四欧元；书面上超过一欧元时 euro 用复数 euros。本课价格只用于练习。",
+        "bodyZh": "本课 quatre euros 是四欧元，euro 在这里写成复数 euros。用数字表示金额时，低于二用单数，例如 1,20 euro；二及以上用复数，例如 2 euros。本课价格只用于练习。",
         "examples": [
           {
             "fr": "Quatre euros.",
@@ -312,7 +312,7 @@
       "id": "explanation-main",
       "type": "explanation",
       "titleZh": "这句话如何使用",
-      "bodyZh": "peux 是 pouvoir 的第一人称单数现在时。Je peux payer…? 在本课询问某种付款方式是否可行，payer 保留原形。\n\n本课 quatre euros 是四欧元；书面上超过一欧元时 euro 用复数 euros。本课价格只用于练习。",
+      "bodyZh": "peux 是 pouvoir 的第一人称单数现在时。Je peux payer…? 在本课询问某种付款方式是否可行，payer 保留原形。\n\n本课 quatre euros 是四欧元，euro 在这里写成复数 euros。用数字表示金额时，低于二用单数，例如 1,20 euro；二及以上用复数，例如 2 euros。本课价格只用于练习。",
       "targets": [
         {
           "blockId": "dialogue-main",

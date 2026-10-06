@@ -797,3 +797,10 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - 按用户要求实际构建并启动Compose project brioche，部署参数使用独立.local/docker.env，系统随机数据库秘密不输出、不入Git，Git/dockerignore均排除该文件，不覆盖开发.env。当前本机LAN origin及localhost/loopback额外允许origin仅在本机配置。开始前确认无brioche项目容器/卷和HTTP30075占用，未停止其他应用。
 - Docker build实际成功；API/migrate使用同一镜像sha256:653f883bc9a409b1016e0a408e2605849b37805922a0e46526981b6c1a394db4，Web镜像sha256:9edae829b48d3014fc268accd60502ea4dc4250f8a846fcc5ab125c2d7a84a0c。up --wait实际完成，migrate exited0，PostgreSQL/API/Web/Traefik四个长期服务healthy、零重启；只Traefik发布0.0.0.0/[::]的30075→8080，无TLS。API/Web/Traefik非root，数据库/API/Web无宿主端口。
 - HTTP loopback及本机LAN origin各执行health:check：五个服务状态及/api/health、/api/ready、/health、首页均healthy/exit0。容器与新数据库/媒体卷保留运行，此次不是启动后清理的隔离演练；实际手机跨设备/公网与认证学习全链路尚未验收。生产目录为空，没有发布48课draft或伪造审校/素材/录音授权。首个管理员邮箱已向用户询问，尚未签发邀请；人工内容/正式录音、真实设备及完整生产门槛继续保留。
+
+## 2026-10-06：金额语法说明修正与 Docker 静态资源核对
+
+- Docker brioche巡检再次五服务/四HTTP healthy、零重启；实际profile SSR引用/assets/root-D_LCGZua.css，经Traefik读取含note-card、note-card-toggle和reduced-motion规则，证明运行栈提供本轮新样式。正式/api/catalog levels仍为空，不把样式可用当作课程发布。
+- 辅助审阅发现a1-bakery-pay的grammar-price-euros与explanation-main重复写“超过一欧元”即复数；依OQLF小于二数量后名词单数及法兰西学院un euro/des euros核对，现两处同步改为1,20 euro / 2 euros并说明边界。本次只修这两处价格解释，不冒充完成四课或全48课人工审校；报告与来源见content/a1/bakery-price-review.md。editorial保持draft，无导入/发布/数据库变化。
+- 实际作者CLI check付款课通过，13项curriculum全部通过，包含全A1/A2结构/共享词汇/144题判分与素材清单检查；未改运行时代码，没有重复Web/SSR或Docker重建。付款草稿位于作者目录，不嵌入当前生产镜像的fixture。目标JSON格式与diff通过。
+- 固定界面提交ea4f99e的Check37470856262/job112293640020本轮实际in_progress，读取到cargo clippy步骤且未观察失败；不是终态成功。首个管理员邮箱仍待用户回复，内容/素材授权/正式录音、真实设备和生产门槛继续保留。
