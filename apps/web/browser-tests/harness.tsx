@@ -11,7 +11,12 @@ import Learning from "../app/routes/learning";
 import Reviews from "../app/routes/reviews";
 import Library from "../app/routes/library";
 import PendingSaves from "../app/routes/pending-saves";
-import { clearPending, draftScope, saveDraft } from "../app/lib/learning-draft";
+import {
+  clearPending,
+  clearSessionDrafts,
+  draftScope,
+  saveDraft,
+} from "../app/lib/learning-draft";
 import { ownedTargetKey } from "../app/lib/owned-draft";
 import type { SavedItem } from "@brioche/contracts/SavedItem";
 import type { ReviewCard } from "@brioche/contracts/ReviewCard";
@@ -296,7 +301,7 @@ const progress: LearningState = {
 function SessionHarness() {
   const session = { lesson, progress };
   return (
-    <LearningProvider>
+    <LearningProvider user={kind === "session-revoked" ? reviewUser : null}>
       <main>
         <Learning
           loaderData={{ session, ownerId: "qa-account" }}
@@ -464,7 +469,9 @@ const pendingJobs = ["qa-account", "qa-account", "qa-next"].map(
     };
   },
 );
-if (kind === "pending") {
+if (kind === "pending" || kind === "session-revoked") {
+  if (kind === "session-revoked")
+    clearSessionDrafts(draftScope("qa-account", "qa-session", 1));
   for (const entry of pendingJobs) saveDraft(entry.key, entry.job);
   qa.confirmExternal = (index) =>
     clearPending(
@@ -519,7 +526,7 @@ const router = createMemoryRouter(
         <ChoicesHarness />
       ) : kind === "profile" ? (
         <ProfileHarness />
-      ) : kind === "session" ? (
+      ) : kind === "session" || kind === "session-revoked" ? (
         <SessionHarness />
       ) : kind === "reviews" ? (
         <ReviewsHarness />

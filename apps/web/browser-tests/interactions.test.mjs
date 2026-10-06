@@ -1120,3 +1120,76 @@ test("an old account recovery response cannot replace the new account pending li
     "没有待确认的保存。",
   );
 });
+
+test("unavailable learning retains independent expression writes and only releases navigation after all confirmations", async () => {
+  await open("session-revoked");
+  await browser("focus", ".learning-actions button.primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.learningWrites.length===1");
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", ".pending-navigation[open]");
+  await evaluate("qa.learningRelease[0](410)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('.lesson-header h1')?.textContent==='课程已撤回'",
+  );
+  assert.equal(
+    await evaluate("!!document.querySelector('.pending-navigation[open]')"),
+    true,
+  );
+  assert.equal(await evaluate("qa.route"), "/");
+  await press("Escape");
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "课程已撤回",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('.learning-stage,.learning-actions').length",
+    ),
+    0,
+  );
+  assert.equal(
+    await evaluate(
+      "Object.keys(sessionStorage).filter(k=>k.includes(':qa-account:owned:')).length",
+    ),
+    2,
+  );
+  await evaluate("qa.navigate('/login')");
+  await browser(
+    "wait",
+    "--fn",
+    "qa.route==='/login'||!!document.querySelector('.pending-navigation[open]')",
+  );
+  assert.equal(await evaluate("qa.route"), "/");
+  await press("Escape");
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "课程已撤回",
+  );
+  await evaluate("qa.confirmExternal(0)");
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", ".pending-navigation[open]");
+  await evaluate("qa.confirmExternal(1)");
+  await browser(
+    "wait",
+    "--fn",
+    "!document.querySelector('.pending-navigation[open]')",
+  );
+  assert.equal(await evaluate("qa.route"), "/");
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "课程已撤回",
+  );
+  assert.equal(
+    await evaluate(
+      "(()=>{const e=new Event('beforeunload',{cancelable:true});window.dispatchEvent(e);return e.defaultPrevented})()",
+    ),
+    false,
+  );
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", "--fn", "qa.route==='/login'");
+  assert.equal(await evaluate("qa.learningWrites.length"), 1);
+  assert.equal(await evaluate("qa.ownedWrites.length"), 0);
+});

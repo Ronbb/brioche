@@ -126,9 +126,16 @@ function Session({
     lesson.completion.requiredExerciseIds.every((id) =>
       session.progress.attempts.some((attempt) => attempt.exerciseId === id),
     );
+  const pendingNavigation = (
+    <PendingNavigation
+      active={session.hasPendingWrite || ownedPending}
+      onStay={() => heading.current?.focus({ preventScroll: true })}
+    />
+  );
   if (session.unavailable)
     return (
       <section className="page-arrive learning-page">
+        {pendingNavigation}
         <div className="lesson-header">
           <h1 ref={heading} tabIndex={-1}>
             {session.unavailable === 410 ? "课程已撤回" : "学习记录暂不可用"}
@@ -145,10 +152,7 @@ function Session({
     );
   return (
     <section className="page-arrive learning-page">
-      <PendingNavigation
-        active={session.hasPendingWrite || ownedPending}
-        onStay={() => heading.current?.focus({ preventScroll: true })}
-      />
+      {pendingNavigation}
       <div className="lesson-header">
         <div className="crumb">
           {lesson.levelId.toUpperCase()} / {lesson.title.zh}

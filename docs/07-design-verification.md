@@ -1,5 +1,11 @@
 # 设计验证记录
 
+## 2026-10-06：课程不可用分支的独立原请求保护
+
+- 实际 Learning/LearningProvider/MemoryRouter 配合受控进度 PUT 与两个合法当前账号 owned 原提交。首轮定位用例用了不存在的 footer 选择器，修正为实际 learning-actions 后才取得应用失败证据：PUT 返回 410、标题聚焦“课程已撤回”、学习操作已移除，owned 存储仍为两项；qa.navigate('/login') 实际进入 /login，没有确认。
+- 正常与 unavailable 的 section 现在都把同一个 PendingNavigation 放在首个子节点，使用学习 pending 或账号 owned pending 聚合状态；不可用分支保留该组件的身份和导航状态，仍只注册一个 blocker。原 removeUnavailable 只清理固定会话的草稿，独立原请求继续保留；修复不增加重放或撤回副作用。
+- 定向回归通过（41 秒）：首次撤回后导航被拦截，Escape 回撤回标题；确认一个独立请求后再次导航仍被拦截，确认最后一个关闭提示/取消旧导航，仍停当前页并聚焦撤回标题，合成 beforeunload 不再阻止；下一次明确导航成功。只有一次进度写入，owned 目标请求为零（确认通过同一 clearPending/通知模拟其他控件的迟到确认）。最终完整 18 项 Chromium 回归通过（238 秒），包括加强后的弹窗已打开→410→提示仍打开→Escape 聚焦撤回标题。TS 7、26 项 Web 测试、6 项构建 SSR 测试、client/SSR build 和 Prettier/diff 通过，测试 teardown 已关闭专用随机浏览器会话与临时 Vite；此证据不证明真实数据库撤回、原生刷新弹窗、iPhone 或辅助技术验收。完整目标继续推进。
+
 ## 2026-10-06：未确认保存页的账号隔离与列表同步
 
 - 两项新浏览器回归在修复前失败：首次确认后的实际焦点为 BODY，aria-busy 缺失；切换账号、释放旧成功响应后新账号列表由 1 条变为 0。测试使用实际 PendingSaves、LearningProvider 与 MemoryRouter，三个不同账号 scope 的合成原提交及受控 HTTP 响应，不连接用户账号或数据库。
