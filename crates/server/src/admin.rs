@@ -487,6 +487,8 @@ async fn history(
             SELECT 'voice:'||character_id||':'||character_revision||':'||revision, 'voiceProfile', character_id||' v'||character_revision||' / voice v'||revision, 'user:'||actor_id, reason, created_at FROM character_voice_profiles
             UNION ALL
             SELECT 'asset:'||id, 'assetImport', target, 'user:'||actor_id, reason, created_at FROM asset_import_audit WHERE actor_id IS NOT NULL
+            UNION ALL
+            SELECT 'audio:'||id, 'audioImport', target, 'user:'||actor_id, reason, created_at FROM audio_import_audit WHERE actor_id IS NOT NULL
         )
         SELECT key,action,target,actor,reason,to_char(created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at
         FROM events WHERE $1::timestamptz IS NULL OR (created_at,key COLLATE "C") < ($1::timestamptz,$2::text COLLATE "C")

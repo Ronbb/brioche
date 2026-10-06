@@ -33,6 +33,7 @@ const labels: Record<string, string> = {
   revokeReset: "撤销重置链接",
   voiceProfile: "新增角色声音档案",
   assetImport: "登记素材与角色",
+  audioImport: "登记录音",
   approve: "批准课程",
   reject: "退回课程",
   import: "导入课程",

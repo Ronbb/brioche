@@ -287,13 +287,23 @@ impl Browser {
         assert_eq!(self.send("POST","/api/v1/auth/accept-invite",Some(json!({"token":token,"email":email,"displayName":"Test","password":"correct horse brioche fromage"})),true).await.0,200);
     }
     async fn upload_asset(&self, document: Value, file: &[u8], protect: bool) -> (u16, Value) {
+        self.upload_media("/api/v1/operator/assets", document, file, protect)
+            .await
+    }
+    async fn upload_media(
+        &self,
+        path: &str,
+        document: Value,
+        file: &[u8],
+        protect: bool,
+    ) -> (u16, Value) {
         let boundary = "brioche-test-boundary";
         let mut body=format!("--{boundary}\r\nContent-Disposition: form-data; name=\"document\"\r\n\r\n{}\r\n--{boundary}\r\nContent-Disposition: form-data; name=\"file\"; filename=\"../../untrusted.svg\"\r\nContent-Type: image/svg+xml\r\n\r\n",document).into_bytes();
         body.extend_from_slice(file);
         body.extend_from_slice(format!("\r\n--{boundary}--\r\n").as_bytes());
         let mut request = Request::builder()
             .method("POST")
-            .uri("/api/v1/operator/assets")
+            .uri(path)
             .header("cookie", &self.cookie)
             .header(
                 "content-type",
@@ -511,6 +521,129 @@ async fn approvals_permissions_concurrency_and_publication() {
             .any(|i| i["target"] == "character-qa v2" && i["action"] == "assetImport")
     );
     let upload = json!({"assetId":"qa-web-upload","revision":1,"mimeType":"image/svg+xml","altZh":"隔离上传","creditZh":"仅测试","source":"test:synthetic","license":"LicenseRef-TestOnly","creator":"test fixture","rightsConfirmed":true,"reason":"isolated asset upload"});
+    let audio_upload = json!({"assetId":"qa-web-recording","revision":1,"mimeType":"audio/mpeg","creditZh":"仅测试","source":"test:synthetic","license":"LicenseRef-TestOnly","creator":"test fixture","rightsConfirmed":true,"reason":"isolated recording upload"});
+    let recording = include_bytes!("fixtures/audio/synthetic.mp3");
+    let audio_path = "/api/v1/operator/recordings";
+    assert_eq!(
+        visitor
+            .upload_media(audio_path, audio_upload.clone(), recording, true)
+            .await
+            .0,
+        401
+    );
+    assert_eq!(
+        learner
+            .upload_media(audio_path, audio_upload.clone(), recording, true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .upload_media(audio_path, audio_upload.clone(), recording, false)
+            .await
+            .0,
+        403
+    );
+    for (field, value) in [
+        ("rightsConfirmed", json!(false)),
+        ("assetId", json!("../escape")),
+        ("reason", json!("")),
+        ("mimeType", json!("audio/ogg")),
+    ] {
+        let mut bad = audio_upload.clone();
+        bad[field] = value;
+        assert_eq!(
+            operator
+                .upload_media(audio_path, bad, recording, true)
+                .await
+                .0,
+            400
+        );
+    }
+    assert_eq!(
+        operator
+            .upload_media(audio_path, audio_upload.clone(), b"not audio", true)
+            .await
+            .0,
+        400
+    );
+    assert_eq!(
+        operator
+            .upload_media(
+                audio_path,
+                audio_upload.clone(),
+                &recording[..recording.len() - 1],
+                true
+            )
+            .await
+            .0,
+        400
+    );
+    let uploaded = operator
+        .upload_media(audio_path, audio_upload.clone(), recording, true)
+        .await;
+    assert_eq!(uploaded.0, 200);
+    assert_eq!(
+        uploaded.1,
+        json!({"assetId":"qa-web-recording","revision":1})
+    );
+    assert_eq!(
+        operator
+            .upload_media(audio_path, audio_upload.clone(), recording, true)
+            .await
+            .0,
+        409
+    );
+    let row=db.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT count(*) AS n FROM audio_import_audit a JOIN users u ON a.actor_id=u.id WHERE u.email='operator@example.test' AND a.reason='isolated recording upload'".to_owned())).await.unwrap().unwrap();
+    assert_eq!(row.try_get::<i64>("", "n").unwrap(), 1);
+    let audio_history = operator
+        .send("GET", "/api/v1/operator/history", None, true)
+        .await;
+    assert!(
+        audio_history.1["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|i| i["action"] == "audioImport"
+                && i["target"] == "qa-web-recording v1"
+                && i["reason"] == "isolated recording upload")
+    );
+    let listed = operator.send("GET", audio_path, None, true).await;
+    assert_eq!(listed.1["items"][0]["asset"]["durationMs"], 1000);
+    assert_eq!(listed.1["items"][0]["sampleRate"], 24000);
+    let mut concurrent = audio_upload.clone();
+    concurrent["assetId"] = json!("qa-concurrent-audio");
+    concurrent["reason"] = json!("concurrent recording");
+    let (left, right) = tokio::join!(
+        operator.upload_media(audio_path, concurrent.clone(), recording, true),
+        operator.upload_media(audio_path, concurrent, recording, true)
+    );
+    let mut outcomes = [left.0, right.0];
+    outcomes.sort();
+    assert_eq!(outcomes, [200, 409]);
+    assert!(
+        brioche_migration::Migrator::down(&db, Some(1))
+            .await
+            .is_err(),
+        "operator recording audit cannot be removed by rollback"
+    );
+    let response = app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri("/api/v1/operator/recordings/qa-web-recording/1/file")
+                .header("cookie", &operator.cookie)
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), 200);
+    assert_eq!(
+        &response.into_body().collect().await.unwrap().to_bytes()[..],
+        recording
+    );
     let svg = format!(
         "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\"><!--{}--><rect width=\"96\" height=\"96\" fill=\"red\"/></svg>",
         "x".repeat(20_000)

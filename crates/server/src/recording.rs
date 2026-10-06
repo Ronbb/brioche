@@ -152,6 +152,35 @@ pub async fn import_bundle(
     store: &Path,
     actor: &str,
 ) -> Result<()> {
+    import_bundle_impl(db, bundle, source_root, store, actor, None).await
+}
+pub(crate) async fn import_operator_bundle(
+    db: &DatabaseConnection,
+    bundle: AudioBundle,
+    source_root: &Path,
+    store: &Path,
+    actor: i64,
+    reason: &str,
+) -> Result<()> {
+    crate::admin::reason(reason)?;
+    import_bundle_impl(
+        db,
+        bundle,
+        source_root,
+        store,
+        &format!("user:{actor}"),
+        Some((actor, reason)),
+    )
+    .await
+}
+async fn import_bundle_impl(
+    db: &DatabaseConnection,
+    bundle: AudioBundle,
+    source_root: &Path,
+    store: &Path,
+    actor: &str,
+    operator: Option<(i64, &str)>,
+) -> Result<()> {
     bundle.validate_author(actor)?;
     let bundle_hash = hash(&bundle).map_err(anyhow::Error::msg)?;
     let source_root = source_root.canonicalize()?;
@@ -178,6 +207,24 @@ pub async fn import_bundle(
     })
     .await??;
     let tx = db.begin().await?;
+    if let Some((actor, _)) = operator {
+        exec(
+            &tx,
+            "SELECT pg_advisory_xact_lock(hashtextextended('account-admin',0))",
+            vec![],
+        )
+        .await?;
+        let row = one(
+            &tx,
+            "SELECT role FROM users WHERE id=$1",
+            vec![actor.into()],
+        )
+        .await?
+        .ok_or(crate::AppError::Forbidden)?;
+        if field::<String>(&row, "role")? != "operator" {
+            return Err(crate::AppError::Forbidden.into());
+        }
+    }
     one(
         &tx,
         "SELECT generation FROM content_state WHERE singleton FOR UPDATE",
@@ -194,6 +241,9 @@ pub async fn import_bundle(
         )
         .await
         .map_err(anyhow::Error::msg)?;
+        if existing.is_some() && operator.is_some() {
+            return Err(crate::AppError::Conflict.into());
+        }
         ensure!(
             existing.is_none(),
             "/assets/{index}/revision: recording revision already registered"
@@ -208,11 +258,14 @@ pub async fn import_bundle(
     }
     exec(
         &tx,
-        "INSERT INTO audio_import_audit(actor,bundle_hash,asset_count) VALUES($1,$2,$3)",
+        "INSERT INTO audio_import_audit(actor,bundle_hash,asset_count,actor_id,reason,target) VALUES($1,$2,$3,$4,$5,$6)",
         vec![
             actor.into(),
             bundle_hash.into(),
             (bundle.assets.len() as i32).into(),
+            operator.map(|(actor,_)|actor).into(),
+            operator.map(|(_,reason)|reason.to_owned()).into(),
+            operator.map(|_|bundle.assets.iter().map(|s|format!("{} v{}",s.asset_id,s.revision)).collect::<Vec<_>>().join(", ")).into(),
         ],
     )
     .await

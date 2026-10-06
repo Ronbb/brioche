@@ -23,7 +23,7 @@ pub fn router() -> Router<Backend> {
         .route("/api/v1/operator/assets/{id}/{revision}/file", get(file))
 }
 // Owned scratch directory: neither the path nor filename comes from the upload.
-struct Scratch(std::path::PathBuf);
+pub(crate) struct Scratch(pub(crate) std::path::PathBuf);
 impl Drop for Scratch {
     fn drop(&mut self) {
         let _ = std::fs::remove_file(self.0.join("upload"));

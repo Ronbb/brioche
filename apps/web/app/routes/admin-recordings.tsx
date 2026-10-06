@@ -7,6 +7,7 @@ import { usePageCursorFocus } from "../components/page-cursor-focus";
 import { RecordingPlayer } from "../lib/recording-playback";
 import { Icon } from "../components/icon";
 import { useLearning } from "../components/learning";
+import { RecordingUpload } from "../components/admin-recording-upload";
 import type { Route } from "./+types/admin-recordings";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -107,6 +108,7 @@ export default function Recordings({ loaderData }: Route.ComponentProps) {
           管理员后台
         </Link>
       </div>
+      <RecordingUpload />
       <Form method="get" className="admin-toolbar" key={loaderData.q}>
         <label>
           搜索录音

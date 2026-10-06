@@ -62,6 +62,7 @@
 - 后台账号发放复用 identity.issue_token_impl，在 account-admin→邮箱锁内复核当前 operator 并与审计原子提交。后续角色/会话管理沿用账号管理锁，并保护最后管理员。明文一次性链接只在当前对话框内存显示，关闭清空，不进入SSR/日志/持久化；网页发放不自动发邮件。管理员写入必须带离页取消信号，迟到CSRF不能继续提交；取消不能冒充服务端事务回滚。
 - 网页角色修改在account-admin锁后重新验证operator，锁定目标并核对expectedRole，最后一位管理员不得降级；角色和不可变审计同事务，每次新请求读取当前角色。真实测试使用隔离数据库，不修改生产账号以演示权限。
 - 录音先 `audio-check`，再 `audio-import <bundle.json> <source-directory> <actor>`；`audioRefs` 固定登记版本，登记不公开文件。发布必须重新验证登记描述、实际文件哈希/解码、来源授权与正文时间轴；音频公开路由和私有预览均保留撤回检查、no-store 与有界读取。
+- `/admin/recordings` 网页上传复用正式录音登记，实际完整解码在 blocking worker 中计算元数据；account-admin→content_state 锁内复核 operator，与真实 actor/对象/理由审计同事务提交。迁移17保留旧CLI记录，存在网页审计时不得回滚删除字段。上传不会自动公开录音或创建课程时间轴，声音复刻授权仍单独确认。
 - 权限、判分、事务、幂等、版本与恢复做风险对应的验证；文档/低风险样式不添加无意义测试。
 - 异步确认按钮在等待期间保留键盘焦点，用 aria-disabled/aria-busy 配合同步提交锁；未满足答题/步骤条件或恢复初始化未完成时仍原生 disabled，不能仅依赖 ARIA 阻止重复写入。
 - 实际命令：`pnpm dev:api`、`pnpm dev:web`、`pnpm contracts`、`pnpm typecheck`、`pnpm build`；Rust 使用 cargo fmt/check/clippy/test。PostgreSQL 集成测试显式设置专用 `TEST_DATABASE_URL` 后运行，禁止指向生产。TS 7 类型检查不能用 Vite build 代替。

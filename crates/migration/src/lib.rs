@@ -15,6 +15,7 @@ mod m20261007_000013_account_admin;
 mod m20261007_000014_character_voices;
 mod m20261007_000015_token_admin;
 mod m20261007_000016_asset_admin;
+mod m20261007_000017_recording_admin;
 pub struct Migrator;
 #[async_trait::async_trait]
 impl MigratorTrait for Migrator {
@@ -36,6 +37,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20261007_000014_character_voices::Migration),
             Box::new(m20261007_000015_token_admin::Migration),
             Box::new(m20261007_000016_asset_admin::Migration),
+            Box::new(m20261007_000017_recording_admin::Migration),
         ]
     }
 }

@@ -303,3 +303,17 @@ pub struct AdminRecording {
     pub sample_rate: u32,
     pub channels: u32,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminRecordingUpload {
+    pub asset_id: String,
+    pub revision: u32,
+    pub mime_type: String,
+    pub credit_zh: String,
+    pub source: String,
+    pub license: String,
+    pub creator: String,
+    pub rights_confirmed: bool,
+    pub reason: String,
+}
