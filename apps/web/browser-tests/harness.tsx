@@ -24,6 +24,7 @@ const qa = {
   changeUser: null as (() => void) | null,
   profileWrites: [] as Record<string, unknown>[],
   profileRelease: [] as ((profile: UserProfile) => void)[],
+  navigate: null as ((destination: string | number) => void) | null,
 };
 Object.assign(window, { qa });
 class ControlledUtterance extends EventTarget {
@@ -189,24 +190,32 @@ function ProfileHarness() {
 }
 const kind = new URL(location.href).searchParams.get("case");
 const reading = kind === "reading";
-const router = createMemoryRouter([
-  {
-    path: "/",
-    element: reading ? (
-      <LearningProvider>
-        <ReadingHarness />
-      </LearningProvider>
-    ) : kind === "choices" ? (
-      <ChoicesHarness />
-    ) : kind === "profile" ? (
-      <ProfileHarness />
-    ) : (
-      <StartHarness />
-    ),
-  },
-  { path: "/learning/:id", element: <h1>已进入学习</h1> },
-  { path: "/login", element: <h1>登录入口</h1> },
-]);
+const router = createMemoryRouter(
+  [
+    {
+      path: "/",
+      element: reading ? (
+        <LearningProvider>
+          <ReadingHarness />
+        </LearningProvider>
+      ) : kind === "choices" ? (
+        <ChoicesHarness />
+      ) : kind === "profile" ? (
+        <ProfileHarness />
+      ) : (
+        <StartHarness />
+      ),
+    },
+    { path: "/learning/:id", element: <h1>已进入学习</h1> },
+    { path: "/login", element: <h1>登录入口</h1> },
+    { path: "/previous", element: <h1>上一页</h1> },
+  ],
+  { initialEntries: ["/previous", "/"], initialIndex: 1 },
+);
+qa.navigate = (destination) => {
+  if (typeof destination === "number") void router.navigate(destination);
+  else void router.navigate(destination);
+};
 router.subscribe((state) => {
   qa.route = state.location.pathname;
   qa.search = state.location.search;

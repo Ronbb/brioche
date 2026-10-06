@@ -414,3 +414,52 @@ test("closing a changed profile asks before discarding and preserves the draft w
     0,
   );
 });
+
+test("profile drafts guard route pushes and history pops, including saves already in flight", async () => {
+  await open("profile");
+  const edit = 'button[aria-label="编辑个人资料与学习目标"]';
+  await browser("focus", edit);
+  await press("Enter");
+  await browser("fill", ".profile-dialog input", "Keep this draft");
+  await evaluate("qa.navigate('/login')");
+  await browser(
+    "wait",
+    "--fn",
+    "qa.route==='/login'||!!document.querySelector('.profile-discard')",
+  );
+  assert.equal(await evaluate("qa.route"), "/");
+  await browser("focus", ".profile-discard .primary");
+  await press("Enter");
+  assert.equal(
+    await evaluate("document.querySelector('.profile-dialog input').value"),
+    "Keep this draft",
+  );
+  await evaluate("qa.navigate(-1)");
+  await browser("wait", ".profile-discard");
+  await browser("focus", ".profile-discard .text-button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.route==='/previous'");
+  assert.equal(await evaluate("qa.profileWrites.length"), 0);
+
+  await open("profile");
+  await browser("focus", edit);
+  await press("Enter");
+  await browser("fill", ".profile-dialog input", "Saved before leaving");
+  await browser("focus", ".profile-dialog button[type=submit]");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.profileWrites.length===1");
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", ".profile-leave-status");
+  assert.equal(
+    await evaluate(
+      "!!document.querySelector('.profile-dialog[open] .profile-leave-status')",
+    ),
+    true,
+  );
+  assert.equal(await evaluate("qa.route"), "/");
+  await evaluate(
+    "qa.profileRelease[0]({id:'account-a',email:'a@example.test',displayName:'Saved before leaving',role:'learner',version:2,settings:{timeZone:'Asia/Shanghai',weeklyDays:5,dailyMinutes:10,showTranslation:false,speechRate:1}})",
+  );
+  await browser("wait", "--fn", "qa.route==='/login'");
+  assert.equal(await evaluate("qa.profileWrites.length"), 1);
+});

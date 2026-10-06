@@ -1,6 +1,6 @@
 import { useLearning } from "../components/learning";
 import { Icon } from "../components/icon";
-import { Link, useRouteLoaderData } from "react-router";
+import { Link, useBlocker, useRouteLoaderData } from "react-router";
 import type { loader } from "../root";
 import { authRequest } from "../lib/auth.client";
 import { clearLearningDrafts } from "../lib/learning-draft";
@@ -48,6 +48,20 @@ function ProfileContent() {
     zone !== baseline.current.zone ||
     days !== baseline.current.days ||
     minutes !== baseline.current.minutes;
+  const blocker = useBlocker(() => editorOpen && (dirty || editBusy.current));
+  useEffect(() => {
+    if (blocker.state !== "blocked" || editing) return;
+    if (!editorOpen) blocker.proceed();
+    else setDiscarding(true);
+  }, [blocker, editorOpen, editing]);
+  function keepEditing() {
+    if (blocker.state === "blocked") blocker.reset();
+    setDiscarding(false);
+  }
+  function discardChanges() {
+    if (blocker.state === "blocked") blocker.proceed();
+    else editor.current?.close();
+  }
   useEffect(() => {
     if (!editorOpen || (!dirty && !editing)) return;
     const warn = (event: BeforeUnloadEvent) => {
@@ -64,7 +78,7 @@ function ProfileContent() {
   }, [discarding]);
   function requestClose() {
     if (editBusy.current) return;
-    if (discarding) setDiscarding(false);
+    if (discarding) keepEditing();
     else if (dirty) setDiscarding(true);
     else editor.current?.close();
   }
@@ -118,8 +132,10 @@ function ProfileContent() {
     }
     setEditing(true);
     editBusy.current = true;
-    if (await learning.saveProfile(changes)) editor.current?.close();
-    else setFailureSequence((sequence) => sequence + 1);
+    if (await learning.saveProfile(changes)) {
+      setEditorOpen(false);
+      editor.current?.close();
+    } else setFailureSequence((sequence) => sequence + 1);
     setEditing(false);
     editBusy.current = false;
   }
@@ -282,23 +298,24 @@ function ProfileContent() {
             <Icon name="close" />
           </button>
         </div>
+        {blocker.state === "blocked" && editing && (
+          <p className="profile-leave-status" role="status">
+            正在保存，完成后将离开。
+          </p>
+        )}
         {discarding && (
           <div className="profile-discard">
             <h3 ref={discardHeading} tabIndex={-1}>
               放弃这些修改？
             </h3>
             <p>昵称、学习目标和时区的修改尚未保存。</p>
-            <button
-              type="button"
-              className="primary"
-              onClick={() => setDiscarding(false)}
-            >
+            <button type="button" className="primary" onClick={keepEditing}>
               继续编辑
             </button>
             <button
               type="button"
               className="text-button"
-              onClick={() => editor.current?.close()}
+              onClick={discardChanges}
             >
               放弃修改
             </button>
