@@ -55,6 +55,7 @@
 - 实际命令：`pnpm dev:api`、`pnpm dev:web`、`pnpm contracts`、`pnpm typecheck`、`pnpm build`；Rust 使用 cargo fmt/check/clippy/test。PostgreSQL 集成测试显式设置专用 `TEST_DATABASE_URL` 后运行，禁止指向生产。TS 7 类型检查不能用 Vite build 代替。
 - `pnpm test:browser` 使用锁定的 agent-browser 和独立 Chromium 会话，对真实组件进行键盘/迟到响应/多正文回归；首次安装浏览器用 `pnpm exec agent-browser install`，Linux CI 使用 `--with-deps`。装配只连接自己的临时端口、合成课程与受控请求，自动清理；不连接用户浏览器/账号，也不替代数据库、真实法语声音、iPhone 或辅助技术验收。
 - 生产页面壳另用 `pnpm test:browser:ssr`；先运行 `pnpm build`，测试直接加载当前 server/client 构建、真实 Layout/客户端路由与 CSS。后端为受控公共课程 API，两台 HTTP 服务及 Chromium 均使用独立随机 loopback 端口/会话并自动关闭；不能将它当作实际 Rust/数据库/生产或 iPhone 验收。
+- 共用浏览器会话的独立测试须隔离 sessionStorage 草稿；同一用例内的离页、返回和重试保留真实草稿。不能把上一用例恢复的步骤当作当前应用推进或焦点缺陷，定向通过后还需核对完整套件的顺序影响。
 - 不自行修改用户 DNS/路由器或执行生产上线；按相应任务的授权范围工作。
 - 运维备份使用 `scripts/backup.mjs`，同时保留数据库与全部登记媒体；真实备份/会话/私有判分不得入 Git。restore 只创建新数据库和新媒体卷，不自动切换应用或清理失败目标。`pnpm test:ops` 运行运维检查，显式 `BRIOCHE_BACKUP_DOCKER_TEST=1` 才创建隔离 Docker 演练资源；恢复样本通过不等于生产 RPO/RTO 或公网验收通过。
 - 运行巡检使用 `pnpm health:check --project <明确的 Compose 项目名>`；只读服务状态与入口 HTTP，可选检查指定宿主盘，不读取/输出环境秘密。退出码 0/1/2 分别表示健康/检测故障/参数或脚本失败。脚本不安装定时任务、发送通知或自动修复；实际生产告警与外部探测仍须按用户环境配置和验收。

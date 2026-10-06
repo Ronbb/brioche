@@ -1,4 +1,4 @@
-import { before, after, afterEach, test } from "node:test";
+import { before, beforeEach, after, afterEach, test } from "node:test";
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -57,6 +57,10 @@ after(async () => {
   } finally {
     await server?.close();
   }
+});
+beforeEach(async () => {
+  // Keep drafts across navigation within a test, never across independent tests.
+  if (browserOpened) await evaluate("sessionStorage.clear()");
 });
 afterEach(async () => {
   if (!browserOpened) return;
@@ -888,6 +892,60 @@ test("learning conflict rereads progress without advancing and removes withdrawn
   );
   assert.equal(await evaluate("qa.learningWrites.length"), 3);
   assert.equal(await evaluate("qa.learningReads.length"), 3);
+});
+
+test("learning pending navigation settles to the current step or withdrawal heading", async () => {
+  for (const outcome of ["confirmed", "conflict", "withdrawn"]) {
+    if (browserOpened) await evaluate("sessionStorage.clear()");
+    await open("session-multi");
+    await browser("focus", ".learning-actions .primary");
+    await press("Enter");
+    await browser("wait", "--fn", "qa.learningWrites.length===1");
+    await evaluate("qa.navigate('/login')");
+    await browser("wait", ".pending-navigation[open]");
+    if (outcome === "confirmed") {
+      await evaluate(
+        "qa.learningRelease[0]({id:'qa-session',lessonId:'reading-protocol',revision:1,version:2,lastStepId:'read',confirmedStepIds:['read'],hintedExerciseIds:[],attempts:[],completedAt:null,firstCompletedAt:null})",
+      );
+    } else if (outcome === "conflict") {
+      await evaluate("qa.learningRelease[0](409)");
+      await browser("wait", "--fn", "qa.learningReads.length===1");
+      await evaluate("qa.learningReads[0](503)");
+    } else {
+      await evaluate("qa.learningRelease[0](410)");
+    }
+    await browser(
+      "wait",
+      "--fn",
+      "!document.querySelector('.pending-navigation[open]')",
+    );
+    assert.equal(
+      await evaluate("document.activeElement.textContent"),
+      outcome === "confirmed"
+        ? "回顾"
+        : outcome === "conflict"
+          ? "阅读"
+          : "课程已撤回",
+      outcome,
+    );
+    assert.equal(await evaluate("qa.route"), "/");
+    assert.equal(await evaluate("qa.learningWrites.length"), 1);
+    if (outcome === "conflict")
+      assert.ok(
+        (
+          await evaluate(
+            "document.querySelector('.learning-actions .primary').textContent",
+          )
+        ).includes("重新读取进度"),
+      );
+    else assert.equal(await evaluate("qa.learningReads.length"), 0);
+    assert.equal(
+      await evaluate(
+        "sessionStorage.getItem('brioche.learning.v1:qa-account:qa-session:1:pending')",
+      ),
+      null,
+    );
+  }
 });
 
 test("learning navigation keeps the exact pending request across leaving and returning", async () => {
