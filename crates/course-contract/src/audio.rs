@@ -23,7 +23,7 @@ impl PublicLesson {
             if !crate::valid_content_id(&asset.asset_id) {
                 return Err(format!("/audio/{index}/assetId: invalid recording ID"));
             }
-            if asset.revision == 0 || asset.revision > i32::MAX as u32 {
+            if !crate::valid_content_revision(asset.revision) {
                 return Err(format!(
                     "/audio/{index}/revision: expected positive database revision"
                 ));

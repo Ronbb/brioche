@@ -136,7 +136,7 @@ impl ReleaseManifest {
                         "{lesson_path}/lessonId: invalid or duplicate lesson reference"
                     );
                     ensure!(
-                        lesson.revision > 0 && lesson.revision <= i32::MAX as u32,
+                        brioche_course_contract::valid_content_revision(lesson.revision),
                         "{lesson_path}/revision: expected positive database-compatible revision"
                     );
                     ensure!(

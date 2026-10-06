@@ -60,7 +60,7 @@ impl AssetBundle {
             let p = format!("/assets/{index}");
             ensure!(valid_id(&asset.asset_id), "{p}/assetId: invalid asset ID");
             ensure!(
-                (1..=i32::MAX as u32).contains(&asset.revision),
+                brioche_course_contract::valid_content_revision(asset.revision),
                 "{p}/revision: outside database range"
             );
             ensure!(
@@ -116,7 +116,7 @@ impl AssetBundle {
                 "{p}/snapshot/characterId: invalid character ID"
             );
             ensure!(
-                (1..=i32::MAX as u32).contains(&snapshot.revision),
+                brioche_course_contract::valid_content_revision(snapshot.revision),
                 "{p}/snapshot/revision: outside database range"
             );
             ensure!(
@@ -137,7 +137,7 @@ impl AssetBundle {
                 "{p}/snapshot/avatarId: invalid avatar ID"
             );
             ensure!(
-                (1..=i32::MAX as u32).contains(&character.avatar_revision),
+                brioche_course_contract::valid_content_revision(character.avatar_revision),
                 "{p}/avatarRevision: outside database range"
             );
         }
@@ -455,8 +455,7 @@ pub async fn import_bundle(
                 let p = format!("/assets/{index}");
                 ensure!(
                     valid_id(&asset.asset_id)
-                        && asset.revision > 0
-                        && asset.revision <= i32::MAX as u32
+                        && brioche_course_contract::valid_content_revision(asset.revision)
                         && ids.insert((&asset.asset_id, asset.revision)),
                     "duplicate or invalid asset identity"
                 );
@@ -579,12 +578,10 @@ pub async fn import_bundle(
         let snapshot = &character.snapshot;
         ensure!(
             valid_id(&snapshot.character_id)
-                && snapshot.revision > 0
-                && snapshot.revision <= i32::MAX as u32
+                && brioche_course_contract::valid_content_revision(snapshot.revision)
                 && text(&snapshot.display_name)
                 && snapshot.speech_locale == brioche_course_contract::CHARACTER_SPEECH_LOCALE
-                && character.avatar_revision > 0
-                && character.avatar_revision <= i32::MAX as u32
+                && brioche_course_contract::valid_content_revision(character.avatar_revision)
                 && ids.insert((&snapshot.character_id, snapshot.revision)),
             "invalid or duplicate character"
         );
@@ -627,7 +624,7 @@ pub(crate) fn source_refs(source: &serde_json::Value, key: &str) -> Result<Vec<A
             "/{key}/{index}/assetId: invalid asset ID"
         );
         ensure!(
-            reference.revision > 0 && reference.revision <= i32::MAX as u32,
+            brioche_course_contract::valid_content_revision(reference.revision),
             "/{key}/{index}/revision: expected revision in database range"
         );
         ensure!(
@@ -718,7 +715,7 @@ pub(crate) async fn validate_lesson_detailed<C: ConnectionTrait>(
                 "duplicate visual asset ID",
             ));
         }
-        if asset.revision == 0 || asset.revision > i32::MAX as u32 {
+        if !brioche_course_contract::valid_content_revision(asset.revision) {
             return Err(PublicationFailure::at(
                 &format!("{pointer}/revision"),
                 "visual asset revision outside database range",
@@ -776,7 +773,7 @@ pub(crate) async fn validate_lesson_detailed<C: ConnectionTrait>(
     }
     for (index, character) in lesson.cast.iter().enumerate() {
         let pointer = format!("/cast/{index}");
-        if character.revision == 0 || character.revision > i32::MAX as u32 {
+        if !brioche_course_contract::valid_content_revision(character.revision) {
             return Err(PublicationFailure::at(
                 &format!("{pointer}/revision"),
                 "character revision outside database range",

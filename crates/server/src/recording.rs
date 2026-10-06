@@ -52,7 +52,7 @@ impl AudioBundle {
                 "{p}/assetId: invalid recording ID"
             );
             ensure!(
-                (1..=i32::MAX as u32).contains(&spec.revision),
+                brioche_course_contract::valid_content_revision(spec.revision),
                 "{p}/revision: outside database range"
             );
             ensure!(

@@ -9,6 +9,11 @@ mod validation;
 /// Current registered character voice policy; regional voices need an explicit content revision.
 pub const CHARACTER_SPEECH_LOCALE: &str = "fr-FR";
 
+/// Immutable revisions share the positive PostgreSQL INTEGER range.
+pub fn valid_content_revision(value: u32) -> bool {
+    value > 0 && value <= i32::MAX as u32
+}
+
 /// Stable author IDs shared by routing, media registration and saved-operation recovery.
 pub fn valid_content_id(value: &str) -> bool {
     !value.is_empty()
@@ -450,8 +455,8 @@ impl PublicLesson {
         if self.schema_version != "1.0" {
             return Err("/schemaVersion: unsupported version".into());
         }
-        if self.revision == 0 {
-            return Err("/revision: expected positive revision".into());
+        if !valid_content_revision(self.revision) {
+            return Err("/revision: expected revision in 1..2147483647".into());
         }
         for (id, path) in [
             (&self.id, "/id"),
@@ -511,6 +516,11 @@ impl PublicLesson {
         }
         for (index, media) in self.media.iter().enumerate() {
             validation::identifier(&media.asset_id, &format!("/media/{index}/assetId"))?;
+            if !valid_content_revision(media.revision) {
+                return Err(format!(
+                    "/media/{index}/revision: expected revision in 1..2147483647"
+                ));
+            }
         }
         let check_segments = |segments: &[Segment], path: &str| -> Result<(), String> {
             for (index, s) in segments.iter().enumerate() {
@@ -657,6 +667,33 @@ mod tests {
     #[test]
     fn unknown_block_rejected() {
         assert!(serde_json::from_str::<Block>(r#"{"type":"script","id":"x"}"#).is_err());
+    }
+    #[test]
+    fn lesson_character_and_visual_revisions_fit_the_persistence_range() {
+        let mut original = serde_json::to_value(fixture()).unwrap();
+        original["media"] = serde_json::json!([{
+            "assetId":"revision-fixture", "revision":1, "sha256":"a".repeat(64),
+            "mimeType":"image/svg+xml", "width":640, "height":470,
+            "altZh":"仅版本协议测试", "creditZh":"仅测试",
+            "url":format!("/api/media/{}.svg", "a".repeat(64))
+        }]);
+        for pointer in ["/revision", "/cast/0/revision", "/media/0/revision"] {
+            for revision in [0, i32::MAX as u32 + 1, u32::MAX] {
+                let mut value = original.clone();
+                *value.pointer_mut(pointer).unwrap() = serde_json::json!(revision);
+                let lesson: PublicLesson = serde_json::from_value(value).unwrap();
+                let error = lesson
+                    .validate()
+                    .expect_err("out-of-range revision accepted");
+                assert!(error.starts_with(&format!("{pointer}:")), "{error}");
+            }
+            for revision in [1, i32::MAX as u32] {
+                let mut value = original.clone();
+                *value.pointer_mut(pointer).unwrap() = serde_json::json!(revision);
+                let lesson: PublicLesson = serde_json::from_value(value).unwrap();
+                lesson.validate().unwrap();
+            }
+        }
     }
     #[test]
     fn unknown_fields_rejected_in_every_block() {

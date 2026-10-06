@@ -338,8 +338,10 @@ impl PublicLesson {
             return Err(format!("/blocks/{index}/id: unreachable teaching block"));
         }
         for (ci, cast) in self.cast.iter().enumerate() {
-            if cast.revision == 0 {
-                return Err(format!("/cast/{ci}/revision: invalid character revision"));
+            if !crate::valid_content_revision(cast.revision) {
+                return Err(format!(
+                    "/cast/{ci}/revision: expected revision in 1..2147483647"
+                ));
             }
             nonempty(&cast.display_name, &format!("/cast/{ci}/displayName"))?;
             if cast.speech_locale != crate::CHARACTER_SPEECH_LOCALE {

@@ -354,7 +354,7 @@ async fn import_and_stage_cli_locate_original_source_and_preserve_atomicity() {
         &text,
         "/revision",
         text.find("2147483648").unwrap(),
-        "revision exceeds database range",
+        "expected revision in 1..2147483647",
     );
     assert_eq!(count(&db, "lesson_revisions").await, 0);
 

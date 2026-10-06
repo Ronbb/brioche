@@ -912,3 +912,42 @@ fn unknown_block_fields_fail_check_and_import_before_database_access() {
     }
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn offline_revision_bounds_locate_the_original_definition() {
+    let path = std::env::temp_dir().join(format!("brioche-revision-bounds-{}.json", random_id()));
+    let mut original = brioche_server::development_source().unwrap();
+    original["media"] = serde_json::json!([{
+        "assetId":"revision-fixture", "revision":1, "sha256":"a".repeat(64),
+        "mimeType":"image/svg+xml", "width":640, "height":470,
+        "altZh":"仅版本协议测试", "creditZh":"仅测试",
+        "url":format!("/api/media/{}.svg", "a".repeat(64))
+    }]);
+    for pointer in ["/revision", "/cast/0/revision", "/media/0/revision"] {
+        for revision in [0, i32::MAX as u32 + 1, u32::MAX] {
+            let mut source = original.clone();
+            *source.pointer_mut(pointer).unwrap() = serde_json::json!(revision);
+            let text = serde_json::to_string_pretty(&source)
+                .unwrap()
+                .replace('\n', "\r\n");
+            std::fs::write(&path, &text).unwrap();
+            let prefix = "\"revision\": ";
+            let marker = format!("{prefix}{revision}");
+            assert_eq!(text.matches(&marker).count(), 1);
+            let before = &text[..text.find(&marker).unwrap() + prefix.len()];
+            let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+            let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+            let output = run("check", &path);
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(!output.status.success());
+            assert!(
+                error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
+                "{error}"
+            );
+            assert!(error.contains("1..2147483647"), "{error}");
+            assert!(!error.contains("database connection"), "{error}");
+            assert!(output.stdout.is_empty());
+        }
+    }
+    std::fs::remove_file(path).unwrap();
+}
