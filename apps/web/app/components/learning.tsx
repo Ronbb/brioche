@@ -79,8 +79,7 @@ export function LearningProvider({
   const savedProfile = useRef(user),
     pendingChanges = useRef(new Map<symbol, ProfileChanges>()),
     saves = useRef<Promise<boolean>>(Promise.resolve(true)),
-    saveGeneration = useRef(0),
-    saveCount = useRef(0);
+    saveGeneration = useRef(0);
   const rateRef = useRef(user?.settings.speechRate ?? 1),
     state = useRef(player),
     queue = useRef<SpeechUnit[]>([]),
@@ -116,6 +115,8 @@ export function LearningProvider({
       return;
     saveGeneration.current++;
     pendingChanges.current.clear();
+    // Requests from an obsolete identity/version must not block the current scope.
+    saves.current = Promise.resolve(true);
     setSaveStatus("idle");
     setSaveError("");
     acceptProfile(user);
@@ -125,7 +126,6 @@ export function LearningProvider({
     const gen = saveGeneration.current;
     const job = Symbol();
     pendingChanges.current.set(job, changes);
-    saveCount.current++;
     setSaveStatus("saving");
     setSaveError("");
     const next = saves.current.then(async () => {
@@ -142,7 +142,7 @@ export function LearningProvider({
         return true;
       } catch (error) {
         if (gen !== saveGeneration.current) return false;
-        saveGeneration.current++;
+        const recoveryGeneration = ++saveGeneration.current;
         pendingChanges.current.clear();
         if (
           error instanceof ApiRequestError &&
@@ -153,10 +153,14 @@ export function LearningProvider({
         else {
           // A timed-out response may already have saved. Read the current state; never resend a write automatically.
           try {
-            acceptProfile(
-              await privateRequest<UserProfile>("/api/v1/me", "GET"),
+            const latest = await privateRequest<UserProfile>(
+              "/api/v1/me",
+              "GET",
             );
+            if (recoveryGeneration !== saveGeneration.current) return false;
+            acceptProfile(latest);
           } catch {
+            if (recoveryGeneration !== saveGeneration.current) return false;
             acceptProfile(savedProfile.current);
           }
         }
@@ -172,9 +176,9 @@ export function LearningProvider({
     });
     saves.current = next;
     void next.then((ok) => {
+      if (gen !== saveGeneration.current) return;
       pendingChanges.current.delete(job);
-      saveCount.current--;
-      if (!saveCount.current && ok) setSaveStatus("saved");
+      if (!pendingChanges.current.size && ok) setSaveStatus("saved");
     });
     return next;
   }
