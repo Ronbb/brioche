@@ -1,8 +1,8 @@
 # A1 课程草稿包
 
-状态：2026-10-06，前五个单元共 20 课，全部待人工审校，未导入或激活线上目录。原来的 12 课试点目录保持不变，四单元目录保留「家与日常安排」四课，五单元目录再增加「买东西与吃饭」四课。A1「认识与约见」及 A2 试点仍待制作。
+状态：2026-10-06，六个单元共 24 课，全部待人工审校，未导入或激活线上目录。原来的 12 课试点目录保持不变，四单元目录保留「家与日常安排」四课，五单元目录再增加「买东西与吃饭」四课。六单元目录补齐「认识与约见」四课。A1 六个规划单元的作者草稿已齐，不等于审校完成或官方等级认证；A2 试点仍待制作。
 
-每份 `.lesson.json` 是作者源文件，包含私有判分规则，不可直接作为 Web 静态资源或公共 API 响应。运行时通过现有 Rust 投影去掉私有字段；新增课程无需新增专属页面。[catalog.release.json](catalog.release.json) 保留前三单元 12 课，[catalog.extended.release.json](catalog.extended.release.json) 记录前四单元 16 课。[catalog.five-units.release.json](catalog.five-units.release.json) 记录前五单元 20 课。三个目录使用不同 release ID，只记录课程 ID、固定 revision 和顺序，不读取文件，也不证明课程已登记或已审校。
+每份 `.lesson.json` 是作者源文件，包含私有判分规则，不可直接作为 Web 静态资源或公共 API 响应。运行时通过现有 Rust 投影去掉私有字段；新增课程无需新增专属页面。[catalog.release.json](catalog.release.json) 保留前三单元 12 课，[catalog.extended.release.json](catalog.extended.release.json) 记录前四单元 16 课。[catalog.five-units.release.json](catalog.five-units.release.json) 记录前五单元 20 课。[catalog.full-a1.release.json](catalog.full-a1.release.json) 记录六单元 24 课。四个目录使用不同 release ID，只记录课程 ID、固定 revision 和顺序，不读取文件，也不证明课程已登记或已审校。
 
 | 单元 | 顺序 | 源文件 | 交际目标 |
 | --- | --- | --- | --- |
@@ -26,14 +26,18 @@
 | | 2 | [a1-food-shopping-list](a1-food-shopping-list.lesson.json) | 食材清单、不定数量与偏好 |
 | | 3 | [a1-food-order-lunch](a1-food-order-lunch.lesson.json) | 人数、菜单、餐点与饮品 |
 | | 4 | [a1-food-ingredients-bill](a1-food-ingredients-bill.lesson.json) | 询问成分、提出选择、用餐后结账 |
+| 认识与约见 | 1 | [a1-social-introduce-friend](a1-social-introduce-friend.lesson.json) | 三位角色间介绍朋友、城市与喜好 |
+| | 2 | [a1-social-invite-coffee](a1-social-invite-coffee.lesson.json) | 询问空闲、提出邀约、确认时间 |
+| | 3 | [a1-social-confirm-meeting](a1-social-confirm-meeting.lesson.json) | 约见地点、出发时间与明日计划 |
+| | 4 | [a1-social-reschedule](a1-social-reschedule.lesson.json) | 拒绝、说明原因、提出并确认改期 |
 
-新课均有 1–3 项目标、5–8 个目标词汇或语块、2 个语法点、解释/文化说明、单选/填空/排序各一题、可选生活任务和回顾。城市末课、起床时间、每周习惯和购物清单使用短文，其他新课使用对话；原有示例同时包含两种正文。角色复用 Camille、Luc、Léa 的 revision 1 快照，场景中的身份是课程情境设定。
+新课均有 1–3 项目标、5–8 个目标词汇或语块、2 个语法点、解释/文化说明、单选/填空/排序各一题、可选生活任务和回顾。城市末课、起床时间、每周习惯、购物清单和约见确认使用短文，其他新课使用对话；原有示例同时包含两种正文。角色复用 Camille、Luc、Léa 的 revision 1 快照，场景中的身份是课程情境设定。
 
 同一知识 ID 保持完全相同的释义与说明，复习可跨课程去重。变位或复数出现在正文时，仍关联原形的词汇 ID；不是建立另一个独立复习词条。练习答案只保存在 `serverOnly.grading`。
 
 ## 校验与预览
 
-对单课运行 `cargo run -p brioche-server -- check docs/content/a1/<lesson-id>.lesson.json`；目录运行 `cargo run -p brioche-server -- check-release docs/content/a1/catalog.release.json`。全包一致性运行 `cargo test -p brioche-server --test curriculum`，分别核对 3×4、4×4 和 5×4 单元顺序、文件与目录对应、共享知识与角色固定快照一致、投影去掉私有字段，并用正式 Grader 验证扩展包全部 60 题的正确答案和合法错误答案。扩展目录检查命令将文件名换成 `catalog.extended.release.json` 或 `catalog.five-units.release.json`。
+对单课运行 `cargo run -p brioche-server -- check docs/content/a1/<lesson-id>.lesson.json`；目录运行 `cargo run -p brioche-server -- check-release docs/content/a1/catalog.release.json`。全包一致性运行 `cargo test -p brioche-server --test curriculum`，分别核对 3×4、4×4、5×4 和 6×4 单元顺序、文件与目录对应、共享知识与角色固定快照一致、投影去掉私有字段，并用正式 Grader 验证扩展包全部 72 题的正确答案和合法错误答案。扩展目录检查命令将文件名换成 `catalog.extended.release.json` 、`catalog.five-units.release.json` 或 `catalog.full-a1.release.json`。
 
 这些检查不访问数据库，也不证明法语教学内容正确。正式预览仍须按 [开发说明](../../08-development.md) 完成素材登记和课程导入；尚未登记的引用不能绕过发布校验。原有 development fixture 仍为单课，不自动替换成草稿包。
 
@@ -47,6 +51,8 @@
 家与日常单元另参考 [Larousse se lever 变位](https://www.larousse.fr/conjugaison/francais/se_lever/5809)、[étudier 变位](https://www.larousse.fr/conjugaison/francais/%C3%A9tudier/4450)、[bureau 词条](https://www.larousse.fr/dictionnaires/francais/bureau/11702)，核对起床和学习的现在时、bureau 的性别与含义，核对日期 2026-10-06。例句与课程正文为项目原创。
 
 购物餐饮单元另参考 [OQLF 部分限定词](https://vitrinelinguistique.oqlf.gouv.qc.ca/fiche-gdt/fiche/26559622/determinant-partitif)、[Larousse aimer 变位](https://www.larousse.fr/fr/conjugaison/francais/aimer/283) 和 [addition 词条](https://www.larousse.fr/dictionnaires/francais/addition/1014)，核对不定数量、喜好动词与餐馆账单用法，核对日期 2026-10-06。du riz 与 des tomates 的说明分别标明部分冠词与复数不定冠词；不是把所有 des 都归为部分冠词。
+
+认识与约见单元另参考 [Larousse aller 变位](https://www.larousse.fr/fr/conjugaison/francais/aller/314)、[pouvoir 变位](https://www.larousse.fr/fr/conjugaison/francais/pouvoir/6963)、[OQLF 近期将来](https://vitrinelinguistique.oqlf.gouv.qc.ca/24122/la-grammaire/le-verbe/temps-grammaticaux/futur/le-futur-proche) 与 [mon/ton/son 在阴性名词前](https://vitrinelinguistique.oqlf.gouv.qc.ca/24157/la-grammaire/les-determinants/determinants-possessifs/mon-ton-et-son-devant-des-mots-feminins)。核对 je vais/elle va/elles vont、je peux/tu peux/on peut、aller + 原形和 mon amie 的规则，日期 2026-10-06。正文、例句与译文为原创草稿，查词不能替代教学审校。
 
 每课以下项目仍未签核，不能把结构检查记录写成审校记录：
 
@@ -67,8 +73,9 @@
 | art-home-morning revision 1 | [640×470 SVG 源文件](assets/home-morning.svg)已制作，清单仍为 planned | 核对画面、署名与授权后登记 |
 | art-fruit-market revision 1 | [640×470 SVG 源文件](assets/fruit-market.svg)已制作，清单仍为 planned | 核对画面、署名与授权后登记 |
 | art-cafe-lunch revision 1 | [640×470 SVG 源文件](assets/cafe-lunch.svg)已制作，清单仍为 planned | 核对画面、署名与授权后登记 |
+| art-park-meeting revision 1 | [640×470 SVG 源文件](assets/park-meeting.svg)已制作，清单仍为 planned | 核对画面、署名与授权后登记 |
 | 正式课程录音 | 尚未制作 | 法语审校后录制，记录授权、时长、哈希与正文时间轴，按 audio-check/audio-import 登记 |
 
 新课使用显式 `assetRefs` 固定版本；这些引用不会使未登记文件可用。没有伪造音频或时间轴；缺录音时沿用浏览器法语声音回退，设备没有法语声音时仍可阅读。正式录音与真实 iPhone 验收继续推进。
 
-五张新图源文件位于作者目录，未放入 Web public。它们的真实 SHA-256、MIME、尺寸、替代文本与来源记录见 [场景素材清单](scene-assets.bundle.json)，来源目录为 `docs/content/a1/assets`；清单保持 planned/rightsConfirmed=false，不能直接导入。图形由项目内 SVG 代码绘制，沿用品牌和已有角色外观，不含外部图片、字体或真实运营者标识。`asset-check` 与正式导入复用图片解码/安全 SVG 校验；`curriculum` 测试核对清单哈希与尺寸。前两张图已在浏览器检查 390px 与 640px 显示；室内、水果摊和餐馆图已通过文件检查，水果摊与餐馆图另在离线浏览器展示页检查 320/390/900px 无溢出；室内图浏览器检查和全部新图的正式画面审校仍待补齐，不替代真实 iPhone 或正式素材审校。
+六张新图源文件位于作者目录，未放入 Web public。它们的真实 SHA-256、MIME、尺寸、替代文本与来源记录见 [场景素材清单](scene-assets.bundle.json)，来源目录为 `docs/content/a1/assets`；清单保持 planned/rightsConfirmed=false，不能直接导入。图形由项目内 SVG 代码绘制，沿用品牌和已有角色外观，不含外部图片、字体或真实运营者标识。`asset-check` 与正式导入复用图片解码/安全 SVG 校验；`curriculum` 测试核对清单哈希与尺寸。前两张图已在浏览器检查 390px 与 640px 显示；室内、水果摊、餐馆和公园图另在离线浏览器展示页检查 320/390/900px 无溢出，并查看 390px 截图；全部新图的正式画面审校仍待补齐，不替代真实 iPhone 或正式素材审校。

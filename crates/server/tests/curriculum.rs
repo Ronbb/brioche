@@ -11,7 +11,7 @@ fn scene_inventory_matches_actual_svg_sources() {
     let bundle: brioche_server::media::AssetBundle =
         serde_json::from_value(document.value).unwrap();
     assert_eq!(bundle.schema_version, "1.0");
-    assert_eq!(bundle.assets.len(), 5);
+    assert_eq!(bundle.assets.len(), 6);
     for asset in bundle.assets {
         let info = brioche_server::media::inspect_file(
             &root.join("assets").join(&asset.file),
@@ -62,6 +62,21 @@ fn five_unit_sources_match_catalog_and_shared_knowledge_and_grade_all_exercises(
             "a1-city-travel",
             "a1-home-routine",
             "a1-food-shopping",
+        ],
+    );
+}
+
+#[test]
+fn full_a1_sources_match_catalog_and_shared_knowledge_and_grade_all_exercises() {
+    check_catalog(
+        "catalog.full-a1.release.json",
+        &[
+            "a1-first-conversations",
+            "a1-breakfast-bakery",
+            "a1-city-travel",
+            "a1-home-routine",
+            "a1-food-shopping",
+            "a1-social-meetings",
         ],
     );
 }

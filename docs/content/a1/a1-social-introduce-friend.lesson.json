@@ -1,0 +1,586 @@
+{
+  "schemaVersion": "1.0",
+  "id": "a1-social-introduce-friend",
+  "revision": 1,
+  "levelId": "a1",
+  "unitId": "a1-social-meetings",
+  "title": {
+    "fr": "Voici mon ami Luc",
+    "zh": "介绍一位朋友"
+  },
+  "summaryZh": "介绍朋友的名字、居住城市和喜好。",
+  "estimatedMinutes": 12,
+  "objectivesZh": [
+    "把朋友介绍给另一人",
+    "理解 mon ami 的搭配",
+    "从对话找出城市与喜好"
+  ],
+  "knowledge": {
+    "vocabulary": [
+      {
+        "id": "word-voici",
+        "lemma": "voici",
+        "partOfSpeech": "other",
+        "meaningZh": "这是……；请看……",
+        "noteZh": "本课用 voici 介绍眼前的人。"
+      },
+      {
+        "id": "word-ami",
+        "lemma": "ami",
+        "partOfSpeech": "noun",
+        "meaningZh": "朋友（男性）",
+        "noteZh": "mon ami Luc 介绍男性朋友 Luc；女性形式为 amie。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-cinema",
+        "lemma": "cinéma",
+        "partOfSpeech": "noun",
+        "meaningZh": "电影；电影院",
+        "noteZh": "aimer le cinéma 表示喜欢电影；devant le cinéma 表示在电影院前。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-musique",
+        "lemma": "musique",
+        "partOfSpeech": "noun",
+        "meaningZh": "音乐",
+        "noteZh": "musique 的单数形式；搭配冠词学习。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-ensemble",
+        "lemma": "ensemble",
+        "partOfSpeech": "adverb",
+        "meaningZh": "一起",
+        "noteZh": "本课用于朋友一起活动的安排。"
+      },
+      {
+        "id": "expr-enchante",
+        "lemma": "enchanté",
+        "partOfSpeech": "phrase",
+        "meaningZh": "很高兴认识你",
+        "noteZh": "本课 Luc 是男性，说 enchanté；女性可写 enchantée，读音相同。"
+      },
+      {
+        "id": "word-aimer",
+        "lemma": "aimer",
+        "partOfSpeech": "verb",
+        "meaningZh": "喜欢；爱",
+        "noteZh": "本单元表示对食物的喜好：j’aime、elle aime。"
+      },
+      {
+        "id": "expr-jhabite",
+        "lemma": "j’habite",
+        "partOfSpeech": "other",
+        "meaningZh": "我住……",
+        "noteZh": "habiter 的第一人称单数现在时，后接居住地点。"
+      }
+    ],
+    "grammar": [
+      {
+        "id": "grammar-voici-person",
+        "titleZh": "Voici：介绍眼前的人",
+        "bodyZh": "Voici 后接名字或身份，本课 Voici mon ami Luc 用于把朋友介绍给另一位朋友，不需要再加 être。",
+        "examples": [
+          {
+            "fr": "Voici mon ami Luc.",
+            "zh": "这是我的朋友 Luc。"
+          }
+        ]
+      },
+      {
+        "id": "grammar-mon-ami",
+        "titleZh": "mon / ma：说我的……",
+        "bodyZh": "物主限定词与后面的名词配合：本课男性朋友是 mon ami，房屋是 ma maison。形式不能只看说话人的性别；元音开头的阴性名词另有省音相关搭配。",
+        "examples": [
+          {
+            "fr": "Mon ami habite à Lyon.",
+            "zh": "我的朋友住在里昂。"
+          }
+        ]
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "id": "scene-main",
+      "type": "scene",
+      "placeZh": "三位朋友在虚构公园中初次碰面",
+      "situationZh": "介绍朋友的名字、居住城市和喜好。",
+      "illustrationId": "art-park-meeting"
+    },
+    {
+      "id": "dialogue-main",
+      "type": "dialogue",
+      "titleZh": "介绍一位朋友",
+      "speakers": [
+        {
+          "id": "speaker-1",
+          "labelZh": "朋友",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "avatarId": "avatar-camille-v1"
+        },
+        {
+          "id": "speaker-2",
+          "labelZh": "朋友",
+          "characterId": "character-lea",
+          "displayName": "Léa",
+          "avatarId": "avatar-lea-v1"
+        },
+        {
+          "id": "speaker-3",
+          "labelZh": "朋友",
+          "characterId": "character-luc",
+          "displayName": "Luc",
+          "avatarId": "avatar-luc-v1"
+        }
+      ],
+      "turns": [
+        {
+          "id": "entry-1",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Bonjour, Léa ! "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "Voici",
+              "vocabularyId": "word-voici",
+              "grammarId": "grammar-voici-person"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " "
+            },
+            {
+              "id": "segment-1-4",
+              "text": "mon",
+              "grammarId": "grammar-mon-ami"
+            },
+            {
+              "id": "segment-1-5",
+              "text": " "
+            },
+            {
+              "id": "segment-1-6",
+              "text": "ami",
+              "vocabularyId": "word-ami"
+            },
+            {
+              "id": "segment-1-7",
+              "text": " Luc."
+            }
+          ],
+          "translationZh": "你好，Léa！这是我的朋友 Luc。"
+        },
+        {
+          "id": "entry-2",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Bonjour, Luc."
+            }
+          ],
+          "translationZh": "你好，Luc。"
+        },
+        {
+          "id": "entry-3",
+          "speakerId": "speaker-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Bonjour. "
+            },
+            {
+              "id": "segment-3-2",
+              "text": "Enchanté",
+              "vocabularyId": "expr-enchante"
+            },
+            {
+              "id": "segment-3-3",
+              "text": " !"
+            }
+          ],
+          "translationZh": "你好。很高兴认识你！"
+        },
+        {
+          "id": "entry-4",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Tu habites à Lyon ?"
+            }
+          ],
+          "translationZh": "你住在里昂吗？"
+        },
+        {
+          "id": "entry-5",
+          "speakerId": "speaker-3",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Oui, "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "j’habite",
+              "vocabularyId": "expr-jhabite"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " à Lyon."
+            }
+          ],
+          "translationZh": "是的，我住在里昂。"
+        },
+        {
+          "id": "entry-6",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Tu "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "aimes",
+              "vocabularyId": "word-aimer"
+            },
+            {
+              "id": "segment-6-3",
+              "text": " le "
+            },
+            {
+              "id": "segment-6-4",
+              "text": "cinéma",
+              "vocabularyId": "word-cinema"
+            },
+            {
+              "id": "segment-6-5",
+              "text": " ?"
+            }
+          ],
+          "translationZh": "你喜欢电影吗？"
+        },
+        {
+          "id": "entry-7",
+          "speakerId": "speaker-3",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Oui, "
+            },
+            {
+              "id": "segment-7-2",
+              "text": "j’aime",
+              "vocabularyId": "word-aimer"
+            },
+            {
+              "id": "segment-7-3",
+              "text": " le "
+            },
+            {
+              "id": "segment-7-4",
+              "text": "cinéma",
+              "vocabularyId": "word-cinema"
+            },
+            {
+              "id": "segment-7-5",
+              "text": " et la "
+            },
+            {
+              "id": "segment-7-6",
+              "text": "musique",
+              "vocabularyId": "word-musique"
+            },
+            {
+              "id": "segment-7-7",
+              "text": "."
+            }
+          ],
+          "translationZh": "是的，我喜欢电影和音乐。"
+        },
+        {
+          "id": "entry-8",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Alors, on peut aller au cinéma "
+            },
+            {
+              "id": "segment-8-2",
+              "text": "ensemble",
+              "vocabularyId": "word-ensemble"
+            },
+            {
+              "id": "segment-8-3",
+              "text": "."
+            }
+          ],
+          "translationZh": "那我们可以一起去看电影。"
+        }
+      ]
+    },
+    {
+      "id": "explanation-main",
+      "type": "explanation",
+      "titleZh": "这句话如何使用",
+      "bodyZh": "Voici mon ami Luc 介绍朋友。mon 与后面的 ami 配合，不表示说话人必须是男性。Luc 说 enchanté；本课朋友之间使用 tu，这是角色关系设定。最后一句中的 on peut… 是“我们可以……”的提议，下一课继续练习。",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4"
+        }
+      ]
+    },
+    {
+      "id": "culture-context",
+      "type": "culture",
+      "titleZh": "场景中的细节",
+      "bodyZh": "名字、朋友关系和城市都是本课角色设定；初次认识时如何称呼对方取决于具体关系，不能把本课的 tu 当作所有场景的规则。",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。"
+    },
+    {
+      "id": "vocabulary-targets",
+      "type": "vocabulary",
+      "entryIds": [
+        "word-voici",
+        "word-ami",
+        "word-cinema",
+        "word-musique",
+        "word-ensemble",
+        "expr-enchante",
+        "word-aimer",
+        "expr-jhabite"
+      ]
+    },
+    {
+      "id": "grammar-targets",
+      "type": "grammar",
+      "entryIds": [
+        "grammar-voici-person",
+        "grammar-mon-ami"
+      ]
+    },
+    {
+      "id": "exercise-comprehension",
+      "type": "exercise",
+      "exerciseType": "single-choice",
+      "promptZh": "Luc 住在哪座城市？",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "巴黎"
+        },
+        {
+          "id": "correct",
+          "text": "里昂"
+        },
+        {
+          "id": "distractor-b",
+          "text": "对话没有提到"
+        }
+      ]
+    },
+    {
+      "id": "exercise-fill",
+      "type": "exercise",
+      "exerciseType": "fill-blank",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Voici ___ ami Luc.",
+      "hintZh": "ami 在本课是阳性名词，用 mon。"
+    },
+    {
+      "id": "exercise-order",
+      "type": "exercise",
+      "exerciseType": "order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "Luc."
+        },
+        {
+          "id": "token-1",
+          "text": "Voici"
+        },
+        {
+          "id": "token-2",
+          "text": "mon ami"
+        }
+      ]
+    },
+    {
+      "id": "habit-main",
+      "type": "habit",
+      "taskZh": "用 Voici… 介绍一位虚构朋友，可以只使用虚构名字。",
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。"
+    },
+    {
+      "id": "summary-main",
+      "type": "summary",
+      "takeawaysZh": [
+        "我能把朋友介绍给另一人。",
+        "我能理解 mon ami 的搭配。",
+        "我能从对话找出城市与喜好。"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景",
+      "blockIds": [
+        "scene-main"
+      ]
+    },
+    {
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话",
+      "blockIds": [
+        "dialogue-main"
+      ]
+    },
+    {
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达",
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ]
+    },
+    {
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用",
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ]
+    },
+    {
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常",
+      "blockIds": [
+        "habit-main"
+      ]
+    },
+    {
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课",
+      "blockIds": [
+        "summary-main"
+      ]
+    }
+  ],
+  "completion": {
+    "strategy": "attempt-all",
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ]
+  },
+  "reviewItemIds": [
+    "word-ami",
+    "word-voici",
+    "expr-enchante"
+  ],
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "kind": "choice",
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：里昂。"
+      },
+      "exercise-fill": {
+        "kind": "text",
+        "accepted": [
+          "mon"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "ami 在本课是阳性名词，用 mon。"
+      },
+      "exercise-order": {
+        "kind": "order",
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Voici mon ami Luc."
+      }
+    }
+  },
+  "editorial": {
+    "status": "draft",
+    "note": "项目原创课程草稿，未完成人工法语、译文和教学审校。名字、朋友关系、地点、时刻与计划为虚构设定。素材待来源授权确认及登记；无正式录音。审校记录见 docs/content/a1/README.md，禁止直接作为已审校课程发布。"
+  },
+  "assetRefs": [
+    {
+      "assetId": "art-park-meeting",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    }
+  ],
+  "cast": [
+    {
+      "characterId": "character-camille",
+      "revision": 1,
+      "displayName": "Camille",
+      "avatarId": "avatar-camille-v1",
+      "speechLocale": "fr-FR"
+    },
+    {
+      "characterId": "character-lea",
+      "revision": 1,
+      "displayName": "Léa",
+      "avatarId": "avatar-lea-v1",
+      "speechLocale": "fr-FR"
+    },
+    {
+      "characterId": "character-luc",
+      "revision": 1,
+      "displayName": "Luc",
+      "avatarId": "avatar-luc-v1",
+      "speechLocale": "fr-FR"
+    }
+  ]
+}

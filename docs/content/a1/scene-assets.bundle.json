@@ -80,6 +80,22 @@
       "license": "待确认素材分发授权",
       "creator": "Brioche 项目（Codex 绘制 SVG）",
       "rightsConfirmed": false
+    },
+    {
+      "assetId": "art-park-meeting",
+      "revision": 1,
+      "sha256": "8a13f40f43ae625232c469c455a5318e65b91ec060337d788dda8882bb91d98d",
+      "mimeType": "image/svg+xml",
+      "width": 640,
+      "height": 470,
+      "altZh": "虚构公园中的长椅、入口路牌与三位朋友，暖阳照着树木和小路",
+      "creditZh": "Brioche · 场景插图草稿",
+      "file": "park-meeting.svg",
+      "status": "planned",
+      "source": "Brioche 项目内以 SVG 独立绘制，2026-10-06；未使用外部位图或字体",
+      "license": "待确认素材分发授权",
+      "creator": "Brioche 项目（Codex 绘制 SVG）",
+      "rightsConfirmed": false
     }
   ],
   "characters": []
