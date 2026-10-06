@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, redirect } from "react-router";
 import type { ReviewQueue } from "@brioche/contracts/ReviewQueue";
 import type { ReviewRating } from "@brioche/contracts/ReviewRating";
@@ -55,6 +55,8 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
     alive = useRef(true),
     cardButton = useRef<HTMLButtonElement>(null),
     heading = useRef<HTMLHeadingElement>(null),
+    staleHeading = useRef<HTMLHeadingElement>(null),
+    unavailable = useRef(new Set<string>()),
     animation = useRef<Animation | null>(null);
   const audio = useLearning(),
     term = queue.items[index];
@@ -65,6 +67,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
     generation.current++;
     alive.current = true;
     pending.current = null;
+    unavailable.current.clear();
     busy.current = false;
     setUncertain(false);
     setQueueStale(false);
@@ -97,6 +100,22 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
       animation.current?.cancel();
     };
   }, [storageKey]);
+  useLayoutEffect(() => {
+    if (queueStale) staleHeading.current?.focus();
+  }, [queueStale]);
+  function acceptQueue(fresh: ReviewQueue) {
+    if (fresh.items.some((card) => unavailable.current.has(card.id))) {
+      setQueueStale(true);
+      setError("队列仍包含不可用的表达，请重新读取后继续。");
+      return false;
+    }
+    setQueue(fresh);
+    setIndex(0);
+    setRevealed(false);
+    setQueueStale(false);
+    requestAnimationFrame(() => heading.current?.focus());
+    return true;
+  }
   useEffect(() => {
     if (!saving && !uncertain) return;
     const warn = (event: BeforeUnloadEvent) => {
@@ -144,8 +163,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
             "GET",
           );
           if (!alive.current || gen !== generation.current) return;
-          setQueue(fresh);
-          setQueueStale(false);
+          acceptQueue(fresh);
         } catch {
           if (!alive.current || gen !== generation.current) return;
           setQueue((old) => ({
@@ -180,23 +198,27 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
           failure.status === 410 ||
           failure.status === 404
         ) {
+          if (failure.status === 410 || failure.status === 404)
+            unavailable.current.add(job.cardId);
+          audio.stop();
+          setRevealed(false);
+          setQueueStale(true);
+          let accepted = false;
           try {
             const fresh = await privateRequest<ReviewQueue>(
               "/api/v1/me/reviews",
               "GET",
             );
             if (alive.current && gen === generation.current) {
-              setQueue(fresh);
-              setIndex(0);
-              setRevealed(false);
-              setQueueStale(false);
+              accepted = acceptQueue(fresh);
             }
           } catch {
             if (!alive.current || gen !== generation.current) return;
             setQueueStale(true);
           }
           if (!alive.current || gen !== generation.current) return;
-          setError("复习记录已变化，请确认最新队列后继续。");
+          if (accepted) setError("复习记录已变化，请确认最新队列后继续。");
+          else setError("复习记录已变化，请重新读取有效队列后继续。");
         } else setError(failure.message);
       } else {
         setUncertain(true);
@@ -221,10 +243,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
         "GET",
       );
       if (alive.current && gen === generation.current) {
-        setQueue(fresh);
-        setIndex(0);
-        setRevealed(false);
-        setQueueStale(false);
+        acceptQueue(fresh);
       }
     } catch (failure) {
       if (alive.current && gen === generation.current)
@@ -307,6 +326,13 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
         <div className="empty-state">
           <h2>确认上次复习</h2>
           <p>确认原提交后，再继续今天的表达。</p>
+        </div>
+      ) : queueStale ? (
+        <div className="empty-state">
+          <h2 ref={staleHeading} tabIndex={-1}>
+            需要确认复习队列
+          </h2>
+          <p>重新读取后，再继续今天的表达。</p>
         </div>
       ) : term ? (
         <>
