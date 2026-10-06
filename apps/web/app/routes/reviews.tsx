@@ -42,6 +42,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
     [saving, setSaving] = useState(false),
     [ready, setReady] = useState(false),
     [uncertain, setUncertain] = useState(false),
+    [queueStale, setQueueStale] = useState(false),
     [error, setError] = useState(""),
     [results, setResults] = useState<ReviewAttemptResult[]>([]);
   const pending = useRef<{
@@ -66,6 +67,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
     pending.current = null;
     busy.current = false;
     setUncertain(false);
+    setQueueStale(false);
     setSaving(false);
     const stored = storageKey ? readDraft(storageKey) : null;
     if (stored && typeof stored === "object") {
@@ -143,13 +145,15 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
           );
           if (!alive.current || gen !== generation.current) return;
           setQueue(fresh);
+          setQueueStale(false);
         } catch {
           if (!alive.current || gen !== generation.current) return;
           setQueue((old) => ({
             ...old,
             items: old.items.filter((card) => card.id !== job.cardId),
           }));
-          setError("复习已保存，最新队列暂时无法读取，请稍后重新进入。");
+          setQueueStale(true);
+          setError("复习已保存，最新队列暂时无法读取，请重新读取后继续。");
         }
         setIndex(0);
       } else setIndex((old) => old + 1);
@@ -181,14 +185,17 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
               "/api/v1/me/reviews",
               "GET",
             );
-            if (alive.current) {
+            if (alive.current && gen === generation.current) {
               setQueue(fresh);
               setIndex(0);
               setRevealed(false);
+              setQueueStale(false);
             }
           } catch {
-            /* keep the current card until the next explicit retry */
+            if (!alive.current || gen !== generation.current) return;
+            setQueueStale(true);
           }
+          if (!alive.current || gen !== generation.current) return;
           setError("复习记录已变化，请确认最新队列后继续。");
         } else setError(failure.message);
       } else {
@@ -205,6 +212,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
   async function nextBatch() {
     if (busy.current || uncertain || !ready) return;
     busy.current = true;
+    const gen = generation.current;
     setSaving(true);
     setError("");
     try {
@@ -212,19 +220,22 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
         "/api/v1/me/reviews",
         "GET",
       );
-      if (alive.current) {
+      if (alive.current && gen === generation.current) {
         setQueue(fresh);
         setIndex(0);
         setRevealed(false);
+        setQueueStale(false);
       }
     } catch (failure) {
-      if (alive.current)
+      if (alive.current && gen === generation.current)
         setError(
           failure instanceof Error ? failure.message : "暂时无法读取复习队列。",
         );
     } finally {
-      busy.current = false;
-      if (alive.current) setSaving(false);
+      if (gen === generation.current) {
+        busy.current = false;
+        if (alive.current) setSaving(false);
+      }
     }
   }
   function reveal() {
@@ -309,7 +320,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
             ref={cardButton}
             className="review-flashcard"
             aria-expanded={revealed}
-            disabled={saving || uncertain || !ready}
+            disabled={saving || uncertain || queueStale || !ready}
             onClick={reveal}
           >
             <span className="review-kind">
@@ -346,7 +357,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
                 <button
                   key={rating.value}
                   data-grade={grade}
-                  disabled={saving || !ready}
+                  disabled={saving || queueStale || !ready}
                   onClick={() =>
                     void submit({
                       cardId: term.id,
@@ -424,6 +435,15 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
         <p className="error-message" role="alert">
           {error}
         </p>
+      )}
+      {queueStale && (
+        <button
+          className="text-button"
+          disabled={saving}
+          onClick={() => void nextBatch()}
+        >
+          重新读取复习队列
+        </button>
       )}
       {uncertain && (
         <button

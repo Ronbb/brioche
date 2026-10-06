@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, redirect } from "react-router";
 import type { SavedItem } from "@brioche/contracts/SavedItem";
 import type { SavedPage } from "@brioche/contracts/SavedPage";
@@ -201,21 +201,39 @@ function Cards({ page }: { page: ReviewCardsPage }) {
 function ManagedCard({ initial }: { initial: ReviewCard }) {
   const [card, setCard] = useState(initial),
     [open, setOpen] = useState(false),
+    [readFailed, setReadFailed] = useState(false),
+    [refreshing, setRefreshing] = useState(false),
     audio = useLearning();
-  const write = useOwnedWrite<ReviewCard>(
-    async () =>
-      setCard(
-        await privateRequest<ReviewCard>(
-          "/api/v1/me/reviews/" + card.id,
-          "GET",
-        ),
-      ),
-    {
-      userId: audio.profile?.id,
-      target: { kind: "preference", cardId: initial.id },
-      accept: setCard,
-    },
-  );
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  async function refresh() {
+    setRefreshing(true);
+    try {
+      const fresh = await privateRequest<ReviewCard>(
+        "/api/v1/me/reviews/" + initial.id,
+        "GET",
+      );
+      if (mounted.current) {
+        setCard(fresh);
+        setReadFailed(false);
+      }
+    } catch (error) {
+      if (mounted.current) setReadFailed(true);
+      throw error;
+    } finally {
+      if (mounted.current) setRefreshing(false);
+    }
+  }
+  const write = useOwnedWrite<ReviewCard>(refresh, {
+    userId: audio.profile?.id,
+    target: { kind: "preference", cardId: initial.id },
+    accept: setCard,
+  });
   return (
     <article className="library-entry">
       <button
@@ -240,7 +258,7 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
           <p>{card.vocabulary.noteZh}</p>
           <button
             className="text-button"
-            disabled={write.blocked}
+            disabled={write.blocked || readFailed || refreshing}
             onClick={() =>
               write.write(
                 "/api/v1/me/reviews/" + card.id + "/preferences",
@@ -259,6 +277,20 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
             <p className="error-message" role="alert">
               {write.error}
             </p>
+          )}
+          {readFailed && (
+            <>
+              <p className="error-message" role="alert">
+                最新记录暂时无法读取，读取成功后再继续操作。
+              </p>
+              <button
+                className="text-button"
+                disabled={refreshing}
+                onClick={() => void refresh().catch(() => {})}
+              >
+                {refreshing ? "正在读取" : "重新读取记录"}
+              </button>
+            </>
           )}
           {write.uncertain && (
             <button
