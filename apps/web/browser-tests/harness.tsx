@@ -7,6 +7,8 @@ import Lesson from "../app/routes/lesson";
 import { lesson } from "./lesson";
 import { ChoiceDialog } from "../app/components/choice-dialog";
 import Profile from "../app/routes/profile";
+import Learning from "../app/routes/learning";
+import type { LearningState } from "@brioche/contracts/LearningState";
 import type { UserProfile } from "@brioche/contracts/UserProfile";
 import "../app/styles/app.css";
 
@@ -26,6 +28,8 @@ const qa = {
   profileRelease: [] as ((profile: UserProfile | number) => void)[],
   profileReads: [] as ((profile: UserProfile | number) => void)[],
   navigate: null as ((destination: string | number) => void) | null,
+  learningWrites: [] as Record<string, unknown>[],
+  learningRelease: [] as ((value: LearningState | number) => void)[],
 };
 Object.assign(window, { qa });
 class ControlledUtterance extends EventTarget {
@@ -60,6 +64,17 @@ const originalFetch = window.fetch;
 window.fetch = async (input, init) => {
   if (String(input) === "/api/v1/auth/csrf")
     return Response.json({ csrfToken: "controlled" });
+  if (String(input).startsWith("/api/v1/learning-sessions/qa-session/")) {
+    const index = qa.learningWrites.push(JSON.parse(String(init?.body))) - 1;
+    return new Promise<Response>((resolve) => {
+      qa.learningRelease[index] = (value) =>
+        resolve(
+          typeof value === "number"
+            ? new Response("", { status: value })
+            : Response.json(value),
+        );
+    });
+  }
   if (String(input) === "/api/v1/me/settings") {
     const index = qa.profileWrites.push(JSON.parse(String(init?.body))) - 1;
     return new Promise<Response>((resolve) => {
@@ -205,6 +220,47 @@ function ProfileHarness() {
     </LearningProvider>
   );
 }
+const progress: LearningState = {
+  id: "qa-session",
+  lessonId: lesson.id,
+  revision: 1,
+  version: 1,
+  lastStepId: "read",
+  confirmedStepIds: [],
+  hintedExerciseIds: [],
+  attempts: [],
+  completedAt: null,
+  firstCompletedAt: null,
+};
+function SessionHarness() {
+  const session = { lesson, progress };
+  return (
+    <LearningProvider>
+      <main>
+        <Learning
+          loaderData={{ session, ownerId: "qa-account" }}
+          params={{ sessionId: "qa-session" }}
+          matches={[
+            {
+              id: "root",
+              params: {},
+              pathname: "/",
+              loaderData: { user: null, enabled: false },
+              handle: undefined,
+            },
+            {
+              id: "routes/learning",
+              params: { sessionId: "qa-session" },
+              pathname: "/",
+              loaderData: { session, ownerId: "qa-account" },
+              handle: undefined,
+            },
+          ]}
+        />
+      </main>
+    </LearningProvider>
+  );
+}
 const kind = new URL(location.href).searchParams.get("case");
 const reading = kind === "reading";
 const router = createMemoryRouter(
@@ -221,6 +277,8 @@ const router = createMemoryRouter(
         <ChoicesHarness />
       ) : kind === "profile" ? (
         <ProfileHarness />
+      ) : kind === "session" ? (
+        <SessionHarness />
       ) : (
         <StartHarness />
       ),

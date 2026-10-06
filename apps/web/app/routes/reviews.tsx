@@ -20,6 +20,7 @@ import {
 import { validOwnedPending } from "../lib/owned-draft";
 import { useLearning } from "../components/learning";
 import { Icon } from "../components/icon";
+import { PendingNavigation } from "../components/pending-navigation";
 import type { Route } from "./+types/reviews";
 export async function loader({ request }: Route.LoaderArgs) {
   try {
@@ -309,6 +310,10 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
   }
   return (
     <section className="review-page page-arrive">
+      <PendingNavigation
+        active={saving || uncertain}
+        onStay={() => heading.current?.focus({ preventScroll: true })}
+      />
       <div className="review-session-header">
         <div>
           <h1 ref={heading} tabIndex={-1}>

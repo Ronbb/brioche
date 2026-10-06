@@ -3573,3 +3573,5 @@ h2[tabindex="-1"]:focus {
 .author-preview .lesson-list small { display: block; color: var(--muted); }
 .author-preview .lesson-list .setting-link > span:first-child { min-width: 0; }
 .author-preview .lesson-list .setting-link > span:last-child { flex-shrink: 0; }
+.pending-navigation > .primary { display: flex; width: 100%; margin-top: 20px; }
+.pending-navigation > .text-button { display: block; margin: 16px auto 0; }

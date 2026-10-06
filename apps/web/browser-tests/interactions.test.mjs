@@ -653,3 +653,101 @@ test("failed recovery reads retain the profile draft and let the server resolve 
   assert.equal(await evaluate("qa.route"), "/");
   assert.equal(await evaluate("qa.profileWrites.length"), 3);
 });
+
+test("learning navigation keeps the exact pending request across leaving and returning", async () => {
+  await open("session");
+  await browser("set", "viewport", "320", "700");
+  await browser("focus", ".speaker");
+  await press("Enter");
+  assert.equal(
+    await evaluate("document.activeElement.matches('.speaker')"),
+    true,
+  );
+  await browser("focus", ".learning-actions .primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.learningWrites.length===1");
+  const original = await evaluate("qa.learningWrites[0]");
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", ".pending-navigation[open]");
+  assert.equal(
+    await evaluate(
+      "(()=>{const r=document.querySelector('.pending-navigation[open]').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight})()",
+    ),
+    true,
+  );
+  assert.equal(await evaluate("qa.route"), "/");
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "这次提交尚未确认",
+  );
+  await press("Escape");
+  assert.equal(
+    await evaluate(
+      "document.activeElement.matches('.learning-step-heading h2')",
+    ),
+    true,
+  );
+  await evaluate("qa.learningRelease[0](503)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('.learning-actions .primary')?.textContent.includes('重试保存')",
+  );
+  await evaluate("qa.navigate(-1)");
+  await browser("wait", ".pending-navigation[open]");
+  await browser("focus", ".pending-navigation .text-button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.route==='/previous'");
+  assert.equal(await evaluate("qa.learningWrites.length"), 1);
+  assert.deepEqual(
+    await evaluate(
+      "JSON.parse(sessionStorage.getItem('brioche.learning.v1:qa-account:qa-session:1:pending')).body",
+    ),
+    original,
+  );
+  await evaluate("qa.navigate('/')");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('.learning-actions .primary')?.textContent.includes('重试保存')",
+  );
+  await browser("focus", ".learning-actions .primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.learningWrites.length===2");
+  assert.deepEqual(await evaluate("qa.learningWrites[1]"), original);
+  await evaluate(
+    "qa.learningRelease[1]({id:'qa-session',lessonId:'reading-protocol',revision:1,version:2,lastStepId:'read',confirmedStepIds:['read'],hintedExerciseIds:[],attempts:[],completedAt:null,firstCompletedAt:null})",
+  );
+  await browser(
+    "wait",
+    "--fn",
+    "!sessionStorage.getItem('brioche.learning.v1:qa-account:qa-session:1:pending')",
+  );
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", "--fn", "qa.route==='/login'");
+
+  await open("session");
+  await browser("focus", ".learning-actions .primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.learningWrites.length===1");
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", ".pending-navigation[open]");
+  await evaluate(
+    "qa.learningRelease[0]({id:'qa-session',lessonId:'reading-protocol',revision:1,version:2,lastStepId:'read',confirmedStepIds:['read'],hintedExerciseIds:[],attempts:[],completedAt:null,firstCompletedAt:null})",
+  );
+  await browser(
+    "wait",
+    "--fn",
+    "!document.querySelector('.pending-navigation[open]')",
+  );
+  assert.equal(await evaluate("qa.route"), "/");
+  assert.equal(
+    await evaluate(
+      "document.activeElement.matches('.learning-step-heading h2')",
+    ),
+    true,
+  );
+  assert.equal(await evaluate("qa.learningWrites.length"), 1);
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", "--fn", "qa.route==='/login'");
+});
