@@ -1275,15 +1275,17 @@ fn required_teaching_text_reports_original_source_values_without_database() {
         let before = &text[..offset];
         let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
         let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
-        let output = run("check", &path);
-        let error = String::from_utf8_lossy(&output.stderr);
-        assert!(!output.status.success());
-        assert!(
-            error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
-            "{error}"
-        );
-        assert!(!error.contains("database connection"), "{error}");
-        assert!(output.stdout.is_empty());
+        for command in ["check", "import"] {
+            let output = run(command, &path);
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(!output.status.success());
+            assert!(
+                error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
+                "{command}: {error}"
+            );
+            assert!(!error.contains("database connection"), "{error}");
+            assert!(output.stdout.is_empty());
+        }
     }
     std::fs::remove_file(path).unwrap();
 }

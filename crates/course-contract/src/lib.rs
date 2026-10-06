@@ -544,6 +544,12 @@ impl PublicLesson {
         }
     }
     pub fn validate(&self) -> Result<(), String> {
+        self.validate_intrinsic()?;
+        self.validate_audio()
+    }
+    /// Course semantics independent of registered recording descriptors.
+    /// Import preflight may defer media descriptors; hydrated lessons still use validate().
+    pub fn validate_intrinsic(&self) -> Result<(), String> {
         if self.schema_version != "1.0" {
             return Err("/schemaVersion: unsupported version".into());
         }
@@ -730,8 +736,7 @@ impl PublicLesson {
                 "/completion/requiredExerciseIds/{i}: unknown completion reference"
             ));
         }
-        self.validate_flow()?;
-        self.validate_audio()
+        self.validate_flow()
     }
 }
 

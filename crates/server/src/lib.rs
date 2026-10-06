@@ -299,7 +299,7 @@ fn project_source_types(mut source: serde_json::Value) -> anyhow::Result<PublicL
     author_json::from_value(source, "")
 }
 
-/// Import preflight checks types and intrinsic exercise semantics; registered descriptors replace author placeholders.
+/// Import preflight checks types and intrinsic course semantics; registered descriptors replace author placeholders.
 /// Validate the complete hydrated lesson again before inserting a revision.
 pub fn validate_source_schema(mut source: serde_json::Value) -> anyhow::Result<()> {
     if source.get("assetRefs").is_some() {
@@ -309,10 +309,7 @@ pub fn validate_source_schema(mut source: serde_json::Value) -> anyhow::Result<(
         source.as_object_mut().unwrap().remove("audio");
     }
     let lesson = project_source_types(source)?;
-    lesson
-        .validate_choice_labels()
-        .map_err(anyhow::Error::msg)?;
-    lesson.validate_exercise_steps().map_err(anyhow::Error::msg)
+    lesson.validate_intrinsic().map_err(anyhow::Error::msg)
 }
 
 pub fn project_source(source: serde_json::Value) -> anyhow::Result<PublicLesson> {

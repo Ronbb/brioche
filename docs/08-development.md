@@ -424,3 +424,5 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 组件浏览器草稿隔离（2026-10-06）：共用Chromium的独立测试在beforeEach清理sessionStorage，同一测试内仍保留离页/返回/重试所需草稿。修复完整CI中上一多步骤测试残留回顾步骤导致冲突用例及待确认保存用例失败的问题，新增保存成功/冲突读失败/撤回时弹窗关闭、原路由和标题焦点检查。四项定向85.43s、完整45组件642.11s通过，无生产应用改动；未重复构建/TS7/Web/SSR或生产页面壳。原42bc05d完整CI实际failure，修复提交须另行确认；设备、内容及生产门槛见验证记录。
 
 本机Docker已实际启动（2026-10-06）：本次使用被忽略的.local/docker.env，维护命令为docker compose --env-file .local/docker.env --project-name brioche ...；未覆盖开发.env。迁移exit0、四常驻服务healthy，HTTP30075的loopback/LAN巡检成功，栈保持运行。正式目录为空，管理员邀请待用户邮箱，未发布未审校内容；实际手机/公网与完整业务验收继续保留。知识点已统一分类笔记卡片，操作入口移除长箭头，详见验证记录。
+
+导入前语义定位补齐（2026-10-06）：新增回归实际复现必需教学文本等非法内容在check可定位、import却先进入环境检查；现PublicLesson.validate_intrinsic统一课程自身的ID/引用/教学文本/步骤/练习等检查，import连接数据库前复用。audio/登记描述仍延后补齐，完整validate与发布媒体校验保留。38server单元、25作者CLI、13课程、19公共契约及Clippy/fmt通过，生成契约无差异；未改HTTP契约或审校/发布数据。Docker API/migrate已按当前源构建并up --wait更新，迁移exit0、四服务healthy，loopback/LAN HTTP30075巡检均通过、零重启；设备、正式内容/录音与生产门槛继续保留。
