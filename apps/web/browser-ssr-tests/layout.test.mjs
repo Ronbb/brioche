@@ -169,6 +169,32 @@ const api = createServer((request, response) => {
       return;
     }
     const query = new URL(request.url, "http://fixture").searchParams.get("q");
+    if (query === "reference-fixture") {
+      response.end(
+        JSON.stringify({
+          items: [1, 2, 3].map((revision) => ({
+            asset: {
+              assetId: "qa-reference",
+              revision,
+              sha256: "a".repeat(64),
+              mimeType: "audio/wav",
+              durationMs: revision === 3 ? 31000 : 4000,
+              creditZh: "仅测试",
+              url: "/api/v1/operator/recordings/qa-reference/1/file",
+            },
+            source: "test:synthetic",
+            license: "LicenseRef-TestOnly",
+            creator: "protocol fixture",
+            rightsConfirmed: true,
+            byteSize: 64044,
+            sampleRate: 8000,
+            channels: 1,
+          })),
+          next: null,
+        }),
+      );
+      return;
+    }
     response.end(
       JSON.stringify({
         items: query
@@ -1053,6 +1079,70 @@ test("operator versions a character voice profile through the real mobile page",
     assert.ok(voiceRef);
     await browser("click", "@" + voiceRef);
     await browser("wait", ".admin-dialog[open]");
+    await browser("check", ".admin-dialog[open] label input[type=checkbox]");
+    await browser("wait", ".reference-recording-option");
+    for (const width of [320, 390]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate(
+          "document.querySelector('.admin-dialog[open]').scrollWidth <= document.querySelector('.admin-dialog[open]').clientWidth",
+        ),
+        true,
+      );
+    }
+    await browser("click", ".reference-recording-option > button:first-child");
+    await browser("fill", "textarea[name=referenceTranscript]", "Bonjour !");
+    await browser(
+      "fill",
+      "textarea[name=cloningPermission]",
+      "Synthetic protocol test only; no real speaker.",
+    );
+    await browser("click", ".reference-recording-option .icon-button");
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('.reference-recording-option .icon-button').getAttribute('aria-label').startsWith('暂停')",
+    );
+    await browser("click", ".reference-recording-option .icon-button");
+    await browser(
+      "fill",
+      ".reference-recording-picker input[type=search]",
+      "reference-fixture",
+    );
+    await browser("press", "Enter");
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('.reference-recording-option')?.textContent.includes('qa-reference')",
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelectorAll('.reference-recording-option').length",
+      ),
+      2,
+    );
+    await browser(
+      "click",
+      ".reference-recording-option:nth-child(2) > button:first-child",
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelector('textarea[name=cloningPermission]').value",
+      ),
+      "",
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelector('textarea[name=referenceTranscript]').value",
+      ),
+      "",
+    );
+    await browser("fill", "textarea[name=referenceTranscript]", "Bonjour !");
+    await browser(
+      "fill",
+      "textarea[name=cloningPermission]",
+      "Synthetic protocol test only; no real speaker.",
+    );
     await browser(
       "fill",
       ".admin-dialog[open] form > label:first-of-type textarea",
@@ -1065,6 +1155,12 @@ test("operator versions a character voice profile through the real mobile page",
     );
     await browser("press", "Tab");
     assert.equal(await evaluate("document.activeElement.type"), "submit");
+    assert.deepEqual(
+      await evaluate(
+        "[...document.querySelector('.admin-dialog[open] form').querySelectorAll(':invalid')].map(el=>({name:el.name,value:el.value,message:el.validationMessage}))",
+      ),
+      [],
+    );
     await browser("press", "Enter");
     await browser("wait", "--text", "声音档案已保存为新版本。");
     assert.equal(
@@ -1077,6 +1173,13 @@ test("operator versions a character voice profile through the real mobile page",
       "Warm, curious and politely reserved.",
     );
     assert.equal(adminWrites[0].reason, "隔离声音档案测试");
+    assert.equal(adminWrites[0].profile.referenceAudio.assetId, "qa-reference");
+    assert.equal(adminWrites[0].profile.referenceAudio.revision, 2);
+    assert.equal(adminWrites[0].profile.referenceAudio.transcript, "Bonjour !");
+    assert.equal(
+      adminWrites[0].profile.referenceAudio.cloningPermission,
+      "Synthetic protocol test only; no real speaker.",
+    );
     assert.equal(
       await evaluate(
         "document.querySelector('.character-profile-head img').naturalWidth>0",

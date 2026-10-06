@@ -6,6 +6,7 @@ import type { CharacterVoiceProfile } from "@brioche/contracts/CharacterVoicePro
 import { getIdentity, getPrivate } from "../lib/api.server";
 import { adminWrite } from "../lib/admin.client";
 import { CharacterEditor } from "../components/admin-character-editor";
+import { ReferenceRecordingPicker } from "../components/reference-recording-picker";
 import type { Route } from "./+types/admin-characters";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -106,6 +107,10 @@ export default function Characters({ loaderData }: Route.ComponentProps) {
   }
   async function save(event: React.FormEvent) {
     event.preventDefault();
+    if (profile.referenceAudio && !profile.referenceAudio.assetId) {
+      setError("请选择已登记的参考录音。");
+      return;
+    }
     if (busy.current || !target || !reason.trim()) {
       setError(
         busy.current
@@ -389,13 +394,19 @@ export default function Characters({ loaderData }: Route.ComponentProps) {
             />
             关联参考录音
           </label>
-          {profile.referenceAudio && (
+          {target && profile.referenceAudio && (
             <fieldset>
               <legend>已登记的参考录音</legend>
+              <ReferenceRecordingPicker
+                value={profile.referenceAudio}
+                pending={pending}
+                onChange={(value) => field("referenceAudio", value)}
+              />
               <label>
                 录音 ID
                 <input
                   required
+                  readOnly
                   value={profile.referenceAudio.assetId}
                   onChange={(e) =>
                     field("referenceAudio", {
@@ -410,6 +421,7 @@ export default function Characters({ loaderData }: Route.ComponentProps) {
                 <input
                   type="number"
                   required
+                  readOnly
                   min="1"
                   step="1"
                   value={profile.referenceAudio.revision}
@@ -425,6 +437,7 @@ export default function Characters({ loaderData }: Route.ComponentProps) {
                 原文
                 <textarea
                   required
+                  name="referenceTranscript"
                   value={profile.referenceAudio.transcript}
                   onChange={(e) =>
                     field("referenceAudio", {
@@ -439,6 +452,7 @@ export default function Characters({ loaderData }: Route.ComponentProps) {
                 声音复刻授权依据
                 <textarea
                   required
+                  name="cloningPermission"
                   value={profile.referenceAudio.cloningPermission}
                   onChange={(e) =>
                     field("referenceAudio", {

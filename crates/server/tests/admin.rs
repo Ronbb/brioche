@@ -920,6 +920,32 @@ async fn approvals_permissions_concurrency_and_publication() {
         400
     );
     voice_request["profile"]["voiceKind"] = json!("system");
+    voice_request["profile"]["referenceAudio"] = json!({"assetId":"qa-web-recording","revision":1,"transcript":"Bonjour !","cloningPermission":"Synthetic protocol fixture; no real speaker"});
+    let mut missing = voice_request.clone();
+    missing["profile"]["referenceAudio"]["revision"] = json!(2);
+    assert_eq!(
+        operator
+            .send("POST", voices_path, Some(missing), true)
+            .await
+            .0,
+        404
+    );
+    let mut unauthorized = voice_request.clone();
+    unauthorized["profile"]["referenceAudio"]["cloningPermission"] = json!("");
+    assert_eq!(
+        operator
+            .send("POST", voices_path, Some(unauthorized), true)
+            .await
+            .0,
+        400
+    );
+    db.execute_unprepared(r#"INSERT INTO audio_assets(asset_id,revision,descriptor,provenance,sha256,extension,byte_size,duration_ms,sample_rate,channels) SELECT 'qa-long-reference',1,jsonb_set(jsonb_set(descriptor,'{assetId}','"qa-long-reference"'),'{durationMs}','31000'),provenance,sha256,extension,byte_size,31000,sample_rate,channels FROM audio_assets WHERE asset_id='qa-web-recording' AND revision=1"#).await.unwrap();
+    let mut long = voice_request.clone();
+    long["profile"]["referenceAudio"]["assetId"] = json!("qa-long-reference");
+    assert_eq!(
+        operator.send("POST", voices_path, Some(long), true).await.0,
+        400
+    );
     voice_request["profile"]["defaultEmotion"] = json!("Quiet and calm.");
     assert_eq!(
         operator
