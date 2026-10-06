@@ -4,7 +4,7 @@ import { Link, useRouteLoaderData } from "react-router";
 import type { loader } from "../root";
 import { authRequest } from "../lib/auth.client";
 import { clearLearningDrafts } from "../lib/learning-draft";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ChoiceDialog, type Choice } from "../components/choice-dialog";
 const commonZones: Choice[] = [
   { value: "Asia/Shanghai", label: "中国", detail: "Asia/Shanghai" },
@@ -23,6 +23,8 @@ export default function Profile() {
   const profile = learning.profile;
   const editor = useRef<HTMLDialogElement>(null);
   const editBusy = useRef(false);
+  const saveFailure = useRef<HTMLParagraphElement>(null);
+  const [failureSequence, setFailureSequence] = useState(0);
   const [draftName, setDraftName] = useState(""),
     [zone, setZone] = useState("Asia/Shanghai"),
     [days, setDays] = useState(5),
@@ -42,6 +44,9 @@ export default function Profile() {
         .map((value) => ({ value, label: value })),
     ]);
   }, []);
+  useLayoutEffect(() => {
+    if (failureSequence && editor.current?.open) saveFailure.current?.focus();
+  }, [failureSequence]);
   function openEditor() {
     if (!profile) return;
     setDraftName(profile.displayName);
@@ -69,6 +74,7 @@ export default function Profile() {
     setEditing(true);
     editBusy.current = true;
     if (await learning.saveProfile(changes)) editor.current?.close();
+    else setFailureSequence((sequence) => sequence + 1);
     setEditing(false);
     editBusy.current = false;
   }
@@ -239,7 +245,7 @@ export default function Profile() {
               maxLength={80}
               autoComplete="nickname"
               value={draftName}
-              disabled={editing}
+              readOnly={editing}
               onChange={(event) => setDraftName(event.target.value)}
             />
           </label>
@@ -291,11 +297,21 @@ export default function Profile() {
             />
           </div>
           {learning.saveError && (
-            <p className="error-message" role="alert">
+            <p
+              ref={saveFailure}
+              className="error-message"
+              role="alert"
+              tabIndex={-1}
+            >
               {learning.saveError}
             </p>
           )}
-          <button className="primary" disabled={editing}>
+          <button
+            type="submit"
+            className="primary"
+            aria-disabled={editing}
+            aria-busy={editing}
+          >
             {editing ? "正在保存" : "保存"}
             <Icon name="check" />
           </button>
