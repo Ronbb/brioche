@@ -608,6 +608,24 @@ test("exercise referenced by explore uses the real learning entry in production"
   }
 });
 
+test("single-body reading has no redundant mode selector", async () => {
+  const originalBlocks = lesson.blocks;
+  const body = lesson.blocks.find((block) => block.type === "dialogue");
+  lesson.blocks = originalBlocks.filter(
+    (block) => !["dialogue", "article"].includes(block.type) || block === body,
+  );
+  try {
+    const response = await request(`/lessons/${lesson.id}`);
+    assert.equal(response.status, 200);
+    const html = await response.text();
+    assert.ok(!html.includes('role="tab"'));
+    assert.ok(!html.includes('role="tabpanel"'));
+    assert.ok(html.includes("Bonjour"));
+  } finally {
+    lesson.blocks = originalBlocks;
+  }
+});
+
 test("public reading exposes every body, including multiple dialogues", async () => {
   const originalBlocks = lesson.blocks;
   const originalSteps = lesson.steps;

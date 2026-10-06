@@ -14,6 +14,8 @@
 | [工程开发说明](08-development.md) | 当前已实现范围、实际启动与检查命令、Docker Compose |
 | [实现与验收清单](09-implementation-tracker.md) | 完整功能目标的状态、缺口与验收证据 |
 | [管理员后台开发目标](10-admin-development.md) | 后台管理范围、首六课用户批准与发布边界 |
+| [情绪语音生成设计](12-expressive-tts.md) | OpenAI/Qwen候选、角色声音与情绪脚本、离线生成和正式音频发布 |
+| [独立HTTPS网关接入](../infra/https-gateway.md) | 当前生产的HTTPS覆盖文件、取消宿主HTTP映射与维护方式 |
 | [首六课发布记录](content/releases/README.md) | 已上线固定目录、原创素材登记与用户授权范围 |
 | [决策记录](decisions/0001-foundation.md) | 关键选择的依据、代价及重新评估条件 |
 | [示例课程](examples/a1-bakery.lesson.json) | 用一堂面包店课程检验数据设计 |

@@ -716,6 +716,99 @@ test("production SSR hydrates its real shell, preserves mobile widths, routes fo
   assert.deepEqual(errors, [], "hydration and route errors must fail");
 });
 
+test("medium reading uses an animated modal with retained content and keyboard dismissal", async () => {
+  const originalBlocks = lesson.blocks;
+  const body = lesson.blocks.find((block) => block.type === "dialogue");
+  lesson.blocks = originalBlocks.filter(
+    (block) => !["dialogue", "article"].includes(block.type) || block === body,
+  );
+  try {
+    await browser("set", "media", "light");
+    await browser("set", "viewport", "678", "884");
+    await browser("open", `${origin}/lessons/${lesson.id}`);
+    opened = true;
+    await browser(
+      "wait",
+      "--fn",
+      "!!document.querySelector('.word.known') && !!window.__reactRouterContext && getComputedStyle(document.documentElement).getPropertyValue('--surface').trim()==='#fffdf7'",
+    );
+    assert.equal(
+      await evaluate("document.querySelectorAll('[role=tab]').length"),
+      0,
+    );
+    assert.equal(
+      await evaluate(
+        "getComputedStyle(document.querySelector('aside.knowledge')).display",
+      ),
+      "none",
+    );
+    assert.equal(
+      await evaluate("document.documentElement.scrollWidth <= innerWidth"),
+      true,
+    );
+    await browser("focus", ".word.known");
+    await browser("press", "Enter");
+    await browser("wait", "dialog.knowledge-sheet[open]");
+    const motion = await evaluate(
+      "(()=>{const d=document.querySelector('dialog.knowledge-sheet');return {card:getComputedStyle(d).animationName,backdrop:getComputedStyle(d,'::backdrop').animationName,inside:d.contains(document.activeElement),text:d.querySelector('h2')?.textContent}})()",
+    );
+    assert.equal(motion.card, "knowledge-enter");
+    assert.equal(motion.backdrop, "knowledge-backdrop-enter");
+    assert.equal(motion.inside, true);
+    const closing = await evaluate(
+      "(()=>{const d=document.querySelector('dialog.knowledge-sheet');d.dispatchEvent(new Event('cancel',{cancelable:true}));return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve({open:d.open,closing:d.hasAttribute('data-closing'),text:d.querySelector('h2')?.textContent,animation:getComputedStyle(d).animationName}))))})()",
+    );
+    assert.equal(closing.open, true);
+    assert.equal(closing.closing, true);
+    assert.equal(closing.text, motion.text);
+    assert.equal(closing.animation, "knowledge-leave");
+    await browser(
+      "wait",
+      "--fn",
+      "!document.querySelector('dialog.knowledge-sheet').open",
+    );
+    assert.equal(
+      await evaluate("document.activeElement.matches('.word.known')"),
+      true,
+    );
+    await browser("press", "Enter");
+    await browser("wait", "dialog.knowledge-sheet[open]");
+    await browser("press", "Escape");
+    await browser(
+      "wait",
+      "--fn",
+      "!document.querySelector('dialog.knowledge-sheet').open",
+    );
+    assert.equal(
+      await evaluate("document.activeElement.matches('.word.known')"),
+      true,
+    );
+    await browser("set", "media", "light", "reduced-motion");
+    await browser("press", "Enter");
+    await browser("wait", "dialog.knowledge-sheet[open]");
+    assert.equal(
+      await evaluate(
+        "getComputedStyle(document.querySelector('dialog.knowledge-sheet')).animationName",
+      ),
+      "none",
+    );
+    assert.equal(
+      await evaluate(
+        "getComputedStyle(document.querySelector('dialog.knowledge-sheet'),'::backdrop').animationName",
+      ),
+      "none",
+    );
+    await browser("press", "Escape");
+    assert.equal(
+      await evaluate("document.querySelector('dialog.knowledge-sheet').open"),
+      false,
+    );
+  } finally {
+    lesson.blocks = originalBlocks;
+    await browser("set", "media", "light");
+  }
+});
+
 test("lesson errors recover through native keyboard reload and catalog navigation", async () => {
   try {
     accounts = false;

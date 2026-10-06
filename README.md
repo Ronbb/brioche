@@ -17,7 +17,7 @@
 
 开发启动与验收见 [工程说明](docs/08-development.md)。安装 `pnpm install --frozen-lockfile` 后，在两个终端分别运行 `pnpm dev:api`、`pnpm dev:web`，打开 `http://localhost:5173/`。开发模式提供未审校示例课程，生产仅读取数据库已发布版本。
 
-生产使用 Docker Compose，Traefik 作为入口网关，**仅暴露 HTTP 30075**；HTTPS 由用户在外部处理。页面与 `/api` 共用这个入口，数据库不映射宿主端口。复制 `infra/production.env.example` 为 `.env` 并设置随机数据库密码和浏览器访问地址 `PUBLIC_APP_URL` 后，按工程说明构建和启动。
+生产使用 Docker Compose，Traefik 作为内部入口，数据库不映射宿主端口。基础配置可单独提供 HTTP30075；当前已接独立 HTTPS 网关，生产叠加 [compose.https.yaml](compose.https.yaml) 取消宿主HTTP映射，维护方式见 [HTTPS接入说明](infra/https-gateway.md)。实际域名、数据库密码与浏览器地址 PUBLIC_APP_URL 仅放部署私有配置。
 
 保留已确认的静态 [Preview](docs/preview/README.md) 作为视觉基准；通过 `python -m http.server 4173 --directory docs/preview` 查看。法语内容与正式媒体仍需审校。
 

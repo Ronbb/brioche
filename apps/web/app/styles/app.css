@@ -37,7 +37,7 @@ html:has(dialog:modal) .page-scrollbar {
   inset: auto 0 0;
 }
 .knowledge-sheet::backdrop {
-  background: #38291f38;
+  background: #38291f28;
   backdrop-filter: blur(7px);
 }
 @media (max-width: 650px) {
@@ -1508,13 +1508,13 @@ small,
 
 /* Brioche: warm orange, butter gold, cream and fresh pistachio. */
 :root {
-  --paper: #f7f2e7;
-  --surface: #fffaef;
+  --paper: #faf7ef;
+  --surface: #fffdf7;
   --ink: #38291f;
   --muted: #695842;
   --primary: #ffa62f;
   --accent: #9c4e27;
-  --soft: #ffe8c8;
+  --soft: #fff0da;
   --leaf: #acd793;
   --green: #3b572b;
   --line: #e9d9bb;
@@ -3715,3 +3715,20 @@ h2[tabindex="-1"]:focus {
 .pending-navigation > .text-button { display: block; margin: 16px auto 0; }
 .admin-history { list-style: none; padding: 0; display: grid; gap: 16px; }
 .admin-history time, .admin-actor { font-size: .85rem; color: var(--muted); overflow-wrap: anywhere; }
+/* Keep a comfortable reading column on phones and medium-width tablets. */
+@media (max-width: 960px) {
+  .reading-layout { grid-template-columns: minmax(0, 1fr); }
+  aside.knowledge { display: none; }
+  dialog.knowledge-sheet[open] { display: block; position: fixed; inset: auto 0 0; width: 100%; max-height: 75dvh; overflow-y: auto; overscroll-behavior: contain; border-radius: 24px 24px 0 0; padding: 24px max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); }
+  dialog.knowledge-sheet .note-close { display: flex; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  dialog.knowledge-sheet[open] { animation: knowledge-enter 360ms cubic-bezier(.2,.8,.2,1) both; }
+  dialog.knowledge-sheet[open]::backdrop { animation: knowledge-backdrop-enter 360ms ease both; }
+  dialog.knowledge-sheet[data-closing] { animation: knowledge-leave 220ms ease-in both; }
+  dialog.knowledge-sheet[data-closing]::backdrop { animation: knowledge-backdrop-leave 220ms ease-in both; }
+  @keyframes knowledge-enter { from { opacity: 0; transform: translateY(64px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes knowledge-leave { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(48px); } }
+  @keyframes knowledge-backdrop-enter { from { background: transparent; backdrop-filter: blur(0); } to { background: #38291f28; backdrop-filter: blur(7px); } }
+  @keyframes knowledge-backdrop-leave { from { background: #38291f28; backdrop-filter: blur(7px); } to { background: transparent; backdrop-filter: blur(0); } }
+}

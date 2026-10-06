@@ -201,47 +201,55 @@ function LessonContent({
       </div>
       <div className="reading-layout">
         <div className="reading">
-          <div className="reading-tabs" role="tablist" aria-label="正文">
-            {bodies.map((value, index) => (
-              <button
-                key={value.id}
-                id={`${bodyId}-${value.id}`}
-                role="tab"
-                aria-selected={body?.id === value.id}
-                aria-controls={bodyId}
-                tabIndex={body?.id === value.id ? 0 : -1}
-                onKeyDown={(event) => {
-                  let next = index;
-                  if (event.key === "ArrowRight")
-                    next = (index + 1) % bodies.length;
-                  else if (event.key === "ArrowLeft")
-                    next = (index + bodies.length - 1) % bodies.length;
-                  else if (event.key === "Home") next = 0;
-                  else if (event.key === "End") next = bodies.length - 1;
-                  else return;
-                  event.preventDefault();
-                  changeMode(bodies[next].id);
-                  const tab =
-                    event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
-                      '[role="tab"]',
-                    )[next];
-                  tab?.focus({ preventScroll: true });
-                  tab?.scrollIntoView({ block: "nearest", inline: "nearest" });
-                }}
-                onClick={() => changeMode(value.id)}
-              >
-                {bodies.filter((block) => block.type === value.type).length > 1
-                  ? value.titleZh
-                  : value.type === "dialogue"
-                    ? "对话"
-                    : "短文"}
-              </button>
-            ))}
-          </div>
+          {bodies.length > 1 && (
+            <div className="reading-tabs" role="tablist" aria-label="正文">
+              {bodies.map((value, index) => (
+                <button
+                  key={value.id}
+                  id={`${bodyId}-${value.id}`}
+                  role="tab"
+                  aria-selected={body?.id === value.id}
+                  aria-controls={bodyId}
+                  tabIndex={body?.id === value.id ? 0 : -1}
+                  onKeyDown={(event) => {
+                    let next = index;
+                    if (event.key === "ArrowRight")
+                      next = (index + 1) % bodies.length;
+                    else if (event.key === "ArrowLeft")
+                      next = (index + bodies.length - 1) % bodies.length;
+                    else if (event.key === "Home") next = 0;
+                    else if (event.key === "End") next = bodies.length - 1;
+                    else return;
+                    event.preventDefault();
+                    changeMode(bodies[next].id);
+                    const tab =
+                      event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
+                        '[role="tab"]',
+                      )[next];
+                    tab?.focus({ preventScroll: true });
+                    tab?.scrollIntoView({
+                      block: "nearest",
+                      inline: "nearest",
+                    });
+                  }}
+                  onClick={() => changeMode(value.id)}
+                >
+                  {bodies.filter((block) => block.type === value.type).length >
+                  1
+                    ? value.titleZh
+                    : value.type === "dialogue"
+                      ? "对话"
+                      : "短文"}
+                </button>
+              ))}
+            </div>
+          )}
           <div
             id={bodyId}
-            role="tabpanel"
-            aria-labelledby={`${bodyId}-${body?.id}`}
+            role={bodies.length > 1 ? "tabpanel" : undefined}
+            aria-labelledby={
+              bodies.length > 1 ? `${bodyId}-${body?.id}` : undefined
+            }
           >
             {mode === "dialogue" && dialogue?.type === "dialogue" && (
               <ul className="reading-characters">

@@ -1,0 +1,5 @@
+# The separate HTTPS gateway must share brioche_app and forward to
+# http://brioche-traefik-1:8080. Keep the HTTP entry internal to Docker.
+services:
+  traefik:
+    ports: !reset []
