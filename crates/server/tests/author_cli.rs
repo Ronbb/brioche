@@ -652,3 +652,56 @@ fn recording_semantics_locate_original_values_before_database_work() {
     }
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn registered_reference_semantics_locate_the_exact_field_before_connection() {
+    use serde_json::json;
+    let path = std::env::temp_dir().join(format!("brioche-reference-fields-{}.json", random_id()));
+    for key in ["assetRefs", "audioRefs"] {
+        for (field, value, reason) in [
+            ("assetId", json!("invalid reference id"), "invalid asset ID"),
+            ("revision", json!(0), "expected revision in database range"),
+            (
+                "revision",
+                json!(2147483648u32),
+                "expected revision in database range",
+            ),
+            (
+                "assetId",
+                json!("reference-field-fixture"),
+                "duplicate asset reference",
+            ),
+        ] {
+            let mut source = brioche_server::development_source().unwrap();
+            source[key] = json!([
+                {"assetId":"reference-field-fixture", "revision":1},
+                {"assetId":"other-reference-fixture", "revision":2}
+            ]);
+            source[key][1][field] = value.clone();
+            let text = serde_json::to_string_pretty(&source)
+                .unwrap()
+                .replace('\n', "\r\n");
+            std::fs::write(&path, &text).unwrap();
+            let prefix = format!("\"{field}\": ");
+            let marker = format!("{prefix}{}", serde_json::to_string(&value).unwrap());
+            let offset = text.rfind(&marker).unwrap() + prefix.len();
+            let before = &text[..offset];
+            let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+            let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+            let pointer = format!("/{key}/1/{field}");
+            for command in ["check", "import"] {
+                let output = run(command, &path);
+                let error = String::from_utf8_lossy(&output.stderr);
+                assert!(!output.status.success());
+                assert!(
+                    error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
+                    "{error}"
+                );
+                assert!(error.contains(reason), "{error}");
+                assert!(!error.contains("database connection"), "{error}");
+                assert!(output.stdout.is_empty());
+            }
+        }
+    }
+    std::fs::remove_file(path).unwrap();
+}

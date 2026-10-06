@@ -626,11 +626,16 @@ pub(crate) fn source_refs(source: &serde_json::Value, key: &str) -> Result<Vec<A
     let mut ids = BTreeSet::new();
     for (index, reference) in refs.iter().enumerate() {
         ensure!(
-            valid_id(&reference.asset_id)
-                && reference.revision > 0
-                && reference.revision <= i32::MAX as u32
-                && ids.insert(reference.asset_id.clone()),
-            "/{key}/{index}: invalid or duplicate asset reference"
+            valid_id(&reference.asset_id),
+            "/{key}/{index}/assetId: invalid asset ID"
+        );
+        ensure!(
+            reference.revision > 0 && reference.revision <= i32::MAX as u32,
+            "/{key}/{index}/revision: expected revision in database range"
+        );
+        ensure!(
+            ids.insert(reference.asset_id.clone()),
+            "/{key}/{index}/assetId: duplicate asset reference"
         );
     }
     Ok(refs)
