@@ -3,8 +3,11 @@ use std::collections::{BTreeMap, BTreeSet};
 
 impl PublicLesson {
     pub(crate) fn validate_audio(&self) -> Result<(), String> {
-        if self.audio.len() > 500 || self.audio_tracks.len() > self.blocks.len() {
-            return Err("/audio: too many assets or tracks".into());
+        if self.audio.len() > 500 {
+            return Err("/audio: too many recording assets".into());
+        }
+        if self.audio_tracks.len() > self.blocks.len() {
+            return Err("/audioTracks: too many reading tracks".into());
         }
         let mut assets = BTreeMap::new();
         for (index, asset) in self.audio.iter().enumerate() {
@@ -23,34 +26,52 @@ impl PublicLesson {
                     .asset_id
                     .bytes()
                     .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_'))
-                || asset.revision == 0
-                || asset.revision > i32::MAX as u32
-                || asset.duration_ms == 0
-                || asset.duration_ms > 1_800_000
-                || asset.sha256.len() != 64
+            {
+                return Err(format!("/audio/{index}/assetId: invalid recording ID"));
+            }
+            if asset.revision == 0 || asset.revision > i32::MAX as u32 {
+                return Err(format!(
+                    "/audio/{index}/revision: expected positive database revision"
+                ));
+            }
+            if asset.duration_ms == 0 || asset.duration_ms > 1_800_000 {
+                return Err(format!(
+                    "/audio/{index}/durationMs: expected 1..1800000 milliseconds"
+                ));
+            }
+            if asset.sha256.len() != 64
                 || !asset
                     .sha256
                     .bytes()
                     .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
-                || asset.url != format!("/api/audio/{}.{}", asset.sha256, extension)
-                || asset.credit_zh.trim().is_empty()
-                || asset.credit_zh.len() > 2000
-                || assets.insert(&asset.asset_id, asset).is_some()
             {
                 return Err(format!(
-                    "/audio/{index}: invalid or duplicate recording descriptor"
+                    "/audio/{index}/sha256: expected lowercase SHA-256 hex"
                 ));
+            }
+            if asset.url != format!("/api/audio/{}.{}", asset.sha256, extension) {
+                return Err(format!(
+                    "/audio/{index}/url: expected same-origin recording hash URL"
+                ));
+            }
+            if asset.credit_zh.trim().is_empty() || asset.credit_zh.len() > 2000 {
+                return Err(format!(
+                    "/audio/{index}/creditZh: expected nonempty credit of at most 2000 bytes"
+                ));
+            }
+            if assets.insert(&asset.asset_id, asset).is_some() {
+                return Err(format!("/audio/{index}/assetId: duplicate recording ID"));
             }
         }
         let mut blocks = BTreeSet::new();
         let mut used_assets = BTreeSet::new();
         for (index, track) in self.audio_tracks.iter().enumerate() {
             let path = format!("/audioTracks/{index}");
-            if !blocks.insert(&track.block_id) || track.cues.is_empty() || track.cues.len() > 20_000
-            {
-                return Err(format!(
-                    "{path}: empty/oversized cues or duplicate block track"
-                ));
+            if !blocks.insert(&track.block_id) {
+                return Err(format!("{path}/blockId: duplicate reading block track"));
+            }
+            if track.cues.is_empty() || track.cues.len() > 20_000 {
+                return Err(format!("{path}/cues: expected 1..20000 intervals"));
             }
             let asset = assets
                 .get(&track.asset_id)
@@ -78,8 +99,13 @@ impl PublicLesson {
             let mut segments = BTreeMap::new();
             for (ci, cue) in track.cues.iter().enumerate() {
                 let cue_path = format!("{path}/cues/{ci}");
-                if cue.start_ms >= cue.end_ms || cue.end_ms > asset.duration_ms {
-                    return Err(format!("{cue_path}: interval outside recording duration"));
+                if cue.start_ms >= cue.end_ms {
+                    return Err(format!("{cue_path}/endMs: end must follow start"));
+                }
+                if cue.end_ms > asset.duration_ms {
+                    return Err(format!(
+                        "{cue_path}/endMs: interval outside recording duration"
+                    ));
                 }
                 let (_, parts) = entries
                     .iter()
@@ -94,7 +120,7 @@ impl PublicLesson {
                 }
                 match (&cue.segment_id, &cue.word_range) {
                     (None, None) => {
-                        whole.insert(&cue.entry_id, cue);
+                        whole.insert(&cue.entry_id, (cue, ci));
                     }
                     (Some(segment_id), word) => {
                         let segment =
@@ -126,34 +152,49 @@ impl PublicLesson {
             }
             let mut previous_end = 0;
             for (id, _) in &entries {
-                let cue = whole
+                let (cue, ci) = whole
                     .get(id)
-                    .ok_or_else(|| format!("{path}: missing whole-entry interval for {id}"))?;
+                    .ok_or_else(|| format!("{path}/cues: missing whole-entry interval for {id}"))?;
                 if cue.start_ms < previous_end {
                     return Err(format!(
-                        "{path}: whole-entry intervals overlap or disagree with reading order"
+                        "{path}/cues/{ci}/startMs: whole-entry intervals overlap or disagree with reading order"
                     ));
                 }
                 previous_end = cue.end_ms;
             }
-            for cue in &track.cues {
+            for (ci, cue) in track.cues.iter().enumerate() {
+                let cue_path = format!("{path}/cues/{ci}");
                 let parent: &AudioCue = if cue.word_range.is_some() {
                     segments
                         .get(&(&cue.entry_id, cue.segment_id.as_ref().unwrap()))
                         .copied()
                         .ok_or_else(|| {
-                            format!("{path}: word interval requires a parent segment interval")
+                            format!("{cue_path}/segmentId: word interval requires a parent segment interval")
                         })?
                 } else {
-                    whole.get(&cue.entry_id).copied().unwrap()
+                    whole.get(&cue.entry_id).unwrap().0
                 };
-                if cue.start_ms < parent.start_ms || cue.end_ms > parent.end_ms {
-                    return Err(format!("{path}: child interval outside parent interval"));
+                if cue.start_ms < parent.start_ms {
+                    return Err(format!(
+                        "{cue_path}/startMs: child interval starts before parent"
+                    ));
+                }
+                if cue.end_ms > parent.end_ms {
+                    return Err(format!(
+                        "{cue_path}/endMs: child interval ends after parent"
+                    ));
                 }
             }
         }
         if used_assets.len() != assets.len() {
-            return Err("/audio: recording has no reading track".into());
+            let index = self
+                .audio
+                .iter()
+                .position(|asset| !used_assets.contains(&asset.asset_id))
+                .unwrap();
+            return Err(format!(
+                "/audio/{index}/assetId: recording has no reading track"
+            ));
         }
         Ok(())
     }
@@ -255,6 +296,76 @@ mod tests {
             assert!(lesson.validate().is_err(), "case {case}");
         }
     }
+    #[test]
+    fn reports_recording_fields_and_actual_unsorted_cue_positions() {
+        use serde_json::json;
+        let original = serde_json::to_value(fixture()).unwrap();
+        for (pointer, value) in [
+            ("/audio/0/assetId", json!("bad id")),
+            ("/audio/0/revision", json!(0)),
+            ("/audio/0/durationMs", json!(0)),
+            ("/audio/0/sha256", json!("not-a-hash")),
+            ("/audio/0/url", json!("https://other.test/file.mp3")),
+            ("/audio/0/creditZh", json!(" ")),
+            ("/audioTracks/0/cues/0/endMs", json!(0)),
+            ("/audioTracks/0/cues/0/endMs", json!(10001)),
+            ("/audioTracks/0/cues/1/startMs", json!(999)),
+        ] {
+            let mut source = original.clone();
+            *source.pointer_mut(pointer).unwrap() = value;
+            let lesson: PublicLesson = serde_json::from_value(source).unwrap();
+            assert!(
+                lesson
+                    .validate()
+                    .unwrap_err()
+                    .starts_with(&format!("{pointer}:"))
+            );
+        }
+        let mut lesson = fixture();
+        // Cues need not be stored in reading order. The error must identify
+        // the original item, not its position after ordering whole entries.
+        lesson.audio_tracks[0].cues.swap(0, 1);
+        lesson.audio_tracks[0].cues[0].start_ms = 999;
+        assert!(
+            lesson
+                .validate()
+                .unwrap_err()
+                .starts_with("/audioTracks/0/cues/0/startMs:")
+        );
+
+        let mut lesson = fixture();
+        let word_index = lesson.audio_tracks[0].cues.len() - 1;
+        lesson.audio_tracks[0].cues[word_index].end_ms = 700;
+        assert!(
+            lesson
+                .validate()
+                .unwrap_err()
+                .starts_with(&format!("/audioTracks/0/cues/{word_index}/endMs:"))
+        );
+        let mut lesson = fixture();
+        lesson.audio_tracks[0].cues[word_index].start_ms = 50;
+        assert!(
+            lesson
+                .validate()
+                .unwrap_err()
+                .starts_with(&format!("/audioTracks/0/cues/{word_index}/startMs:"))
+        );
+        let mut lesson = fixture();
+        lesson.audio_tracks[0].cues.remove(word_index - 1);
+        assert!(lesson.validate().unwrap_err().starts_with(&format!(
+            "/audioTracks/0/cues/{}/segmentId:",
+            word_index - 1
+        )));
+        let mut lesson = fixture();
+        lesson.audio_tracks.clear();
+        assert!(
+            lesson
+                .validate()
+                .unwrap_err()
+                .starts_with("/audio/0/assetId:")
+        );
+    }
+
     #[test]
     fn empty_audio_preserves_existing_public_document_shape() {
         let lesson = crate::tests::fixture();

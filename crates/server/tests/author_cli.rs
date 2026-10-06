@@ -242,8 +242,7 @@ fn semantic_and_projected_type_errors_point_into_original_author_source() {
     let text = serde_json::to_string_pretty(&source).unwrap();
     std::fs::write(&path, &text).unwrap();
     let end_field = text.find("\"endMs\": 1500").unwrap();
-    let cue_start = text[..end_field].rfind('{').unwrap();
-    let before = &text[..cue_start];
+    let before = &text[..end_field + "\"endMs\": ".len()];
     let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
     let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
     let output = run("check", &path);
@@ -251,7 +250,7 @@ fn semantic_and_projected_type_errors_point_into_original_author_source() {
     assert!(!output.status.success());
     assert!(
         error.contains(&format!(
-            "{}:{line}:{column}: /audioTracks/0/cues/0:",
+            "{}:{line}:{column}: /audioTracks/0/cues/0/endMs:",
             path.display()
         )),
         "{error}"
@@ -466,6 +465,74 @@ fn media_import_preflight_reports_original_fields_without_connecting() {
             error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
             "{error}"
         );
+        assert!(!error.contains("database connection"), "{error}");
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn recording_semantics_locate_original_values_before_database_work() {
+    use serde_json::json;
+    let path =
+        std::env::temp_dir().join(format!("brioche-recording-semantics-{}.json", random_id()));
+    let mut original = brioche_server::development_source().unwrap();
+    let turns = original["blocks"][1]["turns"].as_array().unwrap();
+    let mut cues: Vec<_> = turns
+        .iter()
+        .enumerate()
+        .map(|(index, turn)| {
+            json!({
+                "entryId": turn["id"], "startMs": index * 1000, "endMs": (index + 1) * 1000
+            })
+        })
+        .collect();
+    let child_index = cues.len();
+    cues.push(json!({"entryId": turns[0]["id"], "segmentId": turns[0]["segments"][0]["id"], "startMs":100,"endMs":600}));
+    original["audio"] = json!([{"assetId":"audio-test","revision":1,"durationMs":30000,
+        "sha256":"a".repeat(64),"mimeType":"audio/mpeg","creditZh":"中文·synthetic fixture only",
+        "url":format!("/api/audio/{}.mp3", "a".repeat(64))}]);
+    original["audioTracks"] =
+        json!([{"blockId":original["blocks"][1]["id"], "assetId":"audio-test","cues":cues}]);
+    brioche_server::project_source(original.clone()).unwrap();
+    for (pointer, value) in [
+        ("/audio/0/assetId".to_owned(), json!("invalid id")),
+        ("/audio/0/revision".to_owned(), json!(0)),
+        ("/audio/0/durationMs".to_owned(), json!(0)),
+        ("/audio/0/sha256".to_owned(), json!("INVALID-HASH")),
+        (
+            "/audio/0/url".to_owned(),
+            json!("https://other.test/recording.mp3"),
+        ),
+        ("/audio/0/creditZh".to_owned(), json!(" ")),
+        ("/audioTracks/0/cues/0/endMs".to_owned(), json!(30001)),
+        ("/audioTracks/0/cues/1/startMs".to_owned(), json!(987)),
+        (
+            format!("/audioTracks/0/cues/{child_index}/endMs"),
+            json!(1099),
+        ),
+    ] {
+        let mut source = original.clone();
+        *source.pointer_mut(&pointer).unwrap() = value.clone();
+        let text = serde_json::to_string_pretty(&source)
+            .unwrap()
+            .replace('\n', "\r\n");
+        std::fs::write(&path, &text).unwrap();
+        let field = pointer.rsplit('/').next().unwrap();
+        let key = format!("\"{field}\": ");
+        let marker = format!("{key}{}", serde_json::to_string(&value).unwrap());
+        assert_eq!(text.matches(&marker).count(), 1, "ambiguous test marker");
+        let offset = text.find(&marker).unwrap() + key.len();
+        let before = &text[..offset];
+        let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+        let output = run("check", &path);
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success());
+        assert!(
+            error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
+            "{error}"
+        );
+        assert!(output.stdout.is_empty());
         assert!(!error.contains("database connection"), "{error}");
     }
     std::fs::remove_file(path).unwrap();
