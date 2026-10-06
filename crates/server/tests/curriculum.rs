@@ -322,6 +322,7 @@ fn check_catalog(file: &str, expected_units: &[&str]) {
             brioche_server::author_source::editorial(&source).unwrap();
             brioche_server::media::source_asset_refs(&source).unwrap();
             brioche_server::recording::source_audio_refs(&source).unwrap();
+            brioche_server::validate_source_schema(source.clone()).unwrap();
             let lesson = brioche_server::project_source(source.clone()).unwrap();
             let grader = Grader::from_author_source(&lesson, &source).unwrap();
             let public = serde_json::to_value(&lesson).unwrap();

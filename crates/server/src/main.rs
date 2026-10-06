@@ -102,6 +102,8 @@ async fn main() -> Result<()> {
             .map_err(|error| document.semantic(error))?;
         brioche_server::grading::Grader::validate_author_schema(&document.value)
             .map_err(|error| document.semantic(error))?;
+        brioche_server::validate_source_schema(document.value.clone())
+            .map_err(|error| document.semantic(error))?;
         Some(document)
     } else {
         None

@@ -278,7 +278,7 @@ async fn lesson(
         .map(Json)
         .ok_or(AppError::NotFound)
 }
-pub fn project_source(mut source: serde_json::Value) -> anyhow::Result<PublicLesson> {
+fn project_source_types(mut source: serde_json::Value) -> anyhow::Result<PublicLesson> {
     author_source::editorial(&source)?;
     let object = source
         .as_object_mut()
@@ -287,7 +287,23 @@ pub fn project_source(mut source: serde_json::Value) -> anyhow::Result<PublicLes
     object.remove("editorial");
     object.remove("assetRefs");
     object.remove("audioRefs");
-    let lesson: PublicLesson = author_json::from_value(source, "")?;
+    author_json::from_value(source, "")
+}
+
+/// Import preflight checks types only; registered descriptors replace author placeholders.
+/// Validate the complete hydrated lesson again before inserting a revision.
+pub fn validate_source_schema(mut source: serde_json::Value) -> anyhow::Result<()> {
+    if source.get("assetRefs").is_some() {
+        source.as_object_mut().unwrap().remove("media");
+    }
+    if source.get("audioRefs").is_some() {
+        source.as_object_mut().unwrap().remove("audio");
+    }
+    project_source_types(source).map(|_| ())
+}
+
+pub fn project_source(source: serde_json::Value) -> anyhow::Result<PublicLesson> {
+    let lesson = project_source_types(source)?;
     lesson.validate().map_err(anyhow::Error::msg)?;
     Ok(lesson)
 }
@@ -305,6 +321,23 @@ mod tests {
     use super::*;
     use http_body_util::BodyExt;
     use tower::ServiceExt;
+    #[test]
+    fn import_schema_defers_registered_descriptors_but_checks_other_public_types() {
+        let mut source = development_source().unwrap();
+        source["assetRefs"] = serde_json::json!([]);
+        source["audioRefs"] = serde_json::json!([]);
+        source["media"] = serde_json::json!("replaced during hydration");
+        source["audio"] = serde_json::json!("replaced during hydration");
+        assert!(validate_source_schema(source.clone()).is_ok());
+        assert!(project_source(source.clone()).is_err());
+        source.as_object_mut().unwrap().remove("assetRefs");
+        assert!(validate_source_schema(source.clone()).is_err());
+        source["media"] = serde_json::json!([]);
+        source.as_object_mut().unwrap().remove("audioRefs");
+        assert!(validate_source_schema(source).is_err());
+        assert!(validate_source_schema(serde_json::Value::Null).is_err());
+    }
+
     #[tokio::test]
     async fn catalog_search_matches_scenes_normalizes_french_and_bounds_queries() {
         let app = router(AppState {

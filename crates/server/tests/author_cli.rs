@@ -328,6 +328,55 @@ fn private_rules_and_release_semantics_report_exact_source_fields() {
 }
 
 #[test]
+fn import_public_types_are_located_before_database_or_media_hydration() {
+    let path = std::env::temp_dir().join(format!("brioche-public-preflight-{}.json", random_id()));
+    let original = brioche_server::development_source().unwrap();
+    for (pointer, invalid) in [
+        ("/title/fr", serde_json::json!(314159)),
+        ("/revision", serde_json::json!("public-invalid-revision")),
+        (
+            "/cast/0/revision",
+            serde_json::json!("public-invalid-character"),
+        ),
+        (
+            "/knowledge/vocabulary/0/meaningZh",
+            serde_json::json!(271828),
+        ),
+        ("/blocks", serde_json::json!("public-invalid-blocks")),
+        ("/steps", serde_json::json!("public-invalid-steps")),
+    ] {
+        let mut source = original.clone();
+        *source.pointer_mut(pointer).unwrap() = invalid.clone();
+        source["editorial"]["note"] = serde_json::json!("中文原文件位置");
+        let text = serde_json::to_string_pretty(&source)
+            .unwrap()
+            .replace('\n', "\r\n");
+        let token = serde_json::to_string(&invalid).unwrap();
+        let offset = text.find(&token).unwrap();
+        let before = &text[..offset];
+        let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+        std::fs::write(&path, text).unwrap();
+        let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+            .args(["import", path.to_str().unwrap()])
+            .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+            .env("CONTENT_MODE", "database")
+            .env("APP_ENV", "production")
+            .output()
+            .unwrap();
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success());
+        assert!(
+            error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
+            "{error}"
+        );
+        assert!(!error.contains("database connection"), "{error}");
+        assert!(output.stdout.is_empty());
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn import_private_rule_types_fail_before_connecting_with_exact_positions() {
     let path = std::env::temp_dir().join(format!("brioche-rule-preflight-{}.json", random_id()));
     let original = brioche_server::development_source().unwrap();

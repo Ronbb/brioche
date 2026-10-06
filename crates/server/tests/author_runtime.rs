@@ -299,6 +299,10 @@ async fn import_and_stage_cli_locate_original_source_and_preserve_atomicity() {
     let release_file = root.join("release.json");
     let mut source = brioche_server::development_source().unwrap();
     source["assetRefs"] = asset_fixtures::fixture_refs();
+    // Fixed registry references replace these placeholders before final validation.
+    source["media"] = json!("author placeholder replaced by registered images");
+    source["audioRefs"] = json!([]);
+    source["audio"] = json!("author placeholder replaced by empty recording references");
     for (field, pointer, marker, reason) in [
         (
             "assetRefs",
@@ -370,6 +374,22 @@ async fn import_and_stage_cli_locate_original_source_and_preserve_atomicity() {
         "already exists",
     );
     assert_eq!(count(&db, "lesson_revisions").await, 1);
+    let stored = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT public_document,server_document FROM lesson_revisions LIMIT 1",
+        ))
+        .await
+        .unwrap()
+        .unwrap();
+    let public: Value = stored.try_get("", "public_document").unwrap();
+    let private: Value = stored.try_get("", "server_document").unwrap();
+    assert_eq!(
+        public["media"].as_array().unwrap().len(),
+        source["assetRefs"].as_array().unwrap().len()
+    );
+    assert!(private["media"].is_array());
+    assert_eq!(private["audio"], json!([]));
     // A second synthetic revision is reviewed only within this disposable protocol test.
     let mut reviewed = source.clone();
     reviewed["id"] = json!("author-reviewed");
