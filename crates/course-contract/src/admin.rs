@@ -63,3 +63,26 @@ pub struct AdminImportResult {
     pub lesson_id: String,
     pub revision: u32,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminHistory {
+    pub items: Vec<AdminHistoryItem>,
+    pub next: Option<AdminHistoryCursor>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminHistoryCursor {
+    pub before_time: String,
+    pub before_key: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminHistoryItem {
+    pub key: String,
+    pub action: String,
+    pub target: String,
+    pub actor: String,
+    pub reason: String,
+    pub created_at: String,
+}

@@ -481,6 +481,92 @@ async fn approvals_permissions_concurrency_and_publication() {
         .send("GET", "/api/v1/operator/overview", None, true)
         .await;
     assert_eq!(latest.1["generation"], "2");
+    for (browser, status) in [(&mut visitor, 401), (&mut learner, 403)] {
+        assert_eq!(
+            browser
+                .send("GET", "/api/v1/operator/history", None, true)
+                .await
+                .0,
+            status
+        );
+    }
+    assert_eq!(
+        operator
+            .send("GET", "/api/v1/operator/history?beforeTime=bad", None, true)
+            .await
+            .0,
+        400
+    );
+    assert_eq!(
+        operator
+            .send(
+                "GET",
+                "/api/v1/operator/history?beforeTime=bad&beforeKey=content:1",
+                None,
+                true
+            )
+            .await
+            .0,
+        400
+    );
+    let history = operator
+        .send("GET", "/api/v1/operator/history", None, true)
+        .await;
+    assert_eq!(history.0, 200);
+    let history_text = history.1.to_string();
+    for action in [
+        "approve", "reject", "import", "stage", "activate", "withdraw",
+    ] {
+        assert!(
+            history.1["items"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|item| item["action"] == action),
+            "missing {action}"
+        );
+    }
+    assert!(!history_text.contains("serverOnly"));
+    assert!(!history_text.contains("password"));
+    assert!(!history_text.contains("csrfToken"));
+    // Tie timestamps exercise the secondary key and boundaries across tables.
+    db.execute_unprepared("INSERT INTO content_audit(action,actor,reason,generation,created_at) SELECT 'stage','pagination-test','pagination-'||n,2,'2026-10-08T00:00:00Z'::timestamptz FROM generate_series(1,25) n").await.unwrap();
+    let first = operator
+        .send("GET", "/api/v1/operator/history", None, true)
+        .await;
+    assert_eq!(first.0, 200);
+    assert_eq!(first.1["items"].as_array().unwrap().len(), 20);
+    let mut seen = std::collections::HashSet::new();
+    let mut page = first.1;
+    loop {
+        for item in page["items"].as_array().unwrap() {
+            assert!(
+                seen.insert(item["key"].as_str().unwrap().to_owned()),
+                "duplicate page entry"
+            );
+        }
+        if page["next"].is_null() {
+            break;
+        }
+        let mut url = url::Url::parse("http://test/api/v1/operator/history").unwrap();
+        url.query_pairs_mut()
+            .append_pair("beforeTime", page["next"]["beforeTime"].as_str().unwrap())
+            .append_pair("beforeKey", page["next"]["beforeKey"].as_str().unwrap());
+        let result = operator
+            .send(
+                "GET",
+                &format!("{}?{}", url.path(), url.query().unwrap()),
+                None,
+                true,
+            )
+            .await;
+        assert_eq!(result.0, 200);
+        page = result.1;
+    }
+    assert_eq!(
+        seen.len(),
+        25 + history.1["items"].as_array().unwrap().len()
+    );
     assert_eq!(
         latest.1["lessons"]
             .as_array()

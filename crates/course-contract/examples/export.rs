@@ -23,6 +23,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     brioche_course_contract::AdminWithdrawRequest::export_all(&config)?;
     brioche_course_contract::AdminDocumentRequest::export_all(&config)?;
     brioche_course_contract::AdminImportResult::export_all(&config)?;
+    brioche_course_contract::AdminHistory::export_all(&config)?;
     brioche_course_contract::PreviewRelease::export_all(&config)?;
     ApiError::export_all(&config)?;
     GradeRequest::export_all(&config)?;

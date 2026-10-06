@@ -123,6 +123,33 @@ const api = createServer((request, response) => {
     );
     return;
   }
+  if (request.url.startsWith("/api/v1/operator/history")) {
+    const older = new URL(
+      request.url,
+      "http://controlled.test",
+    ).searchParams.has("beforeKey");
+    response.end(
+      JSON.stringify({
+        items: [
+          {
+            key: older ? "content:1" : "review:lesson:1:1",
+            action: older ? "stage" : "approve",
+            target: "在面包店买早餐 v1",
+            actor: older ? "local-author-cli" : "user:101",
+            reason: older ? "较早的目录检查" : "界面协议测试批准",
+            createdAt: "2026-10-07T01:02:03.123456Z",
+          },
+        ],
+        next: older
+          ? null
+          : {
+              beforeTime: "2026-10-07T01:02:03.123456Z",
+              beforeKey: "review:lesson:1:1",
+            },
+      }),
+    );
+    return;
+  }
   if (request.url.endsWith("/review") && request.method === "POST") {
     let body = "";
     request.on("data", (chunk) => {
@@ -401,6 +428,35 @@ test("operator enters admin from profile and approves using the centered dialog"
       0,
     );
     await browser("press", "Escape");
+    await browser("click", "a[href='/admin/history']");
+    await browser("wait", ".admin-history");
+    assert.equal(
+      await evaluate("document.querySelector('h1').textContent"),
+      "审批与发布记录",
+    );
+    assert.equal(
+      await evaluate("document.querySelector('time').dateTime"),
+      "2026-10-07T01:02:03.123456Z",
+    );
+    assert.match(
+      await evaluate("document.querySelector('.admin-actor').textContent"),
+      /user:101/,
+    );
+    await browser("click", "a[href^='/admin/history?']");
+    await browser("wait", "--text", "较早的目录检查");
+    assert.match(
+      await evaluate("document.querySelector('.admin-actor').textContent"),
+      /local-author-cli/,
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelectorAll(\"a[href^='/admin/history?']\").length",
+      ),
+      0,
+    );
+    await browser("back");
+    await browser("wait", "a[href^='/admin/history?']");
+    assert.equal(await evaluate("document.activeElement.tagName"), "H1");
   } finally {
     accounts = false;
     operatorAccount = false;

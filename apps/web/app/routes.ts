@@ -11,6 +11,7 @@ export default [
   route("review-history", "routes/review-history.tsx"),
   route("profile", "routes/profile.tsx"),
   route("admin", "routes/admin.tsx"),
+  route("admin/history", "routes/admin-history.tsx"),
   route("author-preview", "routes/author-preview.tsx"),
   route("pending-saves", "routes/pending-saves.tsx"),
   route("login", "routes/login.tsx"),

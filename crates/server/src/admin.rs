@@ -6,7 +6,7 @@ use crate::{
 };
 use axum::{
     Json, Router,
-    extract::{Path, State},
+    extract::{Path, Query, State},
     routing::{get, post},
 };
 use brioche_course_contract::{
@@ -19,6 +19,7 @@ use serde_json::Value;
 pub fn router(root: std::path::PathBuf) -> Router<Backend> {
     Router::new()
         .route("/api/v1/operator/overview", get(overview))
+        .route("/api/v1/operator/history", get(history))
         .route(
             "/api/v1/operator/lessons/{id}/revisions/{revision}/review",
             post(review),
@@ -40,6 +41,73 @@ pub fn router(root: std::path::PathBuf) -> Router<Backend> {
         .layer(axum::Extension(std::sync::Arc::new(
             tokio::sync::Semaphore::new(2),
         )))
+}
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct HistoryQuery {
+    before_time: Option<String>,
+    before_key: Option<String>,
+}
+async fn history(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    Query(query): Query<HistoryQuery>,
+) -> Result<Json<brioche_course_contract::AdminHistory>, AppError> {
+    use brioche_course_contract::{AdminHistory, AdminHistoryCursor, AdminHistoryItem};
+    require_operator(&auth)?;
+    if query.before_time.is_some() != query.before_key.is_some() {
+        return Err(AppError::InvalidInput);
+    }
+    if let Some(time) = &query.before_time
+        && (time.len() > 40 || time.parse::<jiff::Timestamp>().is_err())
+    {
+        return Err(AppError::InvalidInput);
+    }
+    if let Some(key) = &query.before_key
+        && (key.is_empty()
+            || key.len() > 256
+            || !key
+                .bytes()
+                .all(|b| b.is_ascii_alphanumeric() || b"-_:".contains(&b)))
+    {
+        return Err(AppError::InvalidInput);
+    }
+    let rows = backend.db.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres, r#"
+        WITH events AS (
+            SELECT 'review:'||lesson_id||':'||revision||':'||version AS key,
+                CASE WHEN approved THEN 'approve' ELSE 'reject' END AS action,
+                lesson_id||' v'||revision AS target, 'user:'||actor_id AS actor, reason, created_at
+            FROM editorial_reviews
+            UNION ALL
+            SELECT 'content:'||id, action, COALESCE(release_id,lesson_id||' v'||revision,'未指定对象'), actor, reason, created_at FROM content_audit
+            UNION ALL
+            SELECT 'import:'||lesson_id||':'||revision, 'import', lesson_id||' v'||revision, actor, reason, created_at FROM lesson_import_audit
+        )
+        SELECT key,action,target,actor,reason,to_char(created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at
+        FROM events WHERE $1::timestamptz IS NULL OR (created_at,key COLLATE "C") < ($1::timestamptz,$2::text COLLATE "C")
+        ORDER BY created_at DESC,key COLLATE "C" DESC LIMIT 21
+    "#, vec![query.before_time.into(), query.before_key.into()])).await.map_err(|_|AppError::Unavailable)?;
+    let has_more = rows.len() > 20;
+    let mut items = Vec::new();
+    for row in rows.into_iter().take(20) {
+        items.push(AdminHistoryItem {
+            key: field(&row, "key")?,
+            action: field(&row, "action")?,
+            target: field(&row, "target")?,
+            actor: field(&row, "actor")?,
+            reason: field(&row, "reason")?,
+            created_at: field(&row, "created_at")?,
+        });
+    }
+    let next = if has_more {
+        items.last().map(|item| AdminHistoryCursor {
+            before_time: item.created_at.clone(),
+            before_key: item.key.clone(),
+        })
+    } else {
+        None
+    };
+    Ok(Json(AdminHistory { items, next }))
 }
 async fn import_lesson(
     auth: AuthSession,

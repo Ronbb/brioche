@@ -164,6 +164,9 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
         <strong>{overview.activeRelease ?? "尚未发布课程"}</strong>
         <span>版本 {overview.generation}</span>
       </div>
+      <Link className="text-button" to="/admin/history">
+        审批与发布记录
+      </Link>
       <div className="reader-mode" role="group" aria-label="管理内容">
         <button
           aria-pressed={tab === "lessons"}

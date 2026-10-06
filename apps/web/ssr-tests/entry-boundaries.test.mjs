@@ -64,6 +64,12 @@ const server = createServer((request, response) => {
   if (request.url === "/api/v1/me") {
     response.statusCode = authenticated ? 200 : fixture ? 404 : 401;
     response.end(JSON.stringify(authenticated ? profile : {}));
+  } else if (
+    request.url.startsWith("/api/v1/operator/history") &&
+    authenticated &&
+    profile.role === "operator"
+  ) {
+    response.end(JSON.stringify({ items: [], next: null }));
   } else if (request.url === "/api/v1/me/reviews" && authenticated) {
     response.end(
       JSON.stringify({
@@ -175,6 +181,45 @@ const request = (path) =>
         : {},
     }),
   );
+
+test("admin history SSR authorizes before reading and only forwards cursor fields", async () => {
+  fixture = false;
+  authenticated = false;
+  requests.length = 0;
+  try {
+    assert.equal((await request("/admin/history")).status, 401);
+    authenticated = true;
+    assert.equal((await request("/admin/history")).status, 403);
+    assert.equal(
+      requests.filter((item) =>
+        item.path.startsWith("/api/v1/operator/history"),
+      ).length,
+      0,
+    );
+    profile.role = "operator";
+    requests.length = 0;
+    const parameters = new URLSearchParams({
+      beforeTime: "2026-10-07T01:02:03.123456Z",
+      beforeKey: "content:123",
+      ignored: "client-only",
+    });
+    const response = await request(`/admin/history?${parameters}`);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("cache-control"), "private, no-store");
+    const forwarded = requests.find((item) =>
+      item.path.startsWith("/api/v1/operator/history"),
+    );
+    assert.equal(forwarded.cookie, "brioche.sid=controlled-ssr-session");
+    const query = new URL(forwarded.path, "http://controlled.test")
+      .searchParams;
+    assert.deepEqual([...query.keys()], ["beforeTime", "beforeKey"]);
+    assert.equal(query.get("beforeKey"), "content:123");
+    assert.match(await response.text(), /这一页没有更早的记录/);
+  } finally {
+    authenticated = false;
+    profile.role = "learner";
+  }
+});
 
 test("lesson SSR separates missing, withdrawn and unavailable states with useful recovery entries", async () => {
   fixture = true;
