@@ -233,3 +233,27 @@ pub struct AdminPendingToken {
 pub struct AdminRevokeTokenRequest {
     pub reason: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAssets {
+    pub items: Vec<AdminAsset>,
+    pub next: Option<AdminAssetCursor>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAssetCursor {
+    pub asset_id: String,
+    pub revision: u32,
+}
+/// Explicit private projection: never return local import filenames or the raw provenance blob.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAsset {
+    pub asset: crate::MediaAsset,
+    pub source: String,
+    pub license: String,
+    pub creator: String,
+    pub rights_confirmed: bool,
+    pub byte_size: u32,
+}

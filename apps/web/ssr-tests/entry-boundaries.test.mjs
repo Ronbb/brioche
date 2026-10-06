@@ -71,6 +71,12 @@ const server = createServer((request, response) => {
   ) {
     response.end(JSON.stringify({ items: [], nextId: null }));
   } else if (
+    request.url.startsWith("/api/v1/operator/assets") &&
+    authenticated &&
+    profile.role === "operator"
+  ) {
+    response.end(JSON.stringify({ items: [], next: null }));
+  } else if (
     request.url.startsWith("/api/v1/operator/characters") &&
     authenticated &&
     profile.role === "operator"
@@ -747,6 +753,43 @@ test("character library SSR authorizes before reading private voice profiles", a
       requests.some(
         (r) =>
           r.path === "/api/v1/operator/characters?afterId=character-camille",
+      ),
+    );
+    assert.ok(!requests.some((r) => r.method !== "GET"));
+  } finally {
+    profile.role = "learner";
+    authenticated = false;
+  }
+});
+
+test("visual registry SSR protects metadata and allowlists the composite cursor", async () => {
+  authenticated = false;
+  requests.length = 0;
+  assert.equal((await request("/admin/assets")).status, 401);
+  assert.ok(
+    !requests.some((r) => r.path.startsWith("/api/v1/operator/assets")),
+  );
+  authenticated = true;
+  profile.role = "learner";
+  requests.length = 0;
+  assert.equal((await request("/admin/assets")).status, 403);
+  assert.ok(
+    !requests.some((r) => r.path.startsWith("/api/v1/operator/assets")),
+  );
+  profile.role = "operator";
+  try {
+    requests.length = 0;
+    const response = await request(
+      "/admin/assets?afterId=art-bakery&afterRevision=20&q=baguette&file=discard",
+    );
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get("cache-control"), /no-store/);
+    assert.match(await response.text(), /图片素材/);
+    assert.ok(
+      requests.some(
+        (r) =>
+          r.path ===
+          "/api/v1/operator/assets?afterId=art-bakery&afterRevision=20&q=baguette",
       ),
     );
     assert.ok(!requests.some((r) => r.method !== "GET"));

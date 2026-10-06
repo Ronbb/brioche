@@ -108,6 +108,43 @@ const profile = (id) => ({
 });
 const api = createServer((request, response) => {
   response.setHeader("Content-Type", "application/json");
+  if (request.url.startsWith("/api/v1/operator/assets")) {
+    if (request.url.endsWith("/file")) {
+      response.setHeader("content-type", "image/svg+xml");
+      response.end(characterAvatar);
+    } else {
+      const query = new URL(request.url, "http://test").searchParams;
+      response.end(
+        JSON.stringify({
+          items:
+            query.get("q") === "missing"
+              ? []
+              : [
+                  {
+                    asset: {
+                      assetId: "avatar-camille-v1",
+                      revision: 1,
+                      sha256: "a".repeat(64),
+                      mimeType: "image/svg+xml",
+                      width: 96,
+                      height: 96,
+                      altZh: "Camille 头像",
+                      creditZh: "隔离测试",
+                      url: "/api/v1/operator/assets/avatar-camille-v1/1/file",
+                    },
+                    source: "test:original",
+                    license: "LicenseRef-TestOnly",
+                    creator: "test fixture",
+                    rightsConfirmed: true,
+                    byteSize: 1234,
+                  },
+                ],
+          next: null,
+        }),
+      );
+    }
+    return;
+  }
   if (request.url === "/api/v1/auth/csrf") {
     response.end(JSON.stringify({ csrfToken: "controlled-admin-csrf" }));
     return;
@@ -495,6 +532,45 @@ const web = createServer(async (request, response) => {
     serverErrors.push(String(error));
     if (!response.headersSent) response.writeHead(500);
     response.end();
+  }
+});
+
+test("visual registry renders private images and searches at mobile widths", async () => {
+  accounts = true;
+  operatorAccount = true;
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("open", origin + "/admin/assets");
+    await browser("wait", ".admin-asset img");
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('.admin-asset img')?.naturalWidth > 0",
+    );
+    for (const width of [320, 390, 678, 1024]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+        true,
+      );
+    }
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.admin-asset').textContent.includes('LicenseRef-TestOnly')",
+      ),
+      true,
+    );
+    await browser("fill", "input[name=q]", "missing");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "没有符合条件的素材。");
+    assert.equal(
+      await evaluate("new URL(location.href).searchParams.get('q')"),
+      "missing",
+    );
+  } finally {
+    accounts = false;
+    operatorAccount = false;
   }
 });
 

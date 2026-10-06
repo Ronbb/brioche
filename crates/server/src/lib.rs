@@ -1,4 +1,5 @@
 pub mod admin;
+mod admin_assets;
 pub mod audio;
 pub mod author_import;
 pub mod author_json;

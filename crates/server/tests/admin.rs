@@ -339,6 +339,127 @@ async fn approvals_permissions_concurrency_and_publication() {
         .register(&backend, "operator@example.test", true)
         .await;
     let voices_path = "/api/v1/operator/characters";
+    let assets_path = "/api/v1/operator/assets";
+    let file_path = "/api/v1/operator/assets/avatar-camille-v1/1/file";
+    for path in [assets_path, file_path] {
+        assert_eq!(visitor.send("GET", path, None, true).await.0, 401);
+        assert_eq!(learner.send("GET", path, None, true).await.0, 403);
+    }
+    let registry = operator.send("GET", assets_path, None, true).await;
+    assert_eq!(registry.0, 200);
+    assert_eq!(registry.1["items"].as_array().unwrap().len(), 4);
+    assert!(registry.1["items"].as_array().unwrap().iter().all(|item| {
+        item.get("file").is_none()
+            && item.get("provenance").is_none()
+            && item["asset"]["url"]
+                .as_str()
+                .unwrap()
+                .starts_with("/api/v1/operator/assets/")
+    }));
+    assert_eq!(
+        operator
+            .send(
+                "GET",
+                "/api/v1/operator/assets?afterId=avatar-camille-v1",
+                None,
+                true
+            )
+            .await
+            .0,
+        400
+    );
+    assert_eq!(
+        operator
+            .send(
+                "GET",
+                "/api/v1/operator/assets?afterId=avatar-camille-v1&afterRevision=0",
+                None,
+                true
+            )
+            .await
+            .0,
+        400
+    );
+    assert_eq!(
+        operator
+            .send("GET", "/api/v1/operator/assets?unknown=yes", None, true)
+            .await
+            .0,
+        400
+    );
+    assert_eq!(
+        operator
+            .send("GET", "/api/v1/operator/assets?afterRevision=1", None, true)
+            .await
+            .0,
+        400
+    );
+    // Twenty-five versions of the same ID prove a scalar ID cursor cannot work here.
+    db.execute_unprepared(r#"INSERT INTO media_assets(asset_id,revision,descriptor,provenance,sha256,extension,byte_size)
+        SELECT 'qa-asset',n,jsonb_set(jsonb_set(descriptor,'{assetId}','"qa-asset"'),'{revision}',to_jsonb(n)),provenance,sha256,extension,byte_size
+        FROM media_assets CROSS JOIN generate_series(1,25) n WHERE asset_id='avatar-camille-v1' AND revision=1"#).await.unwrap();
+    let first = operator
+        .send("GET", "/api/v1/operator/assets?q=qa-asset", None, true)
+        .await;
+    assert_eq!(first.1["items"].as_array().unwrap().len(), 20);
+    assert_eq!(first.1["next"], json!({"assetId":"qa-asset","revision":20}));
+    let second = operator
+        .send(
+            "GET",
+            "/api/v1/operator/assets?q=qa-asset&afterId=qa-asset&afterRevision=20",
+            None,
+            true,
+        )
+        .await;
+    assert_eq!(second.1["items"].as_array().unwrap().len(), 5);
+    assert_eq!(second.1["items"][0]["asset"]["revision"], 21);
+    assert!(second.1["next"].is_null());
+    assert!(
+        operator
+            .send("GET", "/api/v1/operator/assets?q=%25", None, true)
+            .await
+            .1["items"]
+            .as_array()
+            .unwrap()
+            .is_empty()
+    );
+    assert_eq!(
+        operator
+            .send(
+                "GET",
+                "/api/v1/operator/assets/no-such-asset/1/file",
+                None,
+                true
+            )
+            .await
+            .0,
+        404
+    );
+    let response = operator
+        .app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri(file_path)
+                .header("cookie", &operator.cookie)
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), 200);
+    assert_eq!(response.headers()["content-type"], "image/svg+xml");
+    assert_eq!(response.headers()["cache-control"], "private, no-store");
+    assert_eq!(response.headers()["x-content-type-options"], "nosniff");
+    let bytes = response.into_body().collect().await.unwrap().to_bytes();
+    assert_eq!(
+        bytes.as_ref(),
+        std::fs::read(
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("../../docs/preview/avatars/camille.svg")
+        )
+        .unwrap()
+    );
     assert_eq!(visitor.send("GET", voices_path, None, true).await.0, 401);
     assert_eq!(learner.send("GET", voices_path, None, true).await.0, 403);
     let listed = operator.send("GET", voices_path, None, true).await;
