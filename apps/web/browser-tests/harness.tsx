@@ -13,13 +13,17 @@ const qa = {
   release: [] as ((status: number) => void)[],
   spoken: [] as string[],
   lastUtterance: null as ControlledUtterance | null,
+  oldUtterance: null as ControlledUtterance | null,
   playback: "idle",
+  playbackId: null as string | null,
   route: "/",
   search: "",
 };
 Object.assign(window, { qa });
 class ControlledUtterance extends EventTarget {
   onstart: (() => void) | null = null;
+  onend: (() => void) | null = null;
+  onerror: ((event: { error: string }) => void) | null = null;
   constructor(public text: string) {
     super();
   }
@@ -82,7 +86,9 @@ function StartHarness() {
   );
 }
 function ReadingHarness() {
-  qa.playback = useLearning().player.status;
+  const { player } = useLearning();
+  qa.playback = player.status;
+  qa.playbackId = player.id;
   return (
     <div className="app">
       <main>

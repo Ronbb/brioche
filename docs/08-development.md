@@ -206,6 +206,8 @@ SSR 入口回归运行 `pnpm build` 后再运行 `pnpm test:ssr`（CI 已接入�
 
 关键组件的 Chromium 自动化回归运行 `pnpm test:browser`；首次需要 `pnpm exec agent-browser install`，Linux CI 先执行 `pnpm exec agent-browser install --with-deps`。agent-browser 固定为 0.27.0 并随 pnpm lockfile 保存，安装脚本只对该依赖显式允许。测试文件在 `apps/web/browser-tests`，合成课程按公共 DTO 类型检查，真实 StartLearning/Lesson/LearningProvider 和 React Router 用独立 Vite 临时端口装配。每次生成独立浏览器会话，结束关闭会话与临时服务；没有数据库、账号、私有答案或生产 API。覆盖键盘焦点/重复提交/登录回跳、课程替换后的迟到响应与同课重试幂等、多正文选择/译文/播放停止和 320/390/900px 标题容器范围。声音列表与 SpeechSynthesis 是受控适配器，不能将其计为真实法语声音或 iPhone/屏幕阅读器验收。
 
+pnpm 11 使用 `pnpm-workspace.yaml` 的 `allowBuilds`，旧 `onlyBuiltDependencies` 已移除；当前显式允许锁定的 `agent-browser@0.27.0`、Tailwind oxide 与 esbuild，不关闭严格安装脚本检查。参考 [pnpm 11 迁移说明](https://pnpm.io/blog/releases/11.0)。浏览器用例结束会核对并清空未捕获页面异常，避免只检查 UI 状态而漏掉脚本错误；语音回归另覆盖旧 utterance 的迟到 start/error/end 不影响新播放、当前 interrupted 后停止并可重试。在精简 Linux 验收容器使用安装器时须具备 sudo；浏览器系统依赖仅用于测试环境，不加入生产运行镜像。
+
 示例练习通过 `POST /api/demo/lessons/:id/grade` 调用 Rust 判分，仅在服务端启用 development fixture 时可用，不写数据库；数据库模式返回 404，不替代未来受认证/CSRF 保护的学习提交。请求必须携带匹配 Host 的 Origin，限定版本、题目 ID、答案类型、选项/词块范围与 body 大小。填空规范化 NFC、空白、大小写（按题配置）和法语弯引号，保留重音差异。规则源只在 Rust 服务端加载，生成 TS/前端 bundle 不含答案键。Unicode 处理依据 [unicode-normalization 文档](https://docs.rs/unicode-normalization/0.1.25/unicode_normalization/)。
 
 速度弹窗显式使用 fixed/inset/auto margin 居中，避免 Tailwind reset 覆盖原生 dialog 的默认 margin；最大高度考虑动态视口与安全区，内部滚动不占额外宽度。

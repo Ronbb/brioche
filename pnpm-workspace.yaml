@@ -2,7 +2,7 @@ packages:
   - apps/*
   - packages/*
 injectWorkspacePackages: true
-onlyBuiltDependencies:
-  - agent-browser
-  - "@tailwindcss/oxide"
-  - esbuild
+allowBuilds:
+  agent-browser@0.27.0: true
+  "@tailwindcss/oxide": true
+  esbuild: true

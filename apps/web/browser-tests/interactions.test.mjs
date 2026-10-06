@@ -1,4 +1,4 @@
-import { before, after, test } from "node:test";
+import { before, after, afterEach, test } from "node:test";
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -16,6 +16,7 @@ const cli = fileURLToPath(
 );
 const session = "brioche-regression-" + randomUUID();
 let server, origin;
+let browserOpened = false;
 async function browser(...args) {
   const { stdout } = await execute(
     process.execPath,
@@ -32,6 +33,7 @@ async function evaluate(code) {
 const press = (key) => browser("press", key);
 async function open(kind = "start") {
   await browser("open", origin + "/?case=" + kind);
+  browserOpened = true;
   await browser(
     "wait",
     "--fn",
@@ -51,10 +53,20 @@ before(async () => {
 });
 after(async () => {
   try {
-    await browser("close");
+    if (browserOpened) await browser("close");
   } finally {
     await server?.close();
   }
+});
+afterEach(async () => {
+  if (!browserOpened) return;
+  const { errors } = await browser("errors");
+  await browser("errors", "--clear");
+  assert.deepEqual(
+    errors,
+    [],
+    "uncaught page errors must fail the interaction regression",
+  );
 });
 
 test("learning entry keeps focus, deduplicates keyboard submits, and returns through login", async () => {
@@ -169,4 +181,43 @@ test("multiple reading bodies support keyboard scrolling, independent translatio
       true,
     );
   }
+});
+
+test("late speech callbacks cannot interrupt newer playback, while current failures stop and allow retry", async () => {
+  await open("reading");
+  await browser("focus", ".speaker");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.playback==='playing'");
+  await evaluate("qa.oldUtterance=qa.lastUtterance");
+  await browser("focus", "[role=tab]");
+  await press("End");
+  await browser("focus", ".speaker");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.playback==='playing'");
+  const currentId = await evaluate("qa.playbackId");
+  await evaluate(
+    "qa.oldUtterance.onstart();qa.oldUtterance.onerror({error:'canceled'});qa.oldUtterance.onend()",
+  );
+  assert.deepEqual(
+    await evaluate(
+      "({status:qa.playback,id:qa.playbackId,count:qa.spoken.length,toast:document.querySelector('.toast [role=status]').textContent})",
+    ),
+    { status: "playing", id: currentId, count: 2, toast: "" },
+  );
+  await evaluate("qa.lastUtterance.onerror({error:'interrupted'})");
+  await browser("wait", "--fn", "qa.playback==='idle'");
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.toast [role=status]').textContent",
+    ),
+    "朗读已中断，请再次点击播放。",
+  );
+  await press("Enter");
+  await browser("wait", "--fn", "qa.playback==='playing'");
+  assert.deepEqual(
+    await evaluate(
+      "({id:qa.playbackId,last:qa.spoken.at(-1),count:qa.spoken.length})",
+    ),
+    { id: currentId, last: "Bonsoir !", count: 3 },
+  );
 });
