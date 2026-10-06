@@ -25,6 +25,7 @@ import Courses from "../app/routes/courses";
 import History from "../app/routes/review-history";
 import { Account } from "../app/components/account";
 import AuthorPreview from "../app/routes/author-preview";
+import { Scrollbar } from "../app/components/scrollbar";
 import type { PreviewRelease } from "@brioche/contracts/PreviewRelease";
 import type { ReviewHistoryPage } from "@brioche/contracts/ReviewHistoryPage";
 import type { Catalog } from "@brioche/contracts/Catalog";
@@ -555,6 +556,23 @@ const catalogFixture: Catalog = {
     },
   ],
 };
+function ScrollHarness() {
+  const [long, setLong] = useState(true);
+  return (
+    <>
+      <main
+        id="page-content"
+        style={{ height: long ? 2400 : 200, padding: 20 }}
+      >
+        <h1>滚动条检查</h1>
+        <button className="scroll-toggle" onClick={() => setLong(!long)}>
+          切换内容高度
+        </button>
+      </main>
+      <Scrollbar />
+    </>
+  );
+}
 function AuthorHarness() {
   const loaderData = useLoaderData() as {
     lesson: typeof lesson | null;
@@ -972,6 +990,8 @@ const router = createMemoryRouter(
       }),
       element: kind?.startsWith("account-") ? (
         <AccountHarness />
+      ) : kind === "scrollbar" ? (
+        <ScrollHarness />
       ) : reading ? (
         <LearningProvider>
           <ReadingHarness />
@@ -1165,6 +1185,8 @@ router.subscribe((state) => {
   qa.route = state.location.pathname;
   qa.search = state.location.search;
 });
+if (kind === "scrollbar")
+  document.documentElement.classList.add("overlay-scroll");
 createRoot(document.getElementById("root")!).render(
   <RouterProvider router={router} />,
 );

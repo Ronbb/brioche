@@ -686,3 +686,11 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - 三类原生键盘回归逐题确认实际提交 revision1、确切 exerciseId、choice=bonjour、text=une、order=[bonjour,luc]；等待按钮焦点和忙碌标记保留，连续 Enter 只有一次请求，503 后控件恢复且焦点仍在确认。明确再按 Enter 的 body 与原请求完全一致，成功反馈聚焦。受控判分不代替数据库写入/幂等或真实辅助技术。
 - 三项受影响 author 浏览器回归通过（66.45s）；补充上述确切答案断言后，新三题用例最终单独通过（52.26s）。28 Web/10 SSR、TS7、client/SSR build、定向 Prettier/diff 通过，本轮未重跑全部 38 浏览器。测试自己的 Vite/Chromium 自动清理。ExerciseEditor 为真实账号学习与管理员共用；此浏览器用例以管理员受控请求装配，不将它当作实际账号完整学习链路。
 - 固定 6ac433d 的 [Check 37454719659](https://github.com/Ronbb/brioche/actions/runs/37454719659) 本轮读取仍 in_progress，最新远端绿色尚未确认。正式审校/素材与录音、真实 iPhone/辅助技术及生产门槛继续待完成。
+
+## 2026-10-06：首屏覆盖滚动条实际接入
+
+- 根 Layout 原 html 只有 lang，整个 Web app 没有启用 overlay-scroll；既有 CSS 的隐藏原生滚动条规则因而未匹配，不能把 CSS 文件已存在当作页面已生效。新增生产 SSR handler 回归在原构建实际失败，首屏 HTML 为 html lang=zh-CN、无该 class。
+- Layout 直接在服务端根 html 加 overlay-scroll，SSR/客户端使用相同类，无需挂载后改变滚动条模式。沿用原覆盖指标、原生滚动能力、fixed 布局、隐藏零高度滚动条与键盘交互；未改 OS、用户浏览器或正在运行的服务。
+- 新独立 Scrollbar/现有应用 CSS 装配，四档 320/390/768/1440px 均验证 document.clientWidth 与 scrollWidth 等于视口宽、scrollbar-width none、track fixed；原生键盘 End/Home 对应 aria 最大值/0且保留轨道焦点；按钮切换2400/200px内容后轨道隐藏/显示，页面宽度不变。
+- 第一轮浏览器错误是用默认等待可见的 selector 去等 hidden 元素，发生等待超时；改为读取 hidden 属性后最终回归通过（52.74s）。不将该工具断言问题算作另一应用缺陷。组件装配按 SSR 应有类名启动，不等于完整生产浏览器页面壳或 iPhone/辅助技术验收；实际根类另由生产 SSR handler 的匿名/私有个人页证明。
+- TS7、client/SSR build、全部11项SSR、定向格式/diff通过；本轮不重跑全39浏览器或无关Web单元。自己的随机Vite/Chromium已自动清理。ddcf170 的 Check37455236784 本轮读取仍 in_progress，最新远端绿色未确认。完整内容人工审校/素材与录音、真实设备/辅助技术、生产门槛仍待完成。

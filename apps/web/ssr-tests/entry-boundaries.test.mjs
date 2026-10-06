@@ -174,6 +174,22 @@ const request = (path) =>
     }),
   );
 
+test("SSR activates overlay scrollbars in the initial document for anonymous and private pages", async () => {
+  fixture = false;
+  authenticated = false;
+  try {
+    for (const signedIn of [false, true]) {
+      authenticated = signedIn;
+      const response = await request("/profile");
+      assert.equal(response.status, 200);
+      assert.match(await response.text(), /<html[^>]*class="overlay-scroll"/);
+    }
+  } finally {
+    authenticated = false;
+    fixture = false;
+  }
+});
+
 test("author SSR requires an operator and reads only the selected release member revision privately", async () => {
   fixture = false;
   authenticated = false;

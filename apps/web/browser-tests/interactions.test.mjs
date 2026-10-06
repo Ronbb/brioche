@@ -2073,6 +2073,48 @@ test("an old logout cannot navigate or toast into a new profile and leaving canc
   assert.equal(await evaluate("qa.route"), "/reviews");
 });
 
+test("overlay scrollbars preserve width through content changes and support native keyboard scrolling", async () => {
+  await open("scrollbar");
+  for (const width of [320, 390, 768, 1440]) {
+    await browser("set", "viewport", String(width), "740");
+    await browser("wait", ".page-scrollbar:not([hidden])");
+    assert.deepEqual(
+      await evaluate(
+        "({width:document.documentElement.clientWidth,overflow:document.documentElement.scrollWidth,style:getComputedStyle(document.documentElement).scrollbarWidth,position:getComputedStyle(document.querySelector('.page-scrollbar')).position})",
+      ),
+      { width, overflow: width, style: "none", position: "fixed" },
+    );
+    await browser("focus", ".page-scrollbar");
+    await press("End");
+    await browser(
+      "wait",
+      "--fn",
+      "Number(document.querySelector('.page-scrollbar').getAttribute('aria-valuenow'))===Number(document.querySelector('.page-scrollbar').getAttribute('aria-valuemax'))",
+    );
+    assert.equal(
+      await evaluate("document.activeElement.matches('.page-scrollbar')"),
+      true,
+    );
+    await press("Home");
+    await browser(
+      "wait",
+      "--fn",
+      "Number(document.querySelector('.page-scrollbar').getAttribute('aria-valuenow'))===0",
+    );
+    await browser("focus", ".scroll-toggle");
+    await press("Enter");
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('.page-scrollbar').hidden",
+    );
+    assert.equal(await evaluate("document.documentElement.clientWidth"), width);
+    await press("Enter");
+    await browser("wait", ".page-scrollbar:not([hidden])");
+    assert.equal(await evaluate("document.documentElement.clientWidth"), width);
+  }
+});
+
 test("all exercise kinds keep keyboard focus and exact answers through pending grading and retry", async () => {
   await open("author");
   await browser("wait", ".exercise-sheet input[type=radio]");

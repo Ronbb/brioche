@@ -28,7 +28,7 @@ export function headers() {
 export function Layout({ children }: { children: React.ReactNode }) {
   const identity = useRouteLoaderData<typeof loader>("root");
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" className="overlay-scroll">
       <head>
         <meta charSet="utf-8" />
         <meta
