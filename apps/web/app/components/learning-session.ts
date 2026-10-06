@@ -30,11 +30,13 @@ export function useLearningSession(initial: LearningSession, scope: string) {
     [confirmedAttempts, setConfirmedAttempts] = useState<
       Record<string, string>
     >({}),
-    [uncertain, setUncertain] = useState(false);
+    [uncertain, setUncertain] = useState(false),
+    [readFailed, setReadFailed] = useState(false);
   const latest = useRef(initial.progress),
     busy = useRef(false),
     pending = useRef<Pending | null>(null),
-    alive = useRef(true);
+    alive = useRef(true),
+    stale = useRef(false);
   useEffect(() => {
     alive.current = true;
     const restored = readDraft(scope + ":pending");
@@ -61,6 +63,31 @@ export function useLearningSession(initial: LearningSession, scope: string) {
     if (value.version < latest.current.version) return;
     latest.current = value;
     setProgress(value);
+  }
+  async function readLatest() {
+    const fresh = await privateRequest<LearningSession>(
+      "/api/v1/learning-sessions/" + initial.progress.id,
+      "GET",
+    );
+    if (!alive.current) return;
+    accept(fresh.progress);
+    stale.current = false;
+    setReadFailed(false);
+  }
+  async function refresh() {
+    if (busy.current || pending.current || !alive.current) return;
+    busy.current = true;
+    setSaving(true);
+    try {
+      await readLatest();
+      if (alive.current) setError("最新进度已读取，请检查当前记录后再确认。");
+    } catch {
+      if (alive.current)
+        setError("最新进度暂时无法读取。答案仍保留，请重新读取后继续。");
+    } finally {
+      busy.current = false;
+      if (alive.current) setSaving(false);
+    }
   }
   async function send<T extends Result>(job: Pending): Promise<T | null> {
     if (busy.current || !alive.current) return null;
@@ -115,16 +142,17 @@ export function useLearningSession(initial: LearningSession, scope: string) {
         pending.current = null;
         setUncertain(false);
         if (failure.status === 409) {
+          stale.current = true;
+          setReadFailed(true);
           try {
-            const fresh = await privateRequest<LearningSession>(
-              "/api/v1/learning-sessions/" + initial.progress.id,
-              "GET",
-            );
-            if (alive.current) accept(fresh.progress);
+            await readLatest();
           } catch {
-            /* preserve the draft and known state */
+            if (alive.current)
+              setError("最新进度暂时无法读取。答案仍保留，请重新读取后继续。");
+            return null;
           }
         }
+        if (!alive.current) return null;
         setError(
           failure.status === 409
             ? "另一处学习进度已更新，请检查当前记录后再确认。"
@@ -151,7 +179,8 @@ export function useLearningSession(initial: LearningSession, scope: string) {
     fields: object = {},
     onSaved?: () => void,
   ): Promise<T | null> {
-    if (pending.current || busy.current) return Promise.resolve(null);
+    if (pending.current || busy.current || stale.current)
+      return Promise.resolve(null);
     return send<T>({
       path: "/api/v1/learning-sessions/" + initial.progress.id + suffix,
       method,
@@ -172,8 +201,10 @@ export function useLearningSession(initial: LearningSession, scope: string) {
     saving,
     error,
     uncertain,
-    blocked: saving || uncertain || !restored,
+    readFailed,
+    blocked: saving || uncertain || readFailed || !restored,
     write,
     retry,
+    refresh,
   };
 }

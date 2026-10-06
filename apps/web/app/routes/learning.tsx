@@ -228,7 +228,16 @@ function Session({
                   {session.error}
                 </p>
               )}
-              {session.uncertain ? (
+              {session.readFailed ? (
+                <button
+                  className="primary"
+                  disabled={session.saving}
+                  onClick={() => void session.refresh()}
+                >
+                  {session.saving ? "正在读取" : "重新读取进度"}
+                  <Icon name="arrow" />
+                </button>
+              ) : session.uncertain ? (
                 <button
                   className="primary"
                   disabled={session.saving}

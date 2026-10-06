@@ -432,3 +432,10 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 
 
 家与日常内容进展（2026-10-06）：补齐第四单元四份原创草稿（房间对话、早晨短文、在家学习对话、每周习惯短文），扩展目录共 16 课，保留原 12 课试点清单。新增室内场景 SVG 与真实哈希清单，均未登记/未审校。结构与 release 检查、三个 curriculum 测试通过，正式 Grader 覆盖扩展目录 48 题的正确和合法错误答案；不据此证明语言审校、正式录音或课程发布完成。A1 后两个单元与 A2 继续待制作。
+
+### 学习进度冲突后的读取失败（2026-10-06）
+
+- learning-session 原逻辑收到 409 后吞掉最新进度 GET 失败，解除 saving 后可继续用旧 version 写入。现保留同步 stale 标记，阻止 write；readFailed 同时禁用学习提交、提示、步骤移动，显示重新读取进度入口。重新读取失败继续保留草稿和锁定，成功后接受最新进度；卸载后迟到响应不更新状态或触发回调。
+- 在独立 Vite 5177 测试页运行实际 React hook 与 privateRequest，Chromium 会话 brioche-learning-conflict 注入响应：初始 version 1 提交 409，最新记录读取失败；保存按钮 disabled，直接调用 write 未增加原有 1 次写请求。再次读取失败时 writes=1/reads=2，仍 locked。恢复读取得到 version 4，下一次写请求携带 version 4，成功返回 version 5，pending 清除。
+- 再次冲突后延迟 GET，确认保存中的 blocked/readFailed、答案草稿保留；卸载并释放响应后 root 为空、写请求保持 3 次，调用旧 hook write 不新增请求。浏览器 CLI 对等待 Promise 的 eval 曾超时，随后单独释放同一个已在等待的读取，没有重启测试或将超时视为成功。
+- TS 7、现有 17 项 Web 测试、client/SSR build、diff check 通过。测试页和浏览器为本机隔离资源，网络为合成故障注入；不声称真实双标签数据库、完整学习页或 iPhone 验收完成。专用浏览器与端口已清理，开发服务保留。
