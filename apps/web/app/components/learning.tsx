@@ -90,6 +90,7 @@ export function LearningProvider({
   const location = useLocation();
   const restartPaused = useRef(false);
   const voiceWait = useRef<AbortController | null>(null);
+  const activeUtterance = useRef<SpeechSynthesisUtterance | null>(null);
   const recording = useRef<RecordingPlayer | null>(null);
   function acceptProfile(value: UserProfile | null) {
     if (savedProfile.current && savedProfile.current.id !== value?.id) {
@@ -191,6 +192,7 @@ export function LearningProvider({
     setPlayer(value);
   }
   function stop(keepRecording = false) {
+    activeUtterance.current = null;
     voiceWait.current?.abort();
     voiceWait.current = null;
     restartPaused.current = false;
@@ -241,6 +243,9 @@ export function LearningProvider({
           return;
         }
         const utterance = new SpeechSynthesisUtterance(unit.text);
+        activeUtterance.current = utterance;
+        const current = () =>
+          gen === generation.current && activeUtterance.current === utterance;
         utterance.lang = unit.locale ?? "fr-FR";
         utterance.voice = voice;
         utterance.rate = rateRef.current;
@@ -250,11 +255,11 @@ export function LearningProvider({
           progress: index.current / queue.current.length,
         });
         utterance.onstart = () => {
-          if (gen === generation.current && state.current.status === "paused") {
+          if (current() && state.current.status === "paused") {
             window.speechSynthesis.pause();
             return;
           }
-          if (gen === generation.current)
+          if (current())
             update({
               status: "playing",
               id: unit.id,
@@ -262,7 +267,7 @@ export function LearningProvider({
             });
         };
         utterance.onboundary = (event) => {
-          if (gen === generation.current && state.current.status !== "paused")
+          if (current() && state.current.status !== "paused")
             update({
               status: "playing",
               id: unit.id,
@@ -273,7 +278,8 @@ export function LearningProvider({
             });
         };
         utterance.onend = () => {
-          if (gen === generation.current) {
+          if (current()) {
+            activeUtterance.current = null;
             index.current++;
             if (state.current.status === "paused") {
               restartPaused.current = true;
@@ -284,7 +290,7 @@ export function LearningProvider({
         };
         utterance.onerror = (event) => {
           if (
-            gen === generation.current &&
+            current() &&
             event.error !== "canceled" &&
             event.error !== "interrupted"
           ) {
@@ -399,11 +405,16 @@ export function LearningProvider({
       recording.current.setRate(value);
       return;
     }
-    if (state.current.status === "playing") {
+    if (
+      state.current.status === "playing" ||
+      (state.current.status === "loading" && activeUtterance.current)
+    ) {
+      activeUtterance.current = null;
       generation.current++;
       window.speechSynthesis.cancel();
       speakCurrent();
     } else if (state.current.status === "paused") {
+      activeUtterance.current = null;
       voiceWait.current?.abort();
       voiceWait.current = null;
       generation.current++;
@@ -423,6 +434,7 @@ export function LearningProvider({
   }, [location.pathname, location.search, user?.id]);
   useEffect(
     () => () => {
+      activeUtterance.current = null;
       voiceWait.current?.abort();
       voiceWait.current = null;
       generation.current++;
