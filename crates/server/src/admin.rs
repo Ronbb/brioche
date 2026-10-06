@@ -22,6 +22,7 @@ pub fn router(root: std::path::PathBuf) -> Router<Backend> {
         .route("/api/v1/operator/history", get(history))
         .route("/api/v1/operator/accounts", get(accounts))
         .route("/api/v1/operator/accounts/token", post(account_token))
+        .route("/api/v1/operator/accounts/{id}/role", post(account_role))
         .route(
             "/api/v1/operator/lessons/{id}/revisions/{revision}/review",
             post(review),
@@ -113,6 +114,89 @@ async fn account_token(
         kind: request.kind,
         expires_in_seconds: if reset { 1800 } else { 172800 },
     }))
+}
+async fn account_role(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    Path(id): Path<String>,
+    Json(request): Json<brioche_course_contract::AdminRoleRequest>,
+) -> Result<Json<brioche_course_contract::AdminAccount>, AppError> {
+    use brioche_course_contract::{AdminAccount, AdminAccountRole};
+    require_operator(&auth)?;
+    reason(&request.reason)?;
+    let target = generation(&id)?;
+    if target == 0 {
+        return Err(AppError::InvalidInput);
+    }
+    let role_name = |role| match role {
+        AdminAccountRole::Learner => "learner",
+        AdminAccountRole::Operator => "operator",
+    };
+    let expected = role_name(request.expected_role);
+    let desired = role_name(request.role);
+    let actor = owner(&auth)?;
+    let tx = backend
+        .db
+        .begin()
+        .await
+        .map_err(|_| AppError::Unavailable)?;
+    exec(
+        &tx,
+        "SELECT pg_advisory_xact_lock(hashtextextended('account-admin',0))",
+        vec![],
+    )
+    .await?;
+    let operator = one(
+        &tx,
+        "SELECT role FROM users WHERE id=$1",
+        vec![actor.into()],
+    )
+    .await?
+    .ok_or(AppError::Forbidden)?;
+    if field::<String>(&operator, "role")? != "operator" {
+        return Err(AppError::Forbidden);
+    }
+    let row = one(
+        &tx,
+        "SELECT email,display_name,role FROM users WHERE id=$1 FOR UPDATE",
+        vec![target.into()],
+    )
+    .await?
+    .ok_or(AppError::NotFound)?;
+    let current: String = field(&row, "role")?;
+    if current != expected {
+        return Err(AppError::Conflict);
+    }
+    let email: String = field(&row, "email")?;
+    if current != desired {
+        if current == "operator" {
+            let count = one(
+                &tx,
+                "SELECT count(*) AS n FROM users WHERE role='operator'",
+                vec![],
+            )
+            .await?
+            .ok_or(AppError::Unavailable)?;
+            if field::<i64>(&count, "n")? <= 1 {
+                return Err(AppError::Conflict);
+            }
+        }
+        exec(
+            &tx,
+            "UPDATE users SET role=$1 WHERE id=$2",
+            vec![desired.into(), target.into()],
+        )
+        .await?;
+        exec(&tx, "INSERT INTO account_admin_audit(action,actor_id,target_email,reason,details) VALUES('role',$1,$2,$3,$4)", vec![actor.into(),email.clone().into(),request.reason.into(),serde_json::json!({"userId":id,"from":current,"to":desired}).into()]).await?;
+    }
+    let account = AdminAccount {
+        id,
+        email,
+        display_name: field(&row, "display_name")?,
+        role: desired.into(),
+    };
+    tx.commit().await.map_err(|_| AppError::Unavailable)?;
+    Ok(Json(account))
 }
 async fn history(
     auth: AuthSession,

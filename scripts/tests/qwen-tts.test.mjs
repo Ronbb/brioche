@@ -1,6 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { audioUrl, requestFor, run, sample, synthesize } from "../qwen-tts.mjs";
+import {
+  audioUrl,
+  requestFor,
+  run,
+  sample,
+  synthesize,
+  normalizeWav,
+} from "../qwen-tts.mjs";
 const env = {
   DASHSCOPE_API_KEY: "private-test-key",
   QWEN_WORKSPACE_ID: "test-space",
@@ -8,6 +15,35 @@ const env = {
 const wav = Buffer.alloc(44);
 wav.write("RIFF");
 wav.write("WAVE", 8);
+wav.writeUInt32LE(36, 4);
+
+test("actual Qwen stream-length WAV is repaired without deleting AIGC or changing PCM", () => {
+  const raw = Buffer.alloc(68);
+  raw.write("RIFF");
+  raw.writeUInt32LE(2147483583, 4);
+  raw.write("WAVE", 8);
+  raw.write("fmt ", 12);
+  raw.writeUInt32LE(16, 16);
+  raw.writeUInt16LE(1, 20);
+  raw.writeUInt16LE(1, 22);
+  raw.writeUInt32LE(24000, 24);
+  raw.writeUInt32LE(48000, 28);
+  raw.writeUInt16LE(2, 32);
+  raw.writeUInt16LE(16, 34);
+  raw.write("AIGC", 36);
+  raw.writeUInt32LE(4, 40);
+  raw.write("tag!", 44);
+  raw.write("data", 48);
+  raw.writeUInt32LE(2147483315, 52);
+  raw.fill(42, 56);
+  const fixed = normalizeWav(raw);
+  assert.equal(fixed.readUInt32LE(4), 60);
+  assert.equal(fixed.readUInt32LE(52), 12);
+  assert.deepEqual(fixed.subarray(8, 52), raw.subarray(8, 52));
+  assert.deepEqual(fixed.subarray(56), raw.subarray(56));
+  assert.equal(raw.readUInt32LE(4), 2147483583);
+  assert.throws(() => normalizeWav(raw.subarray(0, 67)), /安全修正/);
+});
 const success = () =>
   Response.json({
     output: {
@@ -17,6 +53,39 @@ const success = () =>
       },
     },
   });
+
+test("private base URL supports a workspace root or /api/v1, without credential forwarding to arbitrary hosts", () => {
+  for (const path of [
+    "",
+    "/",
+    "/api/v1",
+    "/api/v1/",
+    "/compatible-mode/v1",
+    "/compatible-mode/v1/",
+  ]) {
+    const request = requestFor(sample[0], {
+      DASHSCOPE_API_KEY: "test",
+      DASHSCOPE_BASE_URL: `https://workspace.cn-beijing.maas.aliyuncs.com${path}`,
+    });
+    assert.equal(
+      request.endpoint,
+      "https://workspace.cn-beijing.maas.aliyuncs.com/api/v1/services/audio/tts/SpeechSynthesizer",
+    );
+  }
+  for (const url of [
+    "http://workspace.cn-beijing.maas.aliyuncs.com",
+    "https://evil.test",
+    "https://dashscope-intl.aliyuncs.com/api/v1",
+    "https://workspace.cn-beijing.maas.aliyuncs.com/api/v1?key=private",
+  ]) {
+    assert.throws(() =>
+      requestFor(sample[0], {
+        DASHSCOPE_API_KEY: "test",
+        DASHSCOPE_BASE_URL: url,
+      }),
+    );
+  }
+});
 
 test("French role voices, emotion, and AI provenance use the documented new API", () => {
   const a = requestFor(sample[0], env);

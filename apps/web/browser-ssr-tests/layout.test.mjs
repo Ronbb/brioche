@@ -74,6 +74,7 @@ let origin,
   opened = false;
 let accounts = false;
 let operatorAccount = false;
+let managedRole = "learner";
 let adminApproved = false;
 let adminWrites = [];
 let lessonStatus = 200;
@@ -138,12 +139,35 @@ const api = createServer((request, response) => {
             id: older ? "102" : "101",
             email: older ? "older@example.test" : "learner@example.test",
             displayName: older ? "较早账号" : "测试账号",
-            role: "learner",
+            role: older ? "learner" : managedRole,
           },
         ],
         nextId: older ? null : "101",
       }),
     );
+    return;
+  }
+  if (
+    request.url === "/api/v1/operator/accounts/101/role" &&
+    request.method === "POST"
+  ) {
+    let body = "";
+    request.on("data", (chunk) => {
+      body += chunk;
+    });
+    request.on("end", () => {
+      const change = JSON.parse(body);
+      adminWrites.push({ operation: request.url, ...change });
+      managedRole = change.role;
+      response.end(
+        JSON.stringify({
+          id: "101",
+          email: "learner@example.test",
+          displayName: "测试账号",
+          role: managedRole,
+        }),
+      );
+    });
     return;
   }
   if (
@@ -573,6 +597,38 @@ test("operator enters admin from profile and approves using the centered dialog"
       true,
     );
     await browser("press", "Escape");
+    await browser(
+      "find",
+      "role",
+      "button",
+      "click",
+      "--name",
+      "设为管理员",
+      "--exact",
+    );
+    await browser("wait", ".admin-dialog[open]");
+    await browser("fill", "#account-reason", "隔离权限界面测试");
+    await browser(
+      "find",
+      "role",
+      "button",
+      "click",
+      "--name",
+      "确认修改权限",
+      "--exact",
+    );
+    await browser("wait", "--text", "改为学习者");
+    assert.equal(
+      await evaluate("document.querySelector('.admin-dialog').open"),
+      false,
+    );
+    const change = adminWrites.find(
+      (item) => item.operation === "/api/v1/operator/accounts/101/role",
+    );
+    assert.equal(change.expectedRole, "learner");
+    assert.equal(change.role, "operator");
+    assert.equal(change.reason, "隔离权限界面测试");
+    managedRole = "learner";
     await browser("click", "a[href^='/admin/accounts?']");
     await browser("wait", "--text", "较早账号");
     assert.equal(await evaluate("document.activeElement.tagName"), "H1");

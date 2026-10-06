@@ -57,6 +57,7 @@
 - `/admin` 是实际后台入口，首批含审批、目录切换和版本撤回。网页审批追加不可变 editorial_reviews，当前用户为 actor、版本控制防止覆盖；未有网页决定时沿用作者源 editorial。stage 与 activate 都检查最新决定，并与撤回共用 content_state→revision 锁顺序。不要修改不可变 server_document 来实现审批，或把后台首批能力当作全部管理功能完成。
 - 后台 JSON 课源导入与 CLI 复用 author_import，网页相同内容重试幂等，CLI 保留重复版本冲突；导入审计不可变。测试草稿必须显式设置 editorial，不依赖示例课源一直为 draft。2026-10-07 用户授权的首六课已正式发布，登记素材范围仅为该批项目原创 SVG；全量 planned 清单和其他 42 课仍待审，不把首批上线推广为所有内容与全部后台完成。
 - 后台账号发放复用 identity.issue_token_impl，在 account-admin→邮箱锁内复核当前 operator 并与审计原子提交。后续角色/会话管理沿用账号管理锁，并保护最后管理员。明文一次性链接只在当前对话框内存显示，关闭清空，不进入SSR/日志/持久化；网页发放不自动发邮件。管理员写入必须带离页取消信号，迟到CSRF不能继续提交；取消不能冒充服务端事务回滚。
+- 网页角色修改在account-admin锁后重新验证operator，锁定目标并核对expectedRole，最后一位管理员不得降级；角色和不可变审计同事务，每次新请求读取当前角色。真实测试使用隔离数据库，不修改生产账号以演示权限。
 - 录音先 `audio-check`，再 `audio-import <bundle.json> <source-directory> <actor>`；`audioRefs` 固定登记版本，登记不公开文件。发布必须重新验证登记描述、实际文件哈希/解码、来源授权与正文时间轴；音频公开路由和私有预览均保留撤回检查、no-store 与有界读取。
 - 权限、判分、事务、幂等、版本与恢复做风险对应的验证；文档/低风险样式不添加无意义测试。
 - 异步确认按钮在等待期间保留键盘焦点，用 aria-disabled/aria-busy 配合同步提交锁；未满足答题/步骤条件或恢复初始化未完成时仍原生 disabled，不能仅依赖 ARIA 阻止重复写入。

@@ -60,12 +60,45 @@ export const sample = [
 ];
 
 export function requestFor(line, env) {
-  if (
-    !env.DASHSCOPE_API_KEY ||
-    !/^[a-zA-Z0-9_-]{1,100}$/.test(env.QWEN_WORKSPACE_ID ?? "")
-  ) {
-    throw new Error(
-      "请在 .local/tts.env 配置北京地域 DASHSCOPE_API_KEY 和 QWEN_WORKSPACE_ID。",
+  if (!env.DASHSCOPE_API_KEY) {
+    throw new Error("请在 .local/tts.env 配置北京地域 DASHSCOPE_API_KEY。");
+  }
+  let base;
+  if (env.DASHSCOPE_BASE_URL) {
+    try {
+      base = new URL(env.DASHSCOPE_BASE_URL);
+    } catch {
+      throw new Error("提供方基础地址无效。");
+    }
+    if (
+      base.protocol !== "https:" ||
+      base.username ||
+      base.password ||
+      base.port ||
+      base.search ||
+      base.hash ||
+      !/^[a-zA-Z0-9_-]{1,100}\.cn-beijing\.maas\.aliyuncs\.com$/.test(
+        base.hostname,
+      ) ||
+      ![
+        "/",
+        "/api/v1",
+        "/api/v1/",
+        "/compatible-mode/v1",
+        "/compatible-mode/v1/",
+      ].includes(base.pathname)
+    ) {
+      throw new Error(
+        "提供方基础地址需为北京业务空间 HTTPS 域名，路径为根路径、/api/v1 或 /compatible-mode/v1。",
+      );
+    }
+  } else {
+    if (!/^[a-zA-Z0-9_-]{1,100}$/.test(env.QWEN_WORKSPACE_ID ?? ""))
+      throw new Error(
+        "请在 .local/tts.env 配置 DASHSCOPE_BASE_URL 或 QWEN_WORKSPACE_ID。",
+      );
+    base = new URL(
+      `https://${env.QWEN_WORKSPACE_ID}.cn-beijing.maas.aliyuncs.com`,
     );
   }
   if (
@@ -81,7 +114,7 @@ export function requestFor(line, env) {
     throw new Error("试听台词无效。");
   }
   return {
-    endpoint: `https://${env.QWEN_WORKSPACE_ID}.cn-beijing.maas.aliyuncs.com/api/v1/services/audio/tts/SpeechSynthesizer`,
+    endpoint: `${base.origin}/api/v1/services/audio/tts/SpeechSynthesizer`,
     body: {
       model,
       input: {
@@ -180,7 +213,8 @@ export async function synthesize(line, env, fetcher = fetch) {
   } catch {
     throw new Error("生成已完成，但音频下载失败；请核对记录后再重试。");
   }
-  const wav = await boundedBytes(downloaded, 16 * 1024 * 1024);
+  const providerWav = await boundedBytes(downloaded, 16 * 1024 * 1024);
+  const wav = normalizeWav(providerWav);
   if (
     wav.length < 44 ||
     wav.toString("ascii", 0, 4) !== "RIFF" ||
@@ -190,6 +224,7 @@ export async function synthesize(line, env, fetcher = fetch) {
   }
   return {
     wav,
+    providerWav,
     parameters: request.body,
     usage: {
       inputTokens: Number.isSafeInteger(result.usage?.input_tokens)
@@ -200,6 +235,49 @@ export async function synthesize(line, env, fetcher = fetch) {
         : null,
     },
   };
+}
+
+// Qwen may return a stream-style RIFF/data length. Preserve all metadata (including AIGC)
+// and PCM bytes, repairing only those two lengths for the bounded downloaded file.
+export function normalizeWav(source) {
+  if (
+    source.length < 44 ||
+    source.toString("ascii", 0, 4) !== "RIFF" ||
+    source.toString("ascii", 8, 12) !== "WAVE"
+  )
+    throw new Error("提供方返回的文件不是 WAV，未保存。");
+  const output = Buffer.from(source);
+  if (source.readUInt32LE(4) === source.length - 8) return output;
+  if (source.readUInt32LE(4) !== 2147483583)
+    throw new Error("提供方 WAV 长度字段不受支持。");
+  let format = false;
+  for (let offset = 12; offset + 8 <= source.length;) {
+    const type = source.toString("ascii", offset, offset + 4);
+    const length = source.readUInt32LE(offset + 4);
+    const remaining = source.length - offset - 8;
+    if (type === "fmt " && length === 16 && remaining >= 16) {
+      format =
+        source.readUInt16LE(offset + 8) === 1 &&
+        source.readUInt16LE(offset + 10) === 1 &&
+        source.readUInt32LE(offset + 12) === 24000 &&
+        source.readUInt16LE(offset + 20) === 2 &&
+        source.readUInt16LE(offset + 22) === 16;
+    }
+    if (
+      type === "data" &&
+      length > remaining &&
+      format &&
+      remaining > 0 &&
+      remaining % 2 === 0
+    ) {
+      output.writeUInt32LE(source.length - 8, 4);
+      output.writeUInt32LE(remaining, offset + 4);
+      return output;
+    }
+    if (length > remaining) break;
+    offset += 8 + length + (length % 2);
+  }
+  throw new Error("提供方 WAV 数据长度无法安全修正。");
 }
 
 export async function run(args, env = process.env) {
@@ -231,11 +309,20 @@ export async function run(args, env = process.env) {
         .update(JSON.stringify(result.parameters))
         .digest("hex"),
       audioSha256: createHash("sha256").update(result.wav).digest("hex"),
+      providerAudioSha256: createHash("sha256")
+        .update(result.providerWav)
+        .digest("hex"),
+      postprocessing: "qwen-riff-length-v1-metadata-preserved",
       bytes: result.wav.length,
     };
     await writeFile(resolve(output, `${line.id}.wav`), result.wav, {
       flag: "wx",
     });
+    await writeFile(
+      resolve(output, `${line.id}.provider.wav`),
+      result.providerWav,
+      { flag: "wx" },
+    );
     await writeFile(
       resolve(output, `${line.id}.json`),
       JSON.stringify(receipt, null, 2),

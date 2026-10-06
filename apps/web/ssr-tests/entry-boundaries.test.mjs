@@ -269,6 +269,7 @@ test("admin account SSR gates identity, filters cursors and never renders genera
     assert.equal(forwarded.cookie, "brioche.sid=controlled-ssr-session");
     const html = await response.text();
     assert.match(html, /测试账号/);
+    assert.match(html, /设为管理员/);
     assert.doesNotMatch(html, /id="account-link"/);
     assert.equal(
       requests.some((item) => item.method !== "GET"),

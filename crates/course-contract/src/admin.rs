@@ -123,3 +123,17 @@ pub struct AdminTokenResult {
     pub kind: AdminTokenKind,
     pub expires_in_seconds: u32,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
+pub enum AdminAccountRole {
+    Learner,
+    Operator,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminRoleRequest {
+    pub expected_role: AdminAccountRole,
+    pub role: AdminAccountRole,
+    pub reason: String,
+}

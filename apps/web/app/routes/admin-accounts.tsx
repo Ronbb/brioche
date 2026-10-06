@@ -1,7 +1,9 @@
-import { Form, Link, data, useLocation } from "react-router";
+import { Form, Link, data, useLocation, useRevalidator } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import type { AdminAccounts } from "@brioche/contracts/AdminAccounts";
 import type { AdminTokenResult } from "@brioche/contracts/AdminTokenResult";
+import type { AdminAccount } from "@brioche/contracts/AdminAccount";
+import type { AdminRoleRequest } from "@brioche/contracts/AdminRoleRequest";
 import { getIdentity, getPrivate } from "../lib/api.server";
 import { adminWrite } from "../lib/admin.client";
 import { usePageCursorFocus } from "../components/page-cursor-focus";
@@ -32,13 +34,16 @@ export default function Accounts({
   loaderData: accounts,
 }: Route.ComponentProps) {
   const location = useLocation();
+  const revalidator = useRevalidator();
   const query = new URLSearchParams(location.search);
   const heading = usePageCursorFocus(location.search);
   const dialog = useRef<HTMLDialogElement>(null);
   const busy = useRef(false);
   const write = useRef<AbortController | null>(null);
   useEffect(() => () => write.current?.abort(), []);
-  const [kind, setKind] = useState<"invite" | "reset">("invite");
+  const [kind, setKind] = useState<"invite" | "reset" | "role">("invite");
+  const [target, setTarget] = useState<AdminAccount | null>(null);
+  const [notice, setNotice] = useState("");
   const [email, setEmail] = useState("");
   const [operator, setOperator] = useState(false);
   const [reason, setReason] = useState("");
@@ -64,6 +69,23 @@ export default function Accounts({
     setPending(true);
     setError("");
     try {
+      if (kind === "role" && target) {
+        const request: AdminRoleRequest = {
+          expectedRole: target.role === "operator" ? "operator" : "learner",
+          role: target.role === "operator" ? "learner" : "operator",
+          reason,
+        };
+        await adminWrite<AdminAccount>(
+          `accounts/${target.id}/role`,
+          request,
+          controller.signal,
+        );
+        controller.signal.throwIfAborted();
+        dialog.current?.close();
+        setNotice("账号权限已更新。");
+        void revalidator.revalidate();
+        return;
+      }
       const result = await adminWrite<AdminTokenResult>(
         "accounts/token",
         {
@@ -121,6 +143,7 @@ export default function Accounts({
       <button className="admin-tool" onClick={() => open("invite")}>
         邀请新账号
       </button>
+      <p role="status">{notice}</p>
       {!accounts.items.length && <p role="status">没有匹配的账号。</p>}
       <div className="admin-list">
         {accounts.items.map((account) => (
@@ -130,6 +153,21 @@ export default function Accounts({
               <span>{account.role === "operator" ? "管理员" : "学习者"}</span>
             </div>
             <p className="admin-actor">{account.email}</p>
+            <button
+              className="text-button"
+              onClick={() => {
+                setKind("role");
+                setTarget(account);
+                setEmail(account.email);
+                setReason("");
+                setError("");
+                setLink("");
+                setNotice("");
+                dialog.current?.showModal();
+              }}
+            >
+              {account.role === "operator" ? "改为学习者" : "设为管理员"}
+            </button>
             <button
               className="text-button"
               onClick={() => open("reset", account.email)}
@@ -163,9 +201,16 @@ export default function Accounts({
           setEmail("");
           setReason("");
           setError("");
+          setTarget(null);
         }}
       >
-        <h2>{kind === "invite" ? "邀请新账号" : "密码重置链接"}</h2>
+        <h2>
+          {kind === "role"
+            ? "修改账号权限"
+            : kind === "invite"
+              ? "邀请新账号"
+              : "密码重置链接"}
+        </h2>
         {link ? (
           <>
             <p>
@@ -191,10 +236,14 @@ export default function Accounts({
             }}
           >
             <p>
-              {kind === "invite"
-                ? "邀请有效期为 48 小时。"
-                : "重置链接有效期为 30 分钟，使用后该账号现有登录会话失效。"}
-              重新生成会使之前的链接失效。
+              {kind === "role"
+                ? target?.role === "operator"
+                  ? "将移除这个账号的后台权限，下一次请求立即生效。最后一位管理员不能被降级。"
+                  : "这个账号将能审批和发布课程，以及管理其他账号。"
+                : kind === "invite"
+                  ? "邀请有效期为 48 小时。"
+                  : "重置链接有效期为 30 分钟，使用后该账号现有登录会话失效。"}
+              {kind !== "role" && "重新生成会使之前的链接失效。"}
             </p>
             <label htmlFor="account-email">邮箱</label>
             <input
@@ -203,7 +252,7 @@ export default function Accounts({
               required
               maxLength={254}
               value={email}
-              readOnly={pending || kind === "reset"}
+              readOnly={pending || kind !== "invite"}
               onChange={(event) => setEmail(event.target.value)}
             />
             {kind === "invite" && (
@@ -233,7 +282,11 @@ export default function Accounts({
               aria-disabled={pending}
               aria-busy={pending}
             >
-              {pending ? "正在生成" : "生成链接"}
+              {pending
+                ? "正在提交"
+                : kind === "role"
+                  ? "确认修改权限"
+                  : "生成链接"}
             </button>
           </form>
         )}

@@ -38,6 +38,7 @@ const labels: Record<string, string> = {
   invite: "生成账号邀请",
   inviteOperator: "生成管理员邀请",
   reset: "生成密码重置链接",
+  role: "修改账号权限",
 };
 export default function AdminHistoryPage({
   loaderData: history,

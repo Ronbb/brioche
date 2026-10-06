@@ -742,6 +742,137 @@ async fn approvals_permissions_concurrency_and_publication() {
             .iter()
             .any(|second| first["id"] == second["id"])
     }));
+    // Role management is authorized, optimistic, audited and protects the last operator.
+    let users = operator
+        .send("GET", "/api/v1/operator/accounts", None, true)
+        .await;
+    let lookup = |email: &str| {
+        users.1["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|u| u["email"] == email)
+            .unwrap()["id"]
+            .as_str()
+            .unwrap()
+            .to_owned()
+    };
+    let first_id = lookup("operator@example.test");
+    let second_id = lookup("invited-operator@example.test");
+    let learner_id = lookup("learner@example.test");
+    let payload = json!({"expectedRole":"learner","role":"operator","reason":"promote learner"});
+    let learner_path = format!("/api/v1/operator/accounts/{learner_id}/role");
+    assert_eq!(
+        learner
+            .send("POST", &learner_path, Some(payload.clone()), true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        visitor
+            .send("POST", &learner_path, Some(payload.clone()), true)
+            .await
+            .0,
+        401
+    );
+    assert_eq!(
+        operator
+            .send("POST", &learner_path, Some(payload.clone()), false)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", &learner_path, Some(payload.clone()), true)
+            .await
+            .0,
+        200
+    );
+    // Existing learner session obtains current DB privileges; no re-login or token spoofing.
+    assert_eq!(
+        learner
+            .send("GET", "/api/v1/operator/accounts", None, true)
+            .await
+            .0,
+        200
+    );
+    assert_eq!(
+        operator
+            .send("POST", &learner_path, Some(payload), true)
+            .await
+            .0,
+        409
+    );
+    let demote = json!({"expectedRole":"operator","role":"learner","reason":"demote learner"});
+    assert_eq!(
+        operator
+            .send("POST", &learner_path, Some(demote.clone()), true)
+            .await
+            .0,
+        200
+    );
+    assert_eq!(
+        learner
+            .send("GET", "/api/v1/operator/accounts", None, true)
+            .await
+            .0,
+        403
+    );
+    // Two operators concurrently attempt self-demotion: exactly one survives.
+    let first_path = format!("/api/v1/operator/accounts/{first_id}/role");
+    let second_path = format!("/api/v1/operator/accounts/{second_id}/role");
+    let (first, second) = tokio::join!(
+        operator.send("POST", &first_path, Some(demote.clone()), true),
+        new_operator.send("POST", &second_path, Some(demote.clone()), true)
+    );
+    assert!(matches!((first.0, second.0), (200, 409) | (409, 200)));
+    let count = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT count(*) AS n FROM users WHERE role='operator'".to_owned(),
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get::<i64>("", "n")
+        .unwrap();
+    assert_eq!(count, 1);
+    let changed = db.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT count(*) AS n FROM account_admin_audit WHERE action='role' AND details ? 'from' AND details ? 'to'".to_owned())).await.unwrap().unwrap().try_get::<i64>("","n").unwrap();
+    assert_eq!(changed, 3);
+    let (survivor, removed, last_path) = if first.0 == 200 {
+        (&mut new_operator, &mut operator, &second_path)
+    } else {
+        (&mut operator, &mut new_operator, &first_path)
+    };
+    assert_eq!(
+        removed
+            .send("POST", last_path, Some(demote.clone()), true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        survivor.send("POST", last_path, Some(demote), true).await.0,
+        409
+    );
+    // Earlier pagination fixtures deliberately sit in the future; skip those rows.
+    let event = survivor
+        .send(
+            "GET",
+            "/api/v1/operator/history?beforeTime=2026-10-08T00:00:00Z&beforeKey=account:0",
+            None,
+            true,
+        )
+        .await;
+    assert!(
+        event.1["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|item| item["action"] == "role")
+    );
     db.close().await.unwrap();
     admin
         .execute_unprepared(&format!("DROP SCHEMA {schema} CASCADE"))
