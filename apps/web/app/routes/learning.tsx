@@ -13,6 +13,7 @@ import { ExerciseEditor } from "../components/exercise-editor";
 import { useLearning } from "../components/learning";
 import { Icon } from "../components/icon";
 import { PendingNavigation } from "../components/pending-navigation";
+import { usePendingOwnedWrites } from "../components/pending-owned-writes";
 import type { Route } from "./+types/learning";
 export async function loader({ request, params }: Route.LoaderArgs) {
   try {
@@ -56,6 +57,7 @@ function Session({
   const session = useLearningSession(initial, scope),
     audio = useLearning(),
     lesson = initial.lesson;
+  const ownedPending = usePendingOwnedWrites(ownerId);
   const [index, setIndex] = useState(
     Math.max(
       0,
@@ -144,7 +146,7 @@ function Session({
   return (
     <section className="page-arrive learning-page">
       <PendingNavigation
-        active={session.hasPendingWrite}
+        active={session.hasPendingWrite || ownedPending}
         onStay={() => heading.current?.focus({ preventScroll: true })}
       />
       <div className="lesson-header">

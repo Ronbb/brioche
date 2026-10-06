@@ -1,4 +1,4 @@
-import { useId, useState, type SyntheticEvent } from "react";
+import { useId, useRef, useState, type SyntheticEvent } from "react";
 import { Link } from "react-router";
 import type { Segment } from "@brioche/contracts/Segment";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
@@ -10,6 +10,8 @@ import { StartLearning } from "../components/start-learning";
 import { Player, useLearning } from "../components/learning";
 import { Icon } from "../components/icon";
 import { ResponsiveKnowledge } from "../components/responsive-knowledge";
+import { PendingNavigation } from "../components/pending-navigation";
+import { usePendingOwnedWrites } from "../components/pending-owned-writes";
 import { readingUnits, wordUnit } from "../lib/recording-playback";
 import type { Route } from "./+types/lesson";
 export async function loader({ params }: Route.LoaderArgs) {
@@ -143,6 +145,8 @@ function LessonContent({
     [revealed, setRevealed] = useState<Set<string>>(new Set()),
     [term, setTerm] = useState<Vocabulary | null>(null);
   const [grammar, setGrammar] = useState<Grammar | null>(null);
+  const pending = usePendingOwnedWrites(learning.profile?.id),
+    heading = useRef<HTMLHeadingElement>(null);
   const showTerm = (value: Vocabulary) => {
     setGrammar(null);
     setTerm(value);
@@ -177,11 +181,17 @@ function LessonContent({
   }
   return (
     <section className="page-arrive">
+      <PendingNavigation
+        active={pending}
+        onStay={() => heading.current?.focus({ preventScroll: true })}
+      />
       <div className="lesson-header">
         <div className="crumb">
           {lesson.levelId.toUpperCase()} / {lesson.title.zh}
         </div>
-        <h1 lang="fr">{lesson.title.fr}</h1>
+        <h1 lang="fr" ref={heading} tabIndex={-1}>
+          {lesson.title.fr}
+        </h1>
         {lesson.blocks
           .filter((b) => b.type === "scene")
           .map((b) => (

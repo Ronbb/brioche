@@ -4,6 +4,8 @@
 
 ## 已实现
 
+- 个人表达写入的页面保护覆盖公开阅读、账号学习、账号复习和表达库。按当前账号的已校验原请求存储聚合收藏/加入复习/复习偏好/自评状态；卡片或解释面板收起后仍有离页确认与刷新提醒。单项确认仅清除自己的原请求，全部确认后取消已打开的旧跳转提示，保留当前页供检查；每个页面只注册一个导航拦截器。
+
 - 主屏幕入口：`public/manifest.webmanifest`、Apple 主屏幕名称及 180px PNG、192/512px manifest 图标与 SVG/32px favicon；源文件与维护约定见 `apps/web/public/icons/README.md`。standalone 启动仍保持在线学习，不注册 service worker 或缓存私人数据。实际 iPhone 添加和启动效果待设备验收。
 
 - pnpm / Cargo workspace、锁文件、Rust 1.99.0 工具链、TypeScript 7 独立类型检查。

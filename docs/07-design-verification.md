@@ -1,5 +1,11 @@
 # 设计验证记录
 
+## 2026-10-06：表达卡片收起后的未确认保存
+
+- 源代码核对发现 Bookmark/Enroll 的 beforeunload 依赖控件挂载；表达库收起卡片会卸载两者，原请求仍在 sessionStorage，但 Library 与公开 Lesson 没有 SPA 离页确认。新增 usePendingOwnedWrites，以 pendingOwned 的完整校验和当前账号 scope 读取 Boolean 快照，使用无 payload 的本标签通知与 storage 通知更新；SSR 快照为 false，不读取服务端浏览器存储。每路由一个 PendingNavigation；账号学习/复习合并原有 guard，避免多个表达控件分别注册导航拦截器。
+- 新增实际 Library + LearningProvider + Bookmark/Enroll 装配的 Chromium 原生键盘回归，受控 fetch 暂挂 PUT 收藏与 POST 加入复习。收起卡片后正文控件为零，合成可取消 beforeunload 仍被 preventDefault；只释放加入复习成功后仍留一个原请求，跳登录被拦截，Escape 回到“我的表达”标题。收藏 503 后显式历史离开，存储 path/method/body 与原请求相同；返回展开后的明确重试使用完全相同 body/idempotencyKey。再次收起并打开离页确认，释放原重试成功后存储清空、提示关闭、旧跳转取消、标题获焦点，beforeunload 不再被拦截；下一次明确跳转成功。只发三次目标写请求，没有自动补发。
+- 定向回归通过（1 项，47 秒），完整 15 项 Chromium 回归通过（211 秒），26 项 Web 测试、6 项实际构建 SSR 测试、TS 7、client/SSR build 和 Prettier/diff 检查通过。浏览器使用独立随机会话及临时 loopback Vite，teardown 关闭；受控数据与响应不证明 PostgreSQL 的提交结果、原生刷新弹窗、真实 iPhone 或辅助技术验收。完整内容审校、正式录音与生产验收继续待完成。
+
 ## 2026-10-06：手机词汇抽屉的模态焦点
 
 - 实际在公开阅读页 390px 点 Bonjour 后按 Tab，原知识 aside 虽已展示，activeElement 仍落在其外的背景正文，证实手机覆盖面板缺少模态焦点管理。

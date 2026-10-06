@@ -2,6 +2,15 @@ import type { ExerciseAnswer } from "@brioche/contracts/ExerciseAnswer";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
 
 const prefix = "brioche.learning.v1:";
+// Only a change notification; account data and request bodies stay in storage.
+export const draftsChangedEvent = "brioche:learning-drafts";
+function notifyDraftsChanged() {
+  if (
+    typeof window !== "undefined" &&
+    typeof window.dispatchEvent === "function"
+  )
+    window.dispatchEvent(new Event(draftsChangedEvent));
+}
 export function draftScope(
   userId: string,
   sessionId: string,
@@ -35,6 +44,7 @@ export function saveDraft(key: string, value: unknown): boolean {
   try {
     if (value === null) sessionStorage.removeItem(key);
     else sessionStorage.setItem(key, JSON.stringify(value));
+    notifyDraftsChanged();
     return true;
   } catch {
     return false;
@@ -45,6 +55,7 @@ export function clearLearningDrafts(userId: string) {
   try {
     for (const key of Object.keys(sessionStorage))
       if (key.startsWith(owner)) sessionStorage.removeItem(key);
+    notifyDraftsChanged();
   } catch {
     /* private browsing may deny storage */
   }

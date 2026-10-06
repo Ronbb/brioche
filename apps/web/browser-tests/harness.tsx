@@ -9,6 +9,9 @@ import { ChoiceDialog } from "../app/components/choice-dialog";
 import Profile from "../app/routes/profile";
 import Learning from "../app/routes/learning";
 import Reviews from "../app/routes/reviews";
+import Library from "../app/routes/library";
+import type { SavedItem } from "@brioche/contracts/SavedItem";
+import type { ReviewCard } from "@brioche/contracts/ReviewCard";
 import type { ReviewQueue } from "@brioche/contracts/ReviewQueue";
 import type { ReviewAttemptResult } from "@brioche/contracts/ReviewAttemptResult";
 import type { LearningState } from "@brioche/contracts/LearningState";
@@ -38,6 +41,9 @@ const qa = {
   queueReads: [] as ((value: ReviewQueue | number) => void)[],
   reviewFixture: null as ReviewQueue | null,
   cancellations: 0,
+  ownedWrites: [] as { path: string; body: Record<string, unknown> }[],
+  ownedRelease: [] as ((value: SavedItem | ReviewCard | number) => void)[],
+  savedFixture: null as SavedItem | null,
 };
 Object.assign(window, { qa });
 class ControlledUtterance extends EventTarget {
@@ -74,6 +80,25 @@ const originalFetch = window.fetch;
 window.fetch = async (input, init) => {
   if (String(input) === "/api/v1/auth/csrf")
     return Response.json({ csrfToken: "controlled" });
+  if (
+    (String(input).startsWith("/api/v1/me/saved-items/") &&
+      init?.method === "PUT") ||
+    String(input) === "/api/v1/me/review-enrollments"
+  ) {
+    const index =
+      qa.ownedWrites.push({
+        path: String(input),
+        body: JSON.parse(String(init?.body)),
+      }) - 1;
+    return new Promise<Response>((resolve) => {
+      qa.ownedRelease[index] = (value) =>
+        resolve(
+          typeof value === "number"
+            ? new Response("", { status: value })
+            : Response.json(value),
+        );
+    });
+  }
   if (String(input) === "/api/v1/me/reviews/qa-card/attempts") {
     const index = qa.reviewWrites.push(JSON.parse(String(init?.body))) - 1;
     return new Promise<Response>((resolve) => {
@@ -363,6 +388,51 @@ function ReviewsHarness() {
     </LearningProvider>
   );
 }
+const savedItem: SavedItem = {
+  id: "qa-saved",
+  knowledgeId: "qa-word",
+  sourceLessonId: lesson.id,
+  sourceRevision: 1,
+  vocabulary: reviewQueue.items[0].vocabulary,
+  saved: true,
+  withdrawn: false,
+  version: 1,
+  createdAt: "2026-10-06T00:00:00Z",
+};
+qa.savedFixture = savedItem;
+function LibraryHarness() {
+  const loaderData = {
+    view: "saved" as const,
+    page: { items: [savedItem], nextCursor: null },
+    cursor: null,
+  };
+  return (
+    <LearningProvider user={reviewUser}>
+      <main>
+        <Library
+          loaderData={loaderData}
+          params={{}}
+          matches={[
+            {
+              id: "root",
+              params: {},
+              pathname: "/",
+              loaderData: { user: reviewUser, enabled: true },
+              handle: undefined,
+            },
+            {
+              id: "routes/library",
+              params: {},
+              pathname: "/",
+              loaderData,
+              handle: undefined,
+            },
+          ]}
+        />
+      </main>
+    </LearningProvider>
+  );
+}
 const reading = kind === "reading";
 const router = createMemoryRouter(
   [
@@ -382,6 +452,8 @@ const router = createMemoryRouter(
         <SessionHarness />
       ) : kind === "reviews" ? (
         <ReviewsHarness />
+      ) : kind === "library" ? (
+        <LibraryHarness />
       ) : (
         <StartHarness />
       ),

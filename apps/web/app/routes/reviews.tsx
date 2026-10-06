@@ -21,6 +21,7 @@ import { validOwnedPending } from "../lib/owned-draft";
 import { useLearning } from "../components/learning";
 import { Icon } from "../components/icon";
 import { PendingNavigation } from "../components/pending-navigation";
+import { usePendingOwnedWrites } from "../components/pending-owned-writes";
 import type { Route } from "./+types/reviews";
 export async function loader({ request }: Route.LoaderArgs) {
   try {
@@ -68,6 +69,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
     ? draftScope(audio.profile.id, "reviews", 1) + ":pending"
     : "";
   const hasPendingWrite = !!pending.current;
+  const ownedPending = usePendingOwnedWrites(audio.profile?.id);
   useEffect(() => {
     generation.current++;
     alive.current = true;
@@ -312,7 +314,7 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
   return (
     <section className="review-page page-arrive">
       <PendingNavigation
-        active={hasPendingWrite}
+        active={hasPendingWrite || ownedPending}
         onStay={() => {
           const target = queueStale
             ? staleHeading.current

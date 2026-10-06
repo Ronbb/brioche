@@ -12,6 +12,8 @@ import { Bookmark } from "../components/bookmark";
 import { Enroll } from "../components/enroll";
 import { Icon } from "../components/icon";
 import { usePageCursorFocus } from "../components/page-cursor-focus";
+import { PendingNavigation } from "../components/pending-navigation";
+import { usePendingOwnedWrites } from "../components/pending-owned-writes";
 import type { Route } from "./+types/library";
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url),
@@ -44,8 +46,13 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 export default function Library({ loaderData }: Route.ComponentProps) {
   const heading = usePageCursorFocus(loaderData.cursor);
+  const pending = usePendingOwnedWrites(useLearning().profile?.id);
   return (
     <section className="settings-page page-arrive">
+      <PendingNavigation
+        active={pending}
+        onStay={() => heading.current?.focus({ preventScroll: true })}
+      />
       <div className="settings-title-row">
         <h1 ref={heading} tabIndex={-1}>
           我的表达

@@ -908,3 +908,99 @@ test("revoked reviews close the leave prompt, focus recovery, and never revive a
   );
   assert.equal(await evaluate("qa.reviewWrites.length"), 1);
 });
+
+test("collapsed library cards retain all pending writes and retry the exact original after navigation", async () => {
+  await open("library");
+  await browser("focus", ".library-entry-heading");
+  await press("Enter");
+  await browser("focus", ".bookmark-action");
+  await press("Enter");
+  await browser(
+    "focus",
+    ".knowledge-actions:not(:has(.bookmark-action)) button",
+  );
+  await press("Enter");
+  await browser("wait", "--fn", "qa.ownedWrites.length===2");
+  const original = await evaluate("qa.ownedWrites[0]");
+  await browser("focus", ".library-entry-heading");
+  await press("Enter");
+  assert.equal(
+    await evaluate("!!document.querySelector('.library-entry-body')"),
+    false,
+  );
+  assert.equal(
+    await evaluate(
+      "(()=>{const e=new Event('beforeunload',{cancelable:true});window.dispatchEvent(e);return e.defaultPrevented})()",
+    ),
+    true,
+  );
+  // One acknowledged request cannot clear another pending operation.
+  await evaluate("qa.ownedRelease[1](qa.reviewFixture.items[0])");
+  await browser(
+    "wait",
+    "--fn",
+    "Object.keys(sessionStorage).filter(k=>k.includes(':owned:')).length===1",
+  );
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", ".pending-navigation[open]");
+  await press("Escape");
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "我的表达",
+  );
+  await evaluate("qa.ownedRelease[0](503)");
+  await evaluate("qa.navigate(-1)");
+  await browser("wait", ".pending-navigation[open]");
+  await browser("focus", ".pending-navigation .text-button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.route==='/previous'");
+  assert.deepEqual(
+    await evaluate(
+      "JSON.parse(sessionStorage.getItem(Object.keys(sessionStorage).find(k=>k.includes(':owned:'))))",
+    ),
+    { ...original, method: "PUT" },
+  );
+  await evaluate("qa.navigate('/')");
+  await browser("wait", ".library-entry-heading");
+  await browser("focus", ".library-entry-heading");
+  await press("Enter");
+  await browser(
+    "wait",
+    "--fn",
+    "!!document.querySelector('.bookmark-action:disabled') && !!Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='重试保存')",
+  );
+  await browser(
+    "focus",
+    ".knowledge-actions:has(.bookmark-action) button:last-child",
+  );
+  await press("Enter");
+  await browser("wait", "--fn", "qa.ownedWrites.length===3");
+  assert.deepEqual(await evaluate("qa.ownedWrites[2]"), original);
+  await browser("focus", ".library-entry-heading");
+  await press("Enter");
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", ".pending-navigation[open]");
+  // A late acknowledgement clears storage even when its writer is unmounted.
+  await evaluate(
+    "qa.ownedRelease[2]({...qa.savedFixture,saved:false,version:2})",
+  );
+  await browser(
+    "wait",
+    "--fn",
+    "!document.querySelector('.pending-navigation[open]') && !Object.keys(sessionStorage).some(k=>k.includes(':owned:'))",
+  );
+  assert.equal(await evaluate("qa.route"), "/");
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "我的表达",
+  );
+  assert.equal(
+    await evaluate(
+      "(()=>{const e=new Event('beforeunload',{cancelable:true});window.dispatchEvent(e);return e.defaultPrevented})()",
+    ),
+    false,
+  );
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", "--fn", "qa.route==='/login'");
+  assert.equal(await evaluate("qa.ownedWrites.length"), 3);
+});
