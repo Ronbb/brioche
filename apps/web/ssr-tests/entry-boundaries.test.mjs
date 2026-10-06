@@ -65,11 +65,40 @@ const server = createServer((request, response) => {
     response.statusCode = authenticated ? 200 : fixture ? 404 : 401;
     response.end(JSON.stringify(authenticated ? profile : {}));
   } else if (
+    request.url.startsWith("/api/v1/operator/characters") &&
+    authenticated &&
+    profile.role === "operator"
+  ) {
+    response.end(JSON.stringify({ items: [], nextId: null }));
+  } else if (
     request.url.startsWith("/api/v1/operator/history") &&
     authenticated &&
     profile.role === "operator"
   ) {
     response.end(JSON.stringify({ items: [], next: null }));
+  } else if (
+    /^\/api\/v1\/operator\/accounts\/1\/sessions/.test(request.url) &&
+    authenticated &&
+    profile.role === "operator"
+  ) {
+    response.end(
+      JSON.stringify({
+        account: {
+          id: "1",
+          email: "controlled@example.test",
+          displayName: "测试账号",
+          role: "learner",
+        },
+        items: [
+          {
+            id: "a".repeat(64),
+            expiresAt: "2027-01-01T00:00:00Z",
+            current: false,
+          },
+        ],
+        nextId: null,
+      }),
+    );
   } else if (
     request.url.startsWith("/api/v1/operator/accounts") &&
     authenticated &&
@@ -274,6 +303,52 @@ test("admin account SSR gates identity, filters cursors and never renders genera
     assert.equal(
       requests.some((item) => item.method !== "GET"),
       false,
+    );
+  } finally {
+    authenticated = false;
+    profile.role = "learner";
+  }
+});
+
+test("admin session SSR authorizes before reading and forwards only the bounded cursor", async () => {
+  try {
+    fixture = false;
+    authenticated = false;
+    requests.length = 0;
+    assert.equal((await request("/admin/accounts/1/sessions")).status, 401);
+    authenticated = true;
+    profile.role = "learner";
+    assert.equal((await request("/admin/accounts/1/sessions")).status, 403);
+    assert.equal(
+      requests.some((item) => item.path.includes("/sessions")),
+      false,
+    );
+    profile.role = "operator";
+    requests.length = 0;
+    const response = await request(
+      "/admin/accounts/1/sessions?afterId=" +
+        "b".repeat(64) +
+        "&ignored=internal",
+    );
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("cache-control"), "private, no-store");
+    const read = requests.find((item) => item.path.includes("/sessions"));
+    assert.equal(
+      read.path,
+      "/api/v1/operator/accounts/1/sessions?afterId=" + "b".repeat(64),
+    );
+    assert.equal(read.cookie, "brioche.sid=controlled-ssr-session");
+    const html = await response.text();
+    assert.match(html, /撤销此会话/);
+    assert.match(html, /中国时间/);
+    assert.doesNotMatch(html, /当前浏览器/);
+    assert.equal(
+      requests.some((item) => item.method !== "GET"),
+      false,
+    );
+    assert.equal(
+      (await request("/admin/accounts/not-an-id/sessions")).status,
+      400,
     );
   } finally {
     authenticated = false;
@@ -606,6 +681,41 @@ test("exercise referenced by explore uses the real learning entry in production"
     lesson.steps = originalSteps;
     authenticated = false;
     fixture = false;
+  }
+});
+
+test("character library SSR authorizes before reading private voice profiles", async () => {
+  authenticated = false;
+  requests.length = 0;
+  assert.equal((await request("/admin/characters")).status, 401);
+  assert.ok(
+    !requests.some((r) => r.path.startsWith("/api/v1/operator/characters")),
+  );
+  authenticated = true;
+  profile.role = "learner";
+  requests.length = 0;
+  assert.equal((await request("/admin/characters")).status, 403);
+  assert.ok(
+    !requests.some((r) => r.path.startsWith("/api/v1/operator/characters")),
+  );
+  profile.role = "operator";
+  try {
+    requests.length = 0;
+    const response = await request(
+      "/admin/characters?afterId=character-camille&secret=discard",
+    );
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get("cache-control"), /no-store/);
+    assert.ok(
+      requests.some(
+        (r) =>
+          r.path === "/api/v1/operator/characters?afterId=character-camille",
+      ),
+    );
+    assert.ok(!requests.some((r) => r.method !== "GET"));
+  } finally {
+    profile.role = "learner";
+    authenticated = false;
   }
 });
 

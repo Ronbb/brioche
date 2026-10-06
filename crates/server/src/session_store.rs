@@ -32,7 +32,7 @@ impl PgSessionStore {
         Ok(result.rows_affected())
     }
 }
-fn hash(id: &Id) -> String {
+pub(crate) fn hash(id: &Id) -> String {
     format!("{:x}", Sha256::digest(id.to_string().as_bytes()))
 }
 fn backend() -> Error {

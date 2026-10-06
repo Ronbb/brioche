@@ -3732,3 +3732,39 @@ h2[tabindex="-1"]:focus {
   @keyframes knowledge-backdrop-enter { from { background: transparent; backdrop-filter: blur(0); } to { background: #38291f28; backdrop-filter: blur(7px); } }
   @keyframes knowledge-backdrop-leave { from { background: #38291f28; backdrop-filter: blur(7px); } to { background: transparent; backdrop-filter: blur(0); } }
 }
+.character-profiles {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+}
+.character-profile {
+  padding: 24px;
+  background: var(--surface, #fffdf7);
+  border: 1px solid #e8dbb3;
+  border-radius: 24px;
+  min-width: 0;
+}
+.character-profile-head {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.character-profile-head img {
+  border-radius: 50%;
+  flex: none;
+}
+.character-profile-head h2,
+.character-profile-head p {
+  margin: 0;
+}
+.character-profile dl {
+  overflow-wrap: anywhere;
+}
+.character-profile dt {
+  color: #806c57;
+  margin-top: 16px;
+  font-size: 0.85rem;
+}
+.character-profile dd {
+  margin: 4px 0;
+}

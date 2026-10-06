@@ -206,6 +206,33 @@ async fn main() -> Result<()> {
         )
     };
     match command.as_str() {
+        "character-voice-import" => {
+            let args: Vec<String> = std::env::args().skip(2).collect();
+            if args.len() != 3 {
+                bail!("usage: character-voice-import <request.json> <operator-email> <reason>");
+            }
+            let document = brioche_server::author_json::Document::load(&args[0])?;
+            let mut request: brioche_course_contract::AdminCharacterVoiceRequest =
+                brioche_server::author_json::from_value(document.value, "")?;
+            request.reason = args[2].clone();
+            let database = db.as_ref().unwrap();
+            let row = database
+                .query_one_raw(sea_orm::Statement::from_sql_and_values(
+                    sea_orm::DbBackend::Postgres,
+                    "SELECT id FROM users WHERE email=$1 AND role='operator'",
+                    vec![args[1].clone().into()],
+                ))
+                .await?
+                .ok_or_else(|| anyhow::anyhow!("operator not found"))?;
+            let actor: i64 = row.try_get("", "id")?;
+            let result =
+                brioche_server::character_voices::append_profile(database, actor, request).await?;
+            println!(
+                "Character voice profile registered at revision {}. No audio generated or published.",
+                result.voice_revision
+            );
+            return Ok(());
+        }
         "audio-import" => {
             let args: Vec<String> = std::env::args().skip(2).collect();
             if args.len() != 3 {

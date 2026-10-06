@@ -121,6 +121,115 @@ async fn approvals_permissions_concurrency_and_publication() {
     operator
         .register(&backend, "operator@example.test", true)
         .await;
+    let voices_path = "/api/v1/operator/characters";
+    assert_eq!(visitor.send("GET", voices_path, None, true).await.0, 401);
+    assert_eq!(learner.send("GET", voices_path, None, true).await.0, 403);
+    let listed = operator.send("GET", voices_path, None, true).await;
+    assert_eq!(listed.0, 200);
+    assert!(
+        listed.1["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|v| v["voiceRevision"] == 0)
+    );
+    let seed: Value =
+        serde_json::from_str(include_str!("../../../docs/characters/voices.json")).unwrap();
+    let mut voice_request = json!({"characterId":"character-camille","characterRevision":1,"expectedVoiceRevision":0,"profile":seed["items"][0]["profile"],"reason":"isolated voice profile test"});
+    assert_eq!(
+        learner
+            .send("POST", voices_path, Some(voice_request.clone()), true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", voices_path, Some(voice_request.clone()), false)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", voices_path, Some(voice_request.clone()), true)
+            .await
+            .0,
+        200
+    );
+    assert_eq!(
+        operator
+            .send("POST", voices_path, Some(voice_request.clone()), true)
+            .await
+            .0,
+        409
+    );
+    voice_request["expectedVoiceRevision"] = json!(1);
+    voice_request["profile"]["voiceKind"] = json!("cloned");
+    assert_eq!(
+        operator
+            .send("POST", voices_path, Some(voice_request.clone()), true)
+            .await
+            .0,
+        400
+    );
+    voice_request["profile"]["voiceKind"] = json!("system");
+    voice_request["profile"]["defaultEmotion"] = json!("Quiet and calm.");
+    assert_eq!(
+        operator
+            .send("POST", voices_path, Some(voice_request), true)
+            .await
+            .0,
+        200
+    );
+    let fixed = operator
+        .send(
+            "GET",
+            "/api/v1/operator/characters/character-camille/1/voices/1",
+            None,
+            true,
+        )
+        .await;
+    assert_eq!(fixed.0, 200);
+    assert_eq!(
+        fixed.1["profile"]["defaultEmotion"],
+        seed["items"][0]["profile"]["defaultEmotion"]
+    );
+    assert!(
+        db.execute_unprepared("UPDATE character_voice_profiles SET reason='mutated'")
+            .await
+            .is_err()
+    );
+    let cli_request = root.join("luc-voice.json");
+    std::fs::write(&cli_request,json!({"characterId":"character-luc","characterRevision":1,"expectedVoiceRevision":0,"profile":seed["items"][1]["profile"],"reason":"CLI test"}).to_string()).unwrap();
+    let separator = if std::env::var("TEST_DATABASE_URL").unwrap().contains('?') {
+        "&"
+    } else {
+        "?"
+    };
+    let cli_url = format!(
+        "{}{separator}options=-csearch_path%3D{schema}",
+        std::env::var("TEST_DATABASE_URL").unwrap()
+    );
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+        .current_dir(&root)
+        .env("DATABASE_URL", cli_url)
+        .env("CONTENT_MODE", "database")
+        .env("API_BIND", "invalid-bind-must-not-be-used")
+        .args([
+            "character-voice-import",
+            cli_request.to_str().unwrap(),
+            "operator@example.test",
+            "isolated CLI profile initialization",
+        ])
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(String::from_utf8_lossy(&output.stdout).contains("registered at revision 1"));
     let mut source: Value =
         serde_json::from_str(include_str!("../../../docs/examples/a1-bakery.lesson.json")).unwrap();
     source["assetRefs"] = assets::fixture_refs();
@@ -760,6 +869,115 @@ async fn approvals_permissions_concurrency_and_publication() {
     let first_id = lookup("operator@example.test");
     let second_id = lookup("invited-operator@example.test");
     let learner_id = lookup("learner@example.test");
+    // Session controls never expose cookies/auth state and isolate the target account.
+    let sessions_path = format!("/api/v1/operator/accounts/{learner_id}/sessions");
+    assert_eq!(visitor.send("GET", &sessions_path, None, true).await.0, 401);
+    assert_eq!(learner.send("GET", &sessions_path, None, true).await.0, 403);
+    let initial = operator.send("GET", &sessions_path, None, true).await;
+    assert_eq!(initial.0, 200);
+    assert_eq!(initial.1["items"].as_array().unwrap().len(), 1);
+    let initial_key = initial.1["items"][0]["id"].as_str().unwrap().to_owned();
+    let mut learner_device = Browser::new(app.clone()).await;
+    assert_eq!(learner_device.send("POST","/api/v1/auth/login",Some(json!({"email":"learner@example.test","password":"correct horse brioche fromage"})),true).await.0,200);
+    let listed = operator.send("GET", &sessions_path, None, true).await;
+    assert_eq!(listed.1["items"].as_array().unwrap().len(), 2);
+    let key = listed.1["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|s| s["id"] != initial_key)
+        .unwrap()["id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    assert_eq!(key.len(), 64);
+    assert!(
+        !listed
+            .1
+            .to_string()
+            .contains(learner_device.cookie.split('=').nth(1).unwrap())
+    );
+    for private in ["csrf", "password", "brioche.auth", "settings"] {
+        assert!(!listed.1.to_string().contains(private));
+    }
+    let revoke = format!("{sessions_path}/{key}/revoke");
+    let reason = json!({"reason":"revoke second learner device"});
+    assert_eq!(
+        learner
+            .send("POST", &revoke, Some(reason.clone()), true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", &revoke, Some(reason.clone()), false)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                &format!("/api/v1/operator/accounts/{first_id}/sessions/{key}/revoke"),
+                Some(reason.clone()),
+                true
+            )
+            .await
+            .0,
+        404
+    );
+    assert_eq!(
+        learner_device.send("GET", "/api/v1/me", None, true).await.0,
+        200
+    );
+    assert_eq!(
+        operator
+            .send("POST", &revoke, Some(reason.clone()), true)
+            .await
+            .0,
+        200
+    );
+    assert_eq!(
+        operator.send("POST", &revoke, Some(reason), true).await.0,
+        404
+    );
+    assert_eq!(
+        learner_device.send("GET", "/api/v1/me", None, true).await.0,
+        401
+    );
+    assert_eq!(learner.send("GET", "/api/v1/me", None, true).await.0, 200);
+    assert_eq!(
+        operator
+            .send("GET", &format!("{sessions_path}?afterId=bad"), None, true)
+            .await
+            .0,
+        400
+    );
+    // Synthetic opaque records test bounded paging and exclusion of expired sessions.
+    db.execute_unprepared(&format!("INSERT INTO browser_sessions(id_hash,data,expires_at) SELECT lpad(to_hex(n),64,'0'),data,CURRENT_TIMESTAMP+interval '1 day' FROM browser_sessions CROSS JOIN generate_series(5000,5024) n WHERE id_hash='{initial_key}'; INSERT INTO browser_sessions(id_hash,data,expires_at) SELECT repeat('f',64),data,CURRENT_TIMESTAMP-interval '1 second' FROM browser_sessions WHERE id_hash='{initial_key}'")).await.unwrap();
+    let first_page = operator.send("GET", &sessions_path, None, true).await;
+    assert_eq!(first_page.1["items"].as_array().unwrap().len(), 20);
+    let after = first_page.1["nextId"].as_str().unwrap();
+    let second_page = operator
+        .send(
+            "GET",
+            &format!("{sessions_path}?afterId={after}"),
+            None,
+            true,
+        )
+        .await;
+    assert_eq!(second_page.1["items"].as_array().unwrap().len(), 6);
+    assert!(second_page.1["nextId"].is_null());
+    let all = first_page.1["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .chain(second_page.1["items"].as_array().unwrap());
+    let ids: std::collections::HashSet<_> = all.map(|s| s["id"].as_str().unwrap()).collect();
+    assert_eq!(ids.len(), 26);
+    assert!(!ids.contains("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
     let payload = json!({"expectedRole":"learner","role":"operator","reason":"promote learner"});
     let learner_path = format!("/api/v1/operator/accounts/{learner_id}/role");
     assert_eq!(
@@ -873,6 +1091,49 @@ async fn approvals_permissions_concurrency_and_publication() {
             .iter()
             .any(|item| item["action"] == "role")
     );
+    let survivor_id = if first.0 == 200 {
+        &second_id
+    } else {
+        &first_id
+    };
+    let own = survivor
+        .send(
+            "GET",
+            &format!("/api/v1/operator/accounts/{survivor_id}/sessions"),
+            None,
+            true,
+        )
+        .await;
+    let current = own.1["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|s| s["current"] == true)
+        .unwrap()["id"]
+        .as_str()
+        .unwrap();
+    let revoked = survivor
+        .send(
+            "POST",
+            &format!("/api/v1/operator/accounts/{survivor_id}/sessions/{current}/revoke"),
+            Some(json!({"reason":"revoke current operator browser"})),
+            true,
+        )
+        .await;
+    assert_eq!(revoked.0, 200);
+    assert_eq!(revoked.1["current"], true);
+    assert_eq!(survivor.send("GET", "/api/v1/me", None, true).await.0, 401);
+    let count = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT count(*) AS n FROM account_admin_audit WHERE action='sessions'".to_owned(),
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get::<i64>("", "n")
+        .unwrap();
+    assert_eq!(count, 2);
     db.close().await.unwrap();
     admin
         .execute_unprepared(&format!("DROP SCHEMA {schema} CASCADE"))

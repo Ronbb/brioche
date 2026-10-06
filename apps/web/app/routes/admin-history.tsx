@@ -29,6 +29,7 @@ export function headers() {
   return { "Cache-Control": "private, no-store", Vary: "Cookie" };
 }
 const labels: Record<string, string> = {
+  voiceProfile: "新增角色声音档案",
   approve: "批准课程",
   reject: "退回课程",
   import: "导入课程",
@@ -39,6 +40,7 @@ const labels: Record<string, string> = {
   inviteOperator: "生成管理员邀请",
   reset: "生成密码重置链接",
   role: "修改账号权限",
+  sessions: "撤销登录会话",
 };
 export default function AdminHistoryPage({
   loaderData: history,

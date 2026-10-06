@@ -137,3 +137,77 @@ pub struct AdminRoleRequest {
     pub role: AdminAccountRole,
     pub reason: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSessions {
+    pub account: AdminAccount,
+    pub items: Vec<AdminSession>,
+    pub next_id: Option<String>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSession {
+    // A SHA-256 record identifier, never a session cookie or reusable login token.
+    pub id: String,
+    pub expires_at: String,
+    pub current: bool,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminRevokeSessionRequest {
+    pub reason: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminRevokeSessionResult {
+    pub current: bool,
+}
+
+/// Private authoring data, never embedded in public lesson snapshots.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CharacterVoiceProfile {
+    pub personality: String,
+    pub speaking_style: String,
+    pub default_emotion: String,
+    pub provider: String,
+    pub model: String,
+    pub voice_id: String,
+    pub voice_kind: String,
+    pub locale: String,
+    pub rate: f64,
+    pub reference_audio: Option<CharacterVoiceReference>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CharacterVoiceReference {
+    pub asset_id: String,
+    pub revision: u32,
+    pub transcript: String,
+    // Provenance and consent for cloning, separate from ordinary playback rights.
+    pub cloning_permission: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminCharacterVoices {
+    pub items: Vec<AdminCharacterVoice>,
+    pub next_id: Option<String>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminCharacterVoice {
+    pub character: crate::Character,
+    pub avatar_revision: u32,
+    pub voice_revision: u32,
+    pub profile: Option<CharacterVoiceProfile>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminCharacterVoiceRequest {
+    pub character_id: String,
+    pub character_revision: u32,
+    pub expected_voice_revision: u32,
+    pub profile: CharacterVoiceProfile,
+    pub reason: String,
+}

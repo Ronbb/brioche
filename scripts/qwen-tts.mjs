@@ -1,13 +1,51 @@
 import { createHash } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, writeFile, open } from "node:fs/promises";
+import defaultLibrary from "../docs/characters/voices.json" with { type: "json" };
 import { resolve, relative, isAbsolute } from "node:path";
 import { pathToFileURL } from "node:url";
 
-const model = "qwen-audio-3.1-tts-flash";
-const voices = {
-  customer: "longanlingxin_v3.1",
-  shopkeeper: "xunanchuan_v3.1",
+const roleCharacters = {
+  customer: "character-camille",
+  shopkeeper: "character-luc",
 };
+export function characterFor(line, library = defaultLibrary) {
+  if (!Array.isArray(library?.items) || library.items.length > 100)
+    throw Error("角色库格式无效。");
+  const candidates = library.items.filter(
+    (item) =>
+      item.character?.characterId === roleCharacters[line.role] &&
+      item.character?.revision === 1,
+  );
+  if (candidates.length !== 1)
+    throw Error("角色库缺少固定角色版本或存在重复声音档案。");
+  const item = candidates[0],
+    p = item.profile;
+  if (
+    !Number.isInteger(item.voiceRevision) ||
+    item.voiceRevision < 1 ||
+    !p ||
+    p.provider !== "qwen" ||
+    p.model !== "qwen-audio-3.1-tts-flash" ||
+    p.locale !== "fr-FR" ||
+    p.voiceKind !== "system" ||
+    !/^[a-zA-Z0-9_.-]{1,200}$/.test(p.voiceId ?? "") ||
+    !Number.isFinite(p.rate) ||
+    p.rate < 0.5 ||
+    p.rate > 2
+  )
+    throw Error(
+      "角色声音档案尚未适配：当前生成器只支持 Qwen Flash 法语固定音色。",
+    );
+  for (const key of ["personality", "speakingStyle", "defaultEmotion"])
+    if (
+      typeof p[key] !== "string" ||
+      !p[key].trim() ||
+      Buffer.byteLength(p[key]) > 2000 ||
+      /[\u0000-\u001f\u007f]/.test(p[key])
+    )
+      throw Error("角色声音指令无效。");
+  return item;
+}
 export const sample = [
   {
     id: "01",
@@ -59,7 +97,9 @@ export const sample = [
   },
 ];
 
-export function requestFor(line, env) {
+export function requestFor(line, env, library = defaultLibrary) {
+  const character = characterFor(line, library);
+  const profile = character.profile;
   if (!env.DASHSCOPE_API_KEY) {
     throw new Error("请在 .local/tts.env 配置北京地域 DASHSCOPE_API_KEY。");
   }
@@ -104,7 +144,7 @@ export function requestFor(line, env) {
   if (
     !line ||
     !/^[a-zA-Z0-9_-]{1,40}$/.test(line.id ?? "") ||
-    !voices[line.role] ||
+    !roleCharacters[line.role] ||
     typeof line.text !== "string" ||
     !line.text.trim() ||
     [...line.text].length > 600 ||
@@ -116,17 +156,17 @@ export function requestFor(line, env) {
   return {
     endpoint: `${base.origin}/api/v1/services/audio/tts/SpeechSynthesizer`,
     body: {
-      model,
+      model: profile.model,
       input: {
         text: line.text,
-        voice: voices[line.role],
+        voice: profile.voiceId,
         format: "wav",
         sample_rate: 24000,
         language_hints: ["fr"],
-        rate: 1,
+        rate: profile.rate,
         seed: 0,
         enable_aigc_tag: true,
-        instruction: `Speak only the supplied French text, with clear natural French pronunciation for an A1 learner. Do not add words or read these instructions. ${line.emotion}`,
+        instruction: `Speak only the supplied French text, with clear natural French pronunciation for an A1 learner. Do not add words or read these instructions. Character: ${profile.personality} Speaking style: ${profile.speakingStyle} Default emotion: ${profile.defaultEmotion} Scene emotion: ${line.emotion}`,
       },
     },
   };
@@ -175,8 +215,13 @@ async function boundedBytes(response, limit) {
   return Buffer.concat(chunks, size);
 }
 
-export async function synthesize(line, env, fetcher = fetch) {
-  const request = requestFor(line, env);
+export async function synthesize(
+  line,
+  env,
+  fetcher = fetch,
+  library = defaultLibrary,
+) {
+  const request = requestFor(line, env, library);
   let response;
   try {
     response = await fetcher(request.endpoint, {
@@ -281,10 +326,29 @@ export function normalizeWav(source) {
 }
 
 export async function run(args, env = process.env) {
-  if (args.length !== 1 || !["--plan", "--generate"].includes(args[0]))
-    throw new Error("用法：qwen-tts.mjs --plan 或 --generate");
+  if (
+    ![1, 3].includes(args.length) ||
+    !["--plan", "--generate"].includes(args[0]) ||
+    (args.length === 3 && args[1] !== "--profiles")
+  )
+    throw new Error(
+      "用法：qwen-tts.mjs --plan 或 --generate [--profiles <角色档案.json>]",
+    );
+  let library = defaultLibrary;
+  if (args.length === 3) {
+    const file = await open(args[2], "r");
+    try {
+      if ((await file.stat()).size > 1024 * 1024)
+        throw Error("角色库文件过大。");
+      library = JSON.parse(await file.readFile("utf8"));
+    } finally {
+      await file.close();
+    }
+  }
+  // Validate every required role before any paid request or output file creation.
+  for (const line of sample) characterFor(line, library);
   // Validate credentials before creating any output or issuing paid requests.
-  if (args[0] === "--generate") requestFor(sample[0], env);
+  if (args[0] === "--generate") requestFor(sample[0], env, library);
   const privateRoot = resolve(".local/private/tts-qwen");
   const output = resolve(privateRoot, `bakery-${Date.now()}`);
   const within = relative(privateRoot, output);
@@ -295,13 +359,20 @@ export async function run(args, env = process.env) {
   await mkdir(output, { recursive: true });
   // Per-line receipts survive a later failure. New runs are explicit and bill again.
   for (const line of sample) {
-    const result = await synthesize(line, env);
+    const character = characterFor(line, library);
+    const result = await synthesize(line, env, fetch, library);
     const receipt = {
       status: "unreviewed",
       provider: "qwen",
       modelVersion: "provider-alias-not-immutable",
       generatedAt: new Date().toISOString(),
       role: line.role,
+      characterId: character.character.characterId,
+      characterRevision: character.character.revision,
+      voiceRevision: character.voiceRevision,
+      characterProfileSha256: createHash("sha256")
+        .update(JSON.stringify(character))
+        .digest("hex"),
       id: line.id,
       parameters: result.parameters,
       usage: result.usage,
@@ -341,7 +412,7 @@ if (
   } catch (error) {
     // Network and filesystem exceptions can contain signed URLs or environment data.
     const safe =
-      /^(请在 |试听台词|提供方|语音服务|语音响应|生成连接|生成已完成|用法：|输出路径)/;
+      /^(角色|请在 |试听台词|提供方|语音服务|语音响应|生成连接|生成已完成|用法：|输出路径)/;
     console.error(
       safe.test(error.message)
         ? error.message

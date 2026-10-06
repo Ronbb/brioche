@@ -7,11 +7,30 @@ import {
   sample,
   synthesize,
   normalizeWav,
+  characterFor,
 } from "../qwen-tts.mjs";
 const env = {
   DASHSCOPE_API_KEY: "private-test-key",
   QWEN_WORKSPACE_ID: "test-space",
 };
+test("generation locks character and voice revisions and refuses ambiguous or unsupported clones", () => {
+  const a = structuredClone(characterFor(sample[0]));
+  assert.equal(a.character.characterId, "character-camille");
+  assert.equal(a.voiceRevision, 1);
+  a.voiceRevision = 2;
+  a.profile.rate = 0.85;
+  a.profile.speakingStyle = "A reserved, quietly cheerful voice.";
+  const library = { items: [a] };
+  const request = requestFor(sample[0], env, library);
+  assert.equal(request.body.input.rate, 0.85);
+  assert.match(request.body.input.instruction, /quietly cheerful/);
+  assert.throws(() => characterFor(sample[0], { items: [a, a] }), /重复/);
+  a.character.revision = 2;
+  assert.throws(() => characterFor(sample[0], library), /缺少/);
+  a.character.revision = 1;
+  a.profile.voiceKind = "cloned";
+  assert.throws(() => requestFor(sample[0], env, library), /尚未适配/);
+});
 const wav = Buffer.alloc(44);
 wav.write("RIFF");
 wav.write("WAVE", 8);

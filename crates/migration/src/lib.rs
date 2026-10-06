@@ -12,6 +12,7 @@ mod m20261006_000010_audio;
 mod m20261007_000011_editorial;
 mod m20261007_000012_author_import;
 mod m20261007_000013_account_admin;
+mod m20261007_000014_character_voices;
 pub struct Migrator;
 #[async_trait::async_trait]
 impl MigratorTrait for Migrator {
@@ -30,6 +31,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20261007_000011_editorial::Migration),
             Box::new(m20261007_000012_author_import::Migration),
             Box::new(m20261007_000013_account_admin::Migration),
+            Box::new(m20261007_000014_character_voices::Migration),
         ]
     }
 }

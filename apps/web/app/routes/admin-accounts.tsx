@@ -153,6 +153,12 @@ export default function Accounts({
               <span>{account.role === "operator" ? "管理员" : "学习者"}</span>
             </div>
             <p className="admin-actor">{account.email}</p>
+            <Link
+              className="text-button"
+              to={`/admin/accounts/${account.id}/sessions`}
+            >
+              登录会话
+            </Link>
             <button
               className="text-button"
               onClick={() => {

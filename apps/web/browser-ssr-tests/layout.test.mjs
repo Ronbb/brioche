@@ -75,6 +75,17 @@ let origin,
 let accounts = false;
 let operatorAccount = false;
 let managedRole = "learner";
+let managedSessionRevoked = false;
+const voiceSeed = JSON.parse(
+  await readFile(
+    new URL("../../../docs/characters/voices.json", import.meta.url),
+    "utf8",
+  ),
+);
+let characterVoice = { ...voiceSeed.items[0], voiceRevision: 0, profile: null };
+const characterAvatar = await readFile(
+  new URL("../public/assets/avatars/camille.svg", import.meta.url),
+);
 let adminApproved = false;
 let adminWrites = [];
 let lessonStatus = 200;
@@ -100,6 +111,42 @@ const api = createServer((request, response) => {
     response.end(JSON.stringify({ csrfToken: "controlled-admin-csrf" }));
     return;
   }
+  if (
+    request.url === "/api/v1/operator/characters" &&
+    request.method === "GET"
+  ) {
+    response.end(JSON.stringify({ items: [characterVoice], nextId: null }));
+    return;
+  }
+  if (
+    request.url === "/api/v1/operator/characters" &&
+    request.method === "POST"
+  ) {
+    let body = "";
+    request.on("data", (chunk) => {
+      body += chunk;
+    });
+    request.on("end", () => {
+      const change = JSON.parse(body);
+      adminWrites.push({ operation: request.url, ...change });
+      characterVoice = {
+        ...characterVoice,
+        voiceRevision: characterVoice.voiceRevision + 1,
+        profile: change.profile,
+      };
+      response.end(JSON.stringify(characterVoice));
+    });
+    return;
+  }
+  if (
+    /^\/api\/v1\/operator\/characters\/character-camille\/1\/avatar$/.test(
+      request.url,
+    )
+  ) {
+    response.setHeader("content-type", "image/svg+xml");
+    response.end(characterAvatar);
+    return;
+  }
   if (request.url === "/api/v1/operator/overview") {
     response.end(
       JSON.stringify({
@@ -122,6 +169,48 @@ const api = createServer((request, response) => {
         ],
       }),
     );
+    return;
+  }
+  if (
+    request.url === "/api/v1/operator/accounts/101/sessions" &&
+    request.method === "GET"
+  ) {
+    response.end(
+      JSON.stringify({
+        account: {
+          id: "101",
+          email: "learner@example.test",
+          displayName: "测试账号",
+          role: managedRole,
+        },
+        items: managedSessionRevoked
+          ? []
+          : [
+              {
+                id: "a".repeat(64),
+                expiresAt: "2027-01-01T00:00:00Z",
+                current: false,
+              },
+            ],
+        nextId: null,
+      }),
+    );
+    return;
+  }
+  if (
+    request.url ===
+      "/api/v1/operator/accounts/101/sessions/" + "a".repeat(64) + "/revoke" &&
+    request.method === "POST"
+  ) {
+    let body = "";
+    request.on("data", (chunk) => {
+      body += chunk;
+    });
+    request.on("end", () => {
+      adminWrites.push({ operation: request.url, ...JSON.parse(body) });
+      managedSessionRevoked = true;
+      response.end(JSON.stringify({ current: false }));
+    });
     return;
   }
   if (
@@ -324,7 +413,8 @@ const web = createServer(async (request, response) => {
         },
       );
       response.writeHead(proxied.status, {
-        "Content-Type": "application/json",
+        "Content-Type":
+          proxied.headers.get("content-type") ?? "application/json",
         "Cache-Control": "private, no-store",
       });
       response.end(Buffer.from(await proxied.arrayBuffer()));
@@ -366,6 +456,59 @@ const web = createServer(async (request, response) => {
     serverErrors.push(String(error));
     if (!response.headersSent) response.writeHead(500);
     response.end();
+  }
+});
+
+test("operator versions a character voice profile through the real mobile page", async () => {
+  accounts = true;
+  operatorAccount = true;
+  adminWrites = [];
+  characterVoice = { ...voiceSeed.items[0], voiceRevision: 0, profile: null };
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("set", "viewport", "390", "844");
+    await browser("open", origin + "/admin/characters");
+    await browser("wait", ".character-profile");
+    assert.equal(
+      await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+      true,
+    );
+    await browser("click", ".character-profile button");
+    await browser("wait", ".admin-dialog[open]");
+    await browser(
+      "fill",
+      ".admin-dialog form > label:first-of-type textarea",
+      "Warm, curious and politely reserved.",
+    );
+    await browser(
+      "fill",
+      ".admin-dialog form > label:last-of-type input",
+      "隔离声音档案测试",
+    );
+    await browser("press", "Tab");
+    assert.equal(await evaluate("document.activeElement.type"), "submit");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "声音档案已保存为新版本。");
+    assert.equal(
+      await evaluate("document.querySelector('.admin-dialog').open"),
+      false,
+    );
+    assert.equal(adminWrites[0].expectedVoiceRevision, 0);
+    assert.equal(
+      adminWrites[0].profile.personality,
+      "Warm, curious and politely reserved.",
+    );
+    assert.equal(adminWrites[0].reason, "隔离声音档案测试");
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.character-profile-head img').naturalWidth>0",
+      ),
+      true,
+    );
+  } finally {
+    accounts = false;
+    operatorAccount = false;
   }
 });
 
@@ -629,6 +772,57 @@ test("operator enters admin from profile and approves using the centered dialog"
     assert.equal(change.role, "operator");
     assert.equal(change.reason, "隔离权限界面测试");
     managedRole = "learner";
+    assert.equal(
+      await evaluate(
+        "document.querySelector('a[href=\"/admin/accounts/101/sessions\"]')?.textContent",
+      ),
+      "登录会话",
+    );
+    const sessionsSnapshot = await browser("snapshot", "-i");
+    assert.match(JSON.stringify(sessionsSnapshot), /登录会话/);
+    const sessionsRef = Object.entries(sessionsSnapshot.refs).find(
+      ([, item]) => item.role === "link" && item.name === "登录会话",
+    )?.[0];
+    assert.ok(sessionsRef);
+    await browser("click", `@${sessionsRef}`);
+    await browser("wait", "--text", "撤销此会话");
+    await browser(
+      "find",
+      "role",
+      "button",
+      "click",
+      "--name",
+      "撤销此会话",
+      "--exact",
+    );
+    await browser("wait", ".admin-dialog[open]");
+    await browser("fill", "#session-reason", "隔离会话撤销测试");
+    await browser(
+      "find",
+      "role",
+      "button",
+      "click",
+      "--name",
+      "确认撤销",
+      "--exact",
+    );
+    await browser("wait", "--text", "没有有效的登录会话。");
+    assert.equal(
+      await evaluate("document.querySelector('.admin-dialog').open"),
+      false,
+    );
+    assert.equal(
+      adminWrites.find((item) => item.operation?.endsWith("/revoke")).reason,
+      "隔离会话撤销测试",
+    );
+    const accountSnapshot = await browser("snapshot", "-i");
+    const accountRef = Object.entries(accountSnapshot.refs).find(
+      ([, item]) => item.role === "link" && item.name === "账号管理",
+    )?.[0];
+    assert.ok(accountRef);
+    await browser("click", `@${accountRef}`);
+    await browser("wait", "#account-search");
+    managedSessionRevoked = false;
     await browser("click", "a[href^='/admin/accounts?']");
     await browser("wait", "--text", "较早账号");
     assert.equal(await evaluate("document.activeElement.tagName"), "H1");

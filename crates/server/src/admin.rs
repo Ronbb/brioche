@@ -18,11 +18,20 @@ use serde_json::Value;
 
 pub fn router(root: std::path::PathBuf) -> Router<Backend> {
     Router::new()
+        .merge(crate::character_voices::router())
         .route("/api/v1/operator/overview", get(overview))
         .route("/api/v1/operator/history", get(history))
         .route("/api/v1/operator/accounts", get(accounts))
         .route("/api/v1/operator/accounts/token", post(account_token))
         .route("/api/v1/operator/accounts/{id}/role", post(account_role))
+        .route(
+            "/api/v1/operator/accounts/{id}/sessions",
+            get(account_sessions),
+        )
+        .route(
+            "/api/v1/operator/accounts/{id}/sessions/{session}/revoke",
+            post(revoke_session),
+        )
         .route(
             "/api/v1/operator/lessons/{id}/revisions/{revision}/review",
             post(review),
@@ -56,6 +65,132 @@ struct HistoryQuery {
 struct AccountQuery {
     after_id: Option<String>,
     q: Option<String>,
+}
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct SessionQuery {
+    after_id: Option<String>,
+}
+fn session_key(value: &str) -> Result<(), AppError> {
+    if value.len() != 64
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    {
+        return Err(AppError::InvalidInput);
+    }
+    Ok(())
+}
+async fn account_sessions(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    Path(id): Path<String>,
+    Query(query): Query<SessionQuery>,
+) -> Result<Json<brioche_course_contract::AdminSessions>, AppError> {
+    use brioche_course_contract::{AdminAccount, AdminSession, AdminSessions};
+    require_operator(&auth)?;
+    let user_id = generation(&id)?;
+    if user_id == 0 {
+        return Err(AppError::InvalidInput);
+    }
+    let after = query.after_id.unwrap_or_default();
+    if !after.is_empty() {
+        session_key(&after)?;
+    }
+    let row = one(
+        &backend.db,
+        "SELECT email,display_name,role FROM users WHERE id=$1",
+        vec![user_id.into()],
+    )
+    .await?
+    .ok_or(AppError::NotFound)?;
+    let account = AdminAccount {
+        id: id.clone(),
+        email: field(&row, "email")?,
+        display_name: field(&row, "display_name")?,
+        role: field(&row, "role")?,
+    };
+    let current = auth.session.id().map(|id| crate::session_store::hash(&id));
+    let rows=backend.db.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT id_hash,to_char(expires_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS expires_at FROM browser_sessions WHERE data #>> '{brioche.auth,user_id}'=$1 AND expires_at>CURRENT_TIMESTAMP AND id_hash>$2 ORDER BY id_hash LIMIT 21",vec![id.into(),after.into()])).await.map_err(|_|AppError::Unavailable)?;
+    let more = rows.len() > 20;
+    let mut items = Vec::new();
+    for row in rows.into_iter().take(20) {
+        let key: String = field(&row, "id_hash")?;
+        items.push(AdminSession {
+            current: current.as_ref() == Some(&key),
+            id: key,
+            expires_at: field(&row, "expires_at")?,
+        });
+    }
+    let next_id = if more {
+        items.last().map(|item| item.id.clone())
+    } else {
+        None
+    };
+    Ok(Json(AdminSessions {
+        account,
+        items,
+        next_id,
+    }))
+}
+async fn revoke_session(
+    mut auth: AuthSession,
+    State(backend): State<Backend>,
+    Path((id, key)): Path<(String, String)>,
+    Json(request): Json<brioche_course_contract::AdminRevokeSessionRequest>,
+) -> Result<Json<brioche_course_contract::AdminRevokeSessionResult>, AppError> {
+    require_operator(&auth)?;
+    reason(&request.reason)?;
+    let target = generation(&id)?;
+    if target == 0 {
+        return Err(AppError::InvalidInput);
+    }
+    session_key(&key)?;
+    let actor = owner(&auth)?;
+    let current = auth
+        .session
+        .id()
+        .is_some_and(|session| crate::session_store::hash(&session) == key);
+    let tx = backend
+        .db
+        .begin()
+        .await
+        .map_err(|_| AppError::Unavailable)?;
+    exec(
+        &tx,
+        "SELECT pg_advisory_xact_lock(hashtextextended('account-admin',0))",
+        vec![],
+    )
+    .await?;
+    let operator = one(
+        &tx,
+        "SELECT role FROM users WHERE id=$1",
+        vec![actor.into()],
+    )
+    .await?
+    .ok_or(AppError::Forbidden)?;
+    if field::<String>(&operator, "role")? != "operator" {
+        return Err(AppError::Forbidden);
+    }
+    let user = one(
+        &tx,
+        "SELECT email FROM users WHERE id=$1",
+        vec![target.into()],
+    )
+    .await?
+    .ok_or(AppError::NotFound)?;
+    let deleted=tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"DELETE FROM browser_sessions WHERE id_hash=$1 AND data #>> '{brioche.auth,user_id}'=$2 RETURNING id_hash",vec![key.clone().into(),id.clone().into()])).await.map_err(|_|AppError::Unavailable)?;
+    if deleted.rows_affected() != 1 {
+        return Err(AppError::NotFound);
+    }
+    exec(&tx,"INSERT INTO account_admin_audit(action,actor_id,target_email,reason,details) VALUES('sessions',$1,$2,$3,$4)",vec![actor.into(),field::<String>(&user,"email")?.into(),request.reason.into(),serde_json::json!({"userId":id,"sessionRecord":key,"current":current}).into()]).await?;
+    tx.commit().await.map_err(|_| AppError::Unavailable)?;
+    if current {
+        auth.logout().await.map_err(|_| AppError::Unavailable)?;
+    }
+    Ok(Json(brioche_course_contract::AdminRevokeSessionResult {
+        current,
+    }))
 }
 async fn accounts(
     auth: AuthSession,
@@ -234,6 +369,8 @@ async fn history(
             SELECT 'import:'||lesson_id||':'||revision, 'import', lesson_id||' v'||revision, actor, reason, created_at FROM lesson_import_audit
             UNION ALL
             SELECT 'account:'||id, CASE WHEN action='invite' AND details->>'role'='operator' THEN 'inviteOperator' ELSE action END, target_email, 'user:'||actor_id, reason, created_at FROM account_admin_audit
+            UNION ALL
+            SELECT 'voice:'||character_id||':'||character_revision||':'||revision, 'voiceProfile', character_id||' v'||character_revision||' / voice v'||revision, 'user:'||actor_id, reason, created_at FROM character_voice_profiles
         )
         SELECT key,action,target,actor,reason,to_char(created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at
         FROM events WHERE $1::timestamptz IS NULL OR (created_at,key COLLATE "C") < ($1::timestamptz,$2::text COLLATE "C")

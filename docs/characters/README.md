@@ -1,0 +1,30 @@
+# 角色与声音档案
+
+角色库入口为 `/admin/characters`，从管理员后台进入，只有当前 operator 能读取和修改。姓名、头像和法语 locale 沿用已经登记的不可变 `character_revisions`；头像文件通过有权限的接口读取，登记未发布的头像不会因此变成公共文件。新增角色或换姓名/头像仍用现有素材包登记新角色版本。
+
+配音档案独立存于 `character_voice_profiles`，以 `(characterId, characterRevision, voiceRevision)` 固定。包含个性、说话习惯、默认情绪、提供方、模型、音色 ID、固定/复刻类型、locale、语速及可选参考录音。参考录音引用已登记的 `audio_assets` ID/revision，附原文和用于声音复刻的授权依据；它不会把普通音频播放授权自动转换为声音复刻授权。参考录音暂限30秒，尚未提供上传/远程复刻操作。
+
+编辑总是追加新版本，理由和真实管理员 ID 与档案同事务保存，进入后台历史页。数据库拒绝 UPDATE/DELETE；写入持有 account-admin 锁复核当前权限，expectedVoiceRevision 保护并发修改。旧角色/声音版本可由固定版本 API 读取；列表每次20个角色，显示各角色最新角色版本及其最新声音档案。当前页面展示最近20个历史声音版本，其他固定版本可通过 API 读取。不存在“最新声音自动覆盖旧音频”。
+
+## 一致语音生成
+
+`voices.json` 是 Camille/Luc 的初始配音方向，沿用用户认可的两个法语音色，新的个性指令尚未重新生成试听。Léa 尚未选择独立声音，不能把 Camille 的试听当成 Léa 已通过的声音。
+
+后台可以导出本页已配置档案，或导出单个固定版本。导出仅存于管理员主动下载的文件，不写浏览器持久存储。面包店试听生成器默认读取仓库初始档案，也可明确传入后台导出文件：
+
+```powershell
+node scripts/qwen-tts.mjs --plan --profiles <character-voices.json>
+node --env-file=.local/tts.env scripts/qwen-tts.mjs --generate --profiles <character-voices.json>
+```
+
+面包店脚本按固定角色 Camille v1、Luc v1 解析档案。每个角色必须恰好有一个声音版本，缺失/重复或不支持的模型/复刻类型在计费调用之前失败。角色特点和默认情绪与每句话的场景情绪共同形成指令；音色、模型、语速均读取档案。生成回执记录三重版本、完整参数与档案哈希，原始录音保留。这里只是面包店试听生产工具，尚未覆盖全部课程、Léa、词级时间轴或正式音频发布。
+
+提供方的模型名可能是可更新别名，固定档案只能稳定生成配置，不能保证重新生成的声纹/波形完全不变。正式课程应固定审听后登记的录音版本与文件哈希，保留原文件，而不是上线时重新请求 TTS。
+
+本机 CLI `character-voice-import <request.json> <operator-email> <reason>` 复用网页相同校验和事务，用于初始化实际角色档案；请求遵循生成的 `AdminCharacterVoiceRequest`，不绕过 operator、角色登记或版本冲突。它不调用提供方、不生成录音、不修改已发布课源。
+
+## 声音复刻
+
+用户提供的[阿里云声音复刻指南](https://help.aliyun.com/en/model-studio/voice-cloning-user-guide)列出北京地域 Qwen Audio 3.1 Flash，创建接口是北京业务空间 `/api/v1/services/audio/tts/customization`。使用 `voice-enrollment`、`create_voice` 和明确的 `target_model`，之后合成使用返回的 `voice_id`；创建和合成必须绑定相同模型。北京与新加坡支持范围不同，不把 Qwen Audio、Qwen3-TTS VC 和 Realtime 的请求混用。
+
+文档建议10–20秒参考，至少5秒连续清晰的单人语音，避免背景音乐、其他人声音和过长停顿。现有13.12秒混合对话含多个角色，不能作为单个角色参考。生产档案可以登记人工创建的复刻音色及其参考，但当前生成器仍明确拒绝 cloned；尚未发送任何复刻请求、上传私人录音或验证复刻法语/情绪效果。后续适配应先核验目标模型与音色绑定、参考文件授权/解码/哈希，再为每个角色单独试听。

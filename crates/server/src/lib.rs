@@ -3,6 +3,7 @@ pub mod audio;
 pub mod author_import;
 pub mod author_json;
 pub mod author_source;
+pub mod character_voices;
 pub mod content;
 pub mod csrf;
 pub mod dashboard;
