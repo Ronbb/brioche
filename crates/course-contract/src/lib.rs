@@ -751,6 +751,8 @@ mod tests {
                 .unwrap();
         source.as_object_mut().unwrap().remove("serverOnly");
         source.as_object_mut().unwrap().remove("editorial");
+        source.as_object_mut().unwrap().remove("assetRefs");
+        source.as_object_mut().unwrap().remove("audioRefs");
         serde_json::from_value(source).unwrap()
     }
     #[test]

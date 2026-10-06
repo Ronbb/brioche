@@ -27,9 +27,11 @@
 5. a1-bakery-buy-breakfast
 6. a1-bakery-order-coffee
 
-对应作者源的 editorial.status 已改为 reviewed，note 明确记录项目所有者指示与日期。这是用户授权的批准，不冒充独立专家审校；其他 42 课保持 draft。课程批准不自动确认素材许可、录音或正式发布；素材清单目前仍保留原来的 planned/rightsConfirmed=false，未改写登记证据。
+对应作者源的 editorial.status 已改为 reviewed，note 明确记录项目所有者指示与日期。这是用户授权的批准，不冒充独立专家审校；其他 42 课保持 draft。课程批准不自动确认素材许可、录音或正式发布。
 
-前六课当前仅完成作者源批准记录，尚未导入生产或发布。
+用户随后明确要求导入生产。2026-10-07 已在生产 Compose 登记首六课所需的 5 张项目原创 SVG、3 个角色版本，导入 6 个 revision 1，实际 stage 并激活 `brioche-first-six-20261007`，generation 为 1。数据库确认 6/6 已发布且作者审批为 reviewed；公开目录关闭 developmentFixture，每课 API、媒体和 SSR 均通过读取检查。操作前已制作并验证数据库与媒体备份，具体私有路径不入 Git。
+
+登记包见 `content/releases/first-six.assets.json`，许可仅记录项目所有者指示在 Brioche 中使用项目原创 SVG 的范围，不能扩展为第三方开放许可。原有全量 planned 清单保持不变。未导入正式录音，继续使用已有浏览器 TTS 回退；不将上线等同独立专家审校或真实 iPhone 语音验收。
 
 ## 实现进度
 
@@ -37,4 +39,8 @@
 
 审批与 stage/activate/withdraw 共用 content_state 锁顺序；激活重新检查最新审批，不能利用过去 staging 绕过后来退回的决定。列表当前最多展示 200 个课程版本、100 个目录，分页和搜索待补齐。所有后台请求验证 operator，写入沿用 Origin/CSRF，响应 private/no-store；列表不返回作者源或答案。
 
-课程导入、网页创建 staging 目录、完整审批/发布记录展示、素材/角色/录音与账号管理尚未完成，完整管理员目标保持进行中。正式目录仍为空，不启用 fixture 代替生产内容。
+第二批已加入后台 JSON 文件导入课程、创建 staging 目录及理由输入。网页与 CLI 共用不可变导入和发布检查；拒绝重复 JSON 字段、未知素材引用、同 revision 内容替换。网页相同课源重试不重复插入或增加导入记录；CLI 保留已有版本冲突语义。新增不可变 lesson_import_audit，网页 actor 从当前账号生成，CLI 明确记录 local-author-cli，生产导入不冒充管理员网页登录行为。文件只在当前对话框内存中使用，关闭清空，迟到读取不能污染下一次选择。
+
+审批均在 `/admin` 操作，`/author-preview` 保留固定版本只读教学预览和受控判分。完整审批/发布历史展示、分页搜索、素材/角色/录音与账号管理尚未完成，完整管理员目标保持进行中。
+
+验证：95 项 Rust 契约/单元/作者 CLI/课程检查通过；隔离 PostgreSQL 的管理员与作者运行时 2 项、学习核心 3 项通过；TS 7、28 Web、12 SSR 与 4 项生产构建页面壳浏览器回归通过。覆盖 operator/CSRF 权限、并发审批、退回后禁止激活、超过默认请求体限制的真实文件导入、幂等重试、私有文件与发布目录上传、对话框键盘和重开清空。受控浏览器不替代真实登录/iPhone；旧提交 CI 曾因测试草稿继承已批准样本而失败，现显式设置测试草稿状态，最新完整远端 CI 另行核实。

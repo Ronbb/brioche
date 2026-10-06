@@ -10,8 +10,8 @@ use axum::{
     routing::{get, post},
 };
 use brioche_course_contract::{
-    AdminActivateRequest, AdminLesson, AdminOverview, AdminRelease, AdminReviewRequest,
-    AdminWithdrawRequest,
+    AdminActivateRequest, AdminDocumentRequest, AdminImportResult, AdminLesson, AdminOverview,
+    AdminRelease, AdminReviewRequest, AdminWithdrawRequest,
 };
 use sea_orm::{ConnectionTrait, DbBackend, IsolationLevel, Statement, TransactionTrait};
 use serde_json::Value;
@@ -25,10 +25,74 @@ pub fn router(root: std::path::PathBuf) -> Router<Backend> {
         )
         .route("/api/v1/operator/releases/activate", post(activate))
         .route(
+            "/api/v1/operator/releases/stage",
+            post(stage).layer(axum::extract::DefaultBodyLimit::max(4 * 1024 * 1024)),
+        )
+        .route(
+            "/api/v1/operator/lessons/import",
+            post(import_lesson).layer(axum::extract::DefaultBodyLimit::max(4 * 1024 * 1024)),
+        )
+        .route(
             "/api/v1/operator/lessons/{id}/revisions/{revision}/withdraw",
             post(withdraw),
         )
         .layer(axum::Extension(root))
+        .layer(axum::Extension(std::sync::Arc::new(
+            tokio::sync::Semaphore::new(2),
+        )))
+}
+async fn import_lesson(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    axum::Extension(permits): axum::Extension<std::sync::Arc<tokio::sync::Semaphore>>,
+    Json(request): Json<AdminDocumentRequest>,
+) -> Result<Json<AdminImportResult>, AppError> {
+    require_operator(&auth)?;
+    reason(&request.reason)?;
+    let _permit = permits.try_acquire().map_err(|_| AppError::RateLimited)?;
+    let source = tokio::task::spawn_blocking(move || {
+        let source = crate::author_json::parse_document(request.document.as_bytes())?;
+        crate::validate_source_schema(source.clone())?;
+        Ok::<_, anyhow::Error>(source)
+    })
+    .await
+    .map_err(|_| AppError::Unavailable)?
+    .map_err(|_| AppError::InvalidInput)?;
+    let actor = format!("user:{}", owner(&auth)?);
+    let imported = crate::author_import::import_retry(&backend.db, source, &actor, &request.reason)
+        .await
+        .map_err(|error| {
+            if error.is::<crate::author_import::RevisionConflict>() {
+                return AppError::Conflict;
+            }
+            error
+                .downcast_ref::<AppError>()
+                .map_or(AppError::InvalidInput, |_| AppError::Unavailable)
+        })?;
+    Ok(Json(imported))
+}
+async fn stage(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    axum::Extension(root): axum::Extension<std::path::PathBuf>,
+    axum::Extension(permits): axum::Extension<std::sync::Arc<tokio::sync::Semaphore>>,
+    Json(request): Json<AdminDocumentRequest>,
+) -> Result<Json<String>, AppError> {
+    require_operator(&auth)?;
+    reason(&request.reason)?;
+    let _permit = permits.try_acquire().map_err(|_| AppError::RateLimited)?;
+    let manifest: crate::content::ReleaseManifest = tokio::task::spawn_blocking(move || {
+        let value = crate::author_json::parse_document(request.document.as_bytes())?;
+        let manifest: crate::content::ReleaseManifest = crate::author_json::from_value(value, "")?;
+        manifest.validate_author()?;
+        Ok::<_, anyhow::Error>(manifest)
+    })
+    .await
+    .map_err(|_| AppError::Unavailable)?
+    .map_err(|_| AppError::InvalidInput)?;
+    let actor = format!("user:{}", owner(&auth)?);
+    crate::content::stage(&backend.db, &manifest, &actor, &request.reason, &root).await?;
+    Ok(Json(manifest.id))
 }
 fn reason(value: &str) -> Result<(), AppError> {
     if value.trim().is_empty() || value.len() > 1000 || value.chars().any(char::is_control) {

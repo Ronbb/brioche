@@ -1,7 +1,8 @@
 import { before, after, test } from "node:test";
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile, mkdtemp, unlink, rmdir } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { resolve, sep, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFile } from "node:child_process";
@@ -19,6 +20,11 @@ const cli = fileURLToPath(
 );
 const client = fileURLToPath(new URL("../build/client/", import.meta.url));
 const session = "brioche-ssr-layout-" + randomUUID();
+const uploadDirectory = await mkdtemp(
+  resolve(tmpdir(), "brioche-admin-upload-"),
+);
+const lessonUpload = resolve(uploadDirectory, "lesson.json");
+const releaseUpload = resolve(uploadDirectory, "release.json");
 const source = JSON.parse(
   await readFile(
     new URL("../../../docs/examples/a1-bakery.lesson.json", import.meta.url),
@@ -127,6 +133,30 @@ const api = createServer((request, response) => {
       adminWrites.push(decision);
       adminApproved = decision.approved;
       response.end(JSON.stringify({ ...decision, version: 1 }));
+    });
+    return;
+  }
+  if (
+    [
+      "/api/v1/operator/lessons/import",
+      "/api/v1/operator/releases/stage",
+    ].includes(request.url) &&
+    request.method === "POST"
+  ) {
+    let body = "";
+    request.on("data", (chunk) => {
+      body += chunk;
+    });
+    request.on("end", () => {
+      const upload = JSON.parse(body);
+      adminWrites.push({ operation: request.url, ...upload });
+      response.end(
+        JSON.stringify(
+          request.url.endsWith("/import")
+            ? { lessonId: lesson.id, revision: 1 }
+            : "browser-release",
+        ),
+      );
     });
     return;
   }
@@ -304,6 +334,73 @@ test("operator enters admin from profile and approves using the centered dialog"
       "--exact",
     );
     await browser("wait", "--text", "还没有发布目录");
+    await browser(
+      "find",
+      "role",
+      "button",
+      "click",
+      "--name",
+      "创建发布目录",
+      "--exact",
+    );
+    await browser("wait", ".admin-dialog[open]");
+    await browser("upload", "#admin-document", releaseUpload);
+    await browser("fill", "#admin-reason", "界面目录导入测试");
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('.admin-dialog .primary')?.disabled === false",
+    );
+    await browser("focus", ".admin-dialog .primary");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "发布目录已通过检查，可以预览或切换。");
+    assert.equal(adminWrites[1].operation, "/api/v1/operator/releases/stage");
+    await browser(
+      "find",
+      "role",
+      "button",
+      "click",
+      "--name",
+      "课程审批",
+      "--exact",
+    );
+    await browser(
+      "find",
+      "role",
+      "button",
+      "click",
+      "--name",
+      "导入课程",
+      "--exact",
+    );
+    await browser("wait", ".admin-dialog[open]");
+    await browser("upload", "#admin-document", lessonUpload);
+    await browser("fill", "#admin-reason", "界面课程导入测试");
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('.admin-dialog .primary')?.disabled === false",
+    );
+    await browser("focus", ".admin-dialog .primary");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "课程 v1 已导入，可以预览和审批。");
+    assert.equal(adminWrites[2].operation, "/api/v1/operator/lessons/import");
+    assert.deepEqual(JSON.parse(adminWrites[2].document), source);
+    await browser(
+      "find",
+      "role",
+      "button",
+      "click",
+      "--name",
+      "导入课程",
+      "--exact",
+    );
+    await browser("wait", ".admin-dialog[open]");
+    assert.equal(
+      await evaluate("document.querySelector('#admin-document').files.length"),
+      0,
+    );
+    await browser("press", "Escape");
   } finally {
     accounts = false;
     operatorAccount = false;
@@ -322,12 +419,20 @@ async function browser(...args) {
 }
 const evaluate = async (code) => (await browser("eval", code)).result;
 before(async () => {
+  await writeFile(lessonUpload, JSON.stringify(source));
+  await writeFile(
+    releaseUpload,
+    JSON.stringify({ id: "browser-release", schemaVersion: "1.0", levels: [] }),
+  );
   await new Promise((resolve) => api.listen(0, "127.0.0.1", resolve));
   process.env.INTERNAL_API_URL = `http://127.0.0.1:${api.address().port}`;
   await new Promise((resolve) => web.listen(0, "127.0.0.1", resolve));
   origin = `http://127.0.0.1:${web.address().port}`;
 });
 after(async () => {
+  await unlink(lessonUpload);
+  await unlink(releaseUpload);
+  await rmdir(uploadDirectory);
   try {
     if (opened) await browser("close");
   } finally {

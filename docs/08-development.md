@@ -428,3 +428,5 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 导入前语义定位补齐（2026-10-06）：新增回归实际复现必需教学文本等非法内容在check可定位、import却先进入环境检查；现PublicLesson.validate_intrinsic统一课程自身的ID/引用/教学文本/步骤/练习等检查，import连接数据库前复用。audio/登记描述仍延后补齐，完整validate与发布媒体校验保留。38server单元、25作者CLI、13课程、19公共契约及Clippy/fmt通过，生成契约无差异；未改HTTP契约或审校/发布数据。Docker API/migrate已按当前源构建并up --wait更新，迁移exit0、四服务healthy，loopback/LAN HTTP30075巡检均通过、零重启；设备、正式内容/录音与生产门槛继续保留。
 
 导入前私有规则引用校验（2026-10-06）：回归复现check可定位未知正确选项/排序语块，import却先报环境错误；现import前置语义检查对原课源调用同一Grader::from_author_source，核对规则与真实练习块及非空反馈，不输出私有答案。补三项import字段场景，38server单元、25作者CLI、13课程与Clippy/fmt通过；完整48课离线目录通过。本轮未改公开契约/Web/课程数据，未重跑此前19契约/浏览器或PG事务；实际Docker API/migrate已构建并up --wait更新，迁移exit0、四服务healthy，loopback/LAN HTTP30075健康、零重启。eb7fd8f固定提交CI37473650814本轮实际in_progress；完整人工内容/录音、真实设备及生产门槛继续保留。
+
+管理员操作（2026-10-07）：operator 在个人页进入 /admin，课程批准/退回在后台完成，预览页只读；后台可导入 JSON 课程源及发布目录，填写理由后调用与 CLI 共用的不可变版本/素材/审批校验。批准不等于激活。首六课已按用户指示实际导入生产并激活，目录 generation1；后续切换读取当前 generation。部署前备份与服务检查已完成，CLI/网页审计不冒充彼此 actor；详见10-admin-development.md、content/releases/README.md。

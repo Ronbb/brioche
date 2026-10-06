@@ -50,3 +50,16 @@ pub struct AdminWithdrawRequest {
     pub generation: String,
     pub reason: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminDocumentRequest {
+    pub document: String,
+    pub reason: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminImportResult {
+    pub lesson_id: String,
+    pub revision: u32,
+}

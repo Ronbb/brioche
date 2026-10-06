@@ -1,5 +1,6 @@
 import { Link, data, useRevalidator } from "react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { AdminImportResult } from "@brioche/contracts/AdminImportResult";
 import type { AdminOverview } from "@brioche/contracts/AdminOverview";
 import type { AdminLesson } from "@brioche/contracts/AdminLesson";
 import { getIdentity, getPrivate } from "../lib/api.server";
@@ -28,28 +29,85 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
   const [target, setTarget] = useState<{
     lesson?: AdminLesson;
     release?: string;
-    operation: "approve" | "reject" | "withdraw" | "activate";
+    operation:
+      "approve" | "reject" | "withdraw" | "activate" | "import" | "stage";
   } | null>(null);
   const [reason, setReason] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [document, setDocument] = useState("");
+  const [filename, setFilename] = useState("");
+  const [readingFile, setReadingFile] = useState(false);
+  const [fileSession, setFileSession] = useState(0);
+  const fileSequence = useRef(0);
+  useEffect(
+    () => () => {
+      fileSequence.current += 1;
+    },
+    [],
+  );
   const busy = useRef(false);
   const dialog = useRef<HTMLDialogElement>(null);
   function open(next: NonNullable<typeof target>) {
     setTarget(next);
     setReason("");
     setError("");
+    setDocument("");
+    setFilename("");
+    setReadingFile(false);
+    fileSequence.current += 1;
+    setFileSession((session) => session + 1);
     dialog.current?.showModal();
   }
+  async function readFile(file?: File) {
+    const sequence = ++fileSequence.current;
+    setDocument("");
+    setFilename("");
+    setError("");
+    setReadingFile(false);
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      setError("文件不能超过 2 MiB。");
+      return;
+    }
+    setReadingFile(true);
+    try {
+      const text = await file.text();
+      if (fileSequence.current !== sequence || !dialog.current?.open) return;
+      setDocument(text);
+      setFilename(file.name);
+    } catch {
+      if (fileSequence.current === sequence)
+        setError("文件读取失败，请重新选择。");
+    } finally {
+      if (fileSequence.current === sequence) setReadingFile(false);
+    }
+  }
   async function submit() {
-    if (busy.current || !target || !reason.trim()) return;
+    if (
+      busy.current ||
+      readingFile ||
+      !target ||
+      !reason.trim() ||
+      (["import", "stage"].includes(target.operation) && !document)
+    )
+      return;
     busy.current = true;
     setPending(true);
     setError("");
     try {
       const lesson = target.lesson;
-      if (target.operation === "activate") {
+      if (target.operation === "import") {
+        const result = await adminWrite<AdminImportResult>("lessons/import", {
+          document,
+          reason,
+        });
+        setNotice(`课程 v${result.revision} 已导入，可以预览和审批。`);
+      } else if (target.operation === "stage") {
+        await adminWrite("releases/stage", { document, reason });
+        setNotice("发布目录已通过检查，可以预览或切换。");
+      } else if (target.operation === "activate") {
         await adminWrite("releases/activate", {
           releaseId: target.release,
           generation: overview.generation,
@@ -69,7 +127,8 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
             reason,
           });
       }
-      setNotice("操作已保存。");
+      if (!["import", "stage"].includes(target.operation))
+        setNotice("操作已保存。");
       dialog.current?.close();
       refresh.revalidate();
     } catch (error) {
@@ -86,6 +145,8 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
     reject: "退回课程",
     withdraw: "撤回课程版本",
     activate: "切换发布目录",
+    import: "导入课程",
+    stage: "创建发布目录",
   };
   return (
     <section className="admin-page page-arrive">
@@ -115,6 +176,31 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
           onClick={() => setTab("releases")}
         >
           发布目录
+        </button>
+      </div>
+      <div className="admin-toolbar">
+        <button
+          className="admin-tool"
+          aria-label={tab === "lessons" ? "导入课程" : "创建发布目录"}
+          onClick={() =>
+            open({ operation: tab === "lessons" ? "import" : "stage" })
+          }
+        >
+          <strong>{tab === "lessons" ? "导入课程" : "创建发布目录"}</strong>
+          <span>
+            {tab === "lessons"
+              ? "选择课源文件，导入固定版本"
+              : "选择目录文件，检查课程与素材"}
+          </span>
+        </button>
+        <button
+          className="text-button"
+          aria-disabled={refresh.state !== "idle"}
+          onClick={() => {
+            if (refresh.state === "idle") refresh.revalidate();
+          }}
+        >
+          刷新列表
         </button>
       </div>
       <p role="status">{notice}</p>
@@ -225,12 +311,28 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
       <dialog
         ref={dialog}
         className="choice-dialog admin-dialog"
+        onClose={() => {
+          fileSequence.current += 1;
+          setDocument("");
+          setFilename("");
+          setReadingFile(false);
+        }}
         onCancel={(event) => {
           if (busy.current) event.preventDefault();
         }}
       >
         <h2>{target && labels[target.operation]}</h2>
         <p>{target?.lesson?.title ?? target?.release}</p>
+        {target?.operation === "import" && (
+          <p>
+            图片、头像和录音需先登记。相同版本不会覆盖已有内容；修改课程请使用新版本。
+          </p>
+        )}
+        {target?.operation === "stage" && (
+          <p>
+            目录中的课程必须已批准，素材需通过发布检查。创建后先预览，再切换正式目录。
+          </p>
+        )}
         {target?.operation === "withdraw" && (
           <p>此版本会永久停止访问，已有学习记录保留。恢复内容需要新版本。</p>
         )}
@@ -245,6 +347,24 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
             void submit();
           }}
         >
+          {target && ["import", "stage"].includes(target.operation) && (
+            <>
+              <label htmlFor="admin-document">
+                {target.operation === "import" ? "课程文件" : "目录文件"}
+              </label>
+              <input
+                id="admin-document"
+                type="file"
+                accept=".json,application/json"
+                disabled={pending}
+                key={fileSession}
+                onChange={(event) => {
+                  void readFile(event.target.files?.[0]);
+                }}
+              />
+              <p role="status">{readingFile ? "正在读取文件" : filename}</p>
+            </>
+          )}
           <label htmlFor="admin-reason">操作理由</label>
           <textarea
             id="admin-reason"
@@ -259,7 +379,15 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
             className="primary"
             aria-disabled={pending}
             aria-busy={pending}
-            disabled={!reason.trim()}
+            disabled={
+              !reason.trim() ||
+              readingFile ||
+              !!(
+                target &&
+                ["import", "stage"].includes(target.operation) &&
+                !document
+              )
+            }
           >
             {pending ? "正在保存" : "确认操作"}
           </button>

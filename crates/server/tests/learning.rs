@@ -343,6 +343,8 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         source["assetRefs"] = asset_fixtures::fixture_refs();
         if reviewed {
             source["editorial"]["status"] = json!("reviewed");
+        } else {
+            source["editorial"]["status"] = json!("draft");
         }
         let source = brioche_server::media::hydrate_source(&db, source)
             .await

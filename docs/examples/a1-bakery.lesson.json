@@ -539,5 +539,23 @@
       "avatarId": "avatar-lea-v1",
       "speechLocale": "fr-FR"
     }
+  ],
+  "assetRefs": [
+    {
+      "assetId": "art-bakery-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
   ]
 }

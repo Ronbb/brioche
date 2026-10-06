@@ -1,6 +1,6 @@
 use anyhow::{Context, Result, bail};
-use brioche_server::{AppState, development_fixture, entity, project_source, router};
-use sea_orm::{ActiveModelTrait, ConnectOptions, ConnectionTrait, Database, Set};
+use brioche_server::{AppState, development_fixture, router};
+use sea_orm::{ConnectOptions, ConnectionTrait, Database};
 use sea_orm_migration::MigratorTrait;
 
 #[tokio::main]
@@ -325,42 +325,14 @@ async fn main() -> Result<()> {
         }
         "import" => {
             let document = import_document.as_ref().unwrap();
-            let source = document.value.clone();
-            let source = brioche_server::media::hydrate_source(db.as_ref().unwrap(), source)
-                .await
-                .map_err(|error| document.semantic(error))?;
-            let source = brioche_server::recording::hydrate_source(db.as_ref().unwrap(), source)
-                .await
-                .map_err(|error| document.semantic(error))?;
-            let lesson =
-                project_source(source.clone()).map_err(|error| document.semantic(error))?;
-            brioche_server::grading::Grader::from_author_source(&lesson, &source)
-                .map_err(|error| document.semantic(error))?;
-            let revision = i32::try_from(lesson.revision)
-                .map_err(|_| document.diagnostic("/revision", "revision exceeds database range"))?;
-            entity::ActiveModel {
-                lesson_id: Set(lesson.id.clone()),
-                revision: Set(revision),
-                published: Set(false),
-                public_document: Set(serde_json::to_value(&lesson)?),
-                server_document: Set(source),
-            }
-            .insert(db.as_ref().unwrap())
+            brioche_server::author_import::import(
+                db.as_ref().unwrap(),
+                document.value.clone(),
+                "local-author-cli",
+                "local author import",
+            )
             .await
-            .map_err(|error| {
-                use sea_orm::SqlErr;
-                if matches!(error.sql_err(), Some(SqlErr::UniqueConstraintViolation(_))) {
-                    document.diagnostic(
-                        "/revision",
-                        "lesson revision already exists; revisions are immutable",
-                    )
-                } else {
-                    document.diagnostic(
-                        "/",
-                        "database write failed; verify lesson revision before retrying",
-                    )
-                }
-            })?;
+            .map_err(|error| document.semantic(error))?;
             tracing::info!("immutable lesson revision imported");
             return Ok(());
         }

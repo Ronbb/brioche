@@ -50,7 +50,10 @@ fn located(output: Output, file: &Path, text: &str, pointer: &str, offset: usize
     let before = &text[..offset];
     let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
     let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
-    assert!(!output.status.success());
+    assert!(
+        !output.status.success(),
+        "expected author rejection at {pointer}: {reason}"
+    );
     assert!(
         error.contains(&format!("{}:{line}:{column}: {pointer}:", file.display())),
         "{error}"
@@ -389,6 +392,8 @@ async fn import_and_stage_cli_locate_original_source_and_preserve_atomicity() {
     let lesson_file = root.join("lesson.json");
     let release_file = root.join("release.json");
     let mut source = brioche_server::development_source().unwrap();
+    // The repository example may be user-approved; this fixture explicitly exercises draft rejection.
+    source["editorial"] = json!({"status":"draft","note":"isolated draft rejection protocol"});
     source["assetRefs"] = asset_fixtures::fixture_refs();
     // Fixed registry references replace these placeholders before final validation.
     source["media"] = json!("author placeholder replaced by registered images");

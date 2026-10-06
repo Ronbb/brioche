@@ -125,11 +125,101 @@ async fn approvals_permissions_concurrency_and_publication() {
         serde_json::from_str(include_str!("../../../docs/examples/a1-bakery.lesson.json")).unwrap();
     source["assetRefs"] = assets::fixture_refs();
     source["editorial"] = json!({"status":"draft","note":"synthetic draft"});
+    source["summaryZh"] = json!("导入正文边界".repeat(1500));
+    let import_request = json!({"document":source.to_string(),"reason":"operator import test"});
+    assert!(serde_json::to_vec(&import_request).unwrap().len() > 16 * 1024);
+    assert_eq!(
+        learner
+            .send(
+                "POST",
+                "/api/v1/operator/lessons/import",
+                Some(import_request.clone()),
+                true
+            )
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                "/api/v1/operator/lessons/import",
+                Some(import_request.clone()),
+                false
+            )
+            .await
+            .0,
+        403
+    );
+    let mut missing_asset = source.clone();
+    missing_asset["assetRefs"][0]["assetId"] = json!("unregistered-asset");
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                "/api/v1/operator/lessons/import",
+                Some(json!({"document":missing_asset.to_string(),"reason":"invalid asset"})),
+                true
+            )
+            .await
+            .0,
+        400
+    );
+    assert_eq!(operator.send("POST","/api/v1/operator/lessons/import",Some(json!({"document":"{\"id\":\"a\",\"id\":\"b\"}","reason":"duplicate JSON member"})),true).await.0,400);
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                "/api/v1/operator/lessons/import",
+                Some(import_request.clone()),
+                true
+            )
+            .await
+            .0,
+        200
+    );
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                "/api/v1/operator/lessons/import",
+                Some(import_request.clone()),
+                true
+            )
+            .await
+            .0,
+        200
+    );
+    let mut different = source.clone();
+    different["summaryZh"] = json!("different content");
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                "/api/v1/operator/lessons/import",
+                Some(json!({"document":different.to_string(),"reason":"immutable conflict"})),
+                true
+            )
+            .await
+            .0,
+        409
+    );
+    let imports = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT count(*) AS n FROM lesson_import_audit",
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get::<i64>("", "n")
+        .unwrap();
+    assert_eq!(imports, 1);
     let source = brioche_server::media::hydrate_source(&db, source)
         .await
         .unwrap();
     let lesson = brioche_server::project_source(source.clone()).unwrap();
-    db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO lesson_revisions(lesson_id,revision,published,public_document,server_document) VALUES($1,$2,false,$3,$4)",[lesson.id.clone().into(),1.into(),serde_json::to_value(&lesson).unwrap().into(),source.clone().into()])).await.unwrap();
     let path = format!("/api/v1/operator/lessons/{}/revisions/1/review", lesson.id);
     let decision = json!({"version":0,"approved":true,"reason":"Test approval"});
     assert_eq!(
@@ -158,6 +248,31 @@ async fn approvals_permissions_concurrency_and_publication() {
             && !encoded.contains("correctOptionId")
     );
     let manifest:brioche_server::content::ReleaseManifest=serde_json::from_value(json!({"id":"admin-test","schemaVersion":"1.0","levels":[{"id":lesson.level_id,"label":"A1","units":[{"id":lesson.unit_id,"titleZh":"test","lessons":[{"lessonId":lesson.id,"revision":1}]}]}]})).unwrap();
+    let stage_request = json!({"document":serde_json::to_string(&manifest).unwrap(),"reason":"stage through admin"});
+    assert_eq!(
+        learner
+            .send(
+                "POST",
+                "/api/v1/operator/releases/stage",
+                Some(stage_request.clone()),
+                true
+            )
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                "/api/v1/operator/releases/stage",
+                Some(stage_request.clone()),
+                true
+            )
+            .await
+            .0,
+        400
+    );
     assert!(
         brioche_server::content::stage(&db, &manifest, "test", "test", &root)
             .await
@@ -187,9 +302,30 @@ async fn approvals_permissions_concurrency_and_publication() {
             .0,
         409
     );
-    brioche_server::content::stage(&db, &manifest, "test", "test", &root)
-        .await
-        .unwrap();
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                "/api/v1/operator/releases/stage",
+                Some(stage_request.clone()),
+                true
+            )
+            .await
+            .0,
+        200
+    );
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                "/api/v1/operator/releases/stage",
+                Some(stage_request.clone()),
+                true
+            )
+            .await
+            .0,
+        409
+    );
     assert_eq!(
         operator
             .send(

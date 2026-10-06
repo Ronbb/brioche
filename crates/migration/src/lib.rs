@@ -10,6 +10,7 @@ mod m20261006_000008_releases;
 mod m20261006_000009_media;
 mod m20261006_000010_audio;
 mod m20261007_000011_editorial;
+mod m20261007_000012_author_import;
 pub struct Migrator;
 #[async_trait::async_trait]
 impl MigratorTrait for Migrator {
@@ -26,6 +27,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20261006_000009_media::Migration),
             Box::new(m20261006_000010_audio::Migration),
             Box::new(m20261007_000011_editorial::Migration),
+            Box::new(m20261007_000012_author_import::Migration),
         ]
     }
 }

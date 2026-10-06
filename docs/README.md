@@ -14,6 +14,7 @@
 | [工程开发说明](08-development.md) | 当前已实现范围、实际启动与检查命令、Docker Compose |
 | [实现与验收清单](09-implementation-tracker.md) | 完整功能目标的状态、缺口与验收证据 |
 | [管理员后台开发目标](10-admin-development.md) | 后台管理范围、首六课用户批准与发布边界 |
+| [首六课发布记录](content/releases/README.md) | 已上线固定目录、原创素材登记与用户授权范围 |
 | [决策记录](decisions/0001-foundation.md) | 关键选择的依据、代价及重新评估条件 |
 | [示例课程](examples/a1-bakery.lesson.json) | 用一堂面包店课程检验数据设计 |
 | [A2 课程草稿包](content/a2/README.md) | 六个单元二十四课草稿，两级联合目录与语言/素材审校边界 |

@@ -15,6 +15,14 @@ use std::{
 
 const LIMIT: usize = 2 * 1024 * 1024;
 
+/// HTTP author imports use the same duplicate-member and size checks as local files.
+pub fn parse_document(bytes: &[u8]) -> Result<Value> {
+    if bytes.len() > LIMIT {
+        bail!("author JSON exceeds 2 MiB");
+    }
+    Ok(parse(bytes)?)
+}
+
 fn read(path: &Path) -> Result<Vec<u8>> {
     let file =
         File::open(path).with_context(|| format!("{}: cannot open author file", path.display()))?;

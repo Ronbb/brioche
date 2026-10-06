@@ -1992,6 +1992,9 @@ button.primary {
 .admin-note { color: var(--muted); line-height: 1.8; white-space: pre-wrap; }
 .admin-card-actions { flex-wrap: wrap; margin-top: 24px; }
 .admin-empty { padding: 32px 0; color: var(--muted); }
+.admin-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 24px; }
+.admin-tool { text-align: left; padding: 16px 20px; border-radius: 18px; background: var(--soft); display: grid; gap: 6px; }
+.admin-tool span { font-size: 13px; color: var(--muted); }
 .admin-dialog { position: fixed; inset: 0; margin: auto; width: min(440px, calc(100% - 32px)); max-height: calc(100dvh - 48px); padding: 24px; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); color: var(--ink); }
 .admin-dialog::backdrop { background: rgb(50 35 20 / .3); backdrop-filter: blur(8px); }
 .admin-dialog form { display: grid; gap: 14px; margin-top: 24px; }
