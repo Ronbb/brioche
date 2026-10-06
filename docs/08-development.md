@@ -7,7 +7,7 @@
 - 主屏幕入口：`public/manifest.webmanifest`、Apple 主屏幕名称及 180px PNG、192/512px manifest 图标与 SVG/32px favicon；源文件与维护约定见 `apps/web/public/icons/README.md`。standalone 启动仍保持在线学习，不注册 service worker 或缓存私人数据。实际 iPhone 添加和启动效果待设备验收。
 
 - pnpm / Cargo workspace、锁文件、Rust 1.99.0 工具链、TypeScript 7 独立类型检查。
-- React Router Framework Mode + Vite SSR；正式客户端路由 `/`、`/lessons/:lessonId`、`/review/:lessonId`、`/profile`。
+- React Router Framework Mode + Vite SSR；正式客户端包含首页、课程阅读、固定版本账号学习、`/reviews` 账号复习与 `/profile`；单课 `/practice/:lessonId`、`/review/:lessonId` 仅在 developmentFixture 模式提供演示。
 - 迁移确认过的视觉与主要阅读交互：角色介绍、头像整句、点词朗读和词汇解释、短文、全文播放/暂停/长按调速、复习卡片、统一设置、toast、动效和覆盖式滚动条。
 - 录音失败转浏览器语音时保持用户暂停意图：暂停期间迟到的媒体错误不会开始语音等待或朗读，明确恢复才从当前句以最新倍速尝试；无语音仍保留实际失败提示。等待中的切词/离页取消旧监听与回调。
 - 当前系统语音语句返回终止错误（含 canceled/interrupted）时停止播放器并用 toast 提示明确重试，不继续显示播放或推进下一句；应用停止/切词/调速导致的旧语句错误仍按播放代次和语句身份忽略。
@@ -196,7 +196,9 @@ cargo run -p brioche-server -- reset-password learner@example.com .local/reset-l
 
 步骤、判分记录、幂等结果和完成时复习卡片在事务中保存。相同键/载荷返回原结果，不同载荷拒绝；旧版本返回 409；固定快照撤回后返回 410，包括原幂等结果。浏览器遇到未确认的提交保留原请求和答案，明确重试原键，不自动生成第二次尝试。未提交答案与未确认原请求按账号、会话和固定 revision 保留在当前标签页；刷新或 SPA 离页后可以恢复原草稿与原幂等请求。已保存进度可跨设备读取，标签页本地草稿不跨设备同步。目录发布与硬撤回由上述 CLI 管理。
 
-独立 `/practice/:lessonId` 和 `/review/:lessonId` 仍为演示流程，不保存账号复习自评；账号学习完成生成复习卡片，账号 `/reviews` 自评已持久化；其他验收缺口仍按 [实现清单](09-implementation-tracker.md) 继续实施。
+独立 `/practice/:lessonId` 和 `/review/:lessonId` 仅在 developmentFixture 模式提供演示，不保存账号进度。正式模式旧练习入口重定向到对应课程，由用户明确开始或继续账号学习；旧单课复习入口重定向到 `/reviews`，未登录时继续进入 `/login?next=/reviews`。首页正式复习入口也按身份进入账号队列或登录，不跳演示页。账号学习完成生成复习卡片，账号 `/reviews` 自评已持久化；其他验收缺口仍按 [实现清单](09-implementation-tracker.md) 继续实施。
+
+SSR 入口回归运行 `pnpm build` 后再运行 `pnpm test:ssr`（CI 已接入相同顺序）。测试加载实际构建的 React Router 服务端，用隔离本地 HTTP 适配器控制目录模式和身份；覆盖正式入口重定向、匿名首页、开发演示与已登录私有队列读取。它不替代真实数据库、浏览器交互或设备验收。
 
 示例练习通过 `POST /api/demo/lessons/:id/grade` 调用 Rust 判分，仅在服务端启用 development fixture 时可用，不写数据库；数据库模式返回 404，不替代未来受认证/CSRF 保护的学习提交。请求必须携带匹配 Host 的 Origin，限定版本、题目 ID、答案类型、选项/词块范围与 body 大小。填空规范化 NFC、空白、大小写（按题配置）和法语弯引号，保留重音差异。规则源只在 Rust 服务端加载，生成 TS/前端 bundle 不含答案键。Unicode 处理依据 [unicode-normalization 文档](https://docs.rs/unicode-normalization/0.1.25/unicode_normalization/)。
 

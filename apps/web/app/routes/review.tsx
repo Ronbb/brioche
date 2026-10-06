@@ -1,10 +1,12 @@
 import { useRef, useState } from "react";
-import { Link } from "react-router";
-import { getLesson } from "../lib/api.server";
+import { Link, redirect } from "react-router";
+import { getCatalog, getLesson } from "../lib/api.server";
 import { useLearning } from "../components/learning";
 import { Icon } from "../components/icon";
 import type { Route } from "./+types/review";
 export async function loader({ params }: Route.LoaderArgs) {
+  const catalog = await getCatalog();
+  if (!catalog.developmentFixture) throw redirect("/reviews");
   return { lesson: await getLesson(params.lessonId) };
 }
 export default function Review({

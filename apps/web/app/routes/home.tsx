@@ -238,9 +238,21 @@ export default function Home({
               </button>
               <Link
                 className="home-review-link text-button"
-                to={context.profile ? "/reviews" : "/review/" + lesson.id}
+                to={
+                  catalog.developmentFixture
+                    ? "/review/" + lesson.id
+                    : context.profile
+                      ? "/reviews"
+                      : "/login?next=/reviews"
+                }
               >
-                <span>复习这组表达</span>
+                <span>
+                  {catalog.developmentFixture
+                    ? "复习这组表达"
+                    : context.profile
+                      ? "我的复习"
+                      : "登录后复习"}
+                </span>
                 <Icon name="arrow" />
               </Link>
             </aside>

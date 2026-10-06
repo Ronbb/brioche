@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { Link, redirect } from "react-router";
 import type { ExerciseAnswer } from "@brioche/contracts/ExerciseAnswer";
 import type { GradeRequest } from "@brioche/contracts/GradeRequest";
 import type { GradeResult } from "@brioche/contracts/GradeResult";
@@ -10,11 +10,10 @@ import { Icon } from "../components/icon";
 import type { Route } from "./+types/practice";
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const [lesson, catalog] = await Promise.all([
-    getLesson(params.lessonId),
-    getCatalog(),
-  ]);
-  return { lesson, demo: catalog.developmentFixture };
+  const catalog = await getCatalog();
+  if (!catalog.developmentFixture)
+    throw redirect("/lessons/" + encodeURIComponent(params.lessonId));
+  return { lesson: await getLesson(params.lessonId) };
 }
 export default function Practice({ loaderData }: Route.ComponentProps) {
   return (
@@ -24,7 +23,7 @@ export default function Practice({ loaderData }: Route.ComponentProps) {
     />
   );
 }
-function PracticeSession({ lesson, demo }: Route.ComponentProps["loaderData"]) {
+function PracticeSession({ lesson }: Route.ComponentProps["loaderData"]) {
   const learning = useLearning();
   const exercises = lesson.blocks.filter((b) => b.type === "exercise");
   const [index, setIndex] = useState(0),
@@ -107,16 +106,6 @@ function PracticeSession({ lesson, demo }: Route.ComponentProps["loaderData"]) {
       heading.current?.scrollIntoView({ block: "start", behavior: "instant" });
     });
   }
-  if (!demo)
-    return (
-      <section className="page-arrive practice-page">
-        <h1>练习</h1>
-        <p className="profile-note">账号学习功能正在接入，练习结果暂不保存。</p>
-        <Link className="text-button" to={"/lessons/" + lesson.id}>
-          回看课程
-        </Link>
-      </section>
-    );
   if (!current)
     return (
       <section className="page-arrive practice-page">

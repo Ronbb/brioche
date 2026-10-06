@@ -52,3 +52,4 @@ jobs:
         env:
           BRIOCHE_BACKUP_DOCKER_TEST: "1"
       - run: pnpm build
+      - run: pnpm test:ssr
