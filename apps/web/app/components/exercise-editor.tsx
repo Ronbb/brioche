@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { readDraft, saveDraft, validAnswer } from "../lib/learning-draft";
 import type { Block } from "@brioche/contracts/Block";
 import type { AttemptRecord } from "@brioche/contracts/AttemptRecord";
@@ -40,6 +40,10 @@ export function ExerciseEditor({
     [draftConflict, setDraftConflict] = useState(false);
   const previous = useRef(latest?.id);
   const previousConfirmation = useRef(confirmedSubmission);
+  const form = useRef<HTMLFormElement>(null),
+    feedback = useRef<HTMLDivElement>(null),
+    focusFeedback = useRef(false),
+    answerId = useId();
   const audio = useLearning(),
     storageWarning = useRef(false);
   useEffect(() => {
@@ -54,6 +58,7 @@ export function ExerciseEditor({
       confirmedSubmission !== previousConfirmation.current
     ) {
       previousConfirmation.current = confirmedSubmission;
+      focusFeedback.current = true;
       saveDraft(draftKey, null);
       setEditing(false);
       setDraftConflict(false);
@@ -96,6 +101,12 @@ export function ExerciseEditor({
       ? latest.answer.tokenIds
       : order;
   const result = !editing ? latest?.result : null;
+  useEffect(() => {
+    if (!result || !focusFeedback.current) return;
+    focusFeedback.current = false;
+    const frame = requestAnimationFrame(() => feedback.current?.focus());
+    return () => cancelAnimationFrame(frame);
+  }, [result, confirmedSubmission]);
   const ready =
     block.exerciseType === "single-choice"
       ? !!choice
@@ -104,6 +115,7 @@ export function ExerciseEditor({
         : order.length === block.tokens.length;
   return (
     <form
+      ref={form}
       className="exercise-sheet"
       onSubmit={(event) => {
         event.preventDefault();
@@ -115,6 +127,7 @@ export function ExerciseEditor({
               ? { kind: "text", text }
               : { kind: "order", tokenIds: order },
           () => {
+            focusFeedback.current = true;
             if (draftKey) saveDraft(draftKey, null);
             setEditing(false);
           },
@@ -160,12 +173,12 @@ export function ExerciseEditor({
             <p className="practice-sentence" lang="fr">
               {block.templateFr}
             </p>
-            <label className="answer-label" htmlFor={block.id + "-answer"}>
+            <label className="answer-label" htmlFor={answerId}>
               你的答案
             </label>
             <input
               className="practice-input"
-              id={block.id + "-answer"}
+              id={answerId}
               lang="fr"
               autoComplete="off"
               autoCapitalize="none"
@@ -209,6 +222,8 @@ export function ExerciseEditor({
             "practice-feedback" + (result.correct ? " is-correct" : "")
           }
           role="status"
+          ref={feedback}
+          tabIndex={-1}
         >
           <strong>{result.correct ? "答对了" : "再看看这个表达"}</strong>
           <p>{result.feedbackZh}</p>
@@ -217,15 +232,30 @@ export function ExerciseEditor({
       {!completed &&
         (result ? (
           <button
+            key="retry"
             type="button"
             className="text-button"
             disabled={blocked}
-            onClick={() => setEditing(true)}
+            onClick={() => {
+              setEditing(true);
+              requestAnimationFrame(() =>
+                form.current
+                  ?.querySelector<HTMLElement>(
+                    "fieldset input:not(:disabled), fieldset button:not(:disabled)",
+                  )
+                  ?.focus(),
+              );
+            }}
           >
             再试一次
           </button>
         ) : (
-          <button className="primary" disabled={!ready || blocked}>
+          <button
+            key="submit"
+            type="submit"
+            className="primary"
+            disabled={!ready || blocked}
+          >
             确认答案
             <Icon name="check" />
           </button>
