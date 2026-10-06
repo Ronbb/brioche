@@ -83,13 +83,52 @@ fn full_a1_sources_match_catalog_and_shared_knowledge_and_grade_all_exercises() 
 
 #[test]
 fn a2_travel_pilot_matches_cross_level_shared_knowledge_and_grades_all_exercises() {
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/content/a2");
-    for (id, mode) in [
+    check_a2_readings(&[
         ("a2-travel-plan-weekend", "article"),
         ("a2-travel-book-room", "dialogue"),
         ("a2-travel-buy-return-ticket", "dialogue"),
         ("a2-travel-tell-weekend", "article"),
-    ] {
+    ]);
+    check_catalog(
+        "../a2/catalog.pilot.release.json",
+        &[
+            "a1-first-conversations",
+            "a1-breakfast-bakery",
+            "a1-city-travel",
+            "a1-home-routine",
+            "a1-food-shopping",
+            "a1-social-meetings",
+            "a2-weekend-travel",
+        ],
+    );
+}
+
+#[test]
+fn a2_shared_living_matches_cross_level_catalog_and_grades_all_exercises() {
+    check_a2_readings(&[
+        ("a2-home-share-chores", "dialogue"),
+        ("a2-home-common-rules", "article"),
+        ("a2-home-shared-routine", "article"),
+        ("a2-home-compare-rooms", "dialogue"),
+    ]);
+    check_catalog(
+        "../a2/catalog.two-units.release.json",
+        &[
+            "a1-first-conversations",
+            "a1-breakfast-bakery",
+            "a1-city-travel",
+            "a1-home-routine",
+            "a1-food-shopping",
+            "a1-social-meetings",
+            "a2-weekend-travel",
+            "a2-shared-living",
+        ],
+    );
+}
+
+fn check_a2_readings(readings: &[(&str, &str)]) {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/content/a2");
+    for &(id, mode) in readings {
         let source = Document::load(root.join(format!("{id}.lesson.json")))
             .unwrap()
             .value;
@@ -120,18 +159,6 @@ fn a2_travel_pilot_matches_cross_level_shared_knowledge_and_grades_all_exercises
             "A2 reading length: {id}"
         );
     }
-    check_catalog(
-        "../a2/catalog.pilot.release.json",
-        &[
-            "a1-first-conversations",
-            "a1-breakfast-bakery",
-            "a1-city-travel",
-            "a1-home-routine",
-            "a1-food-shopping",
-            "a1-social-meetings",
-            "a2-weekend-travel",
-        ],
-    );
 }
 
 fn check_catalog(file: &str, expected_units: &[&str]) {

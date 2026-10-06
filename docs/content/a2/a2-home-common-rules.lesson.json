@@ -1,0 +1,518 @@
+{
+  "schemaVersion": "1.0",
+  "id": "a2-home-common-rules",
+  "revision": 1,
+  "levelId": "a2",
+  "unitId": "a2-shared-living",
+  "title": {
+    "fr": "Nos espaces communs",
+    "zh": "说明共同空间规则"
+  },
+  "summaryZh": "读两位合住者写下的规则，区分需要做和不应做的事情。",
+  "estimatedMinutes": 16,
+  "objectivesZh": [
+    "找出共同空间的使用规则",
+    "用 il faut 说明必要动作",
+    "用 il ne faut pas 表达禁止事项"
+  ],
+  "knowledge": {
+    "vocabulary": [
+      {
+        "id": "word-calme",
+        "lemma": "calme",
+        "partOfSpeech": "adjective",
+        "meaningZh": "安静的",
+        "noteZh": "本课形容房间或安静状态，阴阳性单数形式相同。"
+      },
+      {
+        "id": "word-bruit",
+        "lemma": "bruit",
+        "partOfSpeech": "noun",
+        "meaningZh": "噪声；声音",
+        "noteZh": "faire du bruit 表示发出噪声。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-invite",
+        "lemma": "invité",
+        "partOfSpeech": "noun",
+        "meaningZh": "受邀的客人",
+        "noteZh": "女客人写 invitée；本课 un invité 泛指一位客人。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-message",
+        "lemma": "message",
+        "partOfSpeech": "noun",
+        "meaningZh": "消息",
+        "noteZh": "message 的单数形式；搭配冠词学习。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-cle",
+        "lemma": "clé",
+        "partOfSpeech": "noun",
+        "meaningZh": "钥匙",
+        "noteZh": "搭配冠词学习 clé。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-porte",
+        "lemma": "porte",
+        "partOfSpeech": "noun",
+        "meaningZh": "门",
+        "noteZh": "搭配冠词学习 porte。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-prevenir",
+        "lemma": "prévenir",
+        "partOfSpeech": "verb",
+        "meaningZh": "事先通知",
+        "noteZh": "prévenir quelqu’un 表示提前告知某人。"
+      },
+      {
+        "id": "word-piece-room",
+        "lemma": "pièce",
+        "partOfSpeech": "noun",
+        "meaningZh": "房间",
+        "noteZh": "本课指住宅中的房间，与货币“硬币”的词义区分。",
+        "gender": "feminine"
+      }
+    ],
+    "grammar": [
+      {
+        "id": "grammar-a2-il-faut",
+        "titleZh": "il faut + 原形：共同约定",
+        "bodyZh": "il faut 是无人称结构，il 不指某位男性；后接动词原形表达需要做什么。本课把两人商量的共同规则写下来。",
+        "examples": [
+          {
+            "fr": "Il faut fermer la porte.",
+            "zh": "需要关好门。"
+          }
+        ]
+      },
+      {
+        "id": "grammar-a2-il-ne-faut-pas",
+        "titleZh": "il ne faut pas + 原形：说明禁止事项",
+        "bodyZh": "ne…pas 放在 faut 两边，后接原形。在本课规则语境中 il ne faut pas faire du bruit 表示不应制造噪声；不是“没有必要制造噪声”。",
+        "examples": [
+          {
+            "fr": "Il ne faut pas faire du bruit.",
+            "zh": "不应制造噪声。"
+          }
+        ]
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "id": "scene-main",
+      "type": "scene",
+      "placeZh": "公寓厨房里的共同约定",
+      "situationZh": "读两位合住者写下的规则，区分需要做和不应做的事情。",
+      "illustrationId": "art-home-morning"
+    },
+    {
+      "id": "article-main",
+      "type": "article",
+      "titleZh": "说明共同空间规则",
+      "narratorId": "character-camille",
+      "paragraphs": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Camille et Luc partagent un appartement. Ils ont écrit quelques règles pour utiliser les "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "pièces",
+              "vocabularyId": "word-piece-room"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " communes sans se gêner. Ces règles peuvent changer après une discussion."
+            }
+          ],
+          "translationZh": "Camille 和 Luc 合住一套公寓。他们写了几条规则，使用共同房间时互不打扰。讨论之后，这些规则可以调整。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Après un repas, "
+            },
+            {
+              "id": "segment-2-2",
+              "text": "il faut",
+              "grammarId": "grammar-a2-il-faut"
+            },
+            {
+              "id": "segment-2-3",
+              "text": " nettoyer la table et ranger la cuisine. Chacun lave les objets qu’il utilise pour laisser la place libre à l’autre."
+            }
+          ],
+          "translationZh": "饭后，需要擦桌子、整理厨房。每个人清洗自己用过的物品，给对方留下可用的空间。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Le soir, le salon doit rester "
+            },
+            {
+              "id": "segment-3-2",
+              "text": "calme",
+              "vocabularyId": "word-calme"
+            },
+            {
+              "id": "segment-3-3",
+              "text": " après vingt-deux heures. "
+            },
+            {
+              "id": "segment-3-4",
+              "text": "Il ne faut pas",
+              "grammarId": "grammar-a2-il-ne-faut-pas"
+            },
+            {
+              "id": "segment-3-5",
+              "text": " faire du "
+            },
+            {
+              "id": "segment-3-6",
+              "text": "bruit",
+              "vocabularyId": "word-bruit"
+            },
+            {
+              "id": "segment-3-7",
+              "text": " avec de la musique ou un appel sur haut-parleur."
+            }
+          ],
+          "translationZh": "晚上十点后，客厅应保持安静。不应通过音乐或扬声器通话制造噪声。"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Avant de recevoir un "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "invité",
+              "vocabularyId": "word-invite"
+            },
+            {
+              "id": "segment-4-3",
+              "text": ", il faut "
+            },
+            {
+              "id": "segment-4-4",
+              "text": "prévenir",
+              "vocabularyId": "word-prevenir"
+            },
+            {
+              "id": "segment-4-5",
+              "text": " l’autre personne par "
+            },
+            {
+              "id": "segment-4-6",
+              "text": "message",
+              "vocabularyId": "word-message"
+            },
+            {
+              "id": "segment-4-7",
+              "text": ". On indique le jour et l’heure pour vérifier si le salon est disponible."
+            }
+          ],
+          "translationZh": "邀请客人前，需要用消息提前通知对方。说明日期和时间，确认客厅是否可以使用。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "En quittant l’appartement, il faut fermer la "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "porte",
+              "vocabularyId": "word-porte"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " et prendre sa "
+            },
+            {
+              "id": "segment-5-4",
+              "text": "clé",
+              "vocabularyId": "word-cle"
+            },
+            {
+              "id": "segment-5-5",
+              "text": ". Les clés restent personnelles : on ne les prête pas sans en parler ensemble."
+            }
+          ],
+          "translationZh": "离开公寓时，需要关好门、带上钥匙。钥匙由各人保管：没有一起商量，就不借给别人。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Le dimanche, Camille et Luc regardent leur organisation pour la semaine suivante. Si une règle pose un problème, ils cherchent une autre solution au lieu de décider seuls."
+            }
+          ],
+          "translationZh": "周日，Camille 和 Luc 会看看下一周的安排。如果某条规则有问题，他们会一起寻找其他办法，不单独决定。"
+        }
+      ]
+    },
+    {
+      "id": "explanation-main",
+      "type": "explanation",
+      "titleZh": "这句话如何使用",
+      "bodyZh": "il faut + 原形列出需要做的事，il ne faut pas + 原形在这份约定中说明禁止事项。il 不代表 Luc。après vingt-deux heures 是两人自定的时间。sans en parler ensemble 中 en 指钥匙借用这件事，先理解整句意思。",
+      "targets": [
+        {
+          "blockId": "article-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2"
+        },
+        {
+          "blockId": "article-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4"
+        }
+      ]
+    },
+    {
+      "id": "culture-context",
+      "type": "culture",
+      "titleZh": "场景中的细节",
+      "bodyZh": "这是虚构室友协商的生活约定，不是法国住宅通用规定、法律或租约条款。",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。"
+    },
+    {
+      "id": "vocabulary-targets",
+      "type": "vocabulary",
+      "entryIds": [
+        "word-calme",
+        "word-bruit",
+        "word-invite",
+        "word-message",
+        "word-cle",
+        "word-porte",
+        "word-prevenir",
+        "word-piece-room"
+      ]
+    },
+    {
+      "id": "grammar-targets",
+      "type": "grammar",
+      "entryIds": [
+        "grammar-a2-il-faut",
+        "grammar-a2-il-ne-faut-pas"
+      ]
+    },
+    {
+      "id": "exercise-comprehension",
+      "type": "exercise",
+      "exerciseType": "single-choice",
+      "promptZh": "邀请客人来之前，两人约定先做什么？",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "把钥匙直接借给客人"
+        },
+        {
+          "id": "correct",
+          "text": "用消息通知对方"
+        },
+        {
+          "id": "distractor-b",
+          "text": "独自决定使用客厅"
+        }
+      ]
+    },
+    {
+      "id": "exercise-fill",
+      "type": "exercise",
+      "exerciseType": "fill-blank",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Il ne ___ pas faire du bruit.",
+      "hintZh": "无人称结构 il faut，否定时 ne…pas 围住 faut。"
+    },
+    {
+      "id": "exercise-order",
+      "type": "exercise",
+      "exerciseType": "order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "avant de partir."
+        },
+        {
+          "id": "token-1",
+          "text": "Il faut"
+        },
+        {
+          "id": "token-2",
+          "text": "fermer la porte"
+        }
+      ]
+    },
+    {
+      "id": "habit-main",
+      "type": "habit",
+      "taskZh": "为虚构共同空间写一条必要动作和一条禁止事项。",
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。"
+    },
+    {
+      "id": "summary-main",
+      "type": "summary",
+      "takeawaysZh": [
+        "我能找出共同空间的使用规则。",
+        "我能用 il faut 说明必要动作。",
+        "我能用 il ne faut pas 表达禁止事项。"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景",
+      "blockIds": [
+        "scene-main"
+      ]
+    },
+    {
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段短文",
+      "blockIds": [
+        "article-main"
+      ]
+    },
+    {
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达",
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ]
+    },
+    {
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用",
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ]
+    },
+    {
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常",
+      "blockIds": [
+        "habit-main"
+      ]
+    },
+    {
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课",
+      "blockIds": [
+        "summary-main"
+      ]
+    }
+  ],
+  "completion": {
+    "strategy": "attempt-all",
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ]
+  },
+  "reviewItemIds": [
+    "word-prevenir",
+    "word-cle",
+    "word-bruit"
+  ],
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "kind": "choice",
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：用消息通知对方。"
+      },
+      "exercise-fill": {
+        "kind": "text",
+        "accepted": [
+          "faut"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "无人称结构 il faut，否定时 ne…pas 围住 faut。"
+      },
+      "exercise-order": {
+        "kind": "order",
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Il faut fermer la porte avant de partir."
+      }
+    }
+  },
+  "editorial": {
+    "status": "draft",
+    "note": "项目原创课程草稿，未完成人工法语、译文和教学审校。合住规则、任务、习惯与住房报价为虚构设定。素材待来源授权确认及登记；无正式录音。审校记录见 docs/content/a2/README.md，禁止直接作为已审校课程发布。"
+  },
+  "assetRefs": [
+    {
+      "assetId": "art-home-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    }
+  ],
+  "cast": [
+    {
+      "characterId": "character-camille",
+      "revision": 1,
+      "displayName": "Camille",
+      "avatarId": "avatar-camille-v1",
+      "speechLocale": "fr-FR"
+    },
+    {
+      "characterId": "character-luc",
+      "revision": 1,
+      "displayName": "Luc",
+      "avatarId": "avatar-luc-v1",
+      "speechLocale": "fr-FR"
+    }
+  ]
+}

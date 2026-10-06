@@ -1,0 +1,560 @@
+{
+  "schemaVersion": "1.0",
+  "id": "a2-home-share-chores",
+  "revision": 1,
+  "levelId": "a2",
+  "unitId": "a2-shared-living",
+  "title": {
+    "fr": "Les tâches de la semaine",
+    "zh": "分配家务"
+  },
+  "summaryZh": "两位合住者商量厨房清洁、洗餐具和周末家务的分工。",
+  "estimatedMinutes": 16,
+  "objectivesZh": [
+    "确认各自的家务责任",
+    "用 devoir 表达需要做的事",
+    "提出轮流安排"
+  ],
+  "knowledge": {
+    "vocabulary": [
+      {
+        "id": "word-menage",
+        "lemma": "ménage",
+        "partOfSpeech": "noun",
+        "meaningZh": "家务；清洁",
+        "noteZh": "faire le ménage 表示做清洁。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-vaisselle",
+        "lemma": "vaisselle",
+        "partOfSpeech": "noun",
+        "meaningZh": "餐具；洗餐具",
+        "noteZh": "faire la vaisselle 表示洗餐具。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-poubelle",
+        "lemma": "poubelle",
+        "partOfSpeech": "noun",
+        "meaningZh": "垃圾桶",
+        "noteZh": "sortir la poubelle 在本课表示把垃圾桶拿出去清倒。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-aspirateur",
+        "lemma": "aspirateur",
+        "partOfSpeech": "noun",
+        "meaningZh": "吸尘器",
+        "noteZh": "passer l’aspirateur 表示用吸尘器清洁。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-ranger",
+        "lemma": "ranger",
+        "partOfSpeech": "verb",
+        "meaningZh": "整理；收好",
+        "noteZh": "ranger la cuisine 表示整理厨房。"
+      },
+      {
+        "id": "word-partager",
+        "lemma": "partager",
+        "partOfSpeech": "verb",
+        "meaningZh": "分享；分担",
+        "noteZh": "partager les tâches 表示分担任务。"
+      },
+      {
+        "id": "expr-a-tour-de-role",
+        "lemma": "à tour de rôle",
+        "partOfSpeech": "phrase",
+        "meaningZh": "轮流",
+        "noteZh": "说明两人轮换做同一项工作。"
+      },
+      {
+        "id": "word-s-occuper-de",
+        "lemma": "s’occuper de",
+        "partOfSpeech": "verb",
+        "meaningZh": "负责；照料",
+        "noteZh": "je m’occupe de、tu t’occupes de；de 后接所负责的事物。"
+      }
+    ],
+    "grammar": [
+      {
+        "id": "grammar-a2-devoir-present",
+        "titleZh": "devoir + 原形：说需要做的事",
+        "bodyZh": "devoir 的现在时随主语变化：je dois、tu dois、nous devons。后接动词原形，如 nous devons ranger。本课表达约定下需要做的事；不把它的所有语义都归为家务义务。",
+        "examples": [
+          {
+            "fr": "Nous devons ranger la cuisine.",
+            "zh": "我们需要整理厨房。"
+          }
+        ]
+      },
+      {
+        "id": "grammar-a2-s-occuper-de",
+        "titleZh": "s’occuper de：分配责任",
+        "bodyZh": "代词随主语变化：je m’occupe de、tu t’occupes de。m’、t’ 是元音前省音，de 后接名词；de + le 合为 du，如 je m’occupe du ménage。",
+        "examples": [
+          {
+            "fr": "Je m’occupe de la vaisselle.",
+            "zh": "我负责洗餐具。"
+          }
+        ]
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "id": "scene-main",
+      "type": "scene",
+      "placeZh": "两人的虚构合住公寓",
+      "situationZh": "两位合住者商量厨房清洁、洗餐具和周末家务的分工。",
+      "illustrationId": "art-home-morning"
+    },
+    {
+      "id": "dialogue-main",
+      "type": "dialogue",
+      "titleZh": "分配家务",
+      "speakers": [
+        {
+          "id": "speaker-1",
+          "labelZh": "合住者 Camille",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "avatarId": "avatar-camille-v1"
+        },
+        {
+          "id": "speaker-2",
+          "labelZh": "合住者 Luc",
+          "characterId": "character-luc",
+          "displayName": "Luc",
+          "avatarId": "avatar-luc-v1"
+        }
+      ],
+      "turns": [
+        {
+          "id": "entry-1",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Nous "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "devons",
+              "grammarId": "grammar-a2-devoir-present"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " "
+            },
+            {
+              "id": "segment-1-4",
+              "text": "partager",
+              "vocabularyId": "word-partager"
+            },
+            {
+              "id": "segment-1-5",
+              "text": " les tâches cette semaine. La cuisine est en désordre et nous devons "
+            },
+            {
+              "id": "segment-1-6",
+              "text": "ranger",
+              "vocabularyId": "word-ranger"
+            },
+            {
+              "id": "segment-1-7",
+              "text": " les affaires avant de préparer le dîner."
+            }
+          ],
+          "translationZh": "这周我们需要分担任务。厨房很乱，做晚饭前我们需要把东西收好。"
+        },
+        {
+          "id": "entry-2",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "D’accord. Je "
+            },
+            {
+              "id": "segment-2-2",
+              "text": "m’occupe de",
+              "vocabularyId": "word-s-occuper-de",
+              "grammarId": "grammar-a2-s-occuper-de"
+            },
+            {
+              "id": "segment-2-3",
+              "text": " la "
+            },
+            {
+              "id": "segment-2-4",
+              "text": "vaisselle",
+              "vocabularyId": "word-vaisselle"
+            },
+            {
+              "id": "segment-2-5",
+              "text": " ce soir. Tu peux sortir la "
+            },
+            {
+              "id": "segment-2-6",
+              "text": "poubelle",
+              "vocabularyId": "word-poubelle"
+            },
+            {
+              "id": "segment-2-7",
+              "text": " après le repas et nettoyer la table ?"
+            }
+          ],
+          "translationZh": "好的。今晚我负责洗餐具。你能饭后把垃圾桶拿出去清倒，再擦桌子吗？"
+        },
+        {
+          "id": "entry-3",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Oui, je peux le faire. Pour le "
+            },
+            {
+              "id": "segment-3-2",
+              "text": "ménage",
+              "vocabularyId": "word-menage"
+            },
+            {
+              "id": "segment-3-3",
+              "text": " du samedi, je préfère nettoyer la salle de bains pendant que tu passes l’"
+            },
+            {
+              "id": "segment-3-4",
+              "text": "aspirateur",
+              "vocabularyId": "word-aspirateur"
+            },
+            {
+              "id": "segment-3-5",
+              "text": "."
+            }
+          ],
+          "translationZh": "可以。周六的清洁，我更愿意打扫浴室，你来用吸尘器。"
+        },
+        {
+          "id": "entry-4",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Cela me va. Je "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "dois",
+              "grammarId": "grammar-a2-devoir-present"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " partir à onze heures samedi, alors nous pouvons commencer à neuf heures et terminer avant mon départ."
+            }
+          ],
+          "translationZh": "我可以。周六我十一点必须出门，所以我们可以九点开始，在我出门前做完。"
+        },
+        {
+          "id": "entry-5",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Pour les courses, on peut y aller "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "à tour de rôle",
+              "vocabularyId": "expr-a-tour-de-role"
+            },
+            {
+              "id": "segment-5-3",
+              "text": ". Cette semaine, je vais acheter les produits dont nous avons besoin."
+            }
+          ],
+          "translationZh": "采购可以轮流去。这周我会买我们需要的用品。"
+        },
+        {
+          "id": "entry-6",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Très bien. Je vais écrire notre liste et vérifier ce qui reste dans les placards. Nous pouvons ajouter les tâches sur le même papier."
+            }
+          ],
+          "translationZh": "很好。我会写清单，看看柜子里还剩什么。我们可以把任务写在同一张纸上。"
+        },
+        {
+          "id": "entry-7",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "La semaine prochaine, nous allons changer les rôles. Comme cela, chacun fait les différentes tâches et nous pouvons modifier notre organisation si nécessaire."
+            }
+          ],
+          "translationZh": "下周我们会交换分工。这样，每个人都会做不同任务，必要时也可以调整安排。"
+        },
+        {
+          "id": "entry-8",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Oui, et si l’un de nous est absent, il faut prévenir l’autre. Nous allons regarder la liste ensemble dimanche pour préparer la semaine suivante."
+            }
+          ],
+          "translationZh": "是的，如果有人不在，要通知对方。周日我们会一起看清单，为下一周做准备。"
+        }
+      ]
+    },
+    {
+      "id": "explanation-main",
+      "type": "explanation",
+      "titleZh": "这句话如何使用",
+      "bodyZh": "nous devons 接原形 partager、ranger，je dois 接 partir。Luc 说 je m’occupe de la vaisselle，把当晚责任说清楚。周六 Camille 清洁浴室，Luc 用吸尘器；采购轮流进行，第一周 Camille 采购。on 在正文中指两位合住者，dont nous avons besoin 先随文理解为“我们需要的”。",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2"
+        }
+      ]
+    },
+    {
+      "id": "culture-context",
+      "type": "culture",
+      "titleZh": "场景中的细节",
+      "bodyZh": "分工、时间和轮换是两位虚构角色商量的结果，没有按性别或国籍分配家务。",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。"
+    },
+    {
+      "id": "vocabulary-targets",
+      "type": "vocabulary",
+      "entryIds": [
+        "word-menage",
+        "word-vaisselle",
+        "word-poubelle",
+        "word-aspirateur",
+        "word-ranger",
+        "word-partager",
+        "expr-a-tour-de-role",
+        "word-s-occuper-de"
+      ]
+    },
+    {
+      "id": "grammar-targets",
+      "type": "grammar",
+      "entryIds": [
+        "grammar-a2-devoir-present",
+        "grammar-a2-s-occuper-de"
+      ]
+    },
+    {
+      "id": "exercise-comprehension",
+      "type": "exercise",
+      "exerciseType": "single-choice",
+      "promptZh": "这周六谁使用吸尘器？",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "Camille"
+        },
+        {
+          "id": "correct",
+          "text": "Luc"
+        },
+        {
+          "id": "distractor-b",
+          "text": "两人都不做清洁"
+        }
+      ]
+    },
+    {
+      "id": "exercise-fill",
+      "type": "exercise",
+      "exerciseType": "fill-blank",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Nous ___ ranger la cuisine.",
+      "hintZh": "devoir 搭配 nous 的现在时是 devons。"
+    },
+    {
+      "id": "exercise-order",
+      "type": "exercise",
+      "exerciseType": "order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "ce soir."
+        },
+        {
+          "id": "token-1",
+          "text": "Je m’occupe"
+        },
+        {
+          "id": "token-2",
+          "text": "de la vaisselle"
+        }
+      ]
+    },
+    {
+      "id": "habit-main",
+      "type": "habit",
+      "taskZh": "为两个虚构合住者写两项分工，再说明一项轮流任务。",
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。"
+    },
+    {
+      "id": "summary-main",
+      "type": "summary",
+      "takeawaysZh": [
+        "我能确认各自的家务责任。",
+        "我能用 devoir 表达需要做的事。",
+        "我能提出轮流安排。"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景",
+      "blockIds": [
+        "scene-main"
+      ]
+    },
+    {
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话",
+      "blockIds": [
+        "dialogue-main"
+      ]
+    },
+    {
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达",
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ]
+    },
+    {
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用",
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ]
+    },
+    {
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常",
+      "blockIds": [
+        "habit-main"
+      ]
+    },
+    {
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课",
+      "blockIds": [
+        "summary-main"
+      ]
+    }
+  ],
+  "completion": {
+    "strategy": "attempt-all",
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ]
+  },
+  "reviewItemIds": [
+    "word-vaisselle",
+    "word-s-occuper-de",
+    "expr-a-tour-de-role"
+  ],
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "kind": "choice",
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：Luc。"
+      },
+      "exercise-fill": {
+        "kind": "text",
+        "accepted": [
+          "devons"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "devoir 搭配 nous 的现在时是 devons。"
+      },
+      "exercise-order": {
+        "kind": "order",
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Je m’occupe de la vaisselle ce soir."
+      }
+    }
+  },
+  "editorial": {
+    "status": "draft",
+    "note": "项目原创课程草稿，未完成人工法语、译文和教学审校。合住规则、任务、习惯与住房报价为虚构设定。素材待来源授权确认及登记；无正式录音。审校记录见 docs/content/a2/README.md，禁止直接作为已审校课程发布。"
+  },
+  "assetRefs": [
+    {
+      "assetId": "art-home-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    }
+  ],
+  "cast": [
+    {
+      "characterId": "character-camille",
+      "revision": 1,
+      "displayName": "Camille",
+      "avatarId": "avatar-camille-v1",
+      "speechLocale": "fr-FR"
+    },
+    {
+      "characterId": "character-luc",
+      "revision": 1,
+      "displayName": "Luc",
+      "avatarId": "avatar-luc-v1",
+      "speechLocale": "fr-FR"
+    }
+  ]
+}
