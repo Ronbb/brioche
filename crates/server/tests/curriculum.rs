@@ -81,23 +81,87 @@ fn full_a1_sources_match_catalog_and_shared_knowledge_and_grade_all_exercises() 
     );
 }
 
+#[test]
+fn a2_travel_pilot_matches_cross_level_shared_knowledge_and_grades_all_exercises() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/content/a2");
+    for (id, mode) in [
+        ("a2-travel-plan-weekend", "article"),
+        ("a2-travel-book-room", "dialogue"),
+        ("a2-travel-buy-return-ticket", "dialogue"),
+        ("a2-travel-tell-weekend", "article"),
+    ] {
+        let source = Document::load(root.join(format!("{id}.lesson.json")))
+            .unwrap()
+            .value;
+        assert_eq!(source["editorial"]["status"], "draft");
+        let body = &source["blocks"][1];
+        assert_eq!(body["type"], mode);
+        let entries = body[if mode == "article" {
+            "paragraphs"
+        } else {
+            "turns"
+        }]
+        .as_array()
+        .unwrap();
+        let prose = entries
+            .iter()
+            .map(|entry| {
+                entry["segments"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|segment| segment["text"].as_str().unwrap())
+                    .collect::<String>()
+            })
+            .collect::<Vec<_>>()
+            .join(" ");
+        assert!(
+            (120..=250).contains(&prose.split_whitespace().count()),
+            "A2 reading length: {id}"
+        );
+    }
+    check_catalog(
+        "../a2/catalog.pilot.release.json",
+        &[
+            "a1-first-conversations",
+            "a1-breakfast-bakery",
+            "a1-city-travel",
+            "a1-home-routine",
+            "a1-food-shopping",
+            "a1-social-meetings",
+            "a2-weekend-travel",
+        ],
+    );
+}
+
 fn check_catalog(file: &str, expected_units: &[&str]) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs");
     let document = Document::load(root.join("content/a1").join(file)).unwrap();
     let manifest: ReleaseManifest = serde_json::from_value(document.value.clone()).unwrap();
     manifest.validate_author().unwrap();
-    let units = document.value["levels"][0]["units"].as_array().unwrap();
+    let units: Vec<_> = document.value["levels"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .flat_map(|level| {
+            level["units"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(move |unit| (level, unit))
+        })
+        .collect();
     assert_eq!(
         units
             .iter()
-            .map(|unit| unit["id"].as_str().unwrap())
+            .map(|(_, unit)| unit["id"].as_str().unwrap())
             .collect::<Vec<_>>(),
         expected_units
     );
     let mut knowledge = BTreeMap::<String, Value>::new();
     let mut characters = BTreeMap::<(String, u64), Value>::new();
     let mut checked = 0;
-    for unit in units {
+    for (level, unit) in units {
         let lessons = unit["lessons"].as_array().unwrap();
         assert_eq!(lessons.len(), 4);
         for reference in lessons {
@@ -105,13 +169,16 @@ fn check_catalog(file: &str, expected_units: &[&str]) {
             let path = if id == "a1-bakery-buy-breakfast" {
                 root.join("examples/a1-bakery.lesson.json")
             } else {
-                root.join(format!("content/a1/{id}.lesson.json"))
+                root.join(format!(
+                    "content/{}/{id}.lesson.json",
+                    level["id"].as_str().unwrap()
+                ))
             };
             let source = Document::load(path).unwrap().value;
             assert_eq!(source["id"], reference["lessonId"]);
             assert_eq!(source["revision"], reference["revision"]);
             assert_eq!(source["unitId"], unit["id"]);
-            assert_eq!(source["levelId"], "a1");
+            assert_eq!(source["levelId"], level["id"]);
             brioche_server::author_source::editorial(&source).unwrap();
             brioche_server::media::source_asset_refs(&source).unwrap();
             brioche_server::recording::source_audio_refs(&source).unwrap();

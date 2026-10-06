@@ -1,0 +1,496 @@
+{
+  "schemaVersion": "1.0",
+  "id": "a2-travel-plan-weekend",
+  "revision": 1,
+  "levelId": "a2",
+  "unitId": "a2-weekend-travel",
+  "title": {
+    "fr": "Un week-end à Lyon",
+    "zh": "安排一个周末"
+  },
+  "summaryZh": "读 Camille 写给朋友的周末计划，整理活动顺序和准备事项。",
+  "estimatedMinutes": 16,
+  "objectivesZh": [
+    "识别周末计划与行程顺序",
+    "用近期将来表达打算",
+    "区分活动安排和准备事项"
+  ],
+  "knowledge": {
+    "vocabulary": [
+      {
+        "id": "word-week-end",
+        "lemma": "week-end",
+        "partOfSpeech": "noun",
+        "meaningZh": "周末",
+        "noteZh": "搭配冠词学习 week-end。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-visiter",
+        "lemma": "visiter",
+        "partOfSpeech": "verb",
+        "meaningZh": "参观",
+        "noteZh": "本单元表示参观城市或场所，不用于直接表达拜访朋友。"
+      },
+      {
+        "id": "word-musee",
+        "lemma": "musée",
+        "partOfSpeech": "noun",
+        "meaningZh": "博物馆",
+        "noteZh": "搭配冠词学习 musée。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-promenade",
+        "lemma": "promenade",
+        "partOfSpeech": "noun",
+        "meaningZh": "散步",
+        "noteZh": "搭配冠词学习 promenade。",
+        "gender": "feminine"
+      },
+      {
+        "id": "expr-d-abord",
+        "lemma": "d’abord",
+        "partOfSpeech": "phrase",
+        "meaningZh": "首先",
+        "noteZh": "组织事情的先后顺序。"
+      },
+      {
+        "id": "word-ensuite",
+        "lemma": "ensuite",
+        "partOfSpeech": "adverb",
+        "meaningZh": "然后",
+        "noteZh": "引出下一件事。"
+      },
+      {
+        "id": "word-enfin",
+        "lemma": "enfin",
+        "partOfSpeech": "adverb",
+        "meaningZh": "最后",
+        "noteZh": "本单元表示顺序中的最后一步。"
+      },
+      {
+        "id": "word-sac",
+        "lemma": "sac",
+        "partOfSpeech": "noun",
+        "meaningZh": "包",
+        "noteZh": "搭配冠词学习 sac。",
+        "gender": "masculine"
+      }
+    ],
+    "grammar": [
+      {
+        "id": "grammar-futur-proche-plan",
+        "titleZh": "aller + 动词原形：表达接下来的计划",
+        "bodyZh": "本课用 aller 的现在时加动词原形表达计划：je vais prendre、elle va retrouver、elles vont marcher。后一个动词保留原形；这里的近期将来是语法名称，不意味着所有用法都有固定的时间上限。",
+        "examples": [
+          {
+            "fr": "Je vais prendre le métro demain.",
+            "zh": "我明天打算乘地铁。"
+          }
+        ]
+      },
+      {
+        "id": "grammar-a2-sequence",
+        "titleZh": "D’abord, ensuite, enfin：组织顺序",
+        "bodyZh": "d’abord 引出首先做的事，ensuite 引出下一步，enfin 表示最后。本课用这些连接词组织计划；它们本身不决定动词时态。",
+        "examples": [
+          {
+            "fr": "D’abord, nous allons visiter le musée.",
+            "zh": "首先，我们打算参观博物馆。"
+          }
+        ]
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "id": "scene-main",
+      "type": "scene",
+      "placeZh": "出发前的家中",
+      "situationZh": "读 Camille 写给朋友的周末计划，整理活动顺序和准备事项。",
+      "illustrationId": "art-city-morning"
+    },
+    {
+      "id": "article-main",
+      "type": "article",
+      "titleZh": "安排一个周末",
+      "narratorId": "character-camille",
+      "paragraphs": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Ce "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "week-end",
+              "vocabularyId": "word-week-end"
+            },
+            {
+              "id": "segment-1-3",
+              "text": ", "
+            },
+            {
+              "id": "segment-1-4",
+              "text": "je vais passer",
+              "grammarId": "grammar-futur-proche-plan"
+            },
+            {
+              "id": "segment-1-5",
+              "text": " deux jours à Lyon avec Léa. Nous voulons découvrir un quartier près du centre et prendre le temps de marcher."
+            }
+          ],
+          "translationZh": "这个周末，我打算和 Léa 在里昂待两天。我们想逛一逛市中心附近的一个街区，慢慢步行。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "D’abord",
+              "vocabularyId": "expr-d-abord",
+              "grammarId": "grammar-a2-sequence"
+            },
+            {
+              "id": "segment-2-2",
+              "text": ", nous allons "
+            },
+            {
+              "id": "segment-2-3",
+              "text": "visiter",
+              "vocabularyId": "word-visiter"
+            },
+            {
+              "id": "segment-2-4",
+              "text": " un petit "
+            },
+            {
+              "id": "segment-2-5",
+              "text": "musée",
+              "vocabularyId": "word-musee"
+            },
+            {
+              "id": "segment-2-6",
+              "text": " samedi matin. Nous allons regarder les horaires avant le départ pour choisir un moment tranquille."
+            }
+          ],
+          "translationZh": "首先，我们打算星期六上午参观一家小博物馆。出发前我们会查看开放时间，选一个安静的时段。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Ensuite",
+              "vocabularyId": "word-ensuite"
+            },
+            {
+              "id": "segment-3-2",
+              "text": ", nous allons déjeuner dans le quartier. Léa préfère une terrasse, mais nous pouvons manger à l’intérieur si la terrasse est pleine."
+            }
+          ],
+          "translationZh": "然后，我们打算在这个街区吃午饭。Léa 更喜欢露台，但如果露台坐满了，我们也可以在室内吃。"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "L’après-midi, nous allons faire une "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "promenade",
+              "vocabularyId": "word-promenade"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " dans un parc. Nous n’avons pas prévu de rendez-vous et nous pouvons rester un peu plus longtemps."
+            }
+          ],
+          "translationZh": "下午，我们打算在公园散步。我们没有安排约见，可以多待一会儿。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Enfin",
+              "vocabularyId": "word-enfin"
+            },
+            {
+              "id": "segment-5-2",
+              "text": ", nous allons retrouver Luc pour dîner. Il connaît un restaurant près de la gare et propose de réserver une table pour trois personnes."
+            }
+          ],
+          "translationZh": "最后，我们打算和 Luc 碰面吃晚饭。他知道车站附近的一家餐馆，提议预订一张三人桌。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Dans mon "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "sac",
+              "vocabularyId": "word-sac"
+            },
+            {
+              "id": "segment-6-3",
+              "text": ", je vais mettre une bouteille d’eau, un livre et mon téléphone. Nous allons vérifier nos billets avant de quitter la maison."
+            }
+          ],
+          "translationZh": "我会在包里放一瓶水、一本书和手机。离开家之前，我们会核对车票。"
+        }
+      ]
+    },
+    {
+      "id": "explanation-main",
+      "type": "explanation",
+      "titleZh": "这句话如何使用",
+      "bodyZh": "本课复习 aller 现在时 + 原形：je vais passer、nous allons visiter 都表示打算。D’abord、ensuite、enfin 帮助读者整理活动顺序；午后散步处也给出了明确的时段。",
+      "targets": [
+        {
+          "blockId": "article-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4"
+        },
+        {
+          "blockId": "article-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1"
+        }
+      ]
+    },
+    {
+      "id": "culture-context",
+      "type": "culture",
+      "titleZh": "场景中的细节",
+      "bodyZh": "城市、活动和餐馆都是虚构设定；博物馆开放时间、露台座位与餐馆预订规则需要查看实际场所信息。",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。"
+    },
+    {
+      "id": "vocabulary-targets",
+      "type": "vocabulary",
+      "entryIds": [
+        "word-week-end",
+        "word-visiter",
+        "word-musee",
+        "word-promenade",
+        "expr-d-abord",
+        "word-ensuite",
+        "word-enfin",
+        "word-sac"
+      ]
+    },
+    {
+      "id": "grammar-targets",
+      "type": "grammar",
+      "entryIds": [
+        "grammar-futur-proche-plan",
+        "grammar-a2-sequence"
+      ]
+    },
+    {
+      "id": "exercise-comprehension",
+      "type": "exercise",
+      "exerciseType": "single-choice",
+      "promptZh": "计划中星期六上午先做什么？",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "和 Luc 吃晚饭"
+        },
+        {
+          "id": "correct",
+          "text": "参观一家小博物馆"
+        },
+        {
+          "id": "distractor-b",
+          "text": "在公园散步"
+        }
+      ]
+    },
+    {
+      "id": "exercise-fill",
+      "type": "exercise",
+      "exerciseType": "fill-blank",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Nous ___ visiter un musée.",
+      "hintZh": "主语 nous 搭配 aller 的现在时 allons，再接原形 visiter。"
+    },
+    {
+      "id": "exercise-order",
+      "type": "exercise",
+      "exerciseType": "order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "samedi matin."
+        },
+        {
+          "id": "token-1",
+          "text": "Nous allons"
+        },
+        {
+          "id": "token-2",
+          "text": "visiter le musée"
+        }
+      ]
+    },
+    {
+      "id": "habit-main",
+      "type": "habit",
+      "taskZh": "写一个虚构周末的三步计划，用 d’abord、ensuite、enfin 连接。",
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。"
+    },
+    {
+      "id": "summary-main",
+      "type": "summary",
+      "takeawaysZh": [
+        "我能识别周末计划与行程顺序。",
+        "我能用近期将来表达打算。",
+        "我能区分活动安排和准备事项。"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景",
+      "blockIds": [
+        "scene-main"
+      ]
+    },
+    {
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段短文",
+      "blockIds": [
+        "article-main"
+      ]
+    },
+    {
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达",
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ]
+    },
+    {
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用",
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ]
+    },
+    {
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常",
+      "blockIds": [
+        "habit-main"
+      ]
+    },
+    {
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课",
+      "blockIds": [
+        "summary-main"
+      ]
+    }
+  ],
+  "completion": {
+    "strategy": "attempt-all",
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ]
+  },
+  "reviewItemIds": [
+    "word-visiter",
+    "expr-d-abord",
+    "word-promenade"
+  ],
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "kind": "choice",
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：参观一家小博物馆。"
+      },
+      "exercise-fill": {
+        "kind": "text",
+        "accepted": [
+          "allons"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "主语 nous 搭配 aller 的现在时 allons，再接原形 visiter。"
+      },
+      "exercise-order": {
+        "kind": "order",
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Nous allons visiter le musée samedi matin."
+      }
+    }
+  },
+  "editorial": {
+    "status": "draft",
+    "note": "项目原创课程草稿，未完成人工法语、译文和教学审校。地点、班次、日历、报价与人物经历为虚构设定。素材待来源授权确认及登记；无正式录音。审校记录见 docs/content/a2/README.md，禁止直接作为已审校课程发布。"
+  },
+  "assetRefs": [
+    {
+      "assetId": "art-city-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "cast": [
+    {
+      "characterId": "character-camille",
+      "revision": 1,
+      "displayName": "Camille",
+      "avatarId": "avatar-camille-v1",
+      "speechLocale": "fr-FR"
+    },
+    {
+      "characterId": "character-lea",
+      "revision": 1,
+      "displayName": "Léa",
+      "avatarId": "avatar-lea-v1",
+      "speechLocale": "fr-FR"
+    }
+  ]
+}

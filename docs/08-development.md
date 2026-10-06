@@ -299,3 +299,6 @@ Compose 所有五个服务使用 Docker local 日志驱动，配置 max-size=10m
 
 
 表达库分页空态现区分当前页和全库；继续页无记录时可返回对应收藏/复习列表。复习卡暂停/恢复按钮用 `aria-disabled` 保留键盘焦点，点击处理显式拒绝 saving、uncertain、未 ready、最新读取失败或读取期间操作；共用 owned-write 的 busy/pending 防重复门禁保持。不是只改变视觉禁用状态。
+
+
+A2 第一单元四课作者草稿与 `docs/content/a2/catalog.pilot.release.json` 已加入，详见 [A2 草稿说明](content/a2/README.md)。联合目录保留 A1 固定 revision，新增 A2 等级/单元；curriculum 检查覆盖两级内容与知识一致。草稿不自动替换开发 fixture 或正式目录，没有将“结构通过”标为 reviewed。
