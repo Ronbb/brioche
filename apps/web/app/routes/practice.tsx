@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { MAX_TEXT_ANSWER_UTF16_UNITS } from "@brioche/contracts/answer-limits";
 import { Link, redirect } from "react-router";
 import type { ExerciseAnswer } from "@brioche/contracts/ExerciseAnswer";
@@ -37,8 +37,22 @@ function PracticeSession({ lesson }: Route.ComponentProps["loaderData"]) {
     [error, setError] = useState("");
   const busy = useRef(false),
     controller = useRef<AbortController | null>(null),
-    heading = useRef<HTMLHeadingElement>(null);
-  useEffect(() => () => controller.current?.abort(), []);
+    heading = useRef<HTMLHeadingElement>(null),
+    feedback = useRef<HTMLDivElement>(null),
+    form = useRef<HTMLFormElement>(null),
+    active = useRef(true);
+  useLayoutEffect(() => {
+    active.current = true;
+    return () => {
+      active.current = false;
+      controller.current?.abort();
+    };
+  }, []);
+  useEffect(() => {
+    if (!result) return;
+    const frame = requestAnimationFrame(() => feedback.current?.focus());
+    return () => cancelAnimationFrame(frame);
+  }, [result]);
   const current = exercises[index];
   const ready =
     current &&
@@ -48,7 +62,7 @@ function PracticeSession({ lesson }: Route.ComponentProps["loaderData"]) {
         ? !!text.trim()
         : order.length === current.tokens.length);
   async function submit() {
-    if (!current || !ready || busy.current) return;
+    if (!current || !ready || busy.current || !active.current) return;
     busy.current = true;
     setPending(true);
     setError("");
@@ -82,16 +96,17 @@ function PracticeSession({ lesson }: Route.ComponentProps["loaderData"]) {
         throw Error(failure);
       }
       const feedback = (await response.json()) as GradeResult;
+      if (!active.current || request.signal.aborted) return;
       setResult(feedback);
       setResults((old) => ({ ...old, [current.id]: feedback }));
     } catch {
-      if (!request.signal.aborted) {
+      if (active.current && !request.signal.aborted) {
         setError(failure);
         learning.toast(failure);
       }
     } finally {
       busy.current = false;
-      setPending(false);
+      if (active.current) setPending(false);
     }
   }
   function next() {
@@ -183,6 +198,7 @@ function PracticeSession({ lesson }: Route.ComponentProps["loaderData"]) {
         />
       </div>
       <form
+        ref={form}
         className="exercise-sheet"
         onSubmit={(e) => {
           e.preventDefault();
@@ -253,6 +269,8 @@ function PracticeSession({ lesson }: Route.ComponentProps["loaderData"]) {
         </fieldset>
         {result && (
           <div
+            ref={feedback}
+            tabIndex={-1}
             className={
               "practice-feedback" + (result.correct ? " is-correct" : "")
             }
@@ -277,7 +295,16 @@ function PracticeSession({ lesson }: Route.ComponentProps["loaderData"]) {
               <button
                 type="button"
                 className="text-button"
-                onClick={() => setResult(null)}
+                onClick={() => {
+                  setResult(null);
+                  requestAnimationFrame(() =>
+                    form.current
+                      ?.querySelector<HTMLElement>(
+                        "fieldset input:not(:disabled), fieldset button:not(:disabled)",
+                      )
+                      ?.focus(),
+                  );
+                }}
               >
                 再试一次
               </button>
@@ -287,7 +314,9 @@ function PracticeSession({ lesson }: Route.ComponentProps["loaderData"]) {
           <button
             type="submit"
             className="primary"
-            disabled={!ready || pending}
+            disabled={!ready}
+            aria-disabled={!ready || pending}
+            aria-busy={pending}
           >
             {pending ? "正在确认" : error ? "重新提交" : "确认答案"}
             <Icon name="check" />

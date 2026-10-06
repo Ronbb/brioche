@@ -25,6 +25,8 @@ import Courses from "../app/routes/courses";
 import History from "../app/routes/review-history";
 import { Account } from "../app/components/account";
 import AuthorPreview from "../app/routes/author-preview";
+import Practice from "../app/routes/practice";
+import type { Block } from "@brioche/contracts/Block";
 import { Scrollbar } from "../app/components/scrollbar";
 import type { PreviewRelease } from "@brioche/contracts/PreviewRelease";
 import type { ReviewHistoryPage } from "@brioche/contracts/ReviewHistoryPage";
@@ -65,6 +67,11 @@ if (stress) {
 }
 
 const qa = {
+  demoWrites: [] as {
+    body: unknown;
+    signal?: AbortSignal | null;
+    release: (value: GradeResult | number) => void;
+  }[],
   previewWrites: [] as {
     path: string;
     body: unknown;
@@ -169,6 +176,23 @@ function controlledAuth(
   });
 }
 window.fetch = async (input, init) => {
+  if (
+    String(input).startsWith("/api/demo/lessons/") &&
+    init?.method === "POST"
+  ) {
+    return new Promise<Response>((resolve) =>
+      qa.demoWrites.push({
+        body: JSON.parse(String(init.body)),
+        signal: init.signal,
+        release: (value) =>
+          resolve(
+            typeof value === "number"
+              ? new Response("", { status: value })
+              : Response.json(value),
+          ),
+      }),
+    );
+  }
   if (
     String(input).startsWith("/api/v1/operator/lessons/") &&
     init?.method === "POST"
@@ -556,6 +580,67 @@ const catalogFixture: Catalog = {
     },
   ],
 };
+function DemoHarness() {
+  const blocks: Extract<Block, { type: "exercise" }>[] = [
+    {
+      type: "exercise",
+      id: "demo-choice",
+      exerciseType: "single-choice",
+      promptZh: "选择问候",
+      options: [
+        { id: "bonjour", text: "Bonjour !" },
+        { id: "merci", text: "Merci !" },
+      ],
+    },
+    {
+      type: "exercise",
+      id: "demo-text",
+      exerciseType: "fill-blank",
+      promptZh: "填入冠词",
+      templateFr: "___ baguette",
+      hintZh: "阴性名词",
+    },
+    {
+      type: "exercise",
+      id: "demo-order",
+      exerciseType: "order",
+      promptZh: "组成问候",
+      tokens: [
+        { id: "bonjour", text: "Bonjour" },
+        { id: "luc", text: "Luc !" },
+      ],
+    },
+  ];
+  const loaderData = {
+    lesson: { ...lesson, blocks: [...lesson.blocks, ...blocks] },
+  };
+  return (
+    <LearningProvider>
+      <main>
+        <Practice
+          loaderData={loaderData}
+          params={{ lessonId: lesson.id }}
+          matches={[
+            {
+              id: "root",
+              params: {},
+              pathname: "/",
+              loaderData: { user: null, enabled: false },
+              handle: undefined,
+            },
+            {
+              id: "routes/practice",
+              params: { lessonId: lesson.id },
+              pathname: "/",
+              loaderData,
+              handle: undefined,
+            },
+          ]}
+        />
+      </main>
+    </LearningProvider>
+  );
+}
 function ScrollHarness() {
   const [long, setLong] = useState(true);
   return (
@@ -992,6 +1077,8 @@ const router = createMemoryRouter(
         <AccountHarness />
       ) : kind === "scrollbar" ? (
         <ScrollHarness />
+      ) : kind === "demo" ? (
+        <DemoHarness />
       ) : reading ? (
         <LearningProvider>
           <ReadingHarness />

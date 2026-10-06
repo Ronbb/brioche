@@ -2073,6 +2073,159 @@ test("an old logout cannot navigate or toast into a new profile and leaving canc
   assert.equal(await evaluate("qa.route"), "/reviews");
 });
 
+test("guest practice keeps answers and focus through failures, retry and three exercise kinds", async () => {
+  await open("demo");
+  await browser("wait", ".exercise-sheet input[type=radio]");
+  const answers = [
+    { kind: "choice", optionId: "bonjour" },
+    { kind: "text", text: "une" },
+    { kind: "order", tokenIds: ["bonjour", "luc"] },
+  ];
+  for (let index = 0; index < 3; index++) {
+    if (index === 0) {
+      await browser("focus", ".exercise-sheet input[type=radio]");
+      await press("Space");
+    } else if (index === 1) {
+      await browser("focus", ".practice-input");
+      await browser("keyboard", "inserttext", "une");
+    } else {
+      await browser("focus", ".order-bank button");
+      await press("Enter");
+      await press("Enter");
+    }
+    await browser("focus", ".exercise-sheet button[type=submit]");
+    await press("Enter");
+    await browser("wait", "--fn", `qa.demoWrites.length===${index * 3 + 1}`);
+    assert.equal(
+      await evaluate(
+        "document.activeElement.matches('.exercise-sheet button[type=submit]')",
+      ),
+      true,
+    );
+    await press("Enter");
+    assert.equal(await evaluate("qa.demoWrites.length"), index * 3 + 1);
+    await evaluate(`qa.demoWrites[${index * 3}].release(503)`);
+    await browser("wait", ".error-message");
+    assert.equal(
+      await evaluate(
+        "document.activeElement.matches('.exercise-sheet button[type=submit]')",
+      ),
+      true,
+    );
+    await press("Enter");
+    await browser("wait", "--fn", `qa.demoWrites.length===${index * 3 + 2}`);
+    assert.deepEqual(await evaluate(`qa.demoWrites[${index * 3 + 1}].body`), {
+      revision: 1,
+      exerciseId: ["demo-choice", "demo-text", "demo-order"][index],
+      answer: answers[index],
+    });
+    await evaluate(
+      `qa.demoWrites[${index * 3 + 1}].release({correct:false,feedbackZh:'再试一下'})`,
+    );
+    await browser(
+      "wait",
+      "--fn",
+      "document.activeElement.matches('.practice-feedback')",
+    );
+    await browser("focus", ".practice-next .text-button");
+    await press("Enter");
+    await browser(
+      "wait",
+      "--fn",
+      "document.activeElement.matches('fieldset input,fieldset button')",
+    );
+    await browser("focus", ".exercise-sheet button[type=submit]");
+    await press("Enter");
+    await browser("wait", "--fn", `qa.demoWrites.length===${index * 3 + 3}`);
+    assert.deepEqual(
+      await evaluate(`qa.demoWrites[${index * 3 + 2}].body.answer`),
+      answers[index],
+    );
+    await evaluate(
+      `qa.demoWrites[${index * 3 + 2}].release({correct:true,feedbackZh:'确认完成'})`,
+    );
+    await browser(
+      "wait",
+      "--fn",
+      "document.activeElement.matches('.practice-feedback')",
+    );
+    await browser("focus", ".practice-next .primary");
+    await press("Enter");
+    await browser(
+      "wait",
+      "--fn",
+      `document.querySelector('.review-progress')?.getAttribute('aria-valuenow')==='${index + 1}' || !!document.querySelector('.practice-recap')`,
+    );
+  }
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "本次练习",
+  );
+  assert.equal(
+    await evaluate("document.querySelector('.practice-recap').children.length"),
+    3,
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.practice-intro').textContent.replace(/\\s+/g,' ').trim()",
+    ),
+    "完成了 3 道题，其中 3 道答对。",
+  );
+});
+
+test("leaving guest practice aborts grading and old responses cannot change a fresh session", async () => {
+  for (const oldOutcome of [{ correct: true, feedbackZh: "旧反馈" }, 503]) {
+    await open("demo");
+    await browser("wait", ".exercise-sheet input[type=radio]");
+    await browser("focus", ".exercise-sheet input[type=radio]");
+    await press("Space");
+    await browser("focus", ".exercise-sheet button[type=submit]");
+    await press("Enter");
+    await browser("wait", "--fn", "qa.demoWrites.length===1");
+    await evaluate("qa.navigate('/login')");
+    await browser("wait", "--fn", "qa.route==='/login'");
+    assert.equal(await evaluate("qa.demoWrites[0].signal.aborted"), true);
+    await evaluate("qa.navigate('/')");
+    await browser("wait", ".exercise-sheet input[type=radio]");
+    assert.equal(
+      await evaluate("document.querySelectorAll('input:checked').length"),
+      0,
+    );
+    await browser("focus", ".exercise-sheet input[type=radio]");
+    await press("Space");
+    await browser("focus", ".exercise-sheet button[type=submit]");
+    await press("Enter");
+    await browser("wait", "--fn", "qa.demoWrites.length===2");
+    await evaluate(`qa.demoWrites[0].release(${JSON.stringify(oldOutcome)})`);
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.exercise-sheet fieldset').disabled",
+      ),
+      true,
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelectorAll('.practice-feedback,.error-message').length",
+      ),
+      0,
+    );
+    assert.equal(
+      await evaluate("document.querySelector('.toast').hidden"),
+      true,
+    );
+    await evaluate(
+      "qa.demoWrites[1].release({correct:false,feedbackZh:'当前反馈'})",
+    );
+    await browser("wait", ".practice-feedback");
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.practice-feedback p').textContent",
+      ),
+      "当前反馈",
+    );
+  }
+});
+
 test("overlay scrollbars preserve width through content changes and support native keyboard scrolling", async () => {
   await open("scrollbar");
   for (const width of [320, 390, 768, 1440]) {

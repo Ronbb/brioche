@@ -694,3 +694,12 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - 新独立 Scrollbar/现有应用 CSS 装配，四档 320/390/768/1440px 均验证 document.clientWidth 与 scrollWidth 等于视口宽、scrollbar-width none、track fixed；原生键盘 End/Home 对应 aria 最大值/0且保留轨道焦点；按钮切换2400/200px内容后轨道隐藏/显示，页面宽度不变。
 - 第一轮浏览器错误是用默认等待可见的 selector 去等 hidden 元素，发生等待超时；改为读取 hidden 属性后最终回归通过（52.74s）。不将该工具断言问题算作另一应用缺陷。组件装配按 SSR 应有类名启动，不等于完整生产浏览器页面壳或 iPhone/辅助技术验收；实际根类另由生产 SSR handler 的匿名/私有个人页证明。
 - TS7、client/SSR build、全部11项SSR、定向格式/diff通过；本轮不重跑全39浏览器或无关Web单元。自己的随机Vite/Chromium已自动清理。ddcf170 的 Check37455236784 本轮读取仍 in_progress，最新远端绿色未确认。完整内容人工审校/素材与录音、真实设备/辅助技术、生产门槛仍待完成。
+
+## 2026-10-06：访客三类练习与离页生命周期
+
+- 访客 PracticeSession 为独立实现，原确认按钮 pending 时原生 disabled，结果 status 无焦点目标、答错重试只移除结果。新增真实 Practice/LearningProvider/MemoryRouter 的三题受控装配，修复前首题判分暂挂时确认按钮失焦，实际回归 false!==true（33.61s）；不声称基线后三题流程都执行完成。
+- 有答案的确认按钮在 pending 使用 aria-disabled/aria-busy 保留焦点，原同步 busy 锁阻止重复请求；答案 fieldset 仍禁用，无答案仍 disabled。反馈增加独立 ref/tabIndex，当前结果提交后聚焦；答错明确再试返回首个可用答案控件，原选择/文本/排序保持。下一题与回顾保持原标题焦点、停止播放与演示不保存账号的边界。
+- active 与请求取消在 layout 清理时失效；成功 JSON 后重新核对活动/取消，失败或 finally 不再更新卸载页面。取消不表示服务端处理回滚，demo 判分仍由 Rust fixture 接口完成；生产旧 practice 路由仍按真实课程入口重定向。
+- 三题原生键盘回归通过（60.92s）：连续 Enter 仅一请求，503 后保留确认焦点及答案，明确重试提交 revision1/确切题目与 choice=bonjour、text=une、order=[bonjour,luc]；受控答错聚焦反馈，明确再试返回答案，再次正确后进下一题，最终回顾三题/三正确/标题焦点。额外离页回归通过（48.37s）：暂挂判分离页 signal aborted，返回新会话选择清空；新请求暂挂时释放旧200/503均无结果/错误/toast、仍等待新请求，当前响应才显示当前反馈。
+- TS7、client/SSR build、全部11SSR、定向Prettier/diff通过；本轮未重跑全41浏览器或无关Web单元。自己的随机Vite/Chromium自动清理，未访问用户账号或改变部署。受控HTTP/合成课程不代替真实fixture服务、数据库、iPhone或辅助技术验收。
+- 固定d1dab5d的 Check37455801225 本轮实际读取仍in_progress，不提前声称远端绿色。完整人工内容/正式素材与录音、设备/辅助技术、生产门槛继续待完成。
