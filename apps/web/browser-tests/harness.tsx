@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { createMemoryRouter, RouterProvider } from "react-router";
+import {
+  createMemoryRouter,
+  RouterProvider,
+  Navigate,
+  useLoaderData,
+} from "react-router";
 import { StartLearning } from "../app/components/start-learning";
 import { ExerciseEditor } from "../app/components/exercise-editor";
 import type { ExerciseAnswer } from "@brioche/contracts/ExerciseAnswer";
@@ -13,6 +18,10 @@ import Learning from "../app/routes/learning";
 import Reviews from "../app/routes/reviews";
 import Library from "../app/routes/library";
 import PendingSaves from "../app/routes/pending-saves";
+import Home from "../app/routes/home";
+import Courses from "../app/routes/courses";
+import type { Catalog } from "@brioche/contracts/Catalog";
+import type { StudyDashboard } from "@brioche/contracts/StudyDashboard";
 import {
   clearPending,
   clearSessionDrafts,
@@ -29,6 +38,14 @@ import type { UserProfile } from "@brioche/contracts/UserProfile";
 import "../app/styles/app.css";
 
 const stress = new URL(location.href).searchParams.has("stress");
+if (new URL(location.href).searchParams.has("hold-animation")) {
+  const animate = Element.prototype.animate;
+  Element.prototype.animate = function (frames, options) {
+    const animation = animate.call(this, frames, options);
+    if (this.matches(".home-review .review")) animation.pause();
+    return animation;
+  };
+}
 if (stress) {
   lesson.title.fr = "Une conversation autour du mot anticonstitutionnellement";
   for (const block of lesson.blocks) {
@@ -69,6 +86,8 @@ const qa = {
   textAnswers: [] as ExerciseAnswer[],
   hintRequests: 0,
   cardReads: [] as ((value: ReviewCard | number) => void)[],
+  catalogReads: [] as { query: string; release: (catalog: Catalog) => void }[],
+  catalogFixture: null as Catalog | null,
 };
 Object.assign(window, { qa });
 class ControlledUtterance extends EventTarget {
@@ -429,6 +448,133 @@ function ReviewsHarness() {
     </LearningProvider>
   );
 }
+const summary = {
+  id: lesson.id,
+  revision: lesson.revision,
+  levelId: lesson.levelId,
+  unitId: lesson.unitId,
+  title: {
+    ...lesson.title,
+    zh: stress ? "anticonstitutionnellement" : lesson.title.zh,
+  },
+  summaryZh: lesson.summaryZh,
+  estimatedMinutes: lesson.estimatedMinutes,
+};
+const catalogFixture: Catalog = {
+  developmentFixture: false,
+  levels: [
+    {
+      id: lesson.levelId,
+      label: "A1 入门",
+      units: [{ id: lesson.unitId, titleZh: "日常问候", lessons: [summary] }],
+    },
+  ],
+};
+qa.catalogFixture = catalogFixture;
+function HomeHarness() {
+  const resume = {
+    sessionId: "qa-home-session",
+    lessonId: lesson.id,
+    revision: lesson.revision,
+    title: summary.title,
+    lastStepId: "read",
+    completedAt: null,
+    firstCompletedAt: null,
+    updatedAt: "2026-10-06T00:00:00Z",
+  };
+  const dashboard: StudyDashboard = {
+    localDate: "2026-10-06",
+    timeZone: "Asia/Shanghai",
+    weekStart: "2026-10-05",
+    days: Array.from({ length: 7 }, (_, i) => ({
+      localDate: "2026-10-" + String(i + 5).padStart(2, "0"),
+      confirmedSteps: i === 1 ? 1 : 0,
+      exerciseAttempts: 0,
+      reviewAttempts: 0,
+      completedLessons: 0,
+      active: i === 1,
+    })),
+    activeDays: 1,
+    weeklyGoalDays: 5,
+    dailyGoalMinutes: 10,
+    dueReviews: 3,
+    nextReviewAt: null,
+    completedLessons: 0,
+    resume,
+    recommendedLesson: null,
+    allAvailableCompleted: false,
+    courseStates: [resume],
+    catalog: catalogFixture,
+  };
+  const homeLesson = {
+    ...lesson,
+    knowledge: {
+      ...lesson.knowledge,
+      vocabulary:
+        kind === "home-no-expression" ? [] : [reviewQueue.items[0].vocabulary],
+    },
+    reviewItemIds:
+      kind === "home-no-expression" ? [] : [reviewQueue.items[0].knowledgeId],
+  };
+  const loaderData = {
+    catalog: catalogFixture,
+    lesson: homeLesson,
+    learning: dashboard,
+  };
+  return (
+    <LearningProvider user={reviewUser}>
+      <main>
+        <Home
+          loaderData={loaderData}
+          params={{}}
+          matches={[
+            {
+              id: "root",
+              params: {},
+              pathname: "/",
+              loaderData: { user: reviewUser, enabled: true },
+              handle: undefined,
+            },
+            {
+              id: "routes/home",
+              params: {},
+              pathname: "/",
+              loaderData,
+              handle: undefined,
+            },
+          ]}
+        />
+      </main>
+    </LearningProvider>
+  );
+}
+function CoursesHarness() {
+  const loaderData = useLoaderData() as { catalog: Catalog; query: string };
+  return (
+    <main>
+      <Courses
+        loaderData={loaderData}
+        params={{}}
+        matches={[
+          {
+            id: "root",
+            params: {},
+            pathname: "/",
+            loaderData: { user: null, enabled: true },
+            handle: undefined,
+          },
+          {
+            id: "routes/courses",
+            params: {},
+            pathname: "/courses",
+            loaderData,
+            handle: undefined,
+          },
+        ]}
+      />
+    </main>
+  );
+}
 const savedItem: SavedItem = {
   id: "qa-saved",
   knowledgeId: "qa-word",
@@ -645,6 +791,10 @@ const router = createMemoryRouter(
         <LibraryHarness />
       ) : kind === "pending" ? (
         <PendingHarness />
+      ) : kind === "home" || kind === "home-no-expression" ? (
+        <HomeHarness />
+      ) : kind === "courses" ? (
+        <Navigate to="/courses" replace />
       ) : kind === "text-limit" || kind === "text-no-hint" ? (
         <TextLimitHarness
           hintText={kind === "text-no-hint" ? "\u00a0\u202f" : "边界测试"}
@@ -656,6 +806,21 @@ const router = createMemoryRouter(
     { path: "/learning/:id", element: <h1>已进入学习</h1> },
     { path: "/login", element: <h1>登录入口</h1> },
     { path: "/previous", element: <h1>上一页</h1> },
+    { path: "/reviews", element: <h1>账号复习入口</h1> },
+    {
+      path: "/courses",
+      loader: ({ request }) => {
+        const query = new URL(request.url).searchParams.get("q") ?? "";
+        if (!query) return { catalog: catalogFixture, query };
+        return new Promise<{ catalog: Catalog; query: string }>((resolve) => {
+          qa.catalogReads.push({
+            query,
+            release: (catalog) => resolve({ catalog, query }),
+          });
+        });
+      },
+      element: <CoursesHarness />,
+    },
   ],
   { initialEntries: ["/previous", "/"], initialIndex: 1 },
 );

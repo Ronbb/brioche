@@ -1263,13 +1263,15 @@ test("native fill-blank input bounds UTF-16 units and submits the exact text wit
 
 test("responsive content keeps long words and controls inside the viewport", async () => {
   const selectors =
-    ".lesson-header h1,.sentence .word,.practice-option span,.practice-sentence,.order-bank button,.order-answer button,.learning-step-heading h2,.review-expression,.profile-summary h2,.library-entry-heading,.library-entry-heading strong";
+    ".lesson-header h1,.sentence .word,.practice-option span,.practice-sentence,.order-bank button,.order-answer button,.learning-step-heading h2,.review-expression,.profile-summary h2,.library-entry-heading,.library-entry-heading strong,.lesson-label small,.lesson-label b,.resume-learning strong,.review .fr,.course-search-field";
   for (const kind of [
     "reading",
     "session",
     "reviews",
     "profile",
     "library",
+    "home",
+    "courses",
     "text-limit",
   ]) {
     await open(kind + "&stress=1");
@@ -1283,7 +1285,9 @@ test("responsive content keeps long words and controls inside the viewport", asy
             ? ".order-bank button"
             : kind === "library"
               ? ".library-entry-heading"
-              : ".sentence .word",
+              : kind === "home" || kind === "courses"
+                ? ".lesson-row"
+                : ".sentence .word",
     );
     for (const width of [320, 390, 768, 1440]) {
       await browser("set", "viewport", String(width), "844");
@@ -1398,6 +1402,14 @@ test("reduced motion disables card expansion animations", async () => {
       ),
       "0s",
     );
+    await open("home");
+    await browser("focus", ".home-review button.review");
+    await press("Enter");
+    assert.equal(
+      await evaluate("document.activeElement.getAttribute('aria-expanded')"),
+      "true",
+    );
+    assert.equal(await evaluate("document.getAnimations().length"), 0);
   } finally {
     await browser("set", "media", "light");
   }
@@ -1522,5 +1534,112 @@ test("managed review recovery preserves keyboard focus and deduplicates reads an
       "document.querySelectorAll('.library-entry-body button').length",
     ),
     1,
+  );
+});
+
+test("homepage omits an empty expression card while keeping review and continuation entries", async () => {
+  await open("home-no-expression");
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('.home-review button.review').length",
+    ),
+    0,
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.resume-learning').getAttribute('href')",
+    ),
+    "/learning/qa-home-session",
+  );
+  await browser("focus", ".home-review-link");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.route==='/reviews'");
+});
+
+test("homepage rapid card toggles keep a single height animation and immediate expanded state", async () => {
+  await open("home&hold-animation=1");
+  await browser("focus", ".home-review button.review");
+  await press("Enter");
+  assert.equal(
+    await evaluate("document.activeElement.getAttribute('aria-expanded')"),
+    "true",
+  );
+  await press("Space");
+  assert.equal(
+    await evaluate("document.activeElement.getAttribute('aria-expanded')"),
+    "false",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.home-review button.review').getAnimations().filter(a=>a.effect.target===document.querySelector('.home-review button.review')).length<=1",
+    ),
+    true,
+  );
+});
+
+test("course search retains focus while pending and shows explicit empty results and reset", async () => {
+  await open("courses");
+  await browser("focus", "#course-query");
+  await browser("keyboard", "inserttext", "introuvable");
+  await browser("focus", ".course-search button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.catalogReads.length===1");
+  assert.equal(
+    await evaluate("document.activeElement.textContent.trim()"),
+    "搜索",
+  );
+  await press("Enter");
+  assert.equal(await evaluate("qa.catalogReads.length"), 1);
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.courses-page [role=status]').textContent",
+    ),
+    "正在查找…",
+  );
+  await evaluate(
+    "qa.catalogReads[0].release({levels:[],developmentFixture:false})",
+  );
+  await browser("wait", "--text", "还没有找到这个场景");
+  assert.equal(
+    await evaluate("document.querySelector('#course-query').value"),
+    "introuvable",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.courses-page [role=status]').textContent",
+    ),
+    "找到 0 堂课程",
+  );
+  await browser("focus", ".empty-state a");
+  await press("Enter");
+  await browser("wait", ".lesson-row");
+  assert.equal(
+    await evaluate("document.querySelector('#course-query').value"),
+    "",
+  );
+  await browser("focus", "#course-query");
+  await browser("keyboard", "inserttext", "bonjour");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.catalogReads.length===2");
+  await evaluate("qa.catalogReads[1].release(qa.catalogFixture)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('[role=status]').textContent==='找到 1 堂课程'",
+  );
+  assert.equal(await evaluate("document.activeElement.id"), "course-query");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.catalogReads.length===3");
+  await browser("keyboard", "inserttext", " demain");
+  await evaluate("qa.catalogReads[2].release(qa.catalogFixture)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('[role=status]').textContent==='找到 1 堂课程'",
+  );
+  assert.equal(await evaluate("document.activeElement.id"), "course-query");
+  assert.equal(
+    await evaluate("document.querySelector('#course-query').value"),
+    "bonjour demain",
   );
 });

@@ -1,5 +1,6 @@
 import { Link } from "react-router";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import type { Vocabulary } from "@brioche/contracts/Vocabulary";
 import {
   getCatalog,
   getIdentity,
@@ -58,8 +59,6 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function Home({
   loaderData: { catalog, lesson, learning },
 }: Route.ComponentProps) {
-  const [open, setOpen] = useState(false),
-    card = useRef<HTMLButtonElement>(null);
   const context = useLearning();
   const resume = learning?.resume;
   const expression = lesson?.knowledge.vocabulary.find((entry) =>
@@ -197,45 +196,13 @@ export default function Home({
               ))}
             </section>
             <aside className="home-review">
-              <button
-                ref={card}
-                className="review"
-                aria-expanded={open}
-                onClick={() => {
-                  const start = card.current?.getBoundingClientRect().height;
-                  setOpen(!open);
-                  requestAnimationFrame(() => {
-                    if (
-                      card.current &&
-                      start &&
-                      !matchMedia("(prefers-reduced-motion:reduce)").matches
-                    )
-                      card.current.animate(
-                        [
-                          { height: start + "px" },
-                          {
-                            height:
-                              card.current.getBoundingClientRect().height +
-                              "px",
-                          },
-                        ],
-                        { duration: 320, easing: "cubic-bezier(.22,.8,.25,1)" },
-                      );
-                  });
-                }}
-              >
-                <span className="eyebrow">记住一句日常表达</span>
-                <span className="fr" lang="fr">
-                  {expression?.lemma}
-                </span>
-                <span className="review-description">{lesson.summaryZh}</span>
-                {open && (
-                  <span className="review-answer">
-                    <strong>{expression?.meaningZh}</strong>
-                    <span className="review-line">{expression?.noteZh}</span>
-                  </span>
-                )}
-              </button>
+              {expression && (
+                <ExpressionCard
+                  key={lesson.id + ":" + expression.id}
+                  expression={expression}
+                  summary={lesson.summaryZh}
+                />
+              )}
               <Link
                 className="home-review-link text-button"
                 to={
@@ -263,5 +230,66 @@ export default function Home({
         </>
       )}
     </section>
+  );
+}
+
+function ExpressionCard({
+  expression,
+  summary,
+}: {
+  expression: Vocabulary;
+  summary: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const card = useRef<HTMLButtonElement>(null);
+  const animation = useRef<Animation | null>(null);
+  const frame = useRef<number | null>(null);
+  useEffect(
+    () => () => {
+      animation.current?.cancel();
+      if (frame.current !== null) cancelAnimationFrame(frame.current);
+    },
+    [],
+  );
+  return (
+    <button
+      ref={card}
+      className="review"
+      aria-expanded={open}
+      onClick={() => {
+        const start = card.current?.getBoundingClientRect().height;
+        animation.current?.cancel();
+        if (frame.current !== null) cancelAnimationFrame(frame.current);
+        setOpen((value) => !value);
+        frame.current = requestAnimationFrame(() => {
+          frame.current = null;
+          if (
+            card.current &&
+            start &&
+            !matchMedia("(prefers-reduced-motion:reduce)").matches
+          ) {
+            animation.current = card.current.animate(
+              [
+                { height: start + "px" },
+                { height: card.current.getBoundingClientRect().height + "px" },
+              ],
+              { duration: 320, easing: "cubic-bezier(.22,.8,.25,1)" },
+            );
+          }
+        });
+      }}
+    >
+      <span className="eyebrow">记住一句日常表达</span>
+      <span className="fr" lang="fr">
+        {expression.lemma}
+      </span>
+      <span className="review-description">{summary}</span>
+      {open && (
+        <span className="review-answer">
+          <strong>{expression.meaningZh}</strong>
+          <span className="review-line">{expression.noteZh}</span>
+        </span>
+      )}
+    </button>
   );
 }

@@ -1,4 +1,5 @@
 import { Form, Link, useNavigation } from "react-router";
+import { useEffect, useRef } from "react";
 import { getCatalog } from "../lib/api.server";
 import { Icon } from "../components/icon";
 import type { Route } from "./+types/courses";
@@ -13,6 +14,17 @@ export default function Courses({
   loaderData: { catalog, query },
 }: Route.ComponentProps) {
   const navigation = useNavigation();
+  const field = useRef<HTMLInputElement>(null);
+  const submitted = useRef<string | null>(null);
+  useEffect(() => {
+    if (navigation.state !== "idle") return;
+    if (
+      field.current &&
+      (submitted.current === null || field.current.value === submitted.current)
+    )
+      field.current.value = query;
+    submitted.current = null;
+  }, [query, navigation.state]);
   const count = catalog.levels.reduce(
     (total, level) =>
       total + level.units.reduce((n, unit) => n + unit.lessons.length, 0),
@@ -31,11 +43,15 @@ export default function Courses({
         action="/courses"
         className="course-search"
         role="search"
+        onSubmit={(event) => {
+          if (navigation.state !== "idle") event.preventDefault();
+          else submitted.current = field.current?.value ?? "";
+        }}
       >
         <label htmlFor="course-query">找一个日常场景</label>
         <div className="course-search-field">
           <input
-            key={query}
+            ref={field}
             id="course-query"
             name="q"
             type="search"
@@ -46,7 +62,8 @@ export default function Courses({
           <button
             type="submit"
             className="text-button"
-            disabled={navigation.state !== "idle"}
+            aria-disabled={navigation.state !== "idle"}
+            aria-busy={navigation.state !== "idle"}
           >
             搜索 <Icon name="arrow" />
           </button>
