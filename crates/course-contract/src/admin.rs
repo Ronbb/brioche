@@ -86,3 +86,40 @@ pub struct AdminHistoryItem {
     pub reason: String,
     pub created_at: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAccounts {
+    pub items: Vec<AdminAccount>,
+    pub next_id: Option<String>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAccount {
+    pub id: String,
+    pub email: String,
+    pub display_name: String,
+    pub role: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
+pub enum AdminTokenKind {
+    Invite,
+    Reset,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminTokenRequest {
+    pub email: String,
+    pub kind: AdminTokenKind,
+    pub operator: bool,
+    pub reason: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminTokenResult {
+    pub token: String,
+    pub email: String,
+    pub kind: AdminTokenKind,
+    pub expires_in_seconds: u32,
+}

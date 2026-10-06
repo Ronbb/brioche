@@ -20,6 +20,8 @@ pub fn router(root: std::path::PathBuf) -> Router<Backend> {
     Router::new()
         .route("/api/v1/operator/overview", get(overview))
         .route("/api/v1/operator/history", get(history))
+        .route("/api/v1/operator/accounts", get(accounts))
+        .route("/api/v1/operator/accounts/token", post(account_token))
         .route(
             "/api/v1/operator/lessons/{id}/revisions/{revision}/review",
             post(review),
@@ -47,6 +49,70 @@ pub fn router(root: std::path::PathBuf) -> Router<Backend> {
 struct HistoryQuery {
     before_time: Option<String>,
     before_key: Option<String>,
+}
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct AccountQuery {
+    after_id: Option<String>,
+    q: Option<String>,
+}
+async fn accounts(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    Query(query): Query<AccountQuery>,
+) -> Result<Json<brioche_course_contract::AdminAccounts>, AppError> {
+    use brioche_course_contract::{AdminAccount, AdminAccounts};
+    require_operator(&auth)?;
+    let after = generation(query.after_id.as_deref().unwrap_or("0"))?;
+    let search = query.q.unwrap_or_default().trim().to_owned();
+    if search.len() > 300 || search.chars().count() > 100 || search.chars().any(char::is_control) {
+        return Err(AppError::InvalidInput);
+    }
+    let rows=backend.db.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT id,email,display_name,role FROM users WHERE id>$1 AND ($2='' OR strpos(lower(email||' '||display_name),lower($2))>0) ORDER BY id LIMIT 21",vec![after.into(),search.into()])).await.map_err(|_|AppError::Unavailable)?;
+    let has_more = rows.len() > 20;
+    let mut items = Vec::new();
+    for row in rows.into_iter().take(20) {
+        items.push(AdminAccount {
+            id: field::<i64>(&row, "id")?.to_string(),
+            email: field(&row, "email")?,
+            display_name: field(&row, "display_name")?,
+            role: field(&row, "role")?,
+        });
+    }
+    let next_id = if has_more {
+        items.last().map(|item| item.id.clone())
+    } else {
+        None
+    };
+    Ok(Json(AdminAccounts { items, next_id }))
+}
+async fn account_token(
+    auth: AuthSession,
+    State(backend): State<Backend>,
+    Json(request): Json<brioche_course_contract::AdminTokenRequest>,
+) -> Result<Json<brioche_course_contract::AdminTokenResult>, AppError> {
+    use brioche_course_contract::{AdminTokenKind, AdminTokenResult};
+    require_operator(&auth)?;
+    let reset = matches!(request.kind, AdminTokenKind::Reset);
+    if reset && request.operator {
+        return Err(AppError::InvalidInput);
+    }
+    let email = crate::identity::normalize_email(&request.email)?;
+    let token = backend
+        .issue_operator_token(
+            &email,
+            reset,
+            request.operator,
+            owner(&auth)?,
+            &request.reason,
+        )
+        .await?;
+    Ok(Json(AdminTokenResult {
+        token,
+        email,
+        kind: request.kind,
+        expires_in_seconds: if reset { 1800 } else { 172800 },
+    }))
 }
 async fn history(
     auth: AuthSession,
@@ -82,6 +148,8 @@ async fn history(
             SELECT 'content:'||id, action, COALESCE(release_id,lesson_id||' v'||revision,'未指定对象'), actor, reason, created_at FROM content_audit
             UNION ALL
             SELECT 'import:'||lesson_id||':'||revision, 'import', lesson_id||' v'||revision, actor, reason, created_at FROM lesson_import_audit
+            UNION ALL
+            SELECT 'account:'||id, CASE WHEN action='invite' AND details->>'role'='operator' THEN 'inviteOperator' ELSE action END, target_email, 'user:'||actor_id, reason, created_at FROM account_admin_audit
         )
         SELECT key,action,target,actor,reason,to_char(created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at
         FROM events WHERE $1::timestamptz IS NULL OR (created_at,key COLLATE "C") < ($1::timestamptz,$2::text COLLATE "C")
@@ -162,7 +230,7 @@ async fn stage(
     crate::content::stage(&backend.db, &manifest, &actor, &request.reason, &root).await?;
     Ok(Json(manifest.id))
 }
-fn reason(value: &str) -> Result<(), AppError> {
+pub(crate) fn reason(value: &str) -> Result<(), AppError> {
     if value.trim().is_empty() || value.len() > 1000 || value.chars().any(char::is_control) {
         return Err(AppError::InvalidInput);
     }

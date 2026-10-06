@@ -41,9 +41,11 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
   const [readingFile, setReadingFile] = useState(false);
   const [fileSession, setFileSession] = useState(0);
   const fileSequence = useRef(0);
+  const write = useRef<AbortController | null>(null);
   useEffect(
     () => () => {
       fileSequence.current += 1;
+      write.current?.abort();
     },
     [],
   );
@@ -94,50 +96,76 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
     )
       return;
     busy.current = true;
+    const controller = new AbortController();
+    write.current = controller;
     setPending(true);
     setError("");
     try {
       const lesson = target.lesson;
       if (target.operation === "import") {
-        const result = await adminWrite<AdminImportResult>("lessons/import", {
-          document,
-          reason,
-        });
+        const result = await adminWrite<AdminImportResult>(
+          "lessons/import",
+          {
+            document,
+            reason,
+          },
+          controller.signal,
+        );
+        controller.signal.throwIfAborted();
         setNotice(`课程 v${result.revision} 已导入，可以预览和审批。`);
       } else if (target.operation === "stage") {
-        await adminWrite("releases/stage", { document, reason });
+        await adminWrite(
+          "releases/stage",
+          { document, reason },
+          controller.signal,
+        );
+        controller.signal.throwIfAborted();
         setNotice("发布目录已通过检查，可以预览或切换。");
       } else if (target.operation === "activate") {
-        await adminWrite("releases/activate", {
-          releaseId: target.release,
-          generation: overview.generation,
-          reason,
-        });
+        await adminWrite(
+          "releases/activate",
+          {
+            releaseId: target.release,
+            generation: overview.generation,
+            reason,
+          },
+          controller.signal,
+        );
       } else if (lesson) {
         const path = `lessons/${encodeURIComponent(lesson.id)}/revisions/${lesson.revision}`;
         if (target.operation === "withdraw")
-          await adminWrite(`${path}/withdraw`, {
-            generation: overview.generation,
-            reason,
-          });
+          await adminWrite(
+            `${path}/withdraw`,
+            {
+              generation: overview.generation,
+              reason,
+            },
+            controller.signal,
+          );
         else
-          await adminWrite(`${path}/review`, {
-            version: lesson.reviewVersion,
-            approved: target.operation === "approve",
-            reason,
-          });
+          await adminWrite(
+            `${path}/review`,
+            {
+              version: lesson.reviewVersion,
+              approved: target.operation === "approve",
+              reason,
+            },
+            controller.signal,
+          );
       }
+      controller.signal.throwIfAborted();
       if (!["import", "stage"].includes(target.operation))
         setNotice("操作已保存。");
       dialog.current?.close();
       refresh.revalidate();
     } catch (error) {
+      if (controller.signal.aborted) return;
       setError(
         error instanceof Error ? error.message : "操作未确认，请刷新核对。",
       );
     } finally {
       busy.current = false;
-      setPending(false);
+      if (!controller.signal.aborted) setPending(false);
     }
   }
   const labels = {
@@ -166,6 +194,9 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
       </div>
       <Link className="text-button" to="/admin/history">
         审批与发布记录
+      </Link>
+      <Link className="text-button" to="/admin/accounts">
+        账号管理
       </Link>
       <div className="reader-mode" role="group" aria-label="管理内容">
         <button

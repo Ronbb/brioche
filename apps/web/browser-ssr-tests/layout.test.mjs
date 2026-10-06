@@ -123,6 +123,55 @@ const api = createServer((request, response) => {
     );
     return;
   }
+  if (
+    request.url.startsWith("/api/v1/operator/accounts") &&
+    request.method === "GET"
+  ) {
+    const older = new URL(
+      request.url,
+      "http://controlled.test",
+    ).searchParams.has("afterId");
+    response.end(
+      JSON.stringify({
+        items: [
+          {
+            id: older ? "102" : "101",
+            email: older ? "older@example.test" : "learner@example.test",
+            displayName: older ? "较早账号" : "测试账号",
+            role: "learner",
+          },
+        ],
+        nextId: older ? null : "101",
+      }),
+    );
+    return;
+  }
+  if (
+    request.url === "/api/v1/operator/accounts/token" &&
+    request.method === "POST"
+  ) {
+    let body = "";
+    request.on("data", (chunk) => {
+      body += chunk;
+    });
+    request.on("end", () => {
+      const issuance = JSON.parse(body);
+      adminWrites.push({ operation: request.url, ...issuance });
+      setTimeout(
+        () =>
+          response.end(
+            JSON.stringify({
+              token: "f".repeat(64),
+              email: issuance.email,
+              kind: issuance.kind,
+              expiresInSeconds: issuance.kind === "invite" ? 172800 : 1800,
+            }),
+          ),
+        300,
+      );
+    });
+    return;
+  }
   if (request.url.startsWith("/api/v1/operator/history")) {
     const older = new URL(
       request.url,
@@ -456,6 +505,79 @@ test("operator enters admin from profile and approves using the centered dialog"
     );
     await browser("back");
     await browser("wait", "a[href^='/admin/history?']");
+    assert.equal(await evaluate("document.activeElement.tagName"), "H1");
+    await browser("click", "a[href='/admin']");
+    await browser("wait", "a[href='/admin/accounts']");
+    await browser("click", "a[href='/admin/accounts']");
+    await browser("wait", "#account-search");
+    await browser(
+      "find",
+      "role",
+      "button",
+      "click",
+      "--name",
+      "邀请新账号",
+      "--exact",
+    );
+    await browser("wait", ".admin-dialog[open]");
+    await browser("fill", "#account-email", "invited@example.test");
+    await browser("fill", "#account-reason", "隔离邀请界面测试");
+    await browser("focus", ".admin-dialog .primary");
+    await browser("press", "Enter");
+    await browser("press", "Enter");
+    await browser("wait", "#account-link");
+    assert.equal(await evaluate("document.activeElement.id"), "account-link");
+    assert.equal(
+      adminWrites.filter(
+        (item) => item.operation === "/api/v1/operator/accounts/token",
+      ).length,
+      1,
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelector('#account-link').value.startsWith(location.origin+'/invite#token=')",
+      ),
+      true,
+    );
+    assert.equal(
+      await evaluate(
+        "Object.keys(localStorage).some(key=>localStorage.getItem(key).includes('ffffffffffffffff'))",
+      ),
+      false,
+    );
+    await browser(
+      "find",
+      "role",
+      "button",
+      "click",
+      "--name",
+      "关闭",
+      "--exact",
+    );
+    await browser(
+      "find",
+      "role",
+      "button",
+      "click",
+      "--name",
+      "生成密码重置链接",
+      "--exact",
+    );
+    await browser("wait", ".admin-dialog[open]");
+    assert.equal(
+      await evaluate("document.querySelector('#account-link')===null"),
+      true,
+    );
+    assert.equal(
+      await evaluate("document.querySelector('#account-email').readOnly"),
+      true,
+    );
+    await browser("press", "Escape");
+    await browser("click", "a[href^='/admin/accounts?']");
+    await browser("wait", "--text", "较早账号");
+    assert.equal(await evaluate("document.activeElement.tagName"), "H1");
+    await browser("back");
+    await browser("wait", "--text", "测试账号");
     assert.equal(await evaluate("document.activeElement.tagName"), "H1");
   } finally {
     accounts = false;

@@ -35,6 +35,9 @@ const labels: Record<string, string> = {
   stage: "创建发布目录",
   activate: "切换发布目录",
   withdraw: "撤回课程版本",
+  invite: "生成账号邀请",
+  inviteOperator: "生成管理员邀请",
+  reset: "生成密码重置链接",
 };
 export default function AdminHistoryPage({
   loaderData: history,

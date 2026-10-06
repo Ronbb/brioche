@@ -1,17 +1,27 @@
 import type { CsrfToken } from "@brioche/contracts/CsrfToken";
-export async function adminWrite<T>(path: string, body: object): Promise<T> {
+export async function adminWrite<T>(
+  path: string,
+  body: object,
+  signal?: AbortSignal,
+): Promise<T> {
+  signal?.throwIfAborted();
   const bootstrap = await fetch("/api/v1/auth/csrf", {
     cache: "no-store",
-    signal: AbortSignal.timeout(10000),
+    signal: signal
+      ? AbortSignal.any([signal, AbortSignal.timeout(10000)])
+      : AbortSignal.timeout(10000),
   });
   if (!bootstrap.ok) throw Error("管理员服务暂时不可用。");
   const { csrfToken } = (await bootstrap.json()) as CsrfToken;
+  signal?.throwIfAborted();
   const response = await fetch(`/api/v1/operator/${path}`, {
     method: "POST",
     cache: "no-store",
     headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
     body: JSON.stringify(body),
-    signal: AbortSignal.timeout(30000),
+    signal: signal
+      ? AbortSignal.any([signal, AbortSignal.timeout(30000)])
+      : AbortSignal.timeout(30000),
   });
   if (!response.ok) {
     const messages: Record<number, string> = {

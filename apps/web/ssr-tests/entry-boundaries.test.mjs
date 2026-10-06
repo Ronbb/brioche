@@ -70,6 +70,24 @@ const server = createServer((request, response) => {
     profile.role === "operator"
   ) {
     response.end(JSON.stringify({ items: [], next: null }));
+  } else if (
+    request.url.startsWith("/api/v1/operator/accounts") &&
+    authenticated &&
+    profile.role === "operator"
+  ) {
+    response.end(
+      JSON.stringify({
+        items: [
+          {
+            id: "1",
+            email: "controlled@example.test",
+            displayName: "测试账号",
+            role: "learner",
+          },
+        ],
+        nextId: null,
+      }),
+    );
   } else if (request.url === "/api/v1/me/reviews" && authenticated) {
     response.end(
       JSON.stringify({
@@ -215,6 +233,47 @@ test("admin history SSR authorizes before reading and only forwards cursor field
     assert.deepEqual([...query.keys()], ["beforeTime", "beforeKey"]);
     assert.equal(query.get("beforeKey"), "content:123");
     assert.match(await response.text(), /这一页没有更早的记录/);
+  } finally {
+    authenticated = false;
+    profile.role = "learner";
+  }
+});
+test("admin account SSR gates identity, filters cursors and never renders generated tokens", async () => {
+  fixture = false;
+  authenticated = false;
+  requests.length = 0;
+  try {
+    assert.equal((await request("/admin/accounts")).status, 401);
+    authenticated = true;
+    assert.equal((await request("/admin/accounts")).status, 403);
+    assert.equal(
+      requests.filter((item) =>
+        item.path.startsWith("/api/v1/operator/accounts"),
+      ).length,
+      0,
+    );
+    profile.role = "operator";
+    requests.length = 0;
+    const response = await request(
+      "/admin/accounts?q=controlled&afterId=0&ignored=internal",
+    );
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("cache-control"), "private, no-store");
+    const forwarded = requests.find((item) =>
+      item.path.startsWith("/api/v1/operator/accounts"),
+    );
+    assert.equal(
+      forwarded.path,
+      "/api/v1/operator/accounts?q=controlled&afterId=0",
+    );
+    assert.equal(forwarded.cookie, "brioche.sid=controlled-ssr-session");
+    const html = await response.text();
+    assert.match(html, /测试账号/);
+    assert.doesNotMatch(html, /id="account-link"/);
+    assert.equal(
+      requests.some((item) => item.method !== "GET"),
+      false,
+    );
   } finally {
     authenticated = false;
     profile.role = "learner";

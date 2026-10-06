@@ -254,11 +254,50 @@ impl Backend {
         reset: bool,
         operator: bool,
     ) -> Result<String, AppError> {
+        self.issue_token_impl(email, reset, operator, None).await
+    }
+    pub(crate) async fn issue_operator_token(
+        &self,
+        email: &str,
+        reset: bool,
+        operator: bool,
+        actor: i64,
+        reason: &str,
+    ) -> Result<String, AppError> {
+        crate::admin::reason(reason)?;
+        self.issue_token_impl(email, reset, operator, Some((actor, reason)))
+            .await
+    }
+    async fn issue_token_impl(
+        &self,
+        email: &str,
+        reset: bool,
+        operator: bool,
+        audit: Option<(i64, &str)>,
+    ) -> Result<String, AppError> {
         let email = normalize_email(email)?;
         let mut bytes = [0u8; 32];
         getrandom::fill(&mut bytes).map_err(|_| AppError::Unavailable)?;
         let token: String = bytes.iter().map(|b| format!("{b:02x}")).collect();
         let tx = self.db.begin().await.map_err(|_| AppError::Unavailable)?;
+        if let Some((actor, _)) = audit {
+            crate::learning::exec(
+                &tx,
+                "SELECT pg_advisory_xact_lock(hashtextextended('account-admin',0))",
+                vec![],
+            )
+            .await?;
+            let row = crate::learning::one(
+                &tx,
+                "SELECT role FROM users WHERE id=$1",
+                vec![actor.into()],
+            )
+            .await?
+            .ok_or(AppError::Forbidden)?;
+            if crate::learning::field::<String>(&row, "role")? != "operator" {
+                return Err(AppError::Forbidden);
+            }
+        }
         tx.execute_raw(Statement::from_sql_and_values(
             DbBackend::Postgres,
             "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
@@ -287,7 +326,15 @@ impl Backend {
             [email.clone().into(), kind.into()])).await.map_err(|_| AppError::Unavailable)?;
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,
             "INSERT INTO identity_tokens (token_hash,kind,email,user_id,role,expires_at) VALUES ($1,$2,$3,$4,$5,CURRENT_TIMESTAMP + ($6::bigint * interval '1 second'))",
-            [digest(&token).into(), kind.into(), email.into(), user_id.into(), (if operator { "operator" } else { "learner" }).into(), (if reset { 1800_i64 } else { 172800_i64 }).into()])).await.map_err(|_| AppError::Unavailable)?;
+            [digest(&token).into(), kind.into(), email.clone().into(), user_id.into(), (if operator { "operator" } else { "learner" }).into(), (if reset { 1800_i64 } else { 172800_i64 }).into()])).await.map_err(|_| AppError::Unavailable)?;
+        if let Some((actor, reason)) = audit {
+            let details = if reset {
+                serde_json::json!({})
+            } else {
+                serde_json::json!({"role":if operator {"operator"} else {"learner"}})
+            };
+            crate::learning::exec(&tx,"INSERT INTO account_admin_audit(action,actor_id,target_email,reason,details) VALUES($1,$2,$3,$4,$5)",vec![kind.into(),actor.into(),email.into(),reason.into(),details.into()]).await?;
+        }
         tx.commit().await.map_err(|_| AppError::Unavailable)?;
         Ok(token)
     }

@@ -576,6 +576,172 @@ async fn approvals_permissions_concurrency_and_publication() {
             .unwrap()["withdrawn"],
         true
     );
+    let account_endpoint = "/api/v1/operator/accounts/token";
+    let invitation = json!({"email":"new@example.test","kind":"invite","operator":false,"reason":"new learner test"});
+    assert_eq!(
+        learner
+            .send("POST", account_endpoint, Some(invitation.clone()), true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", account_endpoint, Some(invitation.clone()), false)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        visitor
+            .send("GET", "/api/v1/operator/accounts", None, true)
+            .await
+            .0,
+        401
+    );
+    assert_eq!(
+        learner
+            .send("GET", "/api/v1/operator/accounts", None, true)
+            .await
+            .0,
+        403
+    );
+    let first_invite = operator
+        .send("POST", account_endpoint, Some(invitation.clone()), true)
+        .await;
+    assert_eq!(first_invite.0, 200);
+    assert_eq!(first_invite.1["expiresInSeconds"], 172800);
+    let second_invite = operator
+        .send("POST", account_endpoint, Some(invitation), true)
+        .await;
+    assert_eq!(second_invite.0, 200);
+    assert_ne!(first_invite.1["token"], second_invite.1["token"]);
+    let mut invitee = Browser::new(app.clone()).await;
+    let mut accept = json!({"token":first_invite.1["token"],"email":"new@example.test","displayName":"New account","password":"correct horse brioche fromage"});
+    assert_eq!(
+        invitee
+            .send(
+                "POST",
+                "/api/v1/auth/accept-invite",
+                Some(accept.clone()),
+                true
+            )
+            .await
+            .0,
+        400
+    );
+    accept["token"] = second_invite.1["token"].clone();
+    assert_eq!(
+        invitee
+            .send(
+                "POST",
+                "/api/v1/auth/accept-invite",
+                Some(accept.clone()),
+                true
+            )
+            .await
+            .0,
+        200
+    );
+    assert_eq!(
+        invitee
+            .send("POST", "/api/v1/auth/accept-invite", Some(accept), true)
+            .await
+            .0,
+        400
+    );
+    let reset =
+        json!({"email":"new@example.test","kind":"reset","operator":false,"reason":"reset test"});
+    let reset_link = operator
+        .send("POST", account_endpoint, Some(reset), true)
+        .await;
+    assert_eq!(reset_link.0, 200);
+    assert_eq!(reset_link.1["expiresInSeconds"], 1800);
+    let mut password_reset = Browser::new(app.clone()).await;
+    assert_eq!(password_reset.send("POST","/api/v1/auth/reset-password",Some(json!({"token":reset_link.1["token"],"password":"changed horse brioche fromage"})),true).await.0,200);
+    assert_eq!(invitee.send("GET", "/api/v1/me", None, true).await.0, 401);
+    let mut invalid_invite =
+        json!({"email":"another@example.test","kind":"invite","operator":false,"reason":""});
+    assert_eq!(
+        operator
+            .send("POST", account_endpoint, Some(invalid_invite.clone()), true)
+            .await
+            .0,
+        400
+    );
+    invalid_invite["reason"] = json!("check");
+    invalid_invite["kind"] = json!("reset");
+    invalid_invite["operator"] = json!(true);
+    assert_eq!(
+        operator
+            .send("POST", account_endpoint, Some(invalid_invite), true)
+            .await
+            .0,
+        400
+    );
+    let account_history = operator
+        .send("GET", "/api/v1/operator/history", None, true)
+        .await;
+    let audit_count = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT count(*) AS n FROM account_admin_audit".to_owned(),
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get::<i64>("", "n")
+        .unwrap();
+    assert_eq!(audit_count, 3);
+    let operator_invite=operator.send("POST",account_endpoint,Some(json!({"email":"invited-operator@example.test","kind":"invite","operator":true,"reason":"add another operator test"})),true).await;
+    assert_eq!(operator_invite.0, 200);
+    let mut new_operator = Browser::new(app.clone()).await;
+    let accepted=new_operator.send("POST","/api/v1/auth/accept-invite",Some(json!({"token":operator_invite.1["token"],"email":"invited-operator@example.test","displayName":"Invited operator","password":"correct horse brioche fromage"})),true).await;
+    assert_eq!(accepted.0, 200);
+    assert_eq!(accepted.1["user"]["role"], "operator");
+    assert_eq!(
+        new_operator
+            .send("GET", "/api/v1/operator/accounts", None, true)
+            .await
+            .0,
+        200
+    );
+    let invite_role=db.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT details->>'role' AS role FROM account_admin_audit WHERE target_email='invited-operator@example.test'".to_owned())).await.unwrap().unwrap().try_get::<String>("","role").unwrap();
+    assert_eq!(invite_role, "operator");
+    let history_text = account_history.1.to_string();
+    assert!(!history_text.contains(first_invite.1["token"].as_str().unwrap()));
+    assert!(!history_text.contains(second_invite.1["token"].as_str().unwrap()));
+    assert!(!history_text.contains(reset_link.1["token"].as_str().unwrap()));
+    // Search and keyset pagination must not expose private user fields.
+    db.execute_unprepared("INSERT INTO users(email,password_hash,display_name,role,settings) SELECT 'page-'||n||'@example.test',password_hash,'Page account','learner',settings FROM users CROSS JOIN generate_series(1,25) n WHERE email='operator@example.test'").await.unwrap();
+    let accounts = operator
+        .send("GET", "/api/v1/operator/accounts?q=PAGE", None, true)
+        .await;
+    assert_eq!(accounts.0, 200);
+    assert_eq!(accounts.1["items"].as_array().unwrap().len(), 20);
+    assert!(!accounts.1.to_string().contains("password"));
+    assert!(!accounts.1.to_string().contains("settings"));
+    let next = operator
+        .send(
+            "GET",
+            &format!(
+                "/api/v1/operator/accounts?q=PAGE&afterId={}",
+                accounts.1["nextId"].as_str().unwrap()
+            ),
+            None,
+            true,
+        )
+        .await;
+    assert_eq!(next.0, 200);
+    assert_eq!(next.1["items"].as_array().unwrap().len(), 5);
+    assert!(next.1["nextId"].is_null());
+    assert!(accounts.1["items"].as_array().unwrap().iter().all(|first| {
+        !next.1["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|second| first["id"] == second["id"])
+    }));
     db.close().await.unwrap();
     admin
         .execute_unprepared(&format!("DROP SCHEMA {schema} CASCADE"))
