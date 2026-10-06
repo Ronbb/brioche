@@ -446,14 +446,58 @@ pub async fn withdraw(
     actor: &str,
     reason: &str,
 ) -> Result<i64, AppError> {
-    if !identifier(id)
-        || revision == 0
-        || revision > i32::MAX as u32
-        || expected < 0
-        || !text(actor)
-        || !text(reason)
-    {
-        return Err(AppError::InvalidInput);
+    withdraw_impl(db, id, revision, expected, actor, reason)
+        .await
+        .map_err(|error| error.runtime)
+}
+/// Local CLI diagnostics share the runtime transaction and irreversible withdrawal checks.
+pub async fn withdraw_author(
+    db: &DatabaseConnection,
+    id: &str,
+    revision: u32,
+    expected: i64,
+    actor: &str,
+    reason: &str,
+) -> anyhow::Result<i64> {
+    withdraw_impl(db, id, revision, expected, actor, reason).await.map_err(|error| {
+        anyhow::anyhow!("lesson {id}@{revision}: {}", error.diagnostic.unwrap_or_else(|| "withdrawal database operation failed; verify content status before retrying".into()))
+    })
+}
+async fn withdraw_impl(
+    db: &DatabaseConnection,
+    id: &str,
+    revision: u32,
+    expected: i64,
+    actor: &str,
+    reason: &str,
+) -> Result<i64, ReleaseFailure> {
+    if !identifier(id) {
+        return Err(ReleaseFailure::at(
+            AppError::InvalidInput,
+            "lesson-id",
+            "invalid lesson identifier",
+        ));
+    }
+    if !brioche_course_contract::valid_content_revision(revision) {
+        return Err(ReleaseFailure::at(
+            AppError::InvalidInput,
+            "revision",
+            "expected revision in 1..2147483647",
+        ));
+    }
+    if expected < 0 {
+        return Err(ReleaseFailure::at(
+            AppError::InvalidInput,
+            "expected-generation",
+            "must be nonnegative",
+        ));
+    }
+    if !text(actor) || !text(reason) {
+        return Err(ReleaseFailure::at(
+            AppError::InvalidInput,
+            "actor/reason",
+            "must be nonempty, without control characters, at most 1000 bytes",
+        ));
     }
     let tx = db.begin().await.map_err(|_| AppError::Unavailable)?;
     let state = one(
@@ -463,8 +507,13 @@ pub async fn withdraw(
     )
     .await?
     .ok_or(AppError::Unavailable)?;
-    if field::<i64>(&state, "generation")? != expected {
-        return Err(AppError::Conflict);
+    let generation = field::<i64>(&state, "generation")?;
+    if generation != expected {
+        return Err(ReleaseFailure::at(
+            AppError::Conflict,
+            "expected-generation",
+            &format!("content generation changed: expected {expected}, current {generation}"),
+        ));
     }
     if exec(
         &tx,
@@ -474,7 +523,11 @@ pub async fn withdraw(
     .await?
         != 1
     {
-        return Err(AppError::NotFound);
+        return Err(ReleaseFailure::at(
+            AppError::NotFound,
+            "lesson-id/revision",
+            "lesson revision does not exist",
+        ));
     }
     if exec(
         &tx,
@@ -484,7 +537,11 @@ pub async fn withdraw(
     .await?
         != 1
     {
-        return Err(AppError::Gone);
+        return Err(ReleaseFailure::at(
+            AppError::Gone,
+            "lesson-id/revision",
+            "lesson revision was already withdrawn",
+        ));
     }
     let next = expected.checked_add(1).ok_or(AppError::Unavailable)?;
     exec(

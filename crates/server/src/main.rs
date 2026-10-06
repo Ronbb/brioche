@@ -287,7 +287,7 @@ async fn main() -> Result<()> {
                         "usage: content-withdraw <lesson-id> <revision> <expected-generation> <actor> <reason>"
                     );
                 }
-                brioche_server::content::withdraw(
+                brioche_server::content::withdraw_author(
                     db.as_ref().unwrap(),
                     &args[0],
                     args[1].parse()?,

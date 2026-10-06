@@ -41,7 +41,7 @@
 ## 修改与验证
 
 - 改关键设计同步更新 docs 与决策记录，标明事实、建议、待验证项。
-- `release-activate` 的本地作者诊断与运行时激活共用事务和发布检查；可指出 generation 冲突、撤回课程及媒体字段，但不得输出 SQL/连接秘密，也不得为诊断跳过媒体校验或原子性。
+- `release-activate` / `content-withdraw` 的本地作者诊断与运行时共用事务及发布/撤回检查；可指出 generation 冲突、撤回课程及媒体字段，但不得输出 SQL/连接秘密，也不得为诊断跳过媒体校验或原子性。
 - 课程先结构/语义校验，再预览与人工审校；结构通过不表示教学内容正确。
 - 作者文件先运行 `cargo run -p brioche-server -- check <lesson.json>` 或 `check-release <manifest.json>`，不要求数据库。它们检查结构与本地引用/判分一致性，不替代素材登记、授权、人工审校或 release-stage 的数据库发布校验。
 - 整个本地课包可用 `check-release <manifest.json> --sources <file-or-directory> ...`（1–20 个来源）。目录仅按清单引用查 `<lessonId>.lesson.json`，别名课源显式传文件；会检查课源完整结构/语义/私有规则与清单 ID/revision/等级/单元对应，缺失或歧义失败。默认不带 sources 仍只检查清单，不将离线成功当作导入/审校/发布证明。

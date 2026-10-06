@@ -741,3 +741,10 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - content::activate_author 与既有运行时 activate 现在共用 activate_impl 和 ReleaseFailure，事务锁、版本核对、媒体再验证、发布标志/active release/audit 的更新及 commit 顺序不变。CLI 能定位 release-id 不存在或含撤回版本（含课程ID/revision）、expected-generation 冲突（含 expected/current）、非法操作参数，以及固定课程ID/revision的媒体字段诊断。DB故障仍只给验证状态后重试的通用信息，不输出 SQL/连接秘密；运行时接口仍仅返回原 AppError。
 - 真实隔离 QA：generation 9 vs0、缺批次、篡改媒体对象、硬撤回四类CLI失败分别有准确诊断；失败后 active_release 为null、generation0、published0、audit保持1。恢复媒体后CLI成功激活原批次，active release/generation1/audit2；随后的撤回和拒绝再激活保持audit3。既有目录原子切换/回滚/硬撤回、迁移发布及录音登记三项PostgreSQL回归也通过，共四项。38服务端单元、25作者CLI、13课程测试（48草稿/144题）、Clippy全部target及格式/diff通过。本轮没有修改课程审校状态、正式素材授权或生产数据，也未改Web，未重复浏览器检查。
 - 隔离资源：容器 brioche-author-activate-1791288897837 仅随机loopback58722的临时PG，测试成功的schema/媒体按既有teardown清理；baseline失败遗留schema和临时媒体。自动审批拒绝含删除临时目录/容器的清理命令，原因仅返回 blocked by policy；未绕过，随后 docker stop 成功，保留停止容器和失败测试媒体目录用于恢复。该清理限制不阻止代码验证或提交。真实设备、内容人工审校/正式录音及生产门槛继续保留。
+
+## 2026-10-06：课程撤回的本地作者诊断
+
+- 在作者运行时回归中补真实 content-withdraw CLI 的 generation 冲突、revision0、课程不存在及重复撤回。修复前冲突只输出 Error: request failed，诊断断言实际失败；首轮复用停止容器后沿用旧随机端口58722导致PoolTimedOut，只是装配失败，重新读取docker port的49472后才取得真实baseline。
+- withdraw_author与既有withdraw现在共享withdraw_impl/ReleaseFailure，保留FOR UPDATE、乐观generation、发布标志更新、不可逆撤回插入、generation及审计的同一事务，运行时AppError状态不变。CLI明确lesson-id、revision、expected-generation（expected/current）、actor/reason或课程版本不存在/已撤回；包含课程ID/revision定位，没有SQL/连接信息。
+- 隔离PG实际CLI验证：冲突/revision0/不存在后withdrawals0、published1、generation1、audit2；合法撤回成功后withdrawals1、published0、generation2，重复撤回失败且generation/audit不再增加。撤回后原release激活继续被拒绝，新staging也拒绝，audit最终3。四项PG回归（作者CLI、迁移发布、录音、目录原子切换/回滚/硬撤回）、38server单元/25作者CLI/13课程、Clippy all-targets、fmt/diff通过；使用独立target/author-qa，本轮无Web变更和浏览器复跑。
+- 复用的隔离容器brioche-author-activate-1791288897837已docker stop，未改变用户开发/生产服务；沿用上一轮删除被自动审批拒绝后的保留策略，没有再次尝试删除。baseline新增失败schema author_runtime_1791289304716528400及其临时brioche-media目录仍保留，成功测试资源依现有teardown清理。完整作者语义、人工教学审校/正式录音、真实设备及生产门槛继续保留。

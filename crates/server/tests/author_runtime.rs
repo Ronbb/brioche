@@ -98,6 +98,23 @@ fn activation_failure(output: Output, reason: &str) {
         "{error}"
     );
 }
+fn withdraw(url: &str, root: &Path, id: &str, revision: &str, expected: &str) -> Output {
+    Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+        .args([
+            "content-withdraw",
+            id,
+            revision,
+            expected,
+            "protocol-test",
+            "isolated withdrawal diagnostic",
+        ])
+        .env("DATABASE_URL", url)
+        .env("CONTENT_MODE", "database")
+        .env("APP_ENV", "production")
+        .env("MEDIA_ROOT", root)
+        .output()
+        .unwrap()
+}
 
 #[tokio::test]
 #[ignore = "set TEST_DATABASE_URL to a dedicated PostgreSQL database"]
@@ -699,16 +716,57 @@ async fn import_and_stage_cli_locate_original_source_and_preserve_atomicity() {
     );
     assert_eq!(state.try_get::<i64>("", "generation").unwrap(), 1);
     assert_eq!(count(&db, "content_audit").await, 2);
-    brioche_server::content::withdraw(
-        &db,
-        "author-reviewed",
-        1,
-        1,
-        "tester",
-        "protocol withdrawal",
-    )
-    .await
-    .unwrap();
+    activation_failure(
+        withdraw(url.as_str(), &root, "author-reviewed", "1", "0"),
+        "expected-generation: content generation changed: expected 0, current 1",
+    );
+    activation_failure(
+        withdraw(url.as_str(), &root, "author-reviewed", "0", "1"),
+        "revision: expected revision in 1..2147483647",
+    );
+    activation_failure(
+        withdraw(url.as_str(), &root, "missing-lesson", "1", "1"),
+        "lesson-id/revision: lesson revision does not exist",
+    );
+    assert_eq!(count(&db, "content_withdrawals").await, 0);
+    assert_eq!(count(&db, "content_audit").await, 2);
+    assert_eq!(
+        db.query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT generation FROM content_state WHERE singleton"
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get::<i64>("", "generation")
+        .unwrap(),
+        1
+    );
+    assert_eq!(db.query_one_raw(Statement::from_string(DbBackend::Postgres, "SELECT count(*) AS n FROM lesson_revisions WHERE lesson_id='author-reviewed' AND published")).await.unwrap().unwrap().try_get::<i64>("", "n").unwrap(), 1);
+    let withdrawn = withdraw(url.as_str(), &root, "author-reviewed", "1", "1");
+    assert!(
+        withdrawn.status.success(),
+        "{}",
+        String::from_utf8_lossy(&withdrawn.stderr)
+    );
+    activation_failure(
+        withdraw(url.as_str(), &root, "author-reviewed", "1", "2"),
+        "lesson-id/revision: lesson revision was already withdrawn",
+    );
+    assert_eq!(count(&db, "content_withdrawals").await, 1);
+    assert_eq!(
+        db.query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT generation FROM content_state WHERE singleton"
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get::<i64>("", "generation")
+        .unwrap(),
+        2
+    );
+    assert_eq!(db.query_one_raw(Statement::from_string(DbBackend::Postgres, "SELECT count(*) AS n FROM lesson_revisions WHERE lesson_id='author-reviewed' AND published")).await.unwrap().unwrap().try_get::<i64>("", "n").unwrap(), 0);
     activation_failure(
         activate(url.as_str(), &root, "author-release", "2"),
         "release-id: release contains a withdrawn lesson revision",
