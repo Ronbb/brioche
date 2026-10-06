@@ -55,3 +55,4 @@ jobs:
       - run: pnpm test:ssr
       - run: pnpm exec agent-browser install --with-deps
       - run: pnpm test:browser
+      - run: pnpm test:browser:ssr

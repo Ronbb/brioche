@@ -703,3 +703,11 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - 三题原生键盘回归通过（60.92s）：连续 Enter 仅一请求，503 后保留确认焦点及答案，明确重试提交 revision1/确切题目与 choice=bonjour、text=une、order=[bonjour,luc]；受控答错聚焦反馈，明确再试返回答案，再次正确后进下一题，最终回顾三题/三正确/标题焦点。额外离页回归通过（48.37s）：暂挂判分离页 signal aborted，返回新会话选择清空；新请求暂挂时释放旧200/503均无结果/错误/toast、仍等待新请求，当前响应才显示当前反馈。
 - TS7、client/SSR build、全部11SSR、定向Prettier/diff通过；本轮未重跑全41浏览器或无关Web单元。自己的随机Vite/Chromium自动清理，未访问用户账号或改变部署。受控HTTP/合成课程不代替真实fixture服务、数据库、iPhone或辅助技术验收。
 - 固定d1dab5d的 Check37455801225 本轮实际读取仍in_progress，不提前声称远端绿色。完整人工内容/正式素材与录音、设备/辅助技术、生产门槛继续待完成。
+
+## 2026-10-06：生产 SSR 页面壳与客户端路由检查
+
+- 新增独立 `pnpm test:browser:ssr`，前置 `pnpm build`；加载实际生产 server/client 构建和真实 Layout/RouteFocus/Scrollbar/页面组件，以两台临时 Node HTTP 服务提供生产 SSR、构建静态资源和受控公开课程 API。课程从示例作者源只选公共字段，去私有规则/editorial，不连接数据库或真实账号。CI 在构建、SSR和组件浏览器测试后运行该检查。
+- 最终本机 Chromium 一项通过（44.80s）：实际首页320/390/768/1440px根clientWidth/scrollWidth均等于视口、顶部栏不越界、根滚动条样式none；390px原生Enter使用跳到正文并聚焦真实main；头像进入/profile、品牌回首页和目录链接进入/courses均在真实hydrated路由聚焦main h1，浏览器内标记保留证明并非全页重载。
+- 390px真实语速dialog在视口内、焦点在modal、根覆盖滚动条隐藏；Escape返回原速度按钮。核对未捕获浏览器异常与测试服务器异常均为空。不是纯组件装配，但API为受控fixture，这只补代表性公共页面壳/路由证据，不声称全部页面四档宽度、真实SSR服务部署、Rust/database、iPhone/屏幕阅读器或原生声音全部完成。
+- 定向Prettier/diff通过，浏览器与两台随机loopback服务器自动清理；未触及用户5173/3001、Docker或浏览器。此轮只增加测试/CI/协作说明，应用源未改，不重新运行无关Rust/Web或完整41组件浏览器。
+- 固定155b3b0的 Check37456413593/job112245009700 本轮先确认运行，后读取已至pnpm test:browser步骤（26），无失败，仍in_progress；正式终态和最新提交CI另行确认。完整内容/录音、真实设备/辅助技术与生产门槛仍待完成。
