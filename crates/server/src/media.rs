@@ -128,8 +128,9 @@ impl AssetBundle {
                 "{p}/snapshot/displayName: expected nonempty name"
             );
             ensure!(
-                snapshot.speech_locale == "fr-FR",
-                "{p}/snapshot/speechLocale: expected fr-FR"
+                snapshot.speech_locale == brioche_course_contract::CHARACTER_SPEECH_LOCALE,
+                "{p}/snapshot/speechLocale: expected {}",
+                brioche_course_contract::CHARACTER_SPEECH_LOCALE
             );
             ensure!(
                 valid_id(&snapshot.avatar_id),
@@ -581,7 +582,7 @@ pub async fn import_bundle(
                 && snapshot.revision > 0
                 && snapshot.revision <= i32::MAX as u32
                 && text(&snapshot.display_name)
-                && snapshot.speech_locale == "fr-FR"
+                && snapshot.speech_locale == brioche_course_contract::CHARACTER_SPEECH_LOCALE
                 && character.avatar_revision > 0
                 && character.avatar_revision <= i32::MAX as u32
                 && ids.insert((&snapshot.character_id, snapshot.revision)),

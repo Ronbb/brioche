@@ -6,6 +6,9 @@ use ts_rs::TS;
 mod audio;
 mod validation;
 
+/// Current registered character voice policy; regional voices need an explicit content revision.
+pub const CHARACTER_SPEECH_LOCALE: &str = "fr-FR";
+
 /// Stable author IDs shared by routing, media registration and saved-operation recovery.
 pub fn valid_content_id(value: &str) -> bool {
     !value.is_empty()

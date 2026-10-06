@@ -827,3 +827,46 @@ fn offline_check_rejects_identifiers_that_navigation_cannot_recover() {
     }
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn character_locale_rejection_is_located_before_any_registration() {
+    let path = std::env::temp_dir().join(format!("brioche-character-locale-{}.json", random_id()));
+    for locale in [
+        "frank",
+        "fry",
+        "fr",
+        "fr-",
+        "fr-CA",
+        "FR-fr",
+        "fr-FR-extra",
+        "en-US",
+    ] {
+        let mut source = brioche_server::development_source().unwrap();
+        source["cast"][0]["speechLocale"] = serde_json::json!(locale);
+        let text = serde_json::to_string_pretty(&source)
+            .unwrap()
+            .replace('\n', "\r\n");
+        std::fs::write(&path, &text).unwrap();
+        let prefix = "\"speechLocale\": ";
+        let marker = format!("{prefix}{}", serde_json::to_string(locale).unwrap());
+        assert_eq!(text.matches(&marker).count(), 1);
+        let offset = text.find(&marker).unwrap() + prefix.len();
+        let before = &text[..offset];
+        let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+        let output = run("check", &path);
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success());
+        assert!(
+            error.contains(&format!(
+                "{}:{line}:{column}: /cast/0/speechLocale:",
+                path.display()
+            )),
+            "{error}"
+        );
+        assert!(error.contains("expected fr-FR"), "{error}");
+        assert!(!error.contains("database connection"), "{error}");
+        assert!(output.stdout.is_empty());
+    }
+    std::fs::remove_file(path).unwrap();
+}

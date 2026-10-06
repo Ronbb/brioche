@@ -342,9 +342,10 @@ impl PublicLesson {
                 return Err(format!("/cast/{ci}/revision: invalid character revision"));
             }
             nonempty(&cast.display_name, &format!("/cast/{ci}/displayName"))?;
-            if !cast.speech_locale.starts_with("fr") {
+            if cast.speech_locale != crate::CHARACTER_SPEECH_LOCALE {
                 return Err(format!(
-                    "/cast/{ci}/speechLocale: expected French speech locale"
+                    "/cast/{ci}/speechLocale: expected {}",
+                    crate::CHARACTER_SPEECH_LOCALE
                 ));
             }
         }
@@ -356,6 +357,30 @@ mod tests {
     use crate::*;
     fn fixture() -> PublicLesson {
         super::super::tests::fixture()
+    }
+    #[test]
+    fn character_speech_locale_matches_the_registration_policy() {
+        for invalid in [
+            "frank",
+            "fry",
+            "fr",
+            "fr-",
+            "fr-CA",
+            "FR-fr",
+            "fr-FR-extra",
+            "en-US",
+        ] {
+            let mut lesson = fixture();
+            lesson.cast[0].speech_locale = invalid.into();
+            assert!(
+                lesson
+                    .validate()
+                    .unwrap_err()
+                    .starts_with("/cast/0/speechLocale:"),
+                "{invalid}"
+            );
+        }
+        fixture().validate().unwrap();
     }
     #[test]
     fn all_content_identifiers_match_navigation_and_recovery_limits() {
