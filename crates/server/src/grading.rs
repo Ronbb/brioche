@@ -1,11 +1,11 @@
 //! Answer keys stay in this crate. Validation precedes import and grading.
+pub use brioche_course_contract::normalize_text;
 use brioche_course_contract::{
     Block, Exercise, ExerciseAnswer, GradeResult, MAX_TEXT_ANSWER_BYTES,
     MAX_TEXT_ANSWER_UTF16_UNITS, PublicLesson, valid_text_answer_length,
 };
 use serde::Deserialize;
 use std::collections::{BTreeMap, HashSet};
-use unicode_normalization::UnicodeNormalization;
 
 #[derive(Debug, Deserialize, schemars::JsonSchema)]
 #[serde(tag = "kind", rename_all = "lowercase", deny_unknown_fields)]
@@ -38,23 +38,6 @@ pub enum GradeError {
     InvalidContent,
     UnknownExercise,
     InvalidAnswer,
-}
-
-/// NFC, whitespace and French apostrophe variants are equivalent; accents remain meaningful.
-pub fn normalize_text(text: &str, case_sensitive: bool) -> String {
-    let normalized: String = text
-        .nfc()
-        .map(|c| match c {
-            '\u{2018}' | '\u{2019}' | '\u{02bc}' => '\'',
-            _ => c,
-        })
-        .collect();
-    let normalized = normalized.split_whitespace().collect::<Vec<_>>().join(" ");
-    if case_sensitive {
-        normalized
-    } else {
-        normalized.to_lowercase()
-    }
 }
 
 pub struct Grader {

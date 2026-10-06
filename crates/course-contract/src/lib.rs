@@ -3,8 +3,26 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use ts_rs::TS;
+use unicode_normalization::UnicodeNormalization;
 mod audio;
 mod validation;
+
+/// NFC, whitespace and French apostrophe variants are equivalent; accents remain meaningful.
+pub fn normalize_text(text: &str, case_sensitive: bool) -> String {
+    let normalized: String = text
+        .nfc()
+        .map(|c| match c {
+            '\u{2018}' | '\u{2019}' | '\u{02bc}' => '\'',
+            _ => c,
+        })
+        .collect();
+    let normalized = normalized.split_whitespace().collect::<Vec<_>>().join(" ");
+    if case_sensitive {
+        normalized
+    } else {
+        normalized.to_lowercase()
+    }
+}
 
 /// Current registered character voice policy; regional voices need an explicit content revision.
 pub const CHARACTER_SPEECH_LOCALE: &str = "fr-FR";

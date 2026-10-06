@@ -40,7 +40,29 @@ fn text_list(values: &[String], path: &str) -> Result<(), String> {
     Ok(())
 }
 impl PublicLesson {
+    /// Intrinsic choice semantics can be checked before registered media hydration.
+    pub fn validate_choice_labels(&self) -> Result<(), String> {
+        for (index, block) in self.blocks.iter().enumerate() {
+            if let Block::Exercise {
+                exercise: Exercise::SingleChoice { options, .. },
+                ..
+            } = block
+            {
+                let mut labels = HashSet::new();
+                for (i, option) in options.iter().enumerate() {
+                    if !labels.insert(crate::normalize_text(&option.text, true)) {
+                        return Err(format!(
+                            "/blocks/{index}/options/{i}/text: duplicate choice text after NFC, whitespace and apostrophe normalization"
+                        ));
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
     pub(crate) fn validate_flow(&self) -> Result<(), String> {
+        self.validate_choice_labels()?;
         for (value, path) in [
             (self.id.as_str(), "/id"),
             (self.level_id.as_str(), "/levelId"),
@@ -359,6 +381,62 @@ mod tests {
     use crate::*;
     fn fixture() -> PublicLesson {
         super::super::tests::fixture()
+    }
+    #[test]
+    fn choice_labels_must_be_distinguishable_but_order_tokens_may_repeat() {
+        for (first, second, duplicate) in [
+            ("une baguette", "une baguette", true),
+            ("une baguette", "  une\u{00a0}baguette  ", true),
+            ("café", "cafe\u{301}", true),
+            ("s'il vous plaît", "s’il vous plaît", true),
+            ("s'il vous plaît", "sʼil vous plaît", true),
+            ("Une", "une", false),
+            ("cafe", "café", false),
+        ] {
+            let mut lesson = fixture();
+            let index = lesson
+                .blocks
+                .iter()
+                .position(|b| {
+                    matches!(
+                        b,
+                        Block::Exercise {
+                            exercise: Exercise::SingleChoice { .. },
+                            ..
+                        }
+                    )
+                })
+                .unwrap();
+            if let Block::Exercise {
+                exercise: Exercise::SingleChoice { options, .. },
+                ..
+            } = &mut lesson.blocks[index]
+            {
+                options[0].text = first.into();
+                options[1].text = second.into();
+            }
+            if duplicate {
+                let error = lesson.validate().unwrap_err();
+                assert!(
+                    error.starts_with(&format!("/blocks/{index}/options/1/text:")),
+                    "{error}"
+                );
+                assert!(error.contains("duplicate choice text"), "{error}");
+            } else {
+                lesson.validate().unwrap();
+            }
+        }
+        let mut lesson = fixture();
+        for block in &mut lesson.blocks {
+            if let Block::Exercise {
+                exercise: Exercise::Order { tokens, .. },
+                ..
+            } = block
+            {
+                tokens[1].text = tokens[0].text.clone();
+            }
+        }
+        lesson.validate().unwrap();
     }
     #[test]
     fn character_speech_locale_matches_the_registration_policy() {

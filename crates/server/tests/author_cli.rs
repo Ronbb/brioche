@@ -39,6 +39,65 @@ fn checks_drafts_without_database_and_does_not_claim_publication() {
 }
 
 #[test]
+fn duplicate_choice_text_is_located_before_check_or_import_connects() {
+    let path = std::env::temp_dir().join(format!("brioche-choice-label-{}.json", random_id()));
+    let original = brioche_server::development_source().unwrap();
+    let index = original["blocks"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .position(|block| block.get("options").is_some())
+        .unwrap();
+    let pointer = format!("/blocks/{index}/options/1/text");
+    for (first, second) in [
+        ("une baguette", "une baguette"),
+        ("une baguette", "  une\u{00a0}baguette  "),
+        ("café", "cafe\u{301}"),
+        ("s'il vous plaît", "s’il vous plaît"),
+    ] {
+        let mut source = original.clone();
+        source["blocks"][index]["options"][0]["text"] = serde_json::json!(first);
+        *source.pointer_mut(&pointer).unwrap() = serde_json::json!(second);
+        let text = serde_json::to_string_pretty(&source)
+            .unwrap()
+            .replace('\n', "\r\n");
+        // Find the second option's text field, even when both literal values match.
+        let key = serde_json::to_string(
+            source["blocks"][index]["options"][1]["id"]
+                .as_str()
+                .unwrap(),
+        )
+        .unwrap();
+        let option_offset = text.find(&format!("\"id\": {key}")).unwrap();
+        let token = serde_json::to_string(second).unwrap();
+        let offset = option_offset + text[option_offset..].find(&token).unwrap();
+        let before = &text[..offset];
+        let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+        std::fs::write(&path, text).unwrap();
+        for command in ["check", "import"] {
+            let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+                .args([command, path.to_str().unwrap()])
+                .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+                .env("CONTENT_MODE", "database")
+                .env("APP_ENV", "production")
+                .output()
+                .unwrap();
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(!output.status.success());
+            assert!(
+                error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
+                "{error}"
+            );
+            assert!(error.contains("duplicate choice text"), "{error}");
+            assert!(!error.contains("database connection"), "{error}");
+            assert!(output.stdout.is_empty());
+        }
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn unrepresentable_text_answers_are_located_before_check_or_import_connects() {
     let path = std::env::temp_dir().join(format!("brioche-answer-limit-{}.json", random_id()));
     let original = brioche_server::development_source().unwrap();
