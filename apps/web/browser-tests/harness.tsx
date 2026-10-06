@@ -10,6 +10,9 @@ import Profile from "../app/routes/profile";
 import Learning from "../app/routes/learning";
 import Reviews from "../app/routes/reviews";
 import Library from "../app/routes/library";
+import PendingSaves from "../app/routes/pending-saves";
+import { clearPending, draftScope, saveDraft } from "../app/lib/learning-draft";
+import { ownedTargetKey } from "../app/lib/owned-draft";
 import type { SavedItem } from "@brioche/contracts/SavedItem";
 import type { ReviewCard } from "@brioche/contracts/ReviewCard";
 import type { ReviewQueue } from "@brioche/contracts/ReviewQueue";
@@ -44,6 +47,7 @@ const qa = {
   ownedWrites: [] as { path: string; body: Record<string, unknown> }[],
   ownedRelease: [] as ((value: SavedItem | ReviewCard | number) => void)[],
   savedFixture: null as SavedItem | null,
+  confirmExternal: null as ((index: number) => void) | null,
 };
 Object.assign(window, { qa });
 class ControlledUtterance extends EventTarget {
@@ -433,6 +437,73 @@ function LibraryHarness() {
     </LearningProvider>
   );
 }
+const pendingJobs = ["qa-account", "qa-account", "qa-next"].map(
+  (userId, index) => {
+    const knowledgeId = "pending-word-" + index;
+    return {
+      key:
+        draftScope(userId, "owned", 1) +
+        ":" +
+        ownedTargetKey({
+          kind: "bookmark",
+          knowledgeId,
+          lessonId: lesson.id,
+          revision: 1,
+        }),
+      job: {
+        path: "/api/v1/me/saved-items/" + knowledgeId,
+        method: "PUT" as const,
+        body: {
+          sourceLessonId: lesson.id,
+          sourceRevision: 1,
+          saved: true,
+          version: 0,
+          idempotencyKey: "pending-recovery-operation-" + index,
+        },
+      },
+    };
+  },
+);
+if (kind === "pending") {
+  for (const entry of pendingJobs) saveDraft(entry.key, entry.job);
+  qa.confirmExternal = (index) =>
+    clearPending(
+      pendingJobs[index].key,
+      pendingJobs[index].job.body.idempotencyKey,
+    );
+}
+function PendingHarness() {
+  const [user, setUser] = useState(reviewUser);
+  qa.changeUser = () =>
+    setUser({ ...reviewUser, id: "qa-next", displayName: "Next" });
+  const loaderData = { userId: user.id };
+  return (
+    <LearningProvider user={user}>
+      <main>
+        <PendingSaves
+          loaderData={loaderData}
+          params={{}}
+          matches={[
+            {
+              id: "root",
+              params: {},
+              pathname: "/",
+              loaderData: { user, enabled: true },
+              handle: undefined,
+            },
+            {
+              id: "routes/pending-saves",
+              params: {},
+              pathname: "/",
+              loaderData,
+              handle: undefined,
+            },
+          ]}
+        />
+      </main>
+    </LearningProvider>
+  );
+}
 const reading = kind === "reading";
 const router = createMemoryRouter(
   [
@@ -454,6 +525,8 @@ const router = createMemoryRouter(
         <ReviewsHarness />
       ) : kind === "library" ? (
         <LibraryHarness />
+      ) : kind === "pending" ? (
+        <PendingHarness />
       ) : (
         <StartHarness />
       ),

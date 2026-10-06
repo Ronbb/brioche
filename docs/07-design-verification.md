@@ -1,5 +1,12 @@
 # 设计验证记录
 
+## 2026-10-06：未确认保存页的账号隔离与列表同步
+
+- 两项新浏览器回归在修复前失败：首次确认后的实际焦点为 BODY，aria-busy 缺失；切换账号、释放旧成功响应后新账号列表由 1 条变为 0。测试使用实际 PendingSaves、LearningProvider 与 MemoryRouter，三个不同账号 scope 的合成原提交及受控 HTTP 响应，不连接用户账号或数据库。
+- 页面现以账号 ID 为 React key 固定保存生命周期，同步 ref 拒绝重入，按钮改 aria-disabled/aria-busy 保留键盘焦点；只有当前挂载实例能改变 busy/error。成功与目标接口的确定拒绝仍按原 key/idempotencyKey 清理，卸载不取消已经发出的服务端请求。列表订阅草稿变更通知，始终重新读取 pendingOwned 的账号/端点/字段校验结果；提交入口也重新核对当前原请求，避免已确认行在 React 提交前再次发送。
+- 修复后原生三次 Enter 只产生一次请求、BUTTON 焦点/busy=true；离页提示 Escape 返回 H1，503 保留原请求，重试 path/body 完全相同，确认后焦点在剩余按钮。模拟先前控件确认剩余条目后列表清空、空态获焦点、合成 beforeunload 不再 preventDefault、明确导航成功，无额外写入。初次测试对存储枚举顺序作了错误假定，导致确认已经移除的条目；改为根据实际首次请求选择剩余条目，未据此前超时宣称通过。
+- 新账号在旧请求仍挂起时可开始确认自己的原提交；释放旧成功后，新列表仍一条且自己的 busy=true，只有新请求成功才清空并聚焦空态。两项定向回归通过（47 秒），最终源码的完整 17 项 Chromium 回归通过（226 秒），TS 7、26 项 Web 测试、6 项构建 SSR 测试、client/SSR build 与 Prettier/diff 检查通过。测试 teardown 已关闭自己的随机浏览器会话与临时 Vite，不触碰用户浏览器或共享服务。真实设备/辅助技术、课程人工审校与正式录音、生产验收继续待完成。
+
 ## 2026-10-06：表达卡片收起后的未确认保存
 
 - 源代码核对发现 Bookmark/Enroll 的 beforeunload 依赖控件挂载；表达库收起卡片会卸载两者，原请求仍在 sessionStorage，但 Library 与公开 Lesson 没有 SPA 离页确认。新增 usePendingOwnedWrites，以 pendingOwned 的完整校验和当前账号 scope 读取 Boolean 快照，使用无 payload 的本标签通知与 storage 通知更新；SSR 快照为 false，不读取服务端浏览器存储。每路由一个 PendingNavigation；账号学习/复习合并原有 guard，避免多个表达控件分别注册导航拦截器。

@@ -6,9 +6,11 @@ import {
   definitiveWriteFailure,
   privateRequest,
 } from "../lib/api.client";
-import { clearPending } from "../lib/learning-draft";
+import { clearPending, draftsChangedEvent } from "../lib/learning-draft";
 import { pendingOwned } from "../lib/owned-draft";
 import { Icon } from "../components/icon";
+import { PendingNavigation } from "../components/pending-navigation";
+import { usePendingOwnedWrites } from "../components/pending-owned-writes";
 import type { Route } from "./+types/pending-saves";
 export async function loader({ request }: Route.LoaderArgs) {
   const identity = await getIdentity(request);
@@ -18,13 +20,21 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function PendingSaves({
   loaderData: { userId },
 }: Route.ComponentProps) {
+  return <PendingList key={userId} userId={userId} />;
+}
+function PendingList({ userId }: { userId: string }) {
   const [items, setItems] = useState<ReturnType<typeof pendingOwned>>([]),
     [ready, setReady] = useState(false),
     [busy, setBusy] = useState(""),
     [error, setError] = useState("");
   const buttons = useRef(new Map<string, HTMLButtonElement>()),
     empty = useRef<HTMLParagraphElement>(null),
-    pendingFocus = useRef<string | null | undefined>(undefined);
+    heading = useRef<HTMLHeadingElement>(null),
+    pendingFocus = useRef<string | null | undefined>(undefined),
+    currentItems = useRef<ReturnType<typeof pendingOwned>>([]),
+    alive = useRef(true),
+    writing = useRef(false);
+  const hasPending = usePendingOwnedWrites(userId);
   useLayoutEffect(() => {
     if (pendingFocus.current === undefined) return;
     const next = pendingFocus.current;
@@ -35,45 +45,86 @@ export default function PendingSaves({
       empty.current;
     target?.focus();
   }, [items]);
-  useEffect(() => {
-    setItems(pendingOwned(userId));
-    setReady(true);
-  }, [userId]);
-  function removeConfirmed(item: (typeof items)[number]) {
-    const index = items.findIndex((entry) => entry.key === item.key);
-    pendingFocus.current =
-      items[index + 1]?.key ?? items[index - 1]?.key ?? null;
-    setItems(pendingOwned(userId));
+  function sync() {
+    const previous = currentItems.current,
+      next = pendingOwned(userId),
+      nextKeys = new Set(next.map((entry) => entry.key)),
+      focusedKey = [...buttons.current].find(
+        ([, button]) => button === document.activeElement,
+      )?.[0];
+    if (focusedKey && !nextKeys.has(focusedKey)) {
+      const index = previous.findIndex((entry) => entry.key === focusedKey);
+      pendingFocus.current =
+        previous.slice(index + 1).find((entry) => nextKeys.has(entry.key))
+          ?.key ??
+        previous
+          .slice(0, index)
+          .reverse()
+          .find((entry) => nextKeys.has(entry.key))?.key ??
+        next[0]?.key ??
+        null;
+    }
+    currentItems.current = next;
+    setItems(next);
+    if (!next.length) setError("");
   }
+  useEffect(() => {
+    alive.current = true;
+    sync();
+    setReady(true);
+    window.addEventListener(draftsChangedEvent, sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      alive.current = false;
+      window.removeEventListener(draftsChangedEvent, sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, [userId]);
   async function confirm(item: (typeof items)[number]) {
-    if (busy) return;
+    if (writing.current || !alive.current) return;
+    // Another writer may already have confirmed this row before React commits.
+    const current = pendingOwned(userId).find(
+      (entry) => entry.key === item.key,
+    );
+    if (!current || JSON.stringify(current.job) !== JSON.stringify(item.job)) {
+      sync();
+      return;
+    }
+    writing.current = true;
     setBusy(item.key);
     setError("");
     try {
       await privateRequest(item.job.path, item.job.method, item.job.body);
       clearPending(item.key, item.job.body.idempotencyKey);
-      removeConfirmed(item);
     } catch (failure) {
       if (
         failure instanceof ApiRequestError &&
         definitiveWriteFailure(failure)
       ) {
         clearPending(item.key, item.job.body.idempotencyKey);
-        removeConfirmed(item);
-        setError(
-          failure.status === 409
-            ? "记录已在其他地方更新，请回到原页面检查后继续。"
-            : failure.message,
-        );
-      } else setError("保存仍未确认，可以稍后重试同一请求。");
+        if (alive.current)
+          setError(
+            failure.status === 409
+              ? "记录已在其他地方更新，请回到原页面检查后继续。"
+              : failure.message,
+          );
+      } else if (alive.current)
+        setError("保存仍未确认，可以稍后重试同一请求。");
     } finally {
-      setBusy("");
+      writing.current = false;
+      if (alive.current) setBusy("");
     }
   }
   return (
     <section className="settings-page page-arrive">
+      <PendingNavigation
+        active={hasPending}
+        onStay={() => heading.current?.focus({ preventScroll: true })}
+      />
       <div className="section-head">
-        <h1>未确认保存</h1>
+        <h1 ref={heading} tabIndex={-1}>
+          未确认保存
+        </h1>
         <Link className="text-button" to="/profile">
           回到我的
         </Link>
@@ -107,7 +158,9 @@ export default function PendingSaves({
                     else buttons.current.delete(item.key);
                   }}
                   className="text-button"
-                  disabled={!!busy}
+                  type="button"
+                  aria-disabled={!!busy}
+                  aria-busy={busy === item.key}
                   onClick={() => void confirm(item)}
                 >
                   {busy === item.key ? "正在确认" : "确认原提交"}

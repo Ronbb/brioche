@@ -1004,3 +1004,119 @@ test("collapsed library cards retain all pending writes and retry the exact orig
   await browser("wait", "--fn", "qa.route==='/login'");
   assert.equal(await evaluate("qa.ownedWrites.length"), 3);
 });
+
+test("pending save recovery keeps keyboard focus, prevents duplicate requests, and observes external confirmation", async () => {
+  await open("pending");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelectorAll('.library-entry').length===2",
+  );
+  await browser("focus", ".library-entry:first-child button");
+  await press("Enter");
+  await press("Enter");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.ownedWrites.length===1");
+  assert.deepEqual(
+    await evaluate(
+      "({tag:document.activeElement.tagName,busy:document.activeElement.getAttribute('aria-busy'),count:qa.ownedWrites.length})",
+    ),
+    { tag: "BUTTON", busy: "true", count: 1 },
+  );
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", ".pending-navigation[open]");
+  await press("Escape");
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "未确认保存",
+  );
+  await evaluate("qa.ownedRelease[0](503)");
+  await browser("wait", ".error-message");
+  await browser("focus", ".library-entry:first-child button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.ownedWrites.length===2");
+  assert.deepEqual(
+    await evaluate("qa.ownedWrites[1]"),
+    await evaluate("qa.ownedWrites[0]"),
+  );
+  await evaluate("qa.ownedRelease[1](qa.savedFixture)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelectorAll('.library-entry').length===1",
+  );
+  assert.equal(
+    await evaluate("document.activeElement.matches('.library-entry button')"),
+    true,
+  );
+  // A previously mounted writer can confirm while this recovery list is open.
+  await evaluate(
+    "qa.confirmExternal(qa.ownedWrites[0].path.endsWith('0') ? 1 : 0)",
+  );
+  assert.deepEqual(
+    await evaluate(
+      "({rows:document.querySelectorAll('.library-entry').length, keys:Object.keys(sessionStorage).filter(k=>k.includes(':qa-account:')),focus:document.activeElement.textContent})",
+    ),
+    { rows: 0, keys: [], focus: "没有待确认的保存。" },
+  );
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelectorAll('.library-entry').length===0",
+  );
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "没有待确认的保存。",
+  );
+  assert.equal(
+    await evaluate(
+      "(()=>{const e=new Event('beforeunload',{cancelable:true});window.dispatchEvent(e);return e.defaultPrevented})()",
+    ),
+    false,
+  );
+  await evaluate("qa.navigate('/login')");
+  await browser("wait", "--fn", "qa.route==='/login'");
+  assert.equal(await evaluate("qa.ownedWrites.length"), 2);
+});
+
+test("an old account recovery response cannot replace the new account pending list or lock its writes", async () => {
+  await open("pending");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelectorAll('.library-entry').length===2",
+  );
+  await browser("focus", ".library-entry:first-child button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.ownedWrites.length===1");
+  await evaluate("qa.changeUser()");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelectorAll('.library-entry').length===1",
+  );
+  await browser("focus", ".library-entry button");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.ownedWrites.length===2");
+  assert.equal(
+    await evaluate("qa.ownedWrites[1].path"),
+    "/api/v1/me/saved-items/pending-word-2",
+  );
+  await evaluate("qa.ownedRelease[0](qa.savedFixture)");
+  assert.deepEqual(
+    await evaluate(
+      "({rows:document.querySelectorAll('.library-entry').length,busy:document.querySelector('.library-entry button')?.getAttribute('aria-busy')})",
+    ),
+    { rows: 1, busy: "true" },
+  );
+  await evaluate("qa.ownedRelease[1](qa.savedFixture)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelectorAll('.library-entry').length===0",
+  );
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "没有待确认的保存。",
+  );
+});
