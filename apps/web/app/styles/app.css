@@ -1979,6 +1979,9 @@ button.primary {
   border-radius: 16px;
   overflow: hidden;
 }
+.settings-group + h2 {
+  margin-top: 32px;
+}
 .setting-row {
   display: flex;
   align-items: center;

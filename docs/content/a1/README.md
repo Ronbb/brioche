@@ -1,6 +1,6 @@
 # A1 课程草稿包
 
-状态：2026-10-06，六个单元共 24 课，全部待人工审校，未导入或激活线上目录。原来的 12 课试点目录保持不变，四单元目录保留「家与日常安排」四课，五单元目录再增加「买东西与吃饭」四课。六单元目录补齐「认识与约见」四课。A1 与 [A2 六个单元二十四课](../a2/README.md)的作者草稿已齐，不等于审校完成或官方等级认证；完整联合目录包含 48 课。
+状态：2026-10-07，六个单元共 24 课。用户明确指示批准目录前六课，其 revision 1 作者源已记录 reviewed，详见[批准记录](../../10-admin-development.md)；其余 18 课保持 draft。此批准不声称独立专家审校、素材授权或线上发布；当前未导入或激活线上目录。A1 与 [A2 六个单元二十四课](../a2/README.md)的作者源已齐，完整联合目录包含 48 课。
 
 每份 `.lesson.json` 是作者源文件，包含私有判分规则，不可直接作为 Web 静态资源或公共 API 响应。运行时通过现有 Rust 投影去掉私有字段；新增课程无需新增专属页面。[catalog.release.json](catalog.release.json) 保留前三单元 12 课，[catalog.extended.release.json](catalog.extended.release.json) 记录前四单元 16 课。[catalog.five-units.release.json](catalog.five-units.release.json) 记录前五单元 20 课。[catalog.full-a1.release.json](catalog.full-a1.release.json) 记录六单元 24 课。四个目录使用不同 release ID，只记录课程 ID、固定 revision 和顺序，不读取文件，也不证明课程已登记或已审校。
 

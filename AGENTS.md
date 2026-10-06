@@ -13,6 +13,7 @@
 - Web only + server；开发本机直接运行，生产本机 Docker Compose、Cloudflare DNS 与路由器端口映射。
 - Compose 网关采用 Traefik，仅对外映射 HTTP 30075；HTTPS 由用户处理，不加入自动证书或 HTTPS 端口。
 - 用户要求工程收尾后在 Docker Compose 中实际启动应用，核对迁移、服务健康与 HTTP 30075 入口；不能仅交付 Compose 文件或构建镜像代替启动。不以此授权修改外部 DNS、路由器或 HTTPS。
+- 2026-10-07 已要求新增全功能管理员后台，从个人页进入；范围及前六课用户批准记录见 docs/10-admin-development.md。明确用户批准可以记录 reviewed，不得冒充独立专家审校或据此伪造素材授权。后台仍需实现，不将课程预览视作已完成后台管理。
 - 界面美观且有情境插图；前台不暴露数据 Schema、部署方式等实现术语。
 - 操作入口不使用长箭头装饰；课程知识点采用分类色签的笔记卡片、圆形 SVG 展开标记与柔和展开动效，保留键盘操作、清晰焦点与 reduced-motion。
 - 服务端优先 Rust；前端 Vite 8 + TypeScript 7 + Tailwind CSS 4 + React Router，不使用 Next.js。
