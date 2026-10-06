@@ -1,16 +1,20 @@
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import type { LearningSession } from "@brioche/contracts/LearningSession";
 import { ApiRequestError, privateRequest } from "../lib/api.client";
 import { operationKey } from "../lib/operation-key";
 import { Icon } from "./icon";
-export function StartLearning({
-  lessonId,
-  children = "开始学习",
-}: {
+type StartLearningProps = {
   lessonId: string;
   children?: React.ReactNode;
-}) {
+};
+export function StartLearning(props: StartLearningProps) {
+  return <LearningEntry key={props.lessonId} {...props} />;
+}
+function LearningEntry({
+  lessonId,
+  children = "开始学习",
+}: StartLearningProps) {
   const navigate = useNavigate(),
     busy = useRef(false),
     alive = useRef(true),
@@ -18,7 +22,7 @@ export function StartLearning({
   const [pending, setPending] = useState(false),
     [error, setError] = useState(""),
     [expired, setExpired] = useState(false);
-  useEffect(() => {
+  useLayoutEffect(() => {
     alive.current = true;
     return () => {
       alive.current = false;
