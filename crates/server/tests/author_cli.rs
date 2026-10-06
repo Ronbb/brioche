@@ -775,3 +775,55 @@ fn required_teaching_text_reports_original_source_values_without_database() {
     }
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn offline_check_rejects_identifiers_that_navigation_cannot_recover() {
+    use serde_json::json;
+    let path = std::env::temp_dir().join(format!("brioche-stable-ids-{}.json", random_id()));
+    let mut original = brioche_server::development_source().unwrap();
+    // The draft has no hydrated visual descriptors; this is only a typed protocol fixture.
+    original["media"] = json!([{
+        "assetId":"visual-id-fixture", "revision":1, "sha256":"a".repeat(64),
+        "mimeType":"image/svg+xml", "width":640, "height":470,
+        "altZh":"标识协议测试", "creditZh":"仅测试",
+        "url":format!("/api/media/{}.svg", "a".repeat(64))
+    }]);
+    for (pointer, value) in [
+        ("/id", json!("route/escape")),
+        ("/levelId", json!("niveau français")),
+        ("/unitId", json!("a".repeat(101))),
+        ("/knowledge/vocabulary/0/id", json!("word:scope")),
+        ("/knowledge/grammar/0/id", json!("percent%id")),
+        ("/blocks/0/id", json!("block space")),
+        ("/steps/0/id", json!("step/slash")),
+        ("/cast/0/characterId", json!("character:scope")),
+        ("/cast/0/avatarId", json!("avatar space")),
+        ("/media/0/assetId", json!("asset/slash")),
+    ] {
+        let mut source = original.clone();
+        *source.pointer_mut(pointer).unwrap() = value.clone();
+        let text = serde_json::to_string_pretty(&source)
+            .unwrap()
+            .replace('\n', "\r\n");
+        std::fs::write(&path, &text).unwrap();
+        let field = pointer.rsplit('/').next().unwrap();
+        let prefix = format!("\"{field}\": ");
+        let marker = format!("{prefix}{}", serde_json::to_string(&value).unwrap());
+        assert_eq!(text.matches(&marker).count(), 1);
+        let offset = text.find(&marker).unwrap() + prefix.len();
+        let before = &text[..offset];
+        let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+        let output = run("check", &path);
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success());
+        assert!(
+            error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
+            "{error}"
+        );
+        assert!(error.contains("1..100 ASCII"), "{error}");
+        assert!(!error.contains("database connection"), "{error}");
+        assert!(output.stdout.is_empty());
+    }
+    std::fs::remove_file(path).unwrap();
+}

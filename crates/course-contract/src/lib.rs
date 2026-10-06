@@ -6,6 +6,15 @@ use ts_rs::TS;
 mod audio;
 mod validation;
 
+/// Stable author IDs shared by routing, media registration and saved-operation recovery.
+pub fn valid_content_id(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 100
+        && value
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_'))
+}
+
 macro_rules! dto {
     ($name:ident { $($(#[$meta:meta])* $field:ident : $ty:ty),* $(,)? }) => {
         #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, TS)]
@@ -411,12 +420,20 @@ impl PublicLesson {
         if self.revision == 0 {
             return Err("/revision: expected positive revision".into());
         }
+        for (id, path) in [
+            (&self.id, "/id"),
+            (&self.level_id, "/levelId"),
+            (&self.unit_id, "/unitId"),
+        ] {
+            validation::identifier(id, path)?;
+        }
         if self.blocks.is_empty() {
             return Err("/blocks: empty lesson".into());
         }
         let mut ids = HashSet::new();
         let mut insert = |id: &str, path: &str| {
-            if id.is_empty() || !ids.insert(id.to_owned()) {
+            validation::identifier(id, path)?;
+            if !ids.insert(id.to_owned()) {
                 Err(format!("{path}: duplicate/empty id: {id}"))
             } else {
                 Ok(())
@@ -448,11 +465,19 @@ impl PublicLesson {
             .collect();
         let mut cast = HashSet::new();
         for (index, character) in self.cast.iter().enumerate() {
+            validation::identifier(
+                &character.character_id,
+                &format!("/cast/{index}/characterId"),
+            )?;
+            validation::identifier(&character.avatar_id, &format!("/cast/{index}/avatarId"))?;
             if !cast.insert(character.character_id.as_str()) {
                 return Err(format!(
                     "/cast/{index}/characterId: duplicate cast character"
                 ));
             }
+        }
+        for (index, media) in self.media.iter().enumerate() {
+            validation::identifier(&media.asset_id, &format!("/media/{index}/assetId"))?;
         }
         let check_segments = |segments: &[Segment], path: &str| -> Result<(), String> {
             for (index, s) in segments.iter().enumerate() {
@@ -477,6 +502,10 @@ impl PublicLesson {
                 } => {
                     let mut speaker_ids = HashSet::new();
                     for (index, speaker) in speakers.iter().enumerate() {
+                        validation::identifier(
+                            &speaker.id,
+                            &format!("/blocks/{bi}/speakers/{index}/id"),
+                        )?;
                         if !speaker_ids.insert(speaker.id.as_str()) {
                             return Err(format!(
                                 "/blocks/{bi}/speakers/{index}/id: duplicate speaker"

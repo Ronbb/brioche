@@ -20,13 +20,7 @@ impl PublicLesson {
                     ));
                 }
             };
-            if asset.asset_id.is_empty()
-                || asset.asset_id.len() > 100
-                || !asset
-                    .asset_id
-                    .bytes()
-                    .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_'))
-            {
+            if !crate::valid_content_id(&asset.asset_id) {
                 return Err(format!("/audio/{index}/assetId: invalid recording ID"));
             }
             if asset.revision == 0 || asset.revision > i32::MAX as u32 {

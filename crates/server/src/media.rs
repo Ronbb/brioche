@@ -150,11 +150,7 @@ pub struct AssetRef {
     pub revision: u32,
 }
 pub(crate) fn valid_id(value: &str) -> bool {
-    !value.is_empty()
-        && value.len() <= 100
-        && value
-            .bytes()
-            .all(|b| b.is_ascii_alphanumeric() || b == b'-' || b == b'_')
+    brioche_course_contract::valid_content_id(value)
 }
 pub(crate) fn text(value: &str) -> bool {
     !value.trim().is_empty() && value.len() <= 2000 && !value.chars().any(char::is_control)

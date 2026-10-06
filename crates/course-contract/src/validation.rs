@@ -1,6 +1,15 @@
 use crate::{Block, Exercise, PublicLesson};
 use std::collections::HashSet;
 
+pub(crate) fn identifier(value: &str, path: &str) -> Result<(), String> {
+    if !crate::valid_content_id(value) {
+        return Err(format!(
+            "{path}: expected 1..100 ASCII letters, digits, hyphens or underscores"
+        ));
+    }
+    Ok(())
+}
+
 fn unique<'a>(
     values: impl Iterator<Item = &'a str>,
     path: &str,
@@ -8,6 +17,7 @@ fn unique<'a>(
 ) -> Result<(), String> {
     let mut seen = HashSet::new();
     for (index, value) in values.enumerate() {
+        identifier(value, &format!("{path}/{index}{suffix}"))?;
         if value.trim().is_empty() || !seen.insert(value) {
             return Err(format!("{path}/{index}{suffix}: empty or duplicate ID"));
         }
@@ -162,8 +172,10 @@ impl PublicLesson {
                 Block::Scene {
                     place_zh,
                     situation_zh,
+                    illustration_id,
                     ..
                 } => {
+                    identifier(illustration_id, &format!("{path}/illustrationId"))?;
                     nonempty(place_zh, &format!("{path}/placeZh"))?;
                     nonempty(situation_zh, &format!("{path}/situationZh"))?;
                     vec![]
@@ -330,7 +342,6 @@ impl PublicLesson {
                 return Err(format!("/cast/{ci}/revision: invalid character revision"));
             }
             nonempty(&cast.display_name, &format!("/cast/{ci}/displayName"))?;
-            nonempty(&cast.avatar_id, &format!("/cast/{ci}/avatarId"))?;
             if !cast.speech_locale.starts_with("fr") {
                 return Err(format!(
                     "/cast/{ci}/speechLocale: expected French speech locale"
@@ -345,6 +356,90 @@ mod tests {
     use crate::*;
     fn fixture() -> PublicLesson {
         super::super::tests::fixture()
+    }
+    #[test]
+    fn all_content_identifiers_match_navigation_and_recovery_limits() {
+        fn rename(value: &mut serde_json::Value, old: &str, new: &str) {
+            match value {
+                serde_json::Value::String(s) if s == old => *s = new.into(),
+                serde_json::Value::Array(values) => {
+                    for value in values {
+                        rename(value, old, new);
+                    }
+                }
+                serde_json::Value::Object(values) => {
+                    for value in values.values_mut() {
+                        rename(value, old, new);
+                    }
+                }
+                _ => {}
+            }
+        }
+        let original = serde_json::to_value(fixture()).unwrap();
+        let block = |kind: &str| {
+            original["blocks"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .position(|b| b["type"] == kind)
+                .unwrap()
+        };
+        let paths = vec![
+            "/id".to_owned(),
+            "/levelId".to_owned(),
+            "/unitId".to_owned(),
+            "/knowledge/vocabulary/0/id".to_owned(),
+            "/knowledge/grammar/0/id".to_owned(),
+            "/blocks/0/id".to_owned(),
+            "/steps/0/id".to_owned(),
+            "/cast/0/characterId".to_owned(),
+            "/cast/0/avatarId".to_owned(),
+            format!("/blocks/{}/speakers/0/id", block("dialogue")),
+            format!("/blocks/{}/turns/0/id", block("dialogue")),
+            format!("/blocks/{}/turns/0/segments/0/id", block("dialogue")),
+            format!("/blocks/{}/paragraphs/0/id", block("article")),
+            format!("/blocks/{}/paragraphs/0/segments/0/id", block("article")),
+            format!(
+                "/blocks/{}/options/0/id",
+                original["blocks"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .position(|b| b.get("options").is_some())
+                    .unwrap()
+            ),
+            format!(
+                "/blocks/{}/tokens/0/id",
+                original["blocks"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .position(|b| b.get("tokens").is_some())
+                    .unwrap()
+            ),
+        ];
+        for path in paths {
+            let old = original.pointer(&path).unwrap().as_str().unwrap();
+            for id in [
+                "route/escape",
+                "word:scope",
+                "entrée",
+                "has space",
+                &"a".repeat(101),
+            ] {
+                let mut value = original.clone();
+                rename(&mut value, old, id);
+                let lesson: PublicLesson = serde_json::from_value(value).unwrap();
+                let error = lesson.validate().expect_err(&format!("{path}: {id}"));
+                assert!(error.starts_with(&format!("{path}:")), "{path}: {error}");
+            }
+            for id in ["Upper_1-legal", &"a".repeat(100)] {
+                let mut value = original.clone();
+                rename(&mut value, old, id);
+                let lesson: PublicLesson = serde_json::from_value(value).unwrap();
+                lesson.validate().unwrap();
+            }
+        }
     }
     #[test]
     fn requires_readable_teaching_text_and_duration() {

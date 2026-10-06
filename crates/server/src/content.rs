@@ -74,11 +74,7 @@ pub struct RevisionRef {
     pub revision: u32,
 }
 fn identifier(value: &str) -> bool {
-    !value.is_empty()
-        && value.len() <= 100
-        && value
-            .bytes()
-            .all(|b| b.is_ascii_alphanumeric() || b == b'-' || b == b'_')
+    brioche_course_contract::valid_content_id(value)
 }
 fn text(value: &str) -> bool {
     !value.trim().is_empty() && value.len() <= 1000 && !value.chars().any(char::is_control)
