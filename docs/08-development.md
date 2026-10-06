@@ -31,7 +31,7 @@
 - 当前系统语音语句返回终止错误（含 canceled/interrupted）时停止播放器并用 toast 提示明确重试，不继续显示播放或推进下一句；应用停止/切词/调速导致的旧语句错误仍按播放代次和语句身份忽略。
 - Axum 公共目录和课程 API、health/readiness、SIGINT/SIGTERM 优雅退出。
 - Rust Serde 公共 DTO，生成 TS 联合类型和公共课程 JSON Schema；Web 只导入公共契约。私有答案与编辑状态不进入课程响应。
-- 课程块拒绝未知字段：10 类块及三种练习均严格解析，现有平铺练习格式不变。`check`/`import` 在连接前拒绝额外字段，当前诊断定位原文件对应块的 JSON Pointer 与起始行列，并显示未知字段名；生成的公共/作者 Schema 同步约束额外属性。
+- 课程块拒绝未知字段：10 类块及三种练习均严格解析，现有平铺练习格式不变。`check`/`import` 在连接前拒绝额外字段，诊断定位原文件对应字段的 JSON Pointer 与值的行列，并显示未知字段名；生成的公共/作者 Schema 同步约束额外属性。
 - SeaORM PostgreSQL Entity、版本化显式迁移、仅插入的课程导入工具、草稿过滤及最新发布 revision 读取。
 - `/practice/:lessonId` 示例练习：选择、填空、排序由 Rust 判分，错误反馈/重试/回顾由页面呈现。私有答案规则在导入时校验，公共契约只包含提交和反馈 DTO。
 - 正文增加结构化解释、文化范围、词汇与语法；点语法锚点可打开解释。校验拒绝坏解释锚点、重复题目选项、未知步骤类型和不可达教学块。
@@ -114,9 +114,12 @@ pnpm dev:web
 ```sh
 cargo run -p brioche-server -- check docs/examples/a1-bakery.lesson.json
 cargo run -p brioche-server -- check-release docs/examples/catalog.release.json
+cargo run -p brioche-server -- check-release docs/content/a2/catalog.full.release.json --sources docs/content/a1 docs/content/a2 docs/examples/a1-bakery.lesson.json
 ```
 
-`check` 使用实际公共 DTO、课程引用/步骤校验及服务端私有判分校验，另检查素材引用 ID、revision 和重复引用；`check-release` 校验目录清单结构及 ID、revision、重复引用。两者不连接数据库、不写入内容，也不验证数据库中的素材是否存在或已授权、目录引用的课程是否存在及人工审校是否完成。成功明确提示后续仍需媒体登记、审校和 release-stage；CI 运行两份示例的检查。公共投影类型、课程语义、私有判分与目录语义错误显示原文件行列和字段路径；私有规则的语义诊断描述原因，不回显接受答案或正确选项值。HTTP 判分/发布调用仍转换为原有通用错误，不返回作者诊断。
+`check` 使用实际公共 DTO、课程引用/步骤校验及服务端私有判分校验，另检查素材引用 ID、revision 和重复引用；`check-release` 默认仅校验目录清单结构及 ID、revision、重复引用。可选 `--sources` 接受 1–20 个课源文件或目录，逐课复用 check 并核对清单中的 ID/revision/等级/单元。目录只查清单引用的 `<lessonId>.lesson.json`，不递归扫描；别名文件需明确传入，例如例课 `a1-bakery.lesson.json`。同一实际文件去重，不同文件提供同一课源时报歧义；显式提供但不在清单中的课源拒绝。目录候选须为解析后仍位于该目录内的文件。
+
+两者不连接数据库、不写入内容，也不验证数据库登记或授权、实际素材文件或人工审校；带 sources 只证明本地课源关系，不证明相同 revision 已导入数据库。全部检查成功后才报告课数，成功明确提示后续仍需媒体登记、审校和 release-stage。公共投影类型、课程语义、私有判分与目录语义错误显示原文件行列和字段路径；私有规则的语义诊断描述原因，不回显接受答案或正确选项值。HTTP 判分/发布调用仍转换为原有通用错误，不返回作者诊断。
 
 `editorial` 是必需的严格作者信息：status 仅接受 draft/reviewed，note 必需且非空、最多 8000 UTF-8 字节，拒绝未知字段及控制字符（允许换行/制表符）。课程检查、导入、release-stage 共用该校验，发布仅接受 reviewed；该状态是作者声明，不构成人工审校真实性的自动证明。
 

@@ -54,8 +54,11 @@ async fn main() -> Result<()> {
     }
     if matches!(command.as_str(), "check" | "check-release") {
         let args: Vec<String> = std::env::args().skip(2).collect();
-        if args.len() != 1 {
-            bail!("usage: brioche-server {command} <file.json>");
+        let with_sources = command == "check-release" && args.len() >= 3 && args[1] == "--sources";
+        if args.len() != 1 && !with_sources {
+            bail!(
+                "usage: brioche-server {command} <file.json> (check-release optionally accepts --sources <file-or-directory> [<file-or-directory> ...])"
+            );
         }
         let path = &args[0];
         if command == "check-release" {
@@ -66,18 +69,19 @@ async fn main() -> Result<()> {
             manifest
                 .validate_author()
                 .map_err(|error| document.semantic(error))?;
+            if with_sources {
+                let roots = args[2..]
+                    .iter()
+                    .map(std::path::PathBuf::from)
+                    .collect::<Vec<_>>();
+                let count = brioche_server::author_source::check_release_sources(
+                    &document, &manifest, &roots,
+                )?;
+                println!("Checked {count} referenced lesson sources.");
+            }
         } else {
             let document = brioche_server::author_json::Document::load(path)?;
-            let source = &document.value;
-            brioche_server::media::source_asset_refs(source)
-                .map_err(|error| document.semantic(error))?;
-            brioche_server::recording::source_audio_refs(source)
-                .map_err(|error| document.semantic(error))?;
-            let lesson =
-                project_source(source.clone()).map_err(|error| document.semantic(error))?;
-            brioche_server::grading::Grader::from_author_source(&lesson, source)
-                .map_err(|error| document.semantic(error))
-                .context("serverOnly.grading: invalid or inconsistent private grading rules")?;
+            brioche_server::author_source::check_lesson(&document)?;
         }
         println!(
             "Structural checks passed. Publication still requires registered media, editorial review and release-stage validation."

@@ -21,6 +21,185 @@ fn run(command: &str, path: &Path) -> Output {
 }
 
 #[test]
+fn full_release_checks_all_local_sources_without_database_or_publication() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/content");
+    let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+        .arg("check-release")
+        .arg(root.join("a2/catalog.full.release.json"))
+        .arg("--sources")
+        .arg(root.join("a1"))
+        .arg(root.join("a2"))
+        .arg(root.join("../examples/a1-bakery.lesson.json"))
+        .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+        .env("APP_ENV", "production")
+        .env("CONTENT_MODE", "database")
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let report = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        report.contains("Checked 48 referenced lesson sources"),
+        "{report}"
+    );
+    assert!(report.contains("Publication still requires"), "{report}");
+    assert!(!report.contains("correctOptionId"), "{report}");
+}
+
+#[test]
+fn local_release_checks_reject_missing_ambiguous_mismatched_and_invalid_sources() {
+    let root = std::env::temp_dir().join(format!("brioche-release-sources-{}", random_id()));
+    let first = root.join("one");
+    let second = root.join("two");
+    std::fs::create_dir_all(&first).unwrap();
+    std::fs::create_dir(&second).unwrap();
+    let manifest_path = root.join("release.json");
+    std::fs::write(
+        &manifest_path,
+        include_str!("../../../docs/examples/catalog.release.json"),
+    )
+    .unwrap();
+    let original = brioche_server::development_source().unwrap();
+    let filename = format!("{}.lesson.json", original["id"].as_str().unwrap());
+    let source_path = first.join(&filename);
+    let run_pack = || {
+        Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+            .arg("check-release")
+            .arg(&manifest_path)
+            .arg("--sources")
+            .arg(&first)
+            .arg(&second)
+            .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+            .env("CONTENT_MODE", "database")
+            .env("APP_ENV", "production")
+            .output()
+            .unwrap()
+    };
+    let output = run_pack();
+    let error = String::from_utf8_lossy(&output.stderr);
+    assert!(!output.status.success());
+    assert!(
+        error.contains("/levels/0/units/0/lessons/0/lessonId: no local lesson source"),
+        "{error}"
+    );
+    assert!(output.stdout.is_empty());
+    for (pointer, invalid, reason) in [
+        (
+            "/id",
+            serde_json::json!("different-local-id"),
+            "lesson ID does not match",
+        ),
+        (
+            "/revision",
+            serde_json::json!(2),
+            "lesson revision does not match",
+        ),
+        (
+            "/levelId",
+            serde_json::json!("a2"),
+            "lesson level does not match",
+        ),
+        (
+            "/unitId",
+            serde_json::json!("other-local-unit"),
+            "lesson unit does not match",
+        ),
+        (
+            "/blocks/7/options/0/text",
+            serde_json::json!(313161),
+            "expected a string",
+        ),
+        (
+            "/serverOnly/grading/exercise-intention/correctOptionId",
+            serde_json::json!("unknown-local-option"),
+            "correctOptionId",
+        ),
+    ] {
+        let mut source = original.clone();
+        *source.pointer_mut(pointer).unwrap() = invalid.clone();
+        let text = serde_json::to_string_pretty(&source)
+            .unwrap()
+            .replace('\n', "\r\n");
+        let token = serde_json::to_string(&invalid).unwrap();
+        // Locate the revision field rather than an unrelated numeric value.
+        let offset = if pointer == "/revision" {
+            text.rfind("\"revision\": 2").unwrap() + "\"revision\": ".len()
+        } else {
+            text.find(&token).unwrap()
+        };
+        let before = &text[..offset];
+        let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+        std::fs::write(&source_path, text).unwrap();
+        let output = run_pack();
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success());
+        assert!(
+            error.contains(&format!(
+                "{}:{line}:{column}: {pointer}:",
+                source_path.display()
+            )),
+            "{error}"
+        );
+        assert!(error.contains(reason), "{error}");
+        assert!(!error.contains("database connection"), "{error}");
+        assert!(output.stdout.is_empty());
+    }
+    let bytes = serde_json::to_vec(&original).unwrap();
+    std::fs::write(&source_path, &bytes).unwrap();
+    let duplicate = second.join(filename);
+    std::fs::write(&duplicate, bytes).unwrap();
+    let output = run_pack();
+    let error = String::from_utf8_lossy(&output.stderr);
+    assert!(!output.status.success());
+    assert!(error.contains("ambiguous local lesson sources"), "{error}");
+    assert!(
+        error.contains("/levels/0/units/0/lessons/0/lessonId:"),
+        "{error}"
+    );
+    std::fs::remove_file(duplicate).unwrap();
+    assert!(run_pack().status.success());
+    let explicit = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+        .arg("check-release")
+        .arg(&manifest_path)
+        .arg("--sources")
+        .arg(&source_path)
+        .arg(&first)
+        .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+        .output()
+        .unwrap();
+    assert!(
+        explicit.status.success(),
+        "{}",
+        String::from_utf8_lossy(&explicit.stderr)
+    );
+    let mut unrelated = original;
+    unrelated["id"] = serde_json::json!("unreferenced-local-source");
+    std::fs::write(&source_path, serde_json::to_vec(&unrelated).unwrap()).unwrap();
+    let explicit = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+        .arg("check-release")
+        .arg(&manifest_path)
+        .arg("--sources")
+        .arg(&source_path)
+        .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+        .output()
+        .unwrap();
+    assert!(!explicit.status.success());
+    assert!(
+        String::from_utf8_lossy(&explicit.stderr)
+            .contains("/id: explicitly selected source is not referenced")
+    );
+    std::fs::remove_file(source_path).unwrap();
+    std::fs::remove_file(manifest_path).unwrap();
+    std::fs::remove_dir(first).unwrap();
+    std::fs::remove_dir(second).unwrap();
+    std::fs::remove_dir(root).unwrap();
+}
+
+#[test]
 fn checks_drafts_without_database_and_does_not_claim_publication() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/examples");
     for (command, file) in [

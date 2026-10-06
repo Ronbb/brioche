@@ -42,6 +42,7 @@
 - 改关键设计同步更新 docs 与决策记录，标明事实、建议、待验证项。
 - 课程先结构/语义校验，再预览与人工审校；结构通过不表示教学内容正确。
 - 作者文件先运行 `cargo run -p brioche-server -- check <lesson.json>` 或 `check-release <manifest.json>`，不要求数据库。它们检查结构与本地引用/判分一致性，不替代素材登记、授权、人工审校或 release-stage 的数据库发布校验。
+- 整个本地课包可用 `check-release <manifest.json> --sources <file-or-directory> ...`（1–20 个来源）。目录仅按清单引用查 `<lessonId>.lesson.json`，别名课源显式传文件；会检查课源完整结构/语义/私有规则与清单 ID/revision/等级/单元对应，缺失或歧义失败。默认不带 sources 仍只检查清单，不将离线成功当作导入/审校/发布证明。
 - 图片可先运行 `asset-check <file> <image/svg+xml|image/png|image/jpeg|image/webp>`，不访问数据库，输出实际哈希/字节数/尺寸；复用正式导入的大小、格式与安全 SVG 校验，不表示素材已经登记或获得授权。
 - `/author-preview` 仅供 operator 查看已导入固定 revision；私有媒体也必须经过当前管理员身份与撤回检查。不得把预览素材放到公开路由、返回私有答案或以预览创建真实学习进度。
 - 录音先 `audio-check`，再 `audio-import <bundle.json> <source-directory> <actor>`；`audioRefs` 固定登记版本，登记不公开文件。发布必须重新验证登记描述、实际文件哈希/解码、来源授权与正文时间轴；音频公开路由和私有预览均保留撤回检查、no-store 与有界读取。

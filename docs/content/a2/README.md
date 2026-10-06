@@ -61,6 +61,14 @@
 
 ## 检查与发布边界
 
+最新 48 课联合目录可以直接做离线课包检查：
+
+```sh
+cargo run -p brioche-server -- check-release docs/content/a2/catalog.full.release.json --sources docs/content/a1 docs/content/a2 docs/examples/a1-bakery.lesson.json
+```
+
+检查清单引用的各课源与 ID/revision/等级/单元关系，并复用单课结构、语义和判分规则检查；例课使用旧文件名，因此显式传入。不会导入、激活、检查数据库登记或替代人工审校。现有逐课/历史目录检查继续保留。
+
 - 单课：`cargo run -p brioche-server -- check docs/content/a2/<lesson-id>.lesson.json`。
 - 联合目录：`cargo run -p brioche-server -- check-release docs/content/a2/catalog.pilot.release.json`。
 - 新联合目录：`cargo run -p brioche-server -- check-release docs/content/a2/catalog.two-units.release.json`。
