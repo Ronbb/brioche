@@ -3,6 +3,7 @@ import { readDraft, saveDraft, validAnswer } from "../lib/learning-draft";
 import type { Block } from "@brioche/contracts/Block";
 import type { AttemptRecord } from "@brioche/contracts/AttemptRecord";
 import type { ExerciseAnswer } from "@brioche/contracts/ExerciseAnswer";
+import { OrderEditor } from "./order-editor";
 import { Icon } from "./icon";
 import { useLearning } from "./learning";
 export function ExerciseEditor({
@@ -179,47 +180,14 @@ export function ExerciseEditor({
           </>
         )}
         {block.exerciseType === "order" && (
-          <>
-            <div className="order-answer" aria-label="当前句子" lang="fr">
-              {shownOrder.length ? (
-                shownOrder.map((id) => (
-                  <button
-                    key={id}
-                    type="button"
-                    aria-label={
-                      "移回词库：" +
-                      block.tokens.find((token) => token.id === id)?.text
-                    }
-                    onClick={() => {
-                      const next = order.filter((value) => value !== id);
-                      setOrder(next);
-                      keep({ kind: "order", tokenIds: next });
-                    }}
-                  >
-                    {block.tokens.find((token) => token.id === id)?.text}
-                  </button>
-                ))
-              ) : (
-                <span className="order-empty">组成一句话</span>
-              )}
-            </div>
-            <div className="order-bank" lang="fr">
-              {block.tokens.map((token) => (
-                <button
-                  key={token.id}
-                  type="button"
-                  disabled={shownOrder.includes(token.id)}
-                  onClick={() => {
-                    const next = [...order, token.id];
-                    setOrder(next);
-                    keep({ kind: "order", tokenIds: next });
-                  }}
-                >
-                  {token.text}
-                </button>
-              ))}
-            </div>
-          </>
+          <OrderEditor
+            tokens={block.tokens}
+            order={shownOrder}
+            onChange={(next) => {
+              setOrder(next);
+              keep({ kind: "order", tokenIds: next });
+            }}
+          />
         )}
       </fieldset>
       {block.exerciseType === "fill-blank" &&

@@ -439,3 +439,11 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 - 在独立 Vite 5177 测试页运行实际 React hook 与 privateRequest，Chromium 会话 brioche-learning-conflict 注入响应：初始 version 1 提交 409，最新记录读取失败；保存按钮 disabled，直接调用 write 未增加原有 1 次写请求。再次读取失败时 writes=1/reads=2，仍 locked。恢复读取得到 version 4，下一次写请求携带 version 4，成功返回 version 5，pending 清除。
 - 再次冲突后延迟 GET，确认保存中的 blocked/readFailed、答案草稿保留；卸载并释放响应后 root 为空、写请求保持 3 次，调用旧 hook write 不新增请求。浏览器 CLI 对等待 Promise 的 eval 曾超时，随后单独释放同一个已在等待的读取，没有重启测试或将超时视为成功。
 - TS 7、现有 17 项 Web 测试、client/SSR build、diff check 通过。测试页和浏览器为本机隔离资源，网络为合成故障注入；不声称真实双标签数据库、完整学习页或 iPhone 验收完成。专用浏览器与端口已清理，开发服务保留。
+
+### 排序语块的键盘焦点（2026-10-06）
+
+- 原排序按钮选中后在词库禁用，移回时句子按钮被移除，两种操作都会丢失可用焦点。提取共用 OrderEditor，账号 ExerciseEditor（含管理员预览）和 demo 练习都使用它。选词后焦点移到后方可用语块，没有后方时回到前方可用语块；全部选完则聚焦刚加入的句子按钮。移回词库时聚焦该语块的可用词库按钮；用 useLayoutEffect 等待 DOM 更新，禁用状态不强行聚焦。
+- 当前句子和词库提供 group 名称，法语只标在语块文字上；隐藏 status 提供当前句子的完整法语，保留题目 fieldset 禁用、草稿保存和服务端判分规则。没有新增操作教学提示。
+- Chromium 会话 brioche-order-focus 在真实开发页 /practice/a1-bakery-buy-breakfast，用真实 demo 判分走到排序题。Tab 到词库末尾 Je voudrais 后 Enter，焦点回到 s’il vous plaît.；再 Enter 到下一可选 une baguette,，全部选完聚焦句子末项。连续 Enter/Shift+Tab 移回三个语块，各自聚焦对应词库项，句子清空后焦点仍在 Je voudrais。
+- 随后仅用键盘拼出 Je voudrais une baguette, s’il vous plaît.，Tab/Enter 确认，经实际 Rust demo API 返回答对了，全部排序按钮 disabled。320px 无横向溢出，两组可访问名称和法语 status 文本已核对；这不是屏幕阅读器播报或真实 iPhone 验收。账号页面的复用接入通过类型与构建检查，账号故障/保存恢复仍按原验收清单继续验证。
+- TS 7、17 项 Web 测试、client/SSR build、diff check 通过。专用浏览器已关闭，开发服务保留。

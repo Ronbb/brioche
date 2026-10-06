@@ -5,6 +5,7 @@ import type { GradeRequest } from "@brioche/contracts/GradeRequest";
 import type { GradeResult } from "@brioche/contracts/GradeResult";
 import { getCatalog, getLesson } from "../lib/api.server";
 import { useLearning } from "../components/learning";
+import { OrderEditor } from "../components/order-editor";
 import { Icon } from "../components/icon";
 import type { Route } from "./+types/practice";
 
@@ -251,41 +252,11 @@ function PracticeSession({ lesson, demo }: Route.ComponentProps["loaderData"]) {
             </>
           )}
           {current.exerciseType === "order" && (
-            <>
-              <div className="order-answer" aria-label="当前句子" lang="fr">
-                {order.length ? (
-                  order.map((id) => (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() =>
-                        setOrder((old) => old.filter((i) => i !== id))
-                      }
-                      aria-label={
-                        "移回词库：" +
-                        current.tokens.find((t) => t.id === id)?.text
-                      }
-                    >
-                      {current.tokens.find((t) => t.id === id)?.text}
-                    </button>
-                  ))
-                ) : (
-                  <span className="order-empty">组成一句话</span>
-                )}
-              </div>
-              <div className="order-bank" lang="fr">
-                {current.tokens.map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    disabled={order.includes(t.id)}
-                    onClick={() => setOrder((old) => [...old, t.id])}
-                  >
-                    {t.text}
-                  </button>
-                ))}
-              </div>
-            </>
+            <OrderEditor
+              tokens={current.tokens}
+              order={order}
+              onChange={setOrder}
+            />
           )}
         </fieldset>
         {result && (
