@@ -16,6 +16,7 @@ export default [
   route("admin/characters", "routes/admin-characters.tsx"),
   route("admin/assets", "routes/admin-assets.tsx"),
   route("admin/recordings", "routes/admin-recordings.tsx"),
+  route("admin/voice-references", "routes/admin-voice-references.tsx"),
   route("admin/tokens", "routes/admin-tokens.tsx"),
   route("admin/accounts/:accountId/sessions", "routes/admin-sessions.tsx"),
   route("author-preview", "routes/author-preview.tsx"),

@@ -21,6 +21,7 @@ pub mod preview;
 pub mod recording;
 pub mod reviews;
 pub mod session_store;
+mod voice_references;
 use axum::{
     Json, Router,
     extract::{Path, Query, State},

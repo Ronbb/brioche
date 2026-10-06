@@ -77,6 +77,7 @@ let operatorAccount = false;
 let managedRole = "learner";
 let managedSessionRevoked = false;
 let pendingTokenRevoked = false;
+let referenceGrant = null;
 const voiceSeed = JSON.parse(
   await readFile(
     new URL("../../../docs/characters/voices.json", import.meta.url),
@@ -321,6 +322,71 @@ const api = createServer((request, response) => {
       };
       response.end(JSON.stringify(characterVoice));
     });
+    return;
+  }
+  if (
+    request.url === "/api/v1/operator/voice-references" &&
+    request.method === "GET"
+  ) {
+    response.end(
+      JSON.stringify({
+        items: referenceGrant ? [referenceGrant] : [],
+        next: null,
+      }),
+    );
+    return;
+  }
+  if (
+    request.url === "/api/v1/operator/voice-references" &&
+    request.method === "POST"
+  ) {
+    let body = "";
+    request.on("data", (chunk) => (body += chunk));
+    request.on("end", () => {
+      const change = JSON.parse(body);
+      adminWrites.push({ operation: request.url, ...change });
+      referenceGrant = {
+        id: "c".repeat(32),
+        characterId: change.characterId,
+        characterRevision: change.characterRevision,
+        voiceRevision: change.voiceRevision,
+        assetId: "qa-reference",
+        assetRevision: 2,
+        model: "qwen-audio-3.1-tts-flash",
+        createdAt: "2026-10-07T00:00:00Z",
+        expiresAt: "2026-10-07T00:15:00Z",
+        revoked: false,
+        readCount: 0,
+      };
+      response.end(
+        JSON.stringify({
+          grant: referenceGrant,
+          path: `/api/v1/voice-references/${referenceGrant.id}/${"d".repeat(64)}`,
+        }),
+      );
+    });
+    return;
+  }
+  if (
+    request.url ===
+      `/api/v1/operator/voice-references/${"c".repeat(32)}/revoke` &&
+    request.method === "POST"
+  ) {
+    let body = "";
+    request.on("data", (chunk) => (body += chunk));
+    request.on("end", () => {
+      adminWrites.push({ operation: request.url, ...JSON.parse(body) });
+      referenceGrant.revoked = true;
+      response.end(JSON.stringify(referenceGrant));
+    });
+    return;
+  }
+  if (
+    /^\/api\/v1\/operator\/characters\/character-camille\/1\/voices\/1$/.test(
+      request.url,
+    )
+  ) {
+    response.end(JSON.stringify(characterVoice));
     return;
   }
   if (
@@ -990,6 +1056,79 @@ test("operator revokes a pending invitation using the mobile admin page", async 
   } finally {
     accounts = false;
     operatorAccount = false;
+  }
+});
+
+test("operator authorizes and revokes ephemeral reference delivery on the mobile page", async () => {
+  accounts = true;
+  operatorAccount = true;
+  referenceGrant = null;
+  adminWrites = [];
+  characterVoice = structuredClone(voiceSeed.items[0]);
+  characterVoice.profile.referenceAudio = {
+    assetId: "qa-reference",
+    revision: 2,
+    transcript: "Bonjour !",
+    cloningPermission: "Synthetic fixture only",
+  };
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("set", "viewport", "390", "844");
+    await browser(
+      "open",
+      origin +
+        "/admin/voice-references?characterId=character-camille&characterRevision=1&voiceRevision=1",
+    );
+    await browser("wait", ".reference-delivery-form");
+    await browser("check", ".reference-delivery-form input[type=checkbox]");
+    await browser("fill", "input[name=deliveryReason]", "隔离参考交付测试");
+    await browser("press", "Tab");
+    await browser("press", "Enter");
+    await browser("wait", ".reference-delivery-url");
+    assert.equal(adminWrites[0].voiceRevision, 1);
+    assert.equal(adminWrites[0].singleSpeakerConfirmed, true);
+    assert.equal(adminWrites[0].reason, "隔离参考交付测试");
+    const address = await evaluate(
+      "document.querySelector('.reference-delivery-url').value",
+    );
+    assert.match(address, /\/api\/v1\/voice-references\/c{32}\/d{64}$/);
+    for (const width of [320, 390]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+        true,
+      );
+    }
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('.admin-list button')?.getAttribute('aria-disabled') === 'false'",
+    );
+    await browser("scrollintoview", ".admin-list button");
+    await browser("click", ".admin-list button");
+    await browser("wait", ".admin-dialog[open]");
+    await browser("fill", "input[name=revokeReason]", "隔离撤销测试");
+    await browser("press", "Tab");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "交付凭据已撤销。");
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.reference-delivery-url')===null",
+      ),
+      true,
+    );
+    assert.equal(adminWrites[1].reason, "隔离撤销测试");
+    await browser("open", origin + "/admin/voice-references");
+    await browser("wait", ".admin-card");
+    assert.equal(
+      await evaluate("document.body.textContent.includes('d'.repeat(64))"),
+      false,
+    );
+  } finally {
+    accounts = false;
+    operatorAccount = false;
+    referenceGrant = null;
   }
 });
 

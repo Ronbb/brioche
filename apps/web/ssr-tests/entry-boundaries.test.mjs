@@ -72,7 +72,8 @@ const server = createServer((request, response) => {
     response.end(JSON.stringify({ items: [], nextId: null }));
   } else if (
     (request.url.startsWith("/api/v1/operator/assets") ||
-      request.url.startsWith("/api/v1/operator/recordings")) &&
+      request.url.startsWith("/api/v1/operator/recordings") ||
+      request.url.startsWith("/api/v1/operator/voice-references")) &&
     authenticated &&
     profile.role === "operator"
   ) {
@@ -839,6 +840,51 @@ test("recording registry SSR authorizes before fetching and keeps its cursor pri
         (r) =>
           r.path ===
           "/api/v1/operator/recordings?afterId=qa-recording&afterRevision=20&q=bonjour",
+      ),
+    );
+    assert.ok(!requests.some((r) => r.method !== "GET"));
+  } finally {
+    authenticated = false;
+    profile.role = "learner";
+  }
+});
+
+test("reference delivery SSR authorizes before fetching and never restores bearer URLs", async () => {
+  authenticated = false;
+  requests.length = 0;
+  assert.equal((await request("/admin/voice-references")).status, 401);
+  assert.ok(
+    !requests.some((r) =>
+      r.path.startsWith("/api/v1/operator/voice-references"),
+    ),
+  );
+  authenticated = true;
+  profile.role = "learner";
+  requests.length = 0;
+  assert.equal((await request("/admin/voice-references")).status, 403);
+  assert.ok(
+    !requests.some((r) =>
+      r.path.startsWith("/api/v1/operator/voice-references"),
+    ),
+  );
+  profile.role = "operator";
+  try {
+    requests.length = 0;
+    const response = await request(
+      "/admin/voice-references?afterId=" +
+        "c".repeat(32) +
+        "&token=discard&path=discard",
+    );
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get("cache-control"), /private, no-store/);
+    const html = await response.text();
+    assert.match(html, /参考录音交付/);
+    assert.doesNotMatch(html, /reference-delivery-url/);
+    assert.ok(
+      requests.some(
+        (r) =>
+          r.path ===
+          "/api/v1/operator/voice-references?afterId=" + "c".repeat(32),
       ),
     );
     assert.ok(!requests.some((r) => r.method !== "GET"));

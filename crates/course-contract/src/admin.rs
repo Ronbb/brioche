@@ -317,3 +317,41 @@ pub struct AdminRecordingUpload {
     pub rights_confirmed: bool,
     pub reason: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminReferenceGrantRequest {
+    pub character_id: String,
+    pub character_revision: u32,
+    pub voice_revision: u32,
+    pub single_speaker_confirmed: bool,
+    pub reason: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminReferenceGrant {
+    pub id: String,
+    pub character_id: String,
+    pub character_revision: u32,
+    pub voice_revision: u32,
+    pub asset_id: String,
+    pub asset_revision: u32,
+    pub model: String,
+    pub created_at: String,
+    pub expires_at: String,
+    pub revoked: bool,
+    pub read_count: u32,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminReferenceGrants {
+    pub items: Vec<AdminReferenceGrant>,
+    pub next: Option<String>,
+}
+/// Bearer path is returned once, never in list/history responses or persisted in the browser.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminReferenceGrantResult {
+    pub grant: AdminReferenceGrant,
+    pub path: String,
+}

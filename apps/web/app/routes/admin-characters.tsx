@@ -225,6 +225,14 @@ export default function Characters({ loaderData }: Route.ComponentProps) {
             导出固定版本
           </button>
         )}
+        {!!item.profile?.referenceAudio && (
+          <Link
+            className="text-button"
+            to={`/admin/voice-references?characterId=${item.character.characterId}&characterRevision=${item.character.revision}&voiceRevision=${item.voiceRevision}`}
+          >
+            参考录音交付
+          </Link>
+        )}
         {!historical && item.voiceRevision > 1 && (
           <details>
             <summary>历史声音版本</summary>

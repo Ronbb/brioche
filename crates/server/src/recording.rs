@@ -418,11 +418,6 @@ pub(crate) async fn asset_response(
     permits: std::sync::Arc<tokio::sync::Semaphore>,
     headers: axum::http::HeaderMap,
 ) -> Result<axum::response::Response, crate::AppError> {
-    use axum::{
-        body::Body,
-        http::{StatusCode, header},
-        response::Response,
-    };
     let ext = audio::extension(&descriptor.mime_type)
         .map_err(|_| crate::AppError::Unavailable)?
         .to_owned();
@@ -447,9 +442,24 @@ pub(crate) async fn asset_response(
     .await
     .map_err(|_| crate::AppError::Unavailable)?
     .map_err(|_| crate::AppError::Unavailable)?;
+    bytes_response(descriptor.mime_type, etag, bytes, headers)
+}
+
+/// Common bounded byte/Range response after the caller has verified its authorization and hash.
+pub(crate) fn bytes_response(
+    mime: String,
+    etag: String,
+    bytes: Vec<u8>,
+    headers: axum::http::HeaderMap,
+) -> Result<axum::response::Response, crate::AppError> {
+    use axum::{
+        body::Body,
+        http::{StatusCode, header},
+        response::Response,
+    };
     let size = bytes.len();
     let mut builder = Response::builder()
-        .header(header::CONTENT_TYPE, descriptor.mime_type)
+        .header(header::CONTENT_TYPE, mime)
         .header(header::CACHE_CONTROL, "no-store")
         .header(header::ACCEPT_RANGES, "bytes")
         .header(header::ETAG, &etag)

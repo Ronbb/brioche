@@ -207,6 +207,9 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
       <Link className="text-button" to="/admin/recordings">
         录音管理
       </Link>
+      <Link className="text-button" to="/admin/voice-references">
+        参考录音交付
+      </Link>
       <div className="reader-mode" role="group" aria-label="管理内容">
         <button
           aria-pressed={tab === "lessons"}

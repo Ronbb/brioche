@@ -16,6 +16,373 @@ struct Browser {
     cookie: String,
     csrf: String,
 }
+
+#[tokio::test]
+#[ignore = "set TEST_DATABASE_URL to a dedicated PostgreSQL database"]
+async fn voice_reference_delivery_is_bounded_revocable_private_and_audited() {
+    let url = std::env::var("TEST_DATABASE_URL").unwrap();
+    let admin = Database::connect(&url).await.unwrap();
+    let schema = format!(
+        "voice_reference_{}",
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    );
+    admin
+        .execute_unprepared(&format!("CREATE SCHEMA {schema}"))
+        .await
+        .unwrap();
+    let mut options = ConnectOptions::new(url);
+    options.set_schema_search_path(&schema);
+    let db = Database::connect(options).await.unwrap();
+    brioche_migration::Migrator::up(&db, None).await.unwrap();
+    let root = assets::fixture_assets(&db, &schema).await;
+    let backend = Backend::new(db.clone()).await.unwrap();
+    let app = identity::router_with_media_root(
+        backend.clone(),
+        CsrfPolicy::new(["http://localhost:5173".into()]).unwrap(),
+        false,
+        root.clone(),
+    );
+    let mut visitor = Browser::new(app.clone()).await;
+    let mut operator = Browser::new(app.clone()).await;
+    operator
+        .register(&backend, "reference-operator@example.test", true)
+        .await;
+    let mut learner = Browser::new(app.clone()).await;
+    learner
+        .register(&backend, "reference-learner@example.test", false)
+        .await;
+    // Five seconds of synthetic PCM solely for protocol validation, no real speaker/consent claim.
+    let mut wav = vec![0u8; 160044];
+    wav[..4].copy_from_slice(b"RIFF");
+    wav[4..8].copy_from_slice(&(160036u32).to_le_bytes());
+    wav[8..12].copy_from_slice(b"WAVE");
+    wav[12..16].copy_from_slice(b"fmt ");
+    wav[16..20].copy_from_slice(&16u32.to_le_bytes());
+    wav[20..22].copy_from_slice(&1u16.to_le_bytes());
+    wav[22..24].copy_from_slice(&1u16.to_le_bytes());
+    wav[24..28].copy_from_slice(&16000u32.to_le_bytes());
+    wav[28..32].copy_from_slice(&32000u32.to_le_bytes());
+    wav[32..34].copy_from_slice(&2u16.to_le_bytes());
+    wav[34..36].copy_from_slice(&16u16.to_le_bytes());
+    wav[36..40].copy_from_slice(b"data");
+    wav[40..44].copy_from_slice(&160000u32.to_le_bytes());
+    let upload = json!({"assetId":"qa-reference-delivery","revision":1,"mimeType":"audio/wav","creditZh":"合成协议测试","source":"test:synthetic","license":"LicenseRef-TestOnly","creator":"test fixture","rightsConfirmed":true,"reason":"isolated reference file"});
+    assert_eq!(
+        operator
+            .upload_media("/api/v1/operator/recordings", upload.clone(), &wav, true)
+            .await
+            .0,
+        200
+    );
+    let seed: Value =
+        serde_json::from_str(include_str!("../../../docs/characters/voices.json")).unwrap();
+    let mut profile = seed["items"][0]["profile"].clone();
+    profile["referenceAudio"] = json!({"assetId":"qa-reference-delivery","revision":1,"transcript":"Synthetic five second fixture","cloningPermission":"No real person; protocol test only"});
+    let voice = json!({"characterId":"character-camille","characterRevision":1,"expectedVoiceRevision":0,"profile":profile,"reason":"isolated voice reference"});
+    assert_eq!(
+        operator
+            .send("POST", "/api/v1/operator/characters", Some(voice), true)
+            .await
+            .0,
+        200
+    );
+    let path = "/api/v1/operator/voice-references";
+    let request = json!({"characterId":"character-camille","characterRevision":1,"voiceRevision":1,"singleSpeakerConfirmed":true,"reason":"isolated authorized delivery"});
+    assert_eq!(visitor.send("GET", path, None, true).await.0, 401);
+    assert_eq!(learner.send("GET", path, None, true).await.0, 403);
+    assert_eq!(
+        learner
+            .send("POST", path, Some(request.clone()), true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", path, Some(request.clone()), false)
+            .await
+            .0,
+        403
+    );
+    let mut unconfirmed = request.clone();
+    unconfirmed["singleSpeakerConfirmed"] = json!(false);
+    assert_eq!(
+        operator.send("POST", path, Some(unconfirmed), true).await.0,
+        400
+    );
+    let mut missing = request.clone();
+    missing["voiceRevision"] = json!(99);
+    assert_eq!(
+        operator.send("POST", path, Some(missing), true).await.0,
+        404
+    );
+    let (status, result) = operator
+        .send("POST", path, Some(request.clone()), true)
+        .await;
+    assert_eq!(status, 200);
+    let grant_id = result["grant"]["id"].as_str().unwrap();
+    let bearer = result["path"].as_str().unwrap();
+    let token = bearer.rsplit('/').next().unwrap();
+    assert_eq!(token.len(), 64);
+    assert_eq!(
+        operator
+            .send("POST", path, Some(request.clone()), true)
+            .await
+            .0,
+        409
+    );
+    let list = operator.send("GET", path, None, true).await;
+    assert_eq!(list.1["items"][0]["assetRevision"], 1);
+    assert!(!list.1.to_string().contains(token));
+    assert!(!list.1.to_string().contains("tokenHash"));
+    assert!(!list.1.to_string().contains("cloningPermission"));
+    let response = app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri(bearer)
+                .header("range", "bytes=0-9")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), 206);
+    assert_eq!(response.headers()["cache-control"], "private, no-store");
+    assert_eq!(response.headers()["x-content-type-options"], "nosniff");
+    assert_eq!(
+        response.into_body().collect().await.unwrap().to_bytes(),
+        &wav[..10]
+    );
+    let wrong = format!("/api/v1/voice-references/{grant_id}/{}", "0".repeat(64));
+    assert_eq!(visitor.send("GET", &wrong, None, false).await.0, 404);
+    assert_eq!(
+        operator.send("GET", path, None, true).await.1["items"][0]["readCount"],
+        1
+    );
+    let expired_id = "e".repeat(32);
+    let expired_token = "e".repeat(64);
+    use sha2::Digest;
+    let expired_hash = format!("{:x}", sha2::Sha256::digest(expired_token.as_bytes()));
+    db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO voice_reference_grants SELECT $1,$2,character_id,character_revision,voice_revision,asset_id,asset_revision,descriptor,reference,actor_id,reason,model,single_speaker_confirmed,CURRENT_TIMESTAMP-interval '30 minutes',CURRENT_TIMESTAMP-interval '20 minutes' FROM voice_reference_grants WHERE id=$3",vec![expired_id.clone().into(),expired_hash.into(),grant_id.into()])).await.unwrap();
+    assert_eq!(
+        visitor
+            .send(
+                "GET",
+                &format!("/api/v1/voice-references/{expired_id}/{expired_token}"),
+                None,
+                false
+            )
+            .await
+            .0,
+        404
+    );
+    let stored = db
+        .query_one_raw(Statement::from_sql_and_values(
+            DbBackend::Postgres,
+            "SELECT token_hash,reference,actor_id FROM voice_reference_grants WHERE id=$1",
+            vec![grant_id.into()],
+        ))
+        .await
+        .unwrap()
+        .unwrap();
+    assert_ne!(stored.try_get::<String>("", "token_hash").unwrap(), token);
+    assert_eq!(
+        stored.try_get::<Value>("", "reference").unwrap()["cloningPermission"],
+        profile["referenceAudio"]["cloningPermission"]
+    );
+    let revoke = format!("{path}/{grant_id}/revoke");
+    assert_eq!(
+        learner
+            .send("POST", &revoke, Some(json!({"reason":"test"})), true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", &revoke, Some(json!({"reason":"test"})), false)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", &revoke, Some(json!({"reason":"test"})), true)
+            .await
+            .0,
+        200
+    );
+    assert_eq!(visitor.send("GET", bearer, None, false).await.0, 404);
+    assert_eq!(
+        operator
+            .send("POST", &revoke, Some(json!({"reason":"test"})), true)
+            .await
+            .0,
+        409
+    );
+    assert!(
+        brioche_migration::Migrator::down(&db, Some(1))
+            .await
+            .is_err()
+    );
+    // Account lock serializes simultaneous issuance: one credential, one explicit conflict.
+    let parallel_cookie = operator.cookie.clone();
+    let parallel_csrf = operator.csrf.clone();
+    let (a, b) = tokio::join!(
+        operator.send("POST", path, Some(request.clone()), true),
+        learner.app.clone().oneshot(
+            Request::builder()
+                .method("POST")
+                .uri(path)
+                .header("cookie", &parallel_cookie)
+                .header("origin", "http://localhost:5173")
+                .header("x-csrf-token", &parallel_csrf)
+                .header("content-type", "application/json")
+                .body(Body::from(serde_json::to_vec(&request).unwrap()))
+                .unwrap()
+        )
+    );
+    let response = b.unwrap();
+    let b_status = response.status().as_u16();
+    let b_result: Value =
+        serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes()).unwrap();
+    let mut statuses = vec![a.0, b_status];
+    statuses.sort();
+    assert_eq!(statuses, vec![200, 409]);
+    let next = if a.0 == 200 { a.1 } else { b_result };
+    let next_id = next["grant"]["id"].as_str().unwrap();
+    let next_bearer = next["path"].as_str().unwrap();
+    // Exhaustion is atomic and applies equally to HEAD/Range retries.
+    db.execute_raw(Statement::from_sql_and_values(
+        DbBackend::Postgres,
+        "INSERT INTO voice_reference_reads(grant_id) SELECT $1 FROM generate_series(1,32)",
+        vec![next_id.into()],
+    ))
+    .await
+    .unwrap();
+    assert_eq!(visitor.send("GET", next_bearer, None, false).await.0, 404);
+    let third_revoke = format!("{path}/{next_id}/revoke");
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                &third_revoke,
+                Some(json!({"reason":"after exhaustion"})),
+                true
+            )
+            .await
+            .0,
+        200
+    );
+    let third = operator
+        .send("POST", path, Some(request.clone()), true)
+        .await;
+    assert_eq!(third.0, 200);
+    let third_path = third.1["path"].as_str().unwrap();
+    let actor = stored.try_get::<i64>("", "actor_id").unwrap();
+    db.execute_raw(Statement::from_sql_and_values(
+        DbBackend::Postgres,
+        "UPDATE users SET role='learner' WHERE id=$1",
+        vec![actor.into()],
+    ))
+    .await
+    .unwrap();
+    assert_eq!(visitor.send("GET", third_path, None, false).await.0, 404);
+    db.execute_raw(Statement::from_sql_and_values(
+        DbBackend::Postgres,
+        "UPDATE users SET role='operator' WHERE id=$1",
+        vec![actor.into()],
+    ))
+    .await
+    .unwrap();
+    let sha = format!("{:x}", sha2::Sha256::digest(&wav));
+    let file = root.join(format!("{sha}.wav"));
+    assert!(file.exists());
+    std::fs::write(&file, b"corrupt").unwrap();
+    assert_eq!(visitor.send("GET", third_path, None, false).await.0, 400);
+    std::fs::write(&file, &wav).unwrap();
+    // Registered audio is not enough: the provider's actual minimum duration is rechecked.
+    let mut short = wav[..32044].to_vec();
+    short[4..8].copy_from_slice(&32036u32.to_le_bytes());
+    short[40..44].copy_from_slice(&32000u32.to_le_bytes());
+    let mut short_upload = upload;
+    short_upload["revision"] = json!(2);
+    assert_eq!(
+        operator
+            .upload_media("/api/v1/operator/recordings", short_upload, &short, true)
+            .await
+            .0,
+        200
+    );
+    profile["referenceAudio"]["revision"] = json!(2);
+    let short_voice = json!({"characterId":"character-camille","characterRevision":1,"expectedVoiceRevision":1,"profile":profile,"reason":"short reference test"});
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                "/api/v1/operator/characters",
+                Some(short_voice),
+                true
+            )
+            .await
+            .0,
+        200
+    );
+    let mut short_request = request;
+    short_request["voiceRevision"] = json!(2);
+    assert_eq!(
+        operator
+            .send("POST", path, Some(short_request), true)
+            .await
+            .0,
+        400
+    );
+    for i in 0..25u32 {
+        db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO voice_reference_grants SELECT $1,$2,character_id,character_revision,voice_revision,asset_id,asset_revision,descriptor,reference,actor_id,reason,model,single_speaker_confirmed,CURRENT_TIMESTAMP-interval '30 minutes',CURRENT_TIMESTAMP-interval '20 minutes' FROM voice_reference_grants WHERE id=$3",vec![format!("{i:032x}").into(),format!("{i:064x}").into(),grant_id.into()])).await.unwrap();
+    }
+    let first = operator.send("GET", path, None, true).await.1;
+    assert_eq!(first["items"].as_array().unwrap().len(), 20);
+    let cursor = first["next"].as_str().unwrap();
+    let second = operator
+        .send("GET", &format!("{path}?afterId={cursor}"), None, true)
+        .await
+        .1;
+    assert_eq!(second["items"].as_array().unwrap().len(), 9);
+    let ids = first["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .chain(second["items"].as_array().unwrap())
+        .map(|g| g["id"].as_str().unwrap())
+        .collect::<std::collections::HashSet<_>>();
+    assert_eq!(ids.len(), 29);
+    // Audit tables cannot be edited, including expiry, token and consent.
+    assert!(
+        db.execute_unprepared("UPDATE voice_reference_grants SET reason='overwrite'")
+            .await
+            .is_err()
+    );
+    assert!(
+        db.execute_unprepared("DELETE FROM voice_reference_revocations")
+            .await
+            .is_err()
+    );
+    assert!(
+        db.execute_unprepared("DELETE FROM voice_reference_reads")
+            .await
+            .is_err()
+    );
+    db.close().await.unwrap();
+    admin
+        .execute_unprepared(&format!("DROP SCHEMA {schema} CASCADE"))
+        .await
+        .unwrap();
+    std::fs::remove_dir_all(&root).unwrap();
+}
 #[tokio::test]
 #[ignore = "set TEST_DATABASE_URL to a dedicated PostgreSQL database"]
 async fn pending_links_are_private_revocable_and_serialized_with_consumption() {
@@ -623,11 +990,12 @@ async fn approvals_permissions_concurrency_and_publication() {
     outcomes.sort();
     assert_eq!(outcomes, [200, 409]);
     assert!(
-        brioche_migration::Migrator::down(&db, Some(1))
+        brioche_migration::Migrator::down(&db, Some(2))
             .await
             .is_err(),
         "operator recording audit cannot be removed by rollback"
     );
+    brioche_migration::Migrator::up(&db, None).await.unwrap();
     let response = app
         .clone()
         .oneshot(
