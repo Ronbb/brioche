@@ -1761,3 +1761,194 @@ test("review history keeps long expressions and recorded dates inside four viewp
     );
   }
 });
+
+async function fillAccount(
+  password = "only-test-password",
+  email = "qa@example.test",
+) {
+  if (
+    await evaluate(
+      "!!document.querySelector('.account-page input[type=email]')",
+    )
+  ) {
+    await browser("focus", ".account-page input[type=email]");
+    await press("Control+a");
+    await browser("keyboard", "inserttext", email);
+  }
+  await browser("focus", ".account-page input[type=password]");
+  await press("Control+a");
+  await browser("keyboard", "inserttext", password);
+  await browser("focus", ".account-page button.primary");
+}
+
+test("account login retains focus and input while pending, deduplicates submits, and focuses retry errors", async () => {
+  await open("account-login");
+  await fillAccount();
+  await press("Enter");
+  await browser("wait", "--fn", "qa.authRequests.length===1");
+  assert.equal(
+    await evaluate("document.activeElement.textContent.trim()"),
+    "正在确认",
+  );
+  await browser("focus", ".account-page input[type=password]");
+  assert.equal(await evaluate("document.activeElement.readOnly"), true);
+  await browser("keyboard", "inserttext", "ignored");
+  assert.equal(
+    await evaluate("document.activeElement.value"),
+    "only-test-password",
+  );
+  await browser("focus", ".account-page button.primary");
+  await press("Enter");
+  assert.equal(await evaluate("qa.authRequests.length"), 1);
+  assert.deepEqual(await evaluate("qa.authRequests[0].body"), {
+    email: "qa@example.test",
+    password: "only-test-password",
+  });
+  await evaluate("qa.authRequests[0].release(401)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.activeElement.getAttribute('role')==='alert'",
+  );
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "邮箱或密码不正确。",
+  );
+  assert.equal(
+    await evaluate("document.querySelector('input[type=password]').value"),
+    "only-test-password",
+  );
+  await browser("focus", ".account-page button.primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.authRequests.length===2");
+  await evaluate("qa.authRequests[1].release(429)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.activeElement.getAttribute('role')==='alert'",
+  );
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "尝试次数较多，请稍后重试。",
+  );
+  await browser("focus", ".account-page button.primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.authRequests.length===3");
+  await browser("focus", ".account-exit");
+  await evaluate("qa.authRequests[2].release(503)");
+  await browser("wait", "--text", "账号服务暂时不可用，请稍后重试。");
+  assert.equal(
+    await evaluate("document.activeElement.className"),
+    "account-exit",
+  );
+});
+
+test("leaving an account form cancels pending CSRF and never starts the late auth mutation", async () => {
+  await open("account-abort");
+  await fillAccount();
+  await press("Enter");
+  await browser("wait", "--fn", "qa.authBootstraps.length===1");
+  await browser("focus", ".account-exit");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.route==='/previous'");
+  await evaluate("qa.authBootstraps[0].release(200)");
+  await browser(
+    "wait",
+    "--fn",
+    "qa.authRequests.length>0||qa.authBootstraps[0].signal.aborted",
+  );
+  assert.equal(await evaluate("qa.authRequests.length"), 0);
+  assert.equal(await evaluate("qa.authBootstraps[0].signal.aborted"), true);
+});
+
+test("password recovery removes its fragment, submits the token, and focuses the cleared success screen", async () => {
+  await open(
+    "account-reset#token=only-test-recovery-token&email=qa%40example.test",
+  );
+  await browser("wait", ".account-page input[type=password]");
+  const previousNotice = await evaluate(
+    "localStorage.getItem('brioche.identity-change.v1')",
+  );
+  assert.equal(await evaluate("location.hash"), "");
+  await fillAccount();
+  await press("Enter");
+  await browser("wait", "--fn", "qa.authRequests.length===1");
+  assert.deepEqual(await evaluate("qa.authRequests[0].body"), {
+    token: "only-test-recovery-token",
+    password: "only-test-password",
+  });
+  await evaluate("qa.authRequests[0].release(200)");
+  await browser("wait", "--text", "密码已更新");
+  assert.equal(
+    await evaluate("document.activeElement.textContent.trim()"),
+    "密码已更新",
+  );
+  assert.equal(
+    await evaluate("document.querySelectorAll('.account-page input').length"),
+    0,
+  );
+  assert.equal(
+    await evaluate("!!localStorage.getItem('brioche.identity-change.v1')"),
+    true,
+  );
+  assert.notEqual(
+    await evaluate("localStorage.getItem('brioche.identity-change.v1')"),
+    previousNotice,
+  );
+});
+
+test("a new invitation link cancels the old request and clears credentials before its own submission", async () => {
+  await open(
+    "account-invite#token=only-test-old-invite&email=qa%40example.test",
+  );
+  await browser("wait", ".account-page input[type=password]");
+  await fillAccount();
+  await browser("focus", "input[autocomplete=nickname]");
+  await browser("keyboard", "inserttext", "First QA");
+  await browser("focus", ".account-page button.primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.authRequests.length===1");
+  await evaluate(
+    "location.hash='token=only-test-next-invite&email=qa-next%40example.test'",
+  );
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('input[type=email]').value==='qa-next@example.test'&&location.hash===''",
+  );
+  assert.equal(await evaluate("qa.authRequests[0].signal.aborted"), true);
+  assert.equal(
+    await evaluate("document.querySelector('input[type=password]').value"),
+    "",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelector('input[autocomplete=nickname]').value",
+    ),
+    "",
+  );
+  await evaluate("qa.authRequests[0].release(200)");
+  assert.equal(await evaluate("location.pathname"), "/");
+  await fillAccount("only-test-next-password", "qa-next@example.test");
+  await browser("focus", "input[autocomplete=nickname]");
+  await browser("keyboard", "inserttext", "Next QA");
+  await browser("focus", ".account-page button.primary");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.authRequests.length===2");
+  assert.deepEqual(await evaluate("qa.authRequests[1].body"), {
+    email: "qa-next@example.test",
+    password: "only-test-next-password",
+    token: "only-test-next-invite",
+    displayName: "Next QA",
+  });
+  await evaluate("qa.authRequests[1].release(400)");
+  await browser(
+    "wait",
+    "--fn",
+    "document.activeElement.getAttribute('role')==='alert'",
+  );
+  assert.equal(
+    await evaluate("document.querySelector('input[type=password]').value"),
+    "only-test-next-password",
+  );
+});

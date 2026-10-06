@@ -640,3 +640,13 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - 生产构建 SSR 新回归通过真实 React Router request handler + 专用受控 HTTP 后端：实际 History loader 转发编码游标，仅带会话 Cookie、只 GET、响应 private/no-store；服务器渲染空旧页和返回最新链接；未登录 302 到 /login?next=/review-history。该测试不以合成游标/后端代替 PostgreSQL 游标验证。
 - 全 28 项 Chromium 回归通过（383.97s），27 Web/7 SSR、TS7、client/SSR build、定向 Prettier/diff 检查通过；自己的随机 Vite/浏览器自动清理，未操作用户浏览器、账号或生产部署。真实 iPhone/辅助技术、课程人工审校、正式授权/录音及生产门槛仍待完成。
 - 前一提交 86b1bac 的 Check 37447935855/job112217173020 先确认为 browser 步骤运行中，后实际 completed/success；本轮新提交的 CI 另行确认。
+
+## 2026-10-06：账号表单等待与请求生命周期
+
+- 真实 Account/LearningProvider/MemoryRouter 装配先复现三处问题：原生 disabled 让登录等待焦点落到 body；密码恢复成功后焦点也在 body；离开等待中的 CSRF 页面后释放响应，实际仍新增一次登录 POST（1 !== 0）。这些不是通过源码推断的通过项。
+- 输入等待时只读，按钮以 aria-disabled/aria-busy 和同步锁保留焦点并拒绝重复提交。失败保留邮箱/密码；焦点仍在表单时聚焦 role=alert 的错误，已经移到独立入口时不由迟到错误抢走。成功密码恢复清空密码/token，并聚焦成功 H1。
+- authRequest 接受可选 AbortSignal，与既有 CSRF/POST 截止共同使用；读取 CSRF 后再检查取消状态。Account 卸载会取消当前请求，旧请求的成功/失败/finally 不更新已卸载或已经换链接的编辑器。新的邀请/恢复 fragment 先取消旧等待并清空密码、昵称和反馈，再读取新 token/email，移除地址 fragment；已有身份通知仍由成功账号响应触发。
+- 四项新增原生键盘回归通过：等待焦点/只读输入/重复 Enter、401/429/503 失败及表单外焦点；离页取消 CSRF 且没有晚发 POST；恢复 fragment 清理、精确 token/password 请求、成功标题/输入撤除与新身份 nonce；新邀请替换期间旧 POST 被取消，迟到成功不导航，新请求只使用新 token/email/昵称/密码，400 后保留输入。
+- 新 SSR 回归使用真实生产 build/request handler：匿名登录含正常表单；没有客户端完整链接时邀请/恢复表单保持关闭；访客模式不显示密码输入；全过程仅 GET。共 8 项 SSR 通过，HTTP 后端为隔离受控适配器，不表示真实 PostgreSQL 账号验收。
+- 全 32 项 Chromium 通过（424.56s），27 Web/8 SSR、TS7、client/SSR build、定向格式/diff 检查通过。自己的临时 Vite/浏览器自动清理；测试只用明确标记的合成凭据/受控响应，不连接真实账号。取消已经发出的 POST 不证明服务端回滚或 cookie 未变化，身份仍需服务器重新授权；真实 iPhone/辅助技术、课程人工审校、正式录音/授权和生产门槛仍待完成。
+- 上一提交 139b2ae 的 Check 37449232189/job112221439047 本轮先确认运行中，后实际 completed/success；本轮新提交的 CI 另行确认。

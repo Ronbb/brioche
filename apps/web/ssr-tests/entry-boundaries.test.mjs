@@ -186,6 +186,38 @@ test("production history SSR forwards encoded cursors privately and distinguishe
   }
 });
 
+test("account SSR renders anonymous login and keeps invitation and recovery forms gated by their client links", async () => {
+  fixture = false;
+  authenticated = false;
+  requests.length = 0;
+  try {
+    let response = await request("/login?next=/pending-saves");
+    assert.equal(response.status, 200);
+    let html = await response.text();
+    assert.ok(html.includes("欢迎回来"));
+    assert.match(html, /type="email"/);
+    assert.match(html, /autoComplete="current-password"/);
+    assert.match(response.headers.get("Cache-Control"), /private, no-store/);
+    for (const path of ["/invite", "/reset-password"]) {
+      response = await request(path);
+      assert.equal(response.status, 200, path);
+      html = await response.text();
+      assert.ok(html.includes("请通过管理员提供的完整链接打开此页面。"));
+      assert.doesNotMatch(html, /type="password"/);
+    }
+    fixture = true;
+    response = await request("/login");
+    assert.equal(response.status, 200);
+    html = await response.text();
+    assert.ok(html.includes("当前是访客试学"));
+    assert.doesNotMatch(html, /type="password"/);
+    assert.ok(requests.every((entry) => entry.method === "GET"));
+  } finally {
+    fixture = false;
+    authenticated = false;
+  }
+});
+
 test("production legacy entries reach real learning and authenticated review without writes", async () => {
   fixture = false;
   requests.length = 0;

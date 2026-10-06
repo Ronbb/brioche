@@ -5,6 +5,7 @@ import {
   RouterProvider,
   Navigate,
   useLoaderData,
+  Link,
 } from "react-router";
 import { StartLearning } from "../app/components/start-learning";
 import { ExerciseEditor } from "../app/components/exercise-editor";
@@ -21,6 +22,7 @@ import PendingSaves from "../app/routes/pending-saves";
 import Home from "../app/routes/home";
 import Courses from "../app/routes/courses";
 import History from "../app/routes/review-history";
+import { Account } from "../app/components/account";
 import type { ReviewHistoryPage } from "@brioche/contracts/ReviewHistoryPage";
 import type { Catalog } from "@brioche/contracts/Catalog";
 import type { StudyDashboard } from "@brioche/contracts/StudyDashboard";
@@ -60,6 +62,17 @@ if (stress) {
 
 const qa = {
   ready: false,
+  deferAuthBootstrap: false,
+  authBootstraps: [] as {
+    signal?: AbortSignal | null;
+    release: (status: number) => void;
+  }[],
+  authRequests: [] as {
+    path: string;
+    body: unknown;
+    signal?: AbortSignal | null;
+    release: (status: number) => void;
+  }[],
   writes: [] as { lessonId: string; idempotencyKey: string }[],
   release: [] as ((status: number) => void)[],
   spoken: [] as string[],
@@ -123,9 +136,51 @@ Object.defineProperty(window, "speechSynthesis", {
   },
 });
 const originalFetch = window.fetch;
+function controlledAuth(
+  signal: AbortSignal | null | undefined,
+  register: (release: (status: number) => void) => void,
+) {
+  return new Promise<Response>((resolve, reject) => {
+    const abort = () =>
+      reject(signal?.reason ?? new DOMException("Canceled", "AbortError"));
+    if (signal?.aborted) {
+      abort();
+      return;
+    }
+    signal?.addEventListener("abort", abort, { once: true });
+    register((status) => {
+      signal?.removeEventListener("abort", abort);
+      resolve(
+        status === 200
+          ? Response.json({ csrfToken: "controlled" })
+          : new Response("", { status }),
+      );
+    });
+  });
+}
 window.fetch = async (input, init) => {
-  if (String(input) === "/api/v1/auth/csrf")
+  if (String(input) === "/api/v1/auth/csrf") {
+    if (qa.deferAuthBootstrap)
+      return controlledAuth(init?.signal, (release) =>
+        qa.authBootstraps.push({ signal: init?.signal, release }),
+      );
     return Response.json({ csrfToken: "controlled" });
+  }
+  if (
+    [
+      "/api/v1/auth/login",
+      "/api/v1/auth/accept-invite",
+      "/api/v1/auth/reset-password",
+    ].includes(String(input))
+  )
+    return controlledAuth(init?.signal, (release) =>
+      qa.authRequests.push({
+        path: String(input),
+        body: JSON.parse(String(init?.body)),
+        signal: init?.signal,
+        release,
+      }),
+    );
   if (
     (String(input).startsWith("/api/v1/me/saved-items/") &&
       init?.method === "PUT") ||
@@ -811,13 +866,39 @@ function TextLimitHarness({ hintText = "边界测试" }: { hintText?: string }) 
   );
 }
 const reading = kind === "reading";
+function AccountHarness() {
+  qa.deferAuthBootstrap = kind === "account-abort";
+  return (
+    <LearningProvider>
+      <main>
+        <Account
+          mode={
+            kind === "account-reset"
+              ? "reset-password"
+              : kind === "account-invite"
+                ? "invite"
+                : "login"
+          }
+        />
+        <Link className="account-exit" to="/previous">
+          离开账号入口
+        </Link>
+      </main>
+    </LearningProvider>
+  );
+}
 const router = createMemoryRouter(
   [
     {
       id: "root",
       path: "/",
-      loader: () => ({ user: null, enabled: kind === "profile" }),
-      element: reading ? (
+      loader: () => ({
+        user: null,
+        enabled: kind === "profile" || !!kind?.startsWith("account-"),
+      }),
+      element: kind?.startsWith("account-") ? (
+        <AccountHarness />
+      ) : reading ? (
         <LearningProvider>
           <ReadingHarness />
         </LearningProvider>

@@ -216,7 +216,9 @@ Web 镜像用 `pnpm deploy --prod` 保留生产依赖，使用 React Router Node
 
 数据库和媒体持久卷、备份/新目标恢复已接入并实际演练。Rust/Node/Debian/PostgreSQL 与既有 Traefik 的基础镜像固定 index digest，版本与更新方式见 [镜像说明](../infra/images.md)。完整 Compose 已在独立 brioche-compose-qa 项目验证：生产空目录、一次性迁移退出 0、四个长期服务 healthy、仅 HTTP 30075 发布、非 root Web/API 和可写媒体卷；同入口的邀请/注册/登录/退出、精确 Origin 拒绝、SSR/静态资源，以及恢复后的学习/收藏/复习/音频/幂等重放均通过。恢复的测试源只用于协议验收，不作为已审校正式课程。生产参数、容量、用户外部入口与公网验收继续待完成；TLS/DNS/路由器设置尚未修改。
 
-## 下一阶段
+## 账号与课程入口
+
+账号表单等待时保留焦点，输入只读、提交以同步锁去重；失败保留输入，仅在焦点仍位于表单内时聚焦错误。密码恢复确认后清空密码/token 并聚焦成功标题。离页或读取新的邀请/恢复 fragment 会取消当前客户端等待；新链接先清空旧密码、昵称和反馈，旧响应不覆盖新链接或导航。CSRF 返回后重新检查取消状态，避免离页后继续发起账号 POST。取消已经发送的请求不表示服务端回滚，身份仍以服务器会话为准。
 
 认证采用 `axum-login 0.18.0` 配套的 `tower-sessions 0.14.0`，避免与 0.15 创建两套 Session 类型（[官方依赖清单](https://docs.rs/crate/axum-login/0.18.0/source/Cargo.toml)）。只存会话 ID 的 SHA-256，记录用 `timestamptz` 到期；create 不覆盖冲突、save 不插入，撤销后的旧响应不能恢复记录。CSRF 用系统随机数、常量时间比较和配置的 origin allowlist，不从代理 header 推断可信 origin。密码哈希通过有限并发的 blocking worker 执行；登录轮换会话，密码恢复撤销所有旧会话，定时清理过期记录。
 

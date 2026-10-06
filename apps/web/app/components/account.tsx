@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, useRouteLoaderData } from "react-router";
 import type { loader } from "../root";
 import type { LoginRequest } from "@brioche/contracts/LoginRequest";
@@ -16,6 +16,11 @@ export function Account({
   const identity = useRouteLoaderData<typeof loader>("root");
   const learning = useLearning();
   const busy = useRef(false);
+  const alive = useRef(true);
+  const request = useRef<AbortController | null>(null);
+  const form = useRef<HTMLFormElement>(null);
+  const feedback = useRef<HTMLParagraphElement>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
   const [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [name, setName] = useState(""),
@@ -23,10 +28,33 @@ export function Account({
     [pending, setPending] = useState(false),
     [error, setError] = useState(""),
     [done, setDone] = useState(false);
+  useLayoutEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+      request.current?.abort();
+      request.current = null;
+    };
+  }, []);
+  useLayoutEffect(() => {
+    if (error && form.current?.contains(document.activeElement))
+      feedback.current?.focus();
+  }, [error]);
+  useLayoutEffect(() => {
+    if (done) heading.current?.focus();
+  }, [done]);
   useEffect(() => {
     if (mode === "login") return;
     function readLink() {
       if (!window.location.hash) return;
+      request.current?.abort();
+      request.current = null;
+      busy.current = false;
+      setPending(false);
+      setPassword("");
+      setName("");
+      setError("");
+      setDone(false);
       const params = new URLSearchParams(window.location.hash.slice(1));
       setToken(params.get("token") ?? "");
       setEmail(params.get("email") ?? "");
@@ -47,8 +75,10 @@ export function Account({
         ? "开始你的法语日常"
         : "设置新密码";
   async function submit() {
-    if (busy.current) return;
+    if (busy.current || !alive.current) return;
     busy.current = true;
+    const attempt = new AbortController();
+    request.current = attempt;
     setPending(true);
     setError("");
     try {
@@ -58,7 +88,17 @@ export function Account({
           : mode === "invite"
             ? { email, password, token, displayName: name }
             : { token, password };
-      await authRequest(mode === "invite" ? "accept-invite" : mode, body);
+      await authRequest(
+        mode === "invite" ? "accept-invite" : mode,
+        body,
+        attempt.signal,
+      );
+      if (
+        !alive.current ||
+        request.current !== attempt ||
+        attempt.signal.aborted
+      )
+        return;
       setPassword("");
       learning.stop();
       if (mode === "reset-password") {
@@ -72,19 +112,30 @@ export function Account({
         window.location.assign(accountReturnPath(next));
       }
     } catch (e) {
+      if (
+        !alive.current ||
+        request.current !== attempt ||
+        attempt.signal.aborted
+      )
+        return;
       setError(
         e instanceof Error && !["TypeError", "TimeoutError"].includes(e.name)
           ? e.message
           : "请求未完成，请稍后重试。",
       );
     } finally {
-      busy.current = false;
-      setPending(false);
+      if (request.current === attempt) {
+        request.current = null;
+        busy.current = false;
+        if (alive.current) setPending(false);
+      }
     }
   }
   return (
     <section className="account-page page-arrive">
-      <h1>{done ? "密码已更新" : title}</h1>
+      <h1 ref={heading} tabIndex={-1}>
+        {done ? "密码已更新" : title}
+      </h1>
       {done ? (
         <>
           <p>旧会话已退出，请用新密码登录。</p>
@@ -109,6 +160,8 @@ export function Account({
         </>
       ) : (
         <form
+          ref={form}
+          aria-busy={pending}
           onSubmit={(e) => {
             e.preventDefault();
             void submit();
@@ -124,7 +177,7 @@ export function Account({
                 maxLength={254}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                disabled={pending}
+                readOnly={pending}
               />
             </label>
           )}
@@ -137,7 +190,7 @@ export function Account({
                 maxLength={80}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                disabled={pending}
+                readOnly={pending}
               />
             </label>
           )}
@@ -153,7 +206,7 @@ export function Account({
               }
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              disabled={pending}
+              readOnly={pending}
             />
           </label>
           {mode !== "login" && (
@@ -162,11 +215,20 @@ export function Account({
             </p>
           )}
           {error && (
-            <p className="error-message" role="alert">
+            <p
+              ref={feedback}
+              tabIndex={-1}
+              className="error-message"
+              role="alert"
+            >
               {error}
             </p>
           )}
-          <button className="primary" disabled={pending}>
+          <button
+            className="primary"
+            aria-disabled={pending}
+            aria-busy={pending}
+          >
             {pending
               ? "正在确认"
               : mode === "login"

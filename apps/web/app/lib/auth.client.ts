@@ -1,17 +1,27 @@
 import type { CsrfToken } from "@brioche/contracts/CsrfToken";
 import { announceIdentityChange } from "./identity-sync";
-export async function authRequest<T>(path: string, body?: object): Promise<T> {
+export async function authRequest<T>(
+  path: string,
+  body?: object,
+  signal?: AbortSignal,
+): Promise<T> {
+  signal?.throwIfAborted();
   const bootstrap = await fetch("/api/v1/auth/csrf", {
     cache: "no-store",
-    signal: AbortSignal.timeout(10000),
+    signal: signal
+      ? AbortSignal.any([signal, AbortSignal.timeout(10000)])
+      : AbortSignal.timeout(10000),
   });
   if (!bootstrap.ok) throw Error("账号服务暂时不可用，请稍后重试。");
   const { csrfToken } = (await bootstrap.json()) as CsrfToken;
+  signal?.throwIfAborted();
   const response = await fetch("/api/v1/auth/" + path, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
     body: body ? JSON.stringify(body) : undefined,
-    signal: AbortSignal.timeout(15000),
+    signal: signal
+      ? AbortSignal.any([signal, AbortSignal.timeout(15000)])
+      : AbortSignal.timeout(15000),
   });
   if (!response.ok) {
     const messages: Record<number, string> = {
