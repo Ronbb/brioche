@@ -1,6 +1,6 @@
-# 设计文档索引
+# 项目文档索引
 
-设计日期：2026-10-05（Asia/Shanghai）。状态：v0.1 设计提案，供讨论和后续实现。
+设计起草于 2026-10-05（Asia/Shanghai），当前已进入工程实现与验收。01–06 保留完整产品规划与设计约束；实际实现状态、运行命令和剩余门槛以 08–09 为准，已执行检查的范围与局限见 07。设计提案、课程草稿和局部检查均不表示完整目标已经完成。
 
 | 文档 | 解决的问题 |
 | --- | --- |
@@ -10,7 +10,7 @@
 | [界面与插图设计](04-experience-design.md) | 页面布局、交互、视觉语言、插图和无障碍 |
 | [部署与运维设计](05-deployment.md) | 本机开发、Docker、Cloudflare、TLS、备份和恢复 |
 | [开发顺序与验收](06-roadmap.md) | 从设计进入开发的阶段目标、验证方法与待定事项 |
-| [设计验证记录](07-design-verification.md) | 哪些草案与交互实际检查过，哪些留待实现 |
+| [设计验证记录](07-design-verification.md) | 实际工程/数据库/浏览器检查的证据、失败与修复、仍待验收的边界 |
 | [工程开发说明](08-development.md) | 当前已实现范围、实际启动与检查命令、Docker Compose |
 | [实现与验收清单](09-implementation-tracker.md) | 完整功能目标的状态、缺口与验收证据 |
 | [决策记录](decisions/0001-foundation.md) | 关键选择的依据、代价及重新评估条件 |
@@ -19,7 +19,8 @@
 | [A1 六个单元草稿包](content/a1/README.md) | 24 课作者源文件、固定顺序、结构检查与待审校/素材记录 |
 | [目录 release 示例](examples/catalog.release.json) | 显式名称、课程 revision 与教学顺序；引用未审校示例，不能直接发布 |
 | [素材与角色清单示例](examples/asset-bundle.json) | 图片哈希、尺寸、来源/授权与角色快照；保持 planned/未确认授权，不能直接导入 |
-| [示例课程 Schema](examples/lesson.schema.json) | v0.1 数据契约草案；不等于已实现解释器 |
+| [早期示例课程 Schema](examples/lesson.schema.json) | v0.1 设计草案，保留作历史参考；当前契约使用下列 Rust 生成物 |
+| [生成的公共课程 Schema](../packages/contracts/src/generated/public-lesson.schema.json) | Rust 公共 DTO 的当前结构契约；不包含私有答案，也不替代语义及发布检查 |
 | [生成的作者课程 Schema](generated/author-lesson.schema.json) | Rust 公共 DTO、私有判分、审校信息和素材引用组成的作者结构契约；不包含语义或发布审校证明 |
 | [界面概念稿](preview/index.html) | 可切换首页、阅读、练习、复习与个人设置的静态交互提案 |
 
@@ -39,6 +40,10 @@
 名称暂用 Brioche；后端采用 Rust/Axum 模块化单体，持久化采用 SeaORM + PostgreSQL；前端采用用户指定栈，建议 React Router Framework Mode 管理 Vite SSR；初次上线采用邀请制账号。CEFR 是组织学习目标的参考，并不把课程完成率当作官方等级认证。完整内容规划覆盖 A1–A2，工程 MVP 先制作 A1 的三个单元。
 
 这些是设计建议，不代表用户已逐项确认。调整时更新关联文档和决策记录，保留已确认约束。外部资料核对日期见架构和部署文档；具体依赖版本以进入开发时复核并提交的 lockfile 为准。
+
+## 阶段性记录（历史快照）
+
+以下保留当时的范围、测试数量与未完成项，不代表当前总状态；后续实现和验证以工程说明、实现清单与验证记录为准。
 
 
 媒体发布诊断进展（2026-10-06）：release-stage 现保留 release 原文件行列和课程条目路径，并附上已导入课程 `/media/{index}`、`/cast/{index}`、`/audio/{index}` 的发布失败位置。视觉文件缺失/不可读与哈希不匹配分别说明，角色未登记版本与快照不匹配分别说明；录音描述、来源校验、文件、解码和解码元数据也有分项消息。导入课程路径属于数据库中固定投影，不冒充原作者文件的行列。activate 与公共 API 仍只收到原有不透明 AppError；数据库/文件系统原始错误不输出。独立 PostgreSQL 的真实 CLI 验证图片损坏/缺失及两类角色错误的 release 行列定位与无 release/entries/audit 新增，录音集成测试验证损坏/缺失诊断、事务回滚及正常恢复后 staging。32 项 server 单元测试、9 项作者 CLI 测试通过；完整基础设施定位、人工审校、A2 与生产/设备验收继续待完成。
