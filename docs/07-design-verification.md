@@ -678,3 +678,11 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - 身份回归验证新 operator 的选择清空、控件可用、旧请求 signal aborted；新判分暂挂时释放旧成功，仍处于新请求等待且无旧反馈，新请求成功才显示当前反馈并聚焦。另一回归使用目录键盘链接换到另一课程固定版本，CSRF signal aborted，迟到引导无 POST、无 toast、无选择或等待残留。它们使用合成身份/受控 HTTP，不证明真实登录 cookie、数据库权限或服务器回滚。
 - 初次修复后两项 author 回归通过（50.40s，含前一轮参数切换）；新增取消断言和课程切换后最终两个受影响用例通过（45.81s）。28 Web、10 SSR、TS7、client/SSR build、定向格式/diff 通过。本轮未运行完整 37 项浏览器；自己的随机 Vite/Chromium 自动清理。已发请求的服务端处理不因客户端取消而保证回滚；正式内容审校/授权/录音、真实 iPhone/辅助技术和生产门槛继续待完成。
 - 固定 f410336 的 [Check 37453982397](https://github.com/Ronbb/brioche/actions/runs/37453982397) 本轮实际读取仍 in_progress，不提前声称远端绿色。
+
+## 2026-10-06：三类练习等待与重试的确认焦点
+
+- 真实 AuthorPreview/ExerciseEditor 装配新增选择、填空、排序三题。原生键盘选择后点击确认，修复前请求已发且暂挂，活动元素已不是确认按钮，新增回归实际失败 false!==true（33.37s）；该首次失败只证明选择题等待焦点丢失，不声称三题基线都执行完成。
+- 共用 ExerciseEditor 的确认按钮不再因 blocked 原生禁用；无答案仍 disabled，blocked 使用 aria-disabled/aria-busy。表单原有 ready/blocked/completed 守卫保留，底层预览同步锁仍保留，答案 fieldset 等待时仍禁用。不改变判分/私有规则、原请求协议或真实进度写入。
+- 三类原生键盘回归逐题确认实际提交 revision1、确切 exerciseId、choice=bonjour、text=une、order=[bonjour,luc]；等待按钮焦点和忙碌标记保留，连续 Enter 只有一次请求，503 后控件恢复且焦点仍在确认。明确再按 Enter 的 body 与原请求完全一致，成功反馈聚焦。受控判分不代替数据库写入/幂等或真实辅助技术。
+- 三项受影响 author 浏览器回归通过（66.45s）；补充上述确切答案断言后，新三题用例最终单独通过（52.26s）。28 Web/10 SSR、TS7、client/SSR build、定向 Prettier/diff 通过，本轮未重跑全部 38 浏览器。测试自己的 Vite/Chromium 自动清理。ExerciseEditor 为真实账号学习与管理员共用；此浏览器用例以管理员受控请求装配，不将它当作实际账号完整学习链路。
+- 固定 6ac433d 的 [Check 37454719659](https://github.com/Ronbb/brioche/actions/runs/37454719659) 本轮读取仍 in_progress，最新远端绿色尚未确认。正式审校/素材与录音、真实 iPhone/辅助技术及生产门槛继续待完成。

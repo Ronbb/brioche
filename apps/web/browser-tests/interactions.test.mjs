@@ -2073,6 +2073,83 @@ test("an old logout cannot navigate or toast into a new profile and leaving canc
   assert.equal(await evaluate("qa.route"), "/reviews");
 });
 
+test("all exercise kinds keep keyboard focus and exact answers through pending grading and retry", async () => {
+  await open("author");
+  await browser("wait", ".exercise-sheet input[type=radio]");
+  const selectors = [
+    ".exercise-sheet:has(input[type=radio])",
+    ".exercise-sheet:has(.practice-input)",
+    ".exercise-sheet:has(.order-bank)",
+  ];
+  for (const [index, selector] of selectors.entries()) {
+    if (index === 0) {
+      await browser("focus", selector + " input[type=radio]");
+      await press("Space");
+    } else if (index === 1) {
+      await browser("focus", selector + " .practice-input");
+      await browser("keyboard", "inserttext", "une");
+    } else {
+      await browser("focus", selector + " .order-bank button");
+      await press("Enter");
+      await press("Enter");
+    }
+    await browser("focus", selector + " .primary");
+    await press("Enter");
+    await browser("wait", "--fn", `qa.previewWrites.length===${index * 2 + 1}`);
+    assert.deepEqual(await evaluate(`qa.previewWrites[${index * 2}].body`), {
+      revision: 1,
+      exerciseId: ["preview-choice", "preview-text", "preview-order"][index],
+      answer: [
+        { kind: "choice", optionId: "bonjour" },
+        { kind: "text", text: "une" },
+        { kind: "order", tokenIds: ["bonjour", "luc"] },
+      ][index],
+    });
+    assert.equal(
+      await evaluate(
+        `document.activeElement.matches(${JSON.stringify(selector + " .primary")})`,
+      ),
+      true,
+    );
+    assert.equal(
+      await evaluate("document.activeElement.getAttribute('aria-busy')"),
+      "true",
+    );
+    await press("Enter");
+    await press("Enter");
+    assert.equal(await evaluate("qa.previewWrites.length"), index * 2 + 1);
+    await evaluate(`qa.previewWrites[${index * 2}].release(503)`);
+    await browser(
+      "wait",
+      "--fn",
+      `!document.querySelector(${JSON.stringify(selector + " fieldset")}).disabled`,
+    );
+    assert.equal(
+      await evaluate(
+        `document.activeElement.matches(${JSON.stringify(selector + " .primary")})`,
+      ),
+      true,
+    );
+    await press("Enter");
+    await browser("wait", "--fn", `qa.previewWrites.length===${index * 2 + 2}`);
+    assert.equal(
+      await evaluate(
+        `JSON.stringify(qa.previewWrites[${index * 2}].body)===JSON.stringify(qa.previewWrites[${index * 2 + 1}].body)`,
+      ),
+      true,
+    );
+    await evaluate(
+      `qa.previewWrites[${index * 2 + 1}].release({correct:true,feedbackZh:'确认完成'})`,
+    );
+    await browser("wait", selector + " .practice-feedback");
+    await browser(
+      "wait",
+      "--fn",
+      `document.activeElement.matches(${JSON.stringify(selector + " .practice-feedback")})`,
+    );
+  }
+});
+
 test("author preview grading isolates a replaced operator and ignores old results", async () => {
   await open("author");
   await browser("wait", ".exercise-sheet input[type=radio]");

@@ -1075,6 +1075,24 @@ const router = createMemoryRouter(
                       { id: "merci", text: "Merci !" },
                     ],
                   },
+                  {
+                    type: "exercise",
+                    id: "preview-text",
+                    exerciseType: "fill-blank",
+                    promptZh: "填入冠词",
+                    templateFr: "___ baguette",
+                    hintZh: "阴性名词",
+                  },
+                  {
+                    type: "exercise",
+                    id: "preview-order",
+                    exerciseType: "order",
+                    promptZh: "组成问候",
+                    tokens: [
+                      { id: "bonjour", text: "Bonjour" },
+                      { id: "luc", text: "Luc !" },
+                    ],
+                  },
                 ],
                 steps: [
                   ...lesson.steps,
@@ -1082,7 +1100,11 @@ const router = createMemoryRouter(
                     id: "preview-practice",
                     kind: "practice",
                     titleZh: "练习",
-                    blockIds: ["preview-choice"],
+                    blockIds: [
+                      "preview-choice",
+                      "preview-text",
+                      "preview-order",
+                    ],
                   },
                 ],
               }

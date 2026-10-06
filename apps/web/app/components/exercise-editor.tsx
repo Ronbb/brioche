@@ -269,7 +269,9 @@ export function ExerciseEditor({
             key="submit"
             type="submit"
             className="primary"
-            disabled={!ready || blocked}
+            disabled={!ready}
+            aria-disabled={blocked || !ready}
+            aria-busy={blocked}
           >
             确认答案
             <Icon name="check" />
