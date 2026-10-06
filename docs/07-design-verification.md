@@ -804,3 +804,10 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - 辅助审阅发现a1-bakery-pay的grammar-price-euros与explanation-main重复写“超过一欧元”即复数；依OQLF小于二数量后名词单数及法兰西学院un euro/des euros核对，现两处同步改为1,20 euro / 2 euros并说明边界。本次只修这两处价格解释，不冒充完成四课或全48课人工审校；报告与来源见content/a1/bakery-price-review.md。editorial保持draft，无导入/发布/数据库变化。
 - 实际作者CLI check付款课通过，13项curriculum全部通过，包含全A1/A2结构/共享词汇/144题判分与素材清单检查；未改运行时代码，没有重复Web/SSR或Docker重建。付款草稿位于作者目录，不嵌入当前生产镜像的fixture。目标JSON格式与diff通过。
 - 固定界面提交ea4f99e的Check37470856262/job112293640020本轮实际in_progress，读取到cargo clippy步骤且未观察失败；不是终态成功。首个管理员邮箱仍待用户回复，内容/素材授权/正式录音、真实设备和生产门槛继续保留。
+
+## 2026-10-06：A1语法说明与共享词汇辅助审阅
+
+- 按full-A1清单实际读取24课48条grammar说明/例句（前三与后三单元分别读取），检查基本变位、冠词介词、复数、否定提问、时间与计划的说明边界。辅助审阅范围和修改依据记录于content/a1/grammar-review.md；不是全部正文/文化/难度/录音或人工审校验收。
+- social-introduce-friend的grammar-mon-ami不再模糊写“省音相关搭配”，依OQLF明确元音/哑音h开头阴性名词使用mon（mon amie），并增加与Mon ami对应的可朗读例句。word-aimer的食物场景限定错误套用到交友课，现购物清单/交友课两处改为同一通用说明，保持共享ID及既有判分不变；依据法兰西学院词典。
+- 两个课源实际作者check通过，13项curriculum通过；补可朗读例句后再运行对应check和13项课程测试、目标Prettier/diff全部通过。检查全部A1源仍24个draft，没有导入/发布/修改数据库；未改运行代码或重建Docker，现有应用栈继续保留。
+- 首次PowerShell字符串命令因弯撇号触发解析错误，没有执行任何修改；改用apply_patch完成文本编辑，该解析错误不计应用缺陷。固定ea4f99e的Check37470856262/job112293640020本轮两次读取均in_progress且处于组件浏览器步骤，未观察失败、不宣称完整CI成功。人工审校/素材录音、管理员邮箱、真实设备与生产门槛继续保留。

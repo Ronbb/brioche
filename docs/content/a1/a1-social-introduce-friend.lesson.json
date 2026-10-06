@@ -67,7 +67,7 @@
         "lemma": "aimer",
         "partOfSpeech": "verb",
         "meaningZh": "喜欢；爱",
-        "noteZh": "本单元表示对食物的喜好：j’aime、elle aime。"
+        "noteZh": "aimer 表示喜欢或爱，可用于食物、活动或其他事物。常见的现在时形式有 j’aime、elle aime。"
       },
       {
         "id": "expr-jhabite",
@@ -92,11 +92,15 @@
       {
         "id": "grammar-mon-ami",
         "titleZh": "mon / ma：说我的……",
-        "bodyZh": "物主限定词与后面的名词配合：本课男性朋友是 mon ami，房屋是 ma maison。形式不能只看说话人的性别；元音开头的阴性名词另有省音相关搭配。",
+        "bodyZh": "物主限定词与后面的名词配合：本课男性朋友是 mon ami，房屋是 ma maison。阴性名词若以元音或哑音 h 开头，前面也用 mon，例如 mon amie。这些形式不由说话人的性别决定。",
         "examples": [
           {
             "fr": "Mon ami habite à Lyon.",
             "zh": "我的朋友住在里昂。"
+          },
+          {
+            "fr": "Mon amie habite à Lyon.",
+            "zh": "我的朋友（女性）住在里昂。"
           }
         ]
       }
