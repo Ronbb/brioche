@@ -463,3 +463,71 @@ test("profile drafts guard route pushes and history pops, including saves alread
   await browser("wait", "--fn", "qa.route==='/login'");
   assert.equal(await evaluate("qa.profileWrites.length"), 1);
 });
+
+test("failed profile saves retain blocked drafts and require explicit version-aware recovery", async () => {
+  const edit = 'button[aria-label="编辑个人资料与学习目标"]';
+  for (const status of [409, 503]) {
+    await open("profile");
+    await browser("focus", edit);
+    await press("Enter");
+    await browser("fill", ".profile-dialog input", "My draft");
+    await browser("focus", ".profile-dialog button[type=submit]");
+    await press("Enter");
+    await browser("wait", "--fn", "qa.profileWrites.length===1");
+    await evaluate("qa.navigate('/login')");
+    await browser("wait", ".profile-dialog .profile-leave-status");
+    await evaluate("qa.profileRelease[0](" + status + ")");
+    await browser("wait", "--fn", "qa.profileReads.length===1");
+    assert.equal(await evaluate("qa.route"), "/");
+    await evaluate(
+      "qa.profileReads[0]({id:'account-a',email:'a@example.test',displayName:" +
+        JSON.stringify(status === 409 ? "Other device" : "My draft") +
+        ",role:'learner',version:7,settings:{timeZone:'Asia/Shanghai',weeklyDays:5,dailyMinutes:10,showTranslation:false,speechRate:1}})",
+    );
+    await browser("wait", ".profile-discard");
+    assert.equal(
+      await evaluate("document.activeElement.textContent"),
+      "放弃这些修改？",
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.profile-discard p').textContent",
+      ),
+      "上次保存未获确认。离开将丢弃当前编辑草稿。",
+    );
+    assert.equal(await evaluate("qa.profileWrites.length"), 1);
+    await press("Escape");
+    assert.equal(
+      await evaluate("document.querySelector('.profile-dialog input').value"),
+      "My draft",
+    );
+    await browser("focus", ".profile-dialog button[type=submit]");
+    await press("Enter");
+    if (status === 409) {
+      await browser("wait", "--fn", "qa.profileWrites.length===2");
+      assert.deepEqual(await evaluate("qa.profileWrites[1]"), {
+        displayName: "My draft",
+        version: 7,
+      });
+      await evaluate(
+        "qa.profileRelease[1]({id:'account-a',email:'a@example.test',displayName:'My draft',role:'learner',version:8,settings:{timeZone:'Asia/Shanghai',weeklyDays:5,dailyMinutes:10,showTranslation:false,speechRate:1}})",
+      );
+    }
+    await browser(
+      "wait",
+      "--fn",
+      "!document.querySelector('.profile-dialog[open]')",
+    );
+    assert.equal(await evaluate("qa.route"), "/");
+    assert.equal(
+      await evaluate("qa.profileWrites.length"),
+      status === 409 ? 2 : 1,
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.profile-summary h2').textContent",
+      ),
+      "My draft",
+    );
+  }
+});

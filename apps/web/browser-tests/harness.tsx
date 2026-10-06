@@ -23,7 +23,8 @@ const qa = {
   search: "",
   changeUser: null as (() => void) | null,
   profileWrites: [] as Record<string, unknown>[],
-  profileRelease: [] as ((profile: UserProfile) => void)[],
+  profileRelease: [] as ((profile: UserProfile | number) => void)[],
+  profileReads: [] as ((profile: UserProfile | number) => void)[],
   navigate: null as ((destination: string | number) => void) | null,
 };
 Object.assign(window, { qa });
@@ -62,7 +63,23 @@ window.fetch = async (input, init) => {
   if (String(input) === "/api/v1/me/settings") {
     const index = qa.profileWrites.push(JSON.parse(String(init?.body))) - 1;
     return new Promise<Response>((resolve) => {
-      qa.profileRelease[index] = (profile) => resolve(Response.json(profile));
+      qa.profileRelease[index] = (profile) =>
+        resolve(
+          typeof profile === "number"
+            ? new Response("", { status: profile })
+            : Response.json(profile),
+        );
+    });
+  }
+  if (String(input) === "/api/v1/me") {
+    return new Promise<Response>((resolve) => {
+      qa.profileReads.push((profile) =>
+        resolve(
+          typeof profile === "number"
+            ? new Response("", { status: profile })
+            : Response.json(profile),
+        ),
+      );
     });
   }
   if (String(input) !== "/api/v1/learning-sessions")

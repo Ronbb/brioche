@@ -308,7 +308,11 @@ function ProfileContent() {
             <h3 ref={discardHeading} tabIndex={-1}>
               放弃这些修改？
             </h3>
-            <p>昵称、学习目标和时区的修改尚未保存。</p>
+            <p>
+              {learning.saveError
+                ? "上次保存未获确认。离开将丢弃当前编辑草稿。"
+                : "昵称、学习目标和时区的修改尚未保存。"}
+            </p>
             <button type="button" className="primary" onClick={keepEditing}>
               继续编辑
             </button>
