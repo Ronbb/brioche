@@ -300,3 +300,56 @@ test("custom settings dialogs remain in the viewport and restore keyboard focus 
     "时区：巴黎",
   );
 });
+
+test("a profile identity change discards the previous editor and permits independent saves", async () => {
+  await open("profile");
+  const edit = 'button[aria-label="编辑个人资料与学习目标"]';
+  await browser("focus", edit);
+  await press("Enter");
+  await browser("fill", ".profile-dialog input", "Alice edited");
+  await browser("focus", ".profile-dialog button[type=submit]");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.profileWrites.length===1");
+  await evaluate("qa.changeUser()");
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('.profile-summary h2')?.textContent==='Bob'",
+  );
+  assert.equal(
+    await evaluate("document.querySelectorAll('.profile-dialog[open]').length"),
+    0,
+  );
+  await browser("focus", edit);
+  await press("Enter");
+  assert.equal(
+    await evaluate("document.querySelector('.profile-dialog input').value"),
+    "Bob",
+  );
+  await browser("fill", ".profile-dialog input", "Bob edited");
+  await browser("focus", ".profile-dialog button[type=submit]");
+  await press("Enter");
+  await browser("wait", "--fn", "qa.profileWrites.length===2");
+  assert.equal(await evaluate("qa.profileWrites[1].version"), 10);
+  await evaluate(
+    "qa.profileRelease[0]({id:'account-a',email:'a@example.test',displayName:'Alice edited',role:'learner',version:2,settings:{timeZone:'Asia/Shanghai',weeklyDays:5,dailyMinutes:10,showTranslation:false,speechRate:1}})",
+  );
+  assert.equal(
+    await evaluate("document.querySelector('.profile-dialog input').value"),
+    "Bob edited",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelector('.profile-dialog button[type=submit]').getAttribute('aria-busy')",
+    ),
+    "true",
+  );
+  await evaluate(
+    "qa.profileRelease[1]({id:'account-b',email:'b@example.test',displayName:'Bob edited',role:'learner',version:11,settings:{timeZone:'Asia/Shanghai',weeklyDays:5,dailyMinutes:10,showTranslation:false,speechRate:1}})",
+  );
+  await browser(
+    "wait",
+    "--fn",
+    "document.querySelector('.profile-summary h2')?.textContent==='Bob edited' && !document.querySelector('.profile-dialog[open]')",
+  );
+});

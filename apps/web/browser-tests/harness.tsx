@@ -6,6 +6,8 @@ import { LearningProvider, useLearning } from "../app/components/learning";
 import Lesson from "../app/routes/lesson";
 import { lesson } from "./lesson";
 import { ChoiceDialog } from "../app/components/choice-dialog";
+import Profile from "../app/routes/profile";
+import type { UserProfile } from "@brioche/contracts/UserProfile";
 import "../app/styles/app.css";
 
 const qa = {
@@ -19,6 +21,9 @@ const qa = {
   playbackId: null as string | null,
   route: "/",
   search: "",
+  changeUser: null as (() => void) | null,
+  profileWrites: [] as Record<string, unknown>[],
+  profileRelease: [] as ((profile: UserProfile) => void)[],
 };
 Object.assign(window, { qa });
 class ControlledUtterance extends EventTarget {
@@ -53,6 +58,12 @@ const originalFetch = window.fetch;
 window.fetch = async (input, init) => {
   if (String(input) === "/api/v1/auth/csrf")
     return Response.json({ csrfToken: "controlled" });
+  if (String(input) === "/api/v1/me/settings") {
+    const index = qa.profileWrites.push(JSON.parse(String(init?.body))) - 1;
+    return new Promise<Response>((resolve) => {
+      qa.profileRelease[index] = (profile) => resolve(Response.json(profile));
+    });
+  }
   if (String(input) !== "/api/v1/learning-sessions")
     return originalFetch(input, init);
   const body = JSON.parse(String(init?.body)) as {
@@ -145,6 +156,37 @@ function ChoicesHarness() {
     </main>
   );
 }
+function ProfileHarness() {
+  const [user, setUser] = useState<UserProfile>({
+    id: "account-a",
+    email: "a@example.test",
+    displayName: "Alice",
+    role: "learner",
+    version: 1,
+    settings: {
+      timeZone: "Asia/Shanghai",
+      weeklyDays: 5,
+      dailyMinutes: 10,
+      showTranslation: false,
+      speechRate: 1,
+    },
+  });
+  qa.changeUser = () =>
+    setUser({
+      ...user,
+      id: "account-b",
+      email: "b@example.test",
+      displayName: "Bob",
+      version: 10,
+    });
+  return (
+    <LearningProvider user={user}>
+      <main>
+        <Profile />
+      </main>
+    </LearningProvider>
+  );
+}
 const kind = new URL(location.href).searchParams.get("case");
 const reading = kind === "reading";
 const router = createMemoryRouter([
@@ -156,6 +198,8 @@ const router = createMemoryRouter([
       </LearningProvider>
     ) : kind === "choices" ? (
       <ChoicesHarness />
+    ) : kind === "profile" ? (
+      <ProfileHarness />
     ) : (
       <StartHarness />
     ),

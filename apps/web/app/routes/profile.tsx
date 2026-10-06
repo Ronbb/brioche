@@ -17,6 +17,12 @@ const commonZones: Choice[] = [
   { value: "UTC", label: "UTC" },
 ];
 export default function Profile() {
+  const { profile } = useLearning();
+  // Drafts, modal refs and pending writes belong to one identity. A late
+  // completion from the previous editor must never close or lock the new one.
+  return <ProfileContent key={profile?.id ?? "visitor"} />;
+}
+function ProfileContent() {
   const learning = useLearning();
   const identity = useRouteLoaderData<typeof loader>("root");
   const [pending, setPending] = useState(false);
