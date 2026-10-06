@@ -660,3 +660,12 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - 新生产 SSR handler 回归确认个人页按服务端身份显示资料/退出或匿名登录入口，匿名页面不含合成用户邮箱，保持 private/no-store，转发仅会话 Cookie，渲染全过程只有 GET。HTTP 后端为受控适配器，不代替 PostgreSQL 会话撤销或跨标签实际 cookie 检查。
 - 全 34 项 Chromium 通过（446.57s），27 Web/9 SSR、TS7、client/SSR build、定向格式/diff 检查通过；独立随机 Vite/浏览器自动关闭，没有访问真实账号或操作部署。取消已经发出的 POST 不表示服务端回滚，身份仍由服务器重新确认；真实 iPhone/辅助技术、人工内容审校、正式素材/录音授权与生产门槛继续待完成。
 - 上一提交 8c55050 的 Check 37451038196/job112227392494 本轮实际确认 completed/success；本轮新提交 CI 另行确认。
+
+## 2026-10-06：固定版本预览入口同步
+
+- 真实 AuthorPreview 的独立 Chromium 装配复现：编辑三个预览字段后，从目录打开另一课程第 2 版，正文已切换但表单仍显示 draft-release、draft-lesson、第 9 版。新增用例在修复前实际失败。
+- 预览参数变化时同步批次/课程/版本三个输入值，保留输入 DOM；焦点与滚动转到已加载课程标题，只有目录时转到批次标题。初始渲染不抢焦点，同参数重渲染不重置正在输入的草稿。
+- 原生键盘回归覆盖编辑后目录跳转、提交另一批次、打开该批次第 3 版，以及 MemoryRouter 返回目录；逐次核对全部字段与活动标题。合成 loader 不代替实际权限与数据库。
+- 新生产 SSR handler 用受控 HTTP 后端另验证匿名 401、learner 403 且无 operator 读取；operator 按批次及确切版本读取，private/no-store、Vary Cookie、只转发 session cookie；不属于所选批次的版本 404 且不读取课程，非法批次 400 且不读取预览。此证据不表示数据库发布或正式内容审校完成。
+- 本轮受影响的三个 Chromium 用例通过（58.63s，包含多正文与迟到语音回归），27 Web、10 SSR、TS7、client/SSR build、定向 Prettier/diff 通过。本轮未重新执行全部 35 项浏览器用例；独立浏览器与随机 Vite 已清理，没有操作用户服务或生产。
+- 固定上一提交 d44dc39 的 [Check 37452861794](https://github.com/Ronbb/brioche/actions/runs/37452861794) 本轮实际读取 completed/success；新提交另行确认。完整教学审校/正式录音、真实设备/辅助技术与生产门槛继续待完成。

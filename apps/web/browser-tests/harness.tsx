@@ -23,6 +23,8 @@ import Home from "../app/routes/home";
 import Courses from "../app/routes/courses";
 import History from "../app/routes/review-history";
 import { Account } from "../app/components/account";
+import AuthorPreview from "../app/routes/author-preview";
+import type { PreviewRelease } from "@brioche/contracts/PreviewRelease";
 import type { ReviewHistoryPage } from "@brioche/contracts/ReviewHistoryPage";
 import type { Catalog } from "@brioche/contracts/Catalog";
 import type { StudyDashboard } from "@brioche/contracts/StudyDashboard";
@@ -528,6 +530,42 @@ const catalogFixture: Catalog = {
     },
   ],
 };
+function AuthorHarness() {
+  const loaderData = useLoaderData() as {
+    lesson: typeof lesson | null;
+    id: string;
+    revision: string;
+    release: PreviewRelease | null;
+    releaseId: string;
+  };
+  const user = { ...reviewUser, role: "operator" as const };
+  return (
+    <LearningProvider user={user}>
+      <main>
+        <AuthorPreview
+          loaderData={loaderData}
+          params={{}}
+          matches={[
+            {
+              id: "root",
+              params: {},
+              pathname: "/",
+              loaderData: { user, enabled: true },
+              handle: undefined,
+            },
+            {
+              id: "routes/author-preview",
+              params: {},
+              pathname: "/author-preview",
+              loaderData,
+              handle: undefined,
+            },
+          ]}
+        />
+      </main>
+    </LearningProvider>
+  );
+}
 qa.catalogFixture = catalogFixture;
 function HomeHarness() {
   const resume = {
@@ -919,6 +957,18 @@ const router = createMemoryRouter(
         <HomeHarness />
       ) : kind === "courses" ? (
         <Navigate to="/courses" replace />
+      ) : kind === "author" ? (
+        <Navigate
+          to={
+            "/author-preview?" +
+            new URLSearchParams({
+              releaseId: "qa-release-one",
+              lessonId: lesson.id,
+              revision: "1",
+            })
+          }
+          replace
+        />
       ) : kind === "history" || kind === "history-empty" ? (
         <Navigate to="/review-history" replace />
       ) : kind === "text-limit" || kind === "text-no-hint" ? (
@@ -933,6 +983,57 @@ const router = createMemoryRouter(
     { path: "/login", element: <h1>登录入口</h1> },
     { path: "/previous", element: <h1>上一页</h1> },
     { path: "/reviews", element: <h1>账号复习入口</h1> },
+    {
+      path: "/author-preview",
+      loader: ({ request }) => {
+        const query = new URL(request.url).searchParams;
+        const releaseId = query.get("releaseId") ?? "",
+          id = query.get("lessonId") ?? "",
+          revision = query.get("revision") ?? "";
+        const second = {
+          ...summary,
+          id: "qa-second",
+          revision: releaseId === "qa-release-two" ? 3 : 2,
+          title: { zh: "另一段日常对话", fr: "Une autre conversation" },
+        };
+        return {
+          releaseId,
+          id,
+          revision,
+          release: releaseId
+            ? {
+                id: releaseId,
+                catalog: {
+                  developmentFixture: false,
+                  levels: [
+                    {
+                      id: lesson.levelId,
+                      label: "A1",
+                      units: [
+                        {
+                          id: lesson.unitId,
+                          titleZh: "日常对话",
+                          lessons: [summary, second],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                withdrawnLessonIds: [],
+              }
+            : null,
+          lesson: id
+            ? {
+                ...lesson,
+                id,
+                revision: Number(revision),
+                title: id === "qa-second" ? second.title : lesson.title,
+              }
+            : null,
+        };
+      },
+      element: <AuthorHarness />,
+    },
     {
       path: "/review-history",
       loader: ({ request }): ReviewHistoryPage => {

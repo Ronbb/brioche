@@ -1,4 +1,5 @@
 import { Form, Link, data } from "react-router";
+import { useLayoutEffect, useRef } from "react";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
 import type { PreviewRelease } from "@brioche/contracts/PreviewRelease";
 import { getIdentity, getPrivate } from "../lib/api.server";
@@ -62,10 +63,34 @@ export function headers() {
 export default function AuthorPreview({
   loaderData: { lesson, id, revision, release, releaseId },
 }: Route.ComponentProps) {
+  const releaseInput = useRef<HTMLInputElement>(null);
+  const lessonInput = useRef<HTMLInputElement>(null);
+  const revisionInput = useRef<HTMLInputElement>(null);
+  const pageHeading = useRef<HTMLHeadingElement>(null);
+  const releaseHeading = useRef<HTMLHeadingElement>(null);
+  const lessonHeading = useRef<HTMLHeadingElement>(null);
+  const context = JSON.stringify([releaseId, id, revision]);
+  const previous = useRef(context);
+  useLayoutEffect(() => {
+    if (releaseInput.current) releaseInput.current.value = releaseId;
+    if (lessonInput.current) lessonInput.current.value = id;
+    if (revisionInput.current) revisionInput.current.value = revision || "1";
+    if (previous.current === context) return;
+    previous.current = context;
+    const heading = lesson
+      ? lessonHeading.current
+      : release
+        ? releaseHeading.current
+        : pageHeading.current;
+    heading?.focus({ preventScroll: true });
+    heading?.scrollIntoView({ block: "start", behavior: "instant" });
+  }, [releaseId, id, revision]);
   return (
     <section className="page-arrive author-preview">
       <div className="lesson-header">
-        <h1>课程预览</h1>
+        <h1 ref={pageHeading} tabIndex={-1}>
+          课程预览
+        </h1>
         <p className="profile-note">预览已导入的固定版本，不记录学习进度。</p>
       </div>
       <Form method="get" className="auth-form">
@@ -73,6 +98,7 @@ export default function AuthorPreview({
           发布批次
           <input
             name="releaseId"
+            ref={releaseInput}
             defaultValue={releaseId}
             required
             pattern="[A-Za-z0-9_-]{1,100}"
@@ -82,7 +108,9 @@ export default function AuthorPreview({
       </Form>
       {release && (
         <div className="course-directory">
-          <h2>{release.id}</h2>
+          <h2 ref={releaseHeading} tabIndex={-1}>
+            {release.id}
+          </h2>
           {release.catalog.levels.map((level) => (
             <section key={level.id}>
               <h2>{level.label}</h2>
@@ -133,6 +161,7 @@ export default function AuthorPreview({
           课程编号
           <input
             name="lessonId"
+            ref={lessonInput}
             defaultValue={id}
             required
             pattern="[A-Za-z0-9_-]{1,100}"
@@ -142,6 +171,7 @@ export default function AuthorPreview({
           版本
           <input
             name="revision"
+            ref={revisionInput}
             type="number"
             min="1"
             max="2147483647"
@@ -155,7 +185,9 @@ export default function AuthorPreview({
       {lesson && (
         <div key={lesson.id + ":" + lesson.revision}>
           <div className="lesson-header">
-            <h2 lang="fr">{lesson.title.fr}</h2>
+            <h2 lang="fr" ref={lessonHeading} tabIndex={-1}>
+              {lesson.title.fr}
+            </h2>
             <p>
               {lesson.title.zh} · 第 {lesson.revision} 版
             </p>

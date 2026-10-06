@@ -2072,3 +2072,86 @@ test("an old logout cannot navigate or toast into a new profile and leaving canc
   assert.equal(await evaluate("qa.authBootstraps[0].signal.aborted"), true);
   assert.equal(await evaluate("qa.route"), "/reviews");
 });
+
+test("author preview resets edited opener fields to the selected immutable context and focuses loaded content", async () => {
+  await open("author");
+  await browser("wait", ".author-preview > div:last-child .lesson-header h2");
+  for (const [name, value] of [
+    ["releaseId", "draft-release"],
+    ["lessonId", "draft-lesson"],
+    ["revision", "9"],
+  ]) {
+    await browser("focus", `.auth-form input[name=${name}]:not([type=hidden])`);
+    await press("Control+a");
+    await browser("keyboard", "inserttext", value);
+  }
+  await browser("focus", ".course-directory .lesson-list li:nth-child(2) a");
+  await press("Enter");
+  await browser(
+    "wait",
+    "--fn",
+    "new URLSearchParams(qa.search).get('lessonId')==='qa-second'",
+  );
+  assert.deepEqual(
+    await evaluate(
+      "[...document.querySelectorAll('.auth-form input:not([type=hidden])')].map(e=>e.value)",
+    ),
+    ["qa-release-one", "qa-second", "2"],
+  );
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "Une autre conversation",
+  );
+  await browser("focus", ".auth-form input[name=releaseId]:not([type=hidden])");
+  await press("Control+a");
+  await browser("keyboard", "inserttext", "qa-release-two");
+  await press("Enter");
+  await browser(
+    "wait",
+    "--fn",
+    "new URLSearchParams(qa.search).get('releaseId')==='qa-release-two'",
+  );
+  assert.deepEqual(
+    await evaluate(
+      "[...document.querySelectorAll('.auth-form input:not([type=hidden])')].map(e=>e.value)",
+    ),
+    ["qa-release-two", "", "1"],
+  );
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "qa-release-two",
+  );
+  await browser("focus", ".course-directory .lesson-list li:nth-child(2) a");
+  await press("Enter");
+  await browser(
+    "wait",
+    "--fn",
+    "new URLSearchParams(qa.search).get('revision')==='3'",
+  );
+  assert.deepEqual(
+    await evaluate(
+      "[...document.querySelectorAll('.auth-form input:not([type=hidden])')].map(e=>e.value)",
+    ),
+    ["qa-release-two", "qa-second", "3"],
+  );
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "Une autre conversation",
+  );
+  await evaluate("qa.navigate(-1)");
+  await browser(
+    "wait",
+    "--fn",
+    "!new URLSearchParams(qa.search).has('lessonId')",
+  );
+  assert.deepEqual(
+    await evaluate(
+      "[...document.querySelectorAll('.auth-form input:not([type=hidden])')].map(e=>e.value)",
+    ),
+    ["qa-release-two", "", "1"],
+  );
+  assert.equal(
+    await evaluate("document.activeElement.textContent"),
+    "qa-release-two",
+  );
+});

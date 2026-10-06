@@ -99,6 +99,40 @@ const server = createServer((request, response) => {
         nextCursor: request.url.includes("?cursor=") ? null : "older/qa?+",
       }),
     );
+  } else if (
+    authenticated &&
+    profile.role === "operator" &&
+    request.url === "/api/v1/operator/releases/ssr-release"
+  ) {
+    response.end(
+      JSON.stringify({
+        id: "ssr-release",
+        catalog: {
+          developmentFixture: false,
+          levels: [
+            {
+              id: "a1",
+              label: "A1",
+              units: [
+                {
+                  id: lesson.unitId,
+                  titleZh: "早餐与面包店",
+                  lessons: [lesson],
+                },
+              ],
+            },
+          ],
+        },
+        withdrawnLessonIds: [],
+      }),
+    );
+  } else if (
+    authenticated &&
+    profile.role === "operator" &&
+    request.url ===
+      `/api/v1/operator/lessons/${lesson.id}/revisions/${lesson.revision}`
+  ) {
+    response.end(JSON.stringify(lesson));
   } else if (request.url === "/api/catalog") {
     response.end(
       JSON.stringify({
@@ -139,6 +173,73 @@ const request = (path) =>
         : {},
     }),
   );
+
+test("author SSR requires an operator and reads only the selected release member revision privately", async () => {
+  fixture = false;
+  authenticated = false;
+  requests.length = 0;
+  const path = `/author-preview?releaseId=ssr-release&lessonId=${lesson.id}&revision=${lesson.revision}`;
+  try {
+    let response = await request(path);
+    assert.equal(response.status, 401);
+    authenticated = true;
+    response = await request(path);
+    assert.equal(response.status, 403);
+    assert.equal(
+      requests.filter((entry) => entry.path.startsWith("/api/v1/operator/"))
+        .length,
+      0,
+    );
+    profile.role = "operator";
+    requests.length = 0;
+    response = await request(path);
+    assert.equal(response.status, 200);
+    const html = await response.text();
+    assert.ok(html.includes(lesson.title.fr));
+    assert.match(html, /name="releaseId"[^>]*value="ssr-release"/);
+    assert.match(response.headers.get("Cache-Control"), /private, no-store/);
+    assert.match(response.headers.get("Vary"), /Cookie/);
+    const privateReads = requests.filter((entry) =>
+      entry.path.startsWith("/api/v1/operator/"),
+    );
+    assert.deepEqual(
+      privateReads.map((entry) => entry.path),
+      [
+        "/api/v1/operator/releases/ssr-release",
+        `/api/v1/operator/lessons/${lesson.id}/revisions/${lesson.revision}`,
+      ],
+    );
+    assert.ok(
+      privateReads.every(
+        (entry) => entry.cookie === "brioche.sid=controlled-ssr-session",
+      ),
+    );
+    requests.length = 0;
+    response = await request(
+      `/author-preview?releaseId=ssr-release&lessonId=${lesson.id}&revision=${lesson.revision + 1}`,
+    );
+    assert.equal(response.status, 404);
+    assert.equal(
+      requests.filter((entry) =>
+        entry.path.startsWith("/api/v1/operator/lessons/"),
+      ).length,
+      0,
+    );
+    requests.length = 0;
+    response = await request("/author-preview?releaseId=invalid%2Fbatch");
+    assert.equal(response.status, 400);
+    assert.equal(
+      requests.filter((entry) => entry.path.startsWith("/api/v1/operator/"))
+        .length,
+      0,
+    );
+    assert.ok(requests.every((entry) => entry.method === "GET"));
+  } finally {
+    profile.role = "learner";
+    authenticated = false;
+    fixture = false;
+  }
+});
 
 test("production history SSR forwards encoded cursors privately and distinguishes empty older pages", async () => {
   fixture = false;
