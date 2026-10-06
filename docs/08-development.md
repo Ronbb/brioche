@@ -202,6 +202,8 @@ SSR 入口回归运行 `pnpm build` 后再运行 `pnpm test:ssr`（CI 已接入�
 
 公开课程的 explore 步骤可引用练习块，其入口与页尾共用身份/模式判断：正式账号通过明确按钮开始或继续学习，匿名用户登录后返回该课，开发示例进入演示练习。通用 TeachingBlock 不再处理 exercise；账号学习与管理员预览分别使用真实 ExerciseEditor 和预览判分，避免通用渲染器生成指向旧演示路由的循环入口。
 
+公开阅读按正文块 ID 切换，支持同课多个 dialogue/article；同类型有多段时用 block.titleZh 区分，单段仍显示对话/短文。每个正文的译文展开状态独立，切换停止旧播放并关闭知识解释。标题列表在窄屏内部横向滚动，不增加系统滚动条占位；箭头/Home/End 切换并将选中标题滚入可见区域。账号学习继续按步骤遍历全部正文和练习。
+
 示例练习通过 `POST /api/demo/lessons/:id/grade` 调用 Rust 判分，仅在服务端启用 development fixture 时可用，不写数据库；数据库模式返回 404，不替代未来受认证/CSRF 保护的学习提交。请求必须携带匹配 Host 的 Origin，限定版本、题目 ID、答案类型、选项/词块范围与 body 大小。填空规范化 NFC、空白、大小写（按题配置）和法语弯引号，保留重音差异。规则源只在 Rust 服务端加载，生成 TS/前端 bundle 不含答案键。Unicode 处理依据 [unicode-normalization 文档](https://docs.rs/unicode-normalization/0.1.25/unicode_normalization/)。
 
 速度弹窗显式使用 fixed/inset/auto margin 居中，避免 Tailwind reset 覆盖原生 dialog 的默认 margin；最大高度考虑动态视口与安全区，内部滚动不占额外宽度。

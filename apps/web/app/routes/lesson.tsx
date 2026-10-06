@@ -133,9 +133,12 @@ function LessonContent({
   lesson: PublicLesson;
   demo: boolean;
 }) {
+  const bodies = lesson.blocks.filter(
+    (block) => block.type === "dialogue" || block.type === "article",
+  );
   const learning = useLearning(),
-    [mode, setMode] = useState<"dialogue" | "article">(
-      lesson.blocks.some((b) => b.type === "dialogue") ? "dialogue" : "article",
+    [selectedBody, setSelectedBody] = useState(
+      (bodies.find((block) => block.type === "dialogue") ?? bodies[0])?.id,
     ),
     [revealed, setRevealed] = useState<Set<string>>(new Set()),
     [term, setTerm] = useState<Vocabulary | null>(null);
@@ -152,26 +155,24 @@ function LessonContent({
     setTerm(null);
     setGrammar(null);
   };
-  const dialogue = lesson.blocks.find((b) => b.type === "dialogue"),
-    article = lesson.blocks.find((b) => b.type === "article");
+  const body = bodies.find((block) => block.id === selectedBody) ?? bodies[0];
+  const mode = body?.type;
+  const dialogue = body?.type === "dialogue" ? body : undefined,
+    article = body?.type === "article" ? body : undefined;
   const entries =
     mode === "dialogue" && dialogue?.type === "dialogue"
       ? dialogue.turns
       : article?.type === "article"
         ? article.paragraphs
         : [];
-  const body = mode === "dialogue" ? dialogue : article;
   const bodyId = useId();
-  const modes = (["dialogue", "article"] as const).filter((value) =>
-    lesson.blocks.some((block) => block.type === value),
-  );
   const units =
     body && (body.type === "dialogue" || body.type === "article")
       ? readingUnits(lesson, body)
       : [];
-  function changeMode(next: "dialogue" | "article") {
+  function changeMode(next: string) {
     learning.stop();
-    setMode(next);
+    setSelectedBody(next);
     closeNote();
   }
   return (
@@ -191,39 +192,46 @@ function LessonContent({
       <div className="reading-layout">
         <div className="reading">
           <div className="reading-tabs" role="tablist" aria-label="正文">
-            {modes.map((value, index) => (
+            {bodies.map((value, index) => (
               <button
-                key={value}
-                id={`${bodyId}-${value}`}
+                key={value.id}
+                id={`${bodyId}-${value.id}`}
                 role="tab"
-                aria-selected={mode === value}
+                aria-selected={body?.id === value.id}
                 aria-controls={bodyId}
-                tabIndex={mode === value ? 0 : -1}
+                tabIndex={body?.id === value.id ? 0 : -1}
                 onKeyDown={(event) => {
                   let next = index;
                   if (event.key === "ArrowRight")
-                    next = (index + 1) % modes.length;
+                    next = (index + 1) % bodies.length;
                   else if (event.key === "ArrowLeft")
-                    next = (index + modes.length - 1) % modes.length;
+                    next = (index + bodies.length - 1) % bodies.length;
                   else if (event.key === "Home") next = 0;
-                  else if (event.key === "End") next = modes.length - 1;
+                  else if (event.key === "End") next = bodies.length - 1;
                   else return;
                   event.preventDefault();
-                  changeMode(modes[next]);
-                  event.currentTarget.parentElement
-                    ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
-                    [next]?.focus();
+                  changeMode(bodies[next].id);
+                  const tab =
+                    event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
+                      '[role="tab"]',
+                    )[next];
+                  tab?.focus({ preventScroll: true });
+                  tab?.scrollIntoView({ block: "nearest", inline: "nearest" });
                 }}
-                onClick={() => changeMode(value)}
+                onClick={() => changeMode(value.id)}
               >
-                {value === "dialogue" ? "对话" : "短文"}
+                {bodies.filter((block) => block.type === value.type).length > 1
+                  ? value.titleZh
+                  : value.type === "dialogue"
+                    ? "对话"
+                    : "短文"}
               </button>
             ))}
           </div>
           <div
             id={bodyId}
             role="tabpanel"
-            aria-labelledby={`${bodyId}-${mode}`}
+            aria-labelledby={`${bodyId}-${body?.id}`}
           >
             {mode === "dialogue" && dialogue?.type === "dialogue" && (
               <ul className="reading-characters">
@@ -263,7 +271,9 @@ function LessonContent({
                       className="speaker"
                       aria-label={speaker.displayName + "：译文与朗读"}
                       onClick={() => {
-                        setRevealed((old) => new Set([...old, entry.id]));
+                        setRevealed(
+                          (old) => new Set([...old, body!.id + ":" + entry.id]),
+                        );
                         learning.play([units[index]]);
                       }}
                     >
@@ -284,7 +294,8 @@ function LessonContent({
                       onTerm={showTerm}
                       onGrammar={showGrammar}
                     />
-                    {(learning.translation || revealed.has(entry.id)) && (
+                    {(learning.translation ||
+                      revealed.has(body!.id + ":" + entry.id)) && (
                       <p className="translation">{entry.translationZh}</p>
                     )}
                   </div>

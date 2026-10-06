@@ -466,6 +466,7 @@ small,
   gap: 0;
 }
 .reading {
+  min-width: 0;
   padding: 30px 42px;
 }
 .scene-note {
@@ -1683,9 +1684,17 @@ button.primary {
   border-radius: 12px;
   padding: 4px;
   width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
   gap: 3px;
 }
+.reading-tabs::-webkit-scrollbar {
+  height: 0;
+}
 .reading-tabs button {
+  flex: 0 0 auto;
+  max-width: min(260px, 80vw);
   border-radius: 9px;
   min-height: 44px;
   padding: 9px 20px;

@@ -220,3 +220,46 @@ test("exercise referenced by explore uses the real learning entry in production"
     fixture = false;
   }
 });
+
+test("public reading exposes every body, including multiple dialogues", async () => {
+  const originalBlocks = lesson.blocks;
+  const originalSteps = lesson.steps;
+  const dialogue = structuredClone(
+    lesson.blocks.find((block) => block.type === "dialogue"),
+  );
+  dialogue.id = "dialogue-second";
+  dialogue.titleZh = "第二段对话";
+  dialogue.turns = dialogue.turns.map((turn, index) => ({
+    ...turn,
+    id: "second-turn-" + index,
+    segments: turn.segments.map((segment, segmentIndex) => ({
+      ...segment,
+      id: `second-segment-${index}-${segmentIndex}`,
+    })),
+  }));
+  lesson.blocks = [...originalBlocks, dialogue];
+  lesson.steps = [
+    ...originalSteps,
+    {
+      id: "read-second",
+      kind: "read",
+      titleZh: "接着读",
+      blockIds: [dialogue.id],
+    },
+  ];
+  fixture = true;
+  try {
+    const response = await request(`/lessons/${lesson.id}`);
+    assert.equal(response.status, 200);
+    const html = await response.text();
+    const bodyCount = lesson.blocks.filter((block) =>
+      ["dialogue", "article"].includes(block.type),
+    ).length;
+    assert.equal((html.match(/role="tab"/g) ?? []).length, bodyCount);
+    assert.ok(html.includes("第二段对话"));
+  } finally {
+    lesson.blocks = originalBlocks;
+    lesson.steps = originalSteps;
+    fixture = false;
+  }
+});
