@@ -21,6 +21,108 @@ fn run(command: &str, path: &Path) -> Output {
 }
 
 #[test]
+fn media_bundle_checks_inspect_files_offline_and_locate_mismatches() {
+    use serde_json::json;
+    use sha2::{Digest, Sha256};
+    let root = std::env::temp_dir().join(format!("brioche-bundle-check-{}", random_id()));
+    std::fs::create_dir(&root).unwrap();
+    let image = br#"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><circle cx="48" cy="48" r="40"/></svg>"#;
+    std::fs::write(root.join("image.svg"), image).unwrap();
+    let mut wave = Vec::new();
+    wave.extend_from_slice(b"RIFF");
+    wave.extend_from_slice(&1636u32.to_le_bytes());
+    wave.extend_from_slice(b"WAVEfmt ");
+    wave.extend_from_slice(&16u32.to_le_bytes());
+    for n in [1u16, 1] {
+        wave.extend_from_slice(&n.to_le_bytes());
+    }
+    for n in [8000u32, 16000] {
+        wave.extend_from_slice(&n.to_le_bytes());
+    }
+    for n in [2u16, 16] {
+        wave.extend_from_slice(&n.to_le_bytes());
+    }
+    wave.extend_from_slice(b"data");
+    wave.extend_from_slice(&1600u32.to_le_bytes());
+    wave.resize(1644, 0);
+    std::fs::write(root.join("sample.wav"), &wave).unwrap();
+    let common = json!({"assetId":"sample", "revision":1, "status":"ready", "rightsConfirmed":true, "source":"synthetic test", "license":"LicenseRef-TestOnly", "creator":"protocol-test", "creditZh":"仅测试·中文"});
+    let mut visual = common.clone();
+    visual.as_object_mut().unwrap().extend(json!({"sha256":format!("{:x}", Sha256::digest(image)), "mimeType":"image/svg+xml", "width":96, "height":96, "altZh":"仅测试", "file":"image.svg"}).as_object().unwrap().clone());
+    let mut audio = common;
+    audio.as_object_mut().unwrap().extend(json!({"sha256":format!("{:x}", Sha256::digest(&wave)), "mimeType":"audio/wav", "durationMs":100, "file":"sample.wav"}).as_object().unwrap().clone());
+    let path = root.join("bundle.json");
+    let store = root.join("untouched-store");
+    for (command, baseline, mutations) in [
+        (
+            "assets-check",
+            json!({"schemaVersion":"1.0", "assets":[visual], "characters":[]}),
+            vec![
+                ("/assets/0/sha256", json!("0".repeat(64))),
+                ("/assets/0/width", json!(95)),
+                ("/assets/0/file", json!("missing.svg")),
+            ],
+        ),
+        (
+            "audio-bundle-check",
+            json!({"schemaVersion":"1.0", "assets":[audio]}),
+            vec![
+                ("/assets/0/sha256", json!("0".repeat(64))),
+                ("/assets/0/durationMs", json!(101)),
+                ("/assets/0/file", json!("missing.wav")),
+            ],
+        ),
+    ] {
+        for mutation in std::iter::once(None).chain(mutations.into_iter().map(Some)) {
+            let mut source = baseline.clone();
+            if let Some((pointer, value)) = &mutation {
+                *source.pointer_mut(pointer).unwrap() = value.clone();
+            }
+            let text = serde_json::to_string_pretty(&source)
+                .unwrap()
+                .replace('\n', "\r\n");
+            std::fs::write(&path, &text).unwrap();
+            let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+                .args([command, path.to_str().unwrap(), root.to_str().unwrap()])
+                .env("DATABASE_URL", "postgres://invalid@127.0.0.1:1/unavailable")
+                .env("MEDIA_ROOT", &store)
+                .env("APP_ENV", "production")
+                .env("CONTENT_MODE", "fixture")
+                .output()
+                .unwrap();
+            let error = String::from_utf8_lossy(&output.stderr);
+            if let Some((pointer, value)) = mutation {
+                let key = format!("\"{}\": ", pointer.rsplit('/').next().unwrap());
+                let marker = format!("{key}{}", serde_json::to_string(&value).unwrap());
+                let offset = text.find(&marker).unwrap() + key.len();
+                let before = &text[..offset];
+                let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
+                let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+                assert!(!output.status.success());
+                assert!(
+                    error.contains(&format!("{}:{line}:{column}: {pointer}:", path.display())),
+                    "{error}"
+                );
+                assert!(output.stdout.is_empty());
+            } else {
+                assert!(output.status.success(), "{error}");
+                assert!(
+                    String::from_utf8_lossy(&output.stdout).contains("not registered or published")
+                );
+            }
+            assert!(!error.contains("database connection"), "{error}");
+            assert!(!store.exists());
+        }
+    }
+    assert_eq!(std::fs::read(root.join("image.svg")).unwrap(), image);
+    assert_eq!(std::fs::read(root.join("sample.wav")).unwrap(), wave);
+    for file in ["image.svg", "sample.wav", "bundle.json"] {
+        std::fs::remove_file(root.join(file)).unwrap();
+    }
+    std::fs::remove_dir(root).unwrap();
+}
+
+#[test]
 fn full_release_checks_all_local_sources_without_database_or_publication() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/content");
     let output = Command::new(env!("CARGO_BIN_EXE_brioche-server"))

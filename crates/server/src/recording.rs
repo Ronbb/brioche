@@ -104,6 +104,47 @@ impl AudioBundle {
     }
 }
 
+/// Read-only metadata and complete file/decode checks, one bounded recording at a time.
+/// Call from a blocking worker; registration and publication are separate operations.
+pub fn check_bundle(bundle: &AudioBundle, source_root: &Path) -> Result<()> {
+    bundle.validate_author("offline-check")?;
+    let root = source_root
+        .canonicalize()
+        .context("/: source directory unavailable")?;
+    ensure!(root.is_dir(), "/: expected source directory");
+    for (index, spec) in bundle.assets.iter().enumerate() {
+        inspect_source_file(&root, spec, index)?;
+    }
+    Ok(())
+}
+
+fn inspect_source_file(
+    root: &Path,
+    spec: &AudioSpec,
+    index: usize,
+) -> Result<(Vec<u8>, audio::RecordingInfo)> {
+    let p = format!("/assets/{index}");
+    let path = root
+        .join(&spec.file)
+        .canonicalize()
+        .with_context(|| format!("{p}/file: recording file unavailable"))?;
+    ensure!(
+        path.starts_with(root),
+        "{p}/file: recording escapes source directory"
+    );
+    let (bytes, info) = audio::inspect_file(&path, &spec.mime_type)
+        .with_context(|| format!("{p}/file: invalid recording file"))?;
+    ensure!(
+        media::digest(&bytes) == spec.sha256,
+        "{p}/sha256: recording hash mismatch"
+    );
+    ensure!(
+        info.duration_ms == spec.duration_ms,
+        "{p}/durationMs: recording duration does not match decoded frames"
+    );
+    Ok((bytes, info))
+}
+
 pub async fn import_bundle(
     db: &DatabaseConnection,
     bundle: AudioBundle,
@@ -119,25 +160,7 @@ pub async fn import_bundle(
     let recordings = tokio::task::spawn_blocking(move || -> Result<Vec<_>> {
         let mut result = Vec::new();
         for (index, spec) in specs.into_iter().enumerate() {
-            let p = format!("/assets/{index}");
-            let path = source_root
-                .join(&spec.file)
-                .canonicalize()
-                .with_context(|| format!("{p}/file: recording file unavailable"))?;
-            ensure!(
-                path.starts_with(&source_root),
-                "{p}/file: recording escapes source directory"
-            );
-            let (bytes, info) = audio::inspect_file(&path, &spec.mime_type)
-                .with_context(|| format!("{p}/file: invalid recording file"))?;
-            ensure!(
-                media::digest(&bytes) == spec.sha256,
-                "{p}/sha256: recording hash mismatch"
-            );
-            ensure!(
-                info.duration_ms == spec.duration_ms,
-                "{p}/durationMs: recording duration does not match decoded frames"
-            );
+            let (bytes, info) = inspect_source_file(&source_root, &spec, index)?;
             let ext = audio::extension(&spec.mime_type)?;
             media::store_file(&store, &bytes, &spec.sha256, ext)?;
             let descriptor = AudioAsset {

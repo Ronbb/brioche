@@ -14,6 +14,34 @@ async fn main() -> Result<()> {
         )
         .init();
     let command = std::env::args().nth(1).unwrap_or_else(|| "serve".into());
+    if matches!(command.as_str(), "assets-check" | "audio-bundle-check") {
+        let args: Vec<String> = std::env::args().skip(2).collect();
+        if args.len() != 2 {
+            bail!("usage: brioche-server {command} <bundle.json> <source-directory>");
+        }
+        let visual = command == "assets-check";
+        tokio::task::spawn_blocking(move || -> Result<()> {
+            let document = brioche_server::author_json::Document::load(&args[0])?;
+            let root = std::path::Path::new(&args[1]);
+            if visual {
+                let bundle = brioche_server::author_json::from_value(document.value.clone(), "")
+                    .map_err(|error| document.semantic(error))?;
+                brioche_server::media::check_bundle(&bundle, root)
+                    .map_err(|error| document.semantic(error))?;
+            } else {
+                let bundle = brioche_server::author_json::from_value(document.value.clone(), "")
+                    .map_err(|error| document.semantic(error))?;
+                brioche_server::recording::check_bundle(&bundle, root)
+                    .map_err(|error| document.semantic(error))?;
+            }
+            Ok(())
+        })
+        .await??;
+        println!(
+            "Local metadata and file checks passed; not registered or published. Registry references and publication review still require import and release validation."
+        );
+        return Ok(());
+    }
     if command == "asset-check" {
         let args: Vec<String> = std::env::args().skip(2).collect();
         if args.len() != 2 {

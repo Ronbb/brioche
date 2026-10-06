@@ -604,3 +604,13 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 继续加入迟到 GET 用例，实际复现已经移到“回看来源课程”的焦点被成功读取拉回旧标题；现用户离开读取/重试按钮时取消本次焦点恢复。最终回归确认保持来源链接焦点。完整 23 项浏览器先通过（328.04s）；上述最后焦点调整后，对表达库离页保护、四档响应式和管理恢复三项受影响回归重新全部通过（121.55s），最终 TS7、client/SSR build、6 项 SSR 与格式/diff 检查通过，27 项 Web 在本轮通过。所有资源为自动清理的随机 Vite/独立 Chromium，课程/身份/HTTP/TTS 均为合成受控协议，不代表真实 PostgreSQL、iPhone、系统声音或辅助技术验收。
 
 固定前一提交 30da2a3 的 Check 37441523834 本轮实际读取为 completed/success；本次提交的新 CI 仍须另行确认。正式教学审校、录音、完整设备与生产验收继续待完成。
+
+## 素材与录音整包离线预检（2026-10-06）
+
+新增 assets-check <bundle.json> <source-directory> 与 audio-bundle-check 同参数，在数据库/fixture 模式检查前返回，不需数据库或 actor，不写源文件、MEDIA_ROOT、登记或审计。严格 JSON/原位置索引与导入元数据校验沿用现有工具；在 blocking worker 按顺序处理至多 500 项，一次只保留一个有界原文件。图片目录边界/读取/哈希/解码与实际尺寸、录音目录边界/读取/完整解码/哈希与真实时长，均提取为正式 import 与离线工具共用的文件检查；正式导入仍重新读取并执行原有写文件、登记事务与重复版本/角色引用验证。
+
+新 CLI 回归先复现未实现命令进入模式检查并失败；实现后使用合成 96×96 SVG 与 100ms 单声道 WAV，合法包成功，哈希/图片宽度/录音时长/缺文件六种故障均定位中文 CRLF 清单原值行列。测试使用不可用数据库和 production+fixture，证明命令不访问这些配置分支；每次确认媒体目录未创建、源文件字节保持不变。清单 ready/授权数据仅为 synthetic/LicenseRef-TestOnly，不改现有 planned 内容或声明正式授权；角色登记引用/正方形头像、版本冲突和课程时间轴/审校仍属于 import/release 验证。成功信息明确 not registered or published。
+
+37 server 单元、24 作者 CLI、13 curriculum 共 74 项通过，Clippy（所有 target、-D warnings）、fmt/diff 通过。独立 PostgreSQL 的 author_runtime 与 recording 两项真实集成通过，覆盖原文件诊断/导入与 staging 原子性、图片登记、录音不可变/整批登记与固定 revision；专用容器 brioche-bundle-qa-9ae33ab6ea4e（仅 loopback 临时 49500）按精确 ID/名称核对后连匿名卷清理，初次失败的临时合成文件也按路径/内容核对清理。共享开发服务、用户浏览器、生产数据未修改。
+
+固定前一提交 9f85c01 的 Check 37443645612/job112203129839 本轮已实际确认 completed/success；本次整包预检提交的 CI 须另行确认。

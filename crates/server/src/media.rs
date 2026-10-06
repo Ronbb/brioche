@@ -427,6 +427,48 @@ pub(crate) fn store_file(root: &Path, bytes: &[u8], sha: &str, ext: &str) -> Res
     let _ = std::fs::remove_file(&temp);
     result
 }
+/// Read-only local checks. Existing registry references still require import validation.
+/// Call from a blocking worker: reads and decodes one bounded file at a time.
+pub fn check_bundle(bundle: &AssetBundle, source_root: &Path) -> Result<()> {
+    bundle.validate_author("offline-check")?;
+    let root = source_root
+        .canonicalize()
+        .context("/: source directory unavailable")?;
+    ensure!(root.is_dir(), "/: expected source directory");
+    for (index, asset) in bundle.assets.iter().enumerate() {
+        inspect_source_file(&root, asset, index)?;
+    }
+    Ok(())
+}
+
+fn inspect_source_file(root: &Path, asset: &AssetSpec, index: usize) -> Result<Vec<u8>> {
+    let p = format!("/assets/{index}");
+    let path = root
+        .join(&asset.file)
+        .canonicalize()
+        .with_context(|| format!("{p}/file: visual file unavailable"))?;
+    ensure!(
+        path.starts_with(root),
+        "{p}/file: asset escapes source directory"
+    );
+    let bytes = read_file(&path).with_context(|| format!("{p}/file: invalid visual file"))?;
+    ensure!(
+        digest(&bytes) == asset.sha256,
+        "{p}/sha256: asset hash mismatch"
+    );
+    let (width, height) = dimensions(&bytes, &asset.mime_type)
+        .with_context(|| format!("{p}/file: invalid visual format"))?;
+    ensure!(
+        width == asset.width,
+        "{p}/width: declared width does not match file"
+    );
+    ensure!(
+        height == asset.height,
+        "{p}/height: declared height does not match file"
+    );
+    Ok(bytes)
+}
+
 pub async fn import_bundle(
     db: &DatabaseConnection,
     bundle: AssetBundle,
@@ -452,7 +494,6 @@ pub async fn import_bundle(
             let mut ids = BTreeSet::new();
             let mut descriptors = Vec::new();
             for (index, asset) in assets.iter().enumerate() {
-                let p = format!("/assets/{index}");
                 ensure!(
                     valid_id(&asset.asset_id)
                         && brioche_course_contract::valid_content_revision(asset.revision)
@@ -484,30 +525,7 @@ pub async fn import_bundle(
                         .all(|c| matches!(c, Component::Normal(_))),
                     "asset path must be relative, without traversal"
                 );
-                let path = source_root
-                    .join(relative)
-                    .canonicalize()
-                    .with_context(|| format!("{p}/file: visual file unavailable"))?;
-                ensure!(
-                    path.starts_with(&source_root),
-                    "{p}/file: asset escapes source directory"
-                );
-                let bytes =
-                    read_file(&path).with_context(|| format!("{p}/file: invalid visual file"))?;
-                ensure!(
-                    digest(&bytes) == asset.sha256,
-                    "{p}/sha256: asset hash mismatch"
-                );
-                let (width, height) = dimensions(&bytes, &asset.mime_type)
-                    .with_context(|| format!("{p}/file: invalid visual format"))?;
-                ensure!(
-                    width == asset.width,
-                    "{p}/width: declared width does not match file"
-                );
-                ensure!(
-                    height == asset.height,
-                    "{p}/height: declared height does not match file"
-                );
+                let bytes = inspect_source_file(&source_root, asset, index)?;
                 let ext = extension(&asset.mime_type)?;
                 store_file(&store, &bytes, &asset.sha256, ext)?;
                 descriptors.push((
