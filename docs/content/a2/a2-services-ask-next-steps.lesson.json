@@ -84,7 +84,7 @@
       {
         "id": "grammar-a2-sequence",
         "titleZh": "D’abord, ensuite, enfin：组织顺序",
-        "bodyZh": "d’abord 引出首先做的事，ensuite 引出下一步，enfin 表示最后。本课用这些连接词组织计划；它们本身不决定动词时态。",
+        "bodyZh": "d’abord 表示首先，ensuite 表示接下来，enfin 表示最后。这些连接词可组织计划、操作步骤或过去事件的叙述；它们本身不决定动词时态。例句用近期将来表达计划，讲述过去经历时则按情境使用过去时。",
         "examples": [
           {
             "fr": "D’abord, nous allons visiter le musée.",
@@ -95,7 +95,7 @@
       {
         "id": "grammar-a2-devoir-present",
         "titleZh": "devoir + 原形：说需要做的事",
-        "bodyZh": "devoir 的现在时随主语变化：je dois、tu dois、nous devons。后接动词原形，如 nous devons ranger。本课表达约定下需要做的事；不把它的所有语义都归为家务义务。",
+        "bodyZh": "devoir 的现在时随主语变化：je dois、tu dois、nous devons。后接动词原形，如 nous devons ranger。这些课程用它表达需要做的事，包括家务分工和办事步骤；devoir 还可表达推测等其他意思，不能把所有用法都解释为义务。",
         "examples": [
           {
             "fr": "Nous devons ranger la cuisine.",

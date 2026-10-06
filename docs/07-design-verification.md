@@ -811,3 +811,5 @@ A2 表达与协商进展（2026-10-06）：新增评价体验、说明偏好、�
 - social-introduce-friend的grammar-mon-ami不再模糊写“省音相关搭配”，依OQLF明确元音/哑音h开头阴性名词使用mon（mon amie），并增加与Mon ami对应的可朗读例句。word-aimer的食物场景限定错误套用到交友课，现购物清单/交友课两处改为同一通用说明，保持共享ID及既有判分不变；依据法兰西学院词典。
 - 两个课源实际作者check通过，13项curriculum通过；补可朗读例句后再运行对应check和13项课程测试、目标Prettier/diff全部通过。检查全部A1源仍24个draft，没有导入/发布/修改数据库；未改运行代码或重建Docker，现有应用栈继续保留。
 - 首次PowerShell字符串命令因弯撇号触发解析错误，没有执行任何修改；改用apply_patch完成文本编辑，该解析错误不计应用缺陷。固定ea4f99e的Check37470856262/job112293640020本轮两次读取均in_progress且处于组件浏览器步骤，未观察失败、不宣称完整CI成功。人工审校/素材录音、管理员邮箱、真实设备与生产门槛继续保留。
+
+A2语法辅助审阅（2026-10-06）：读取24课48条grammar说明/例句，修正三课共享顺序词说明对过去叙述/操作步骤的不适配，以及两课共享devoir说明的家务范围；共改四课，仍draft。四份作者check、带sources的完整48课release检查、13课程测试与JSON格式/diff通过；初次重复sources flag调用错误已修正。报告见content/a2/grammar-review.md。ea4f99e完整LinuxCI37470856262/job112293640020本轮已实际确认completed/success，不作为后续内容提交CI证明。当前Docker继续运行；管理员邮箱、完整人工审校/正式录音、真实设备及生产门槛仍待完成。

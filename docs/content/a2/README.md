@@ -2,6 +2,8 @@
 
 状态：2026-10-06，六个规划单元二十四课作者草稿，均 `editorial.status=draft`。未导入正式环境、未人工审校、无正式录音，未 staging 或激活正式目录。最新 [完整 A1–A2 联合草稿目录](catalog.full.release.json) 包含十二单元 48 课、144 道题；草稿覆盖规划不代表教学或发布验收完成。
 
+24 课的 48 条语法说明已做有限字段辅助检查，跨课顺序词与 devoir 说明的修订及边界见 [语法辅助审阅记录](grammar-review.md)。这不改变草稿状态或代替完整人工审校。
+
 完整包技术预览已在隔离 PostgreSQL/API/Web 验证：48 个固定版本与私有图片读取、144 题正确/合法错误判分、全部页面 320/390px 实际渲染、匿名权限与不产生个人学习记录均通过。原作者源文件未改为 reviewed，测试素材副本不代表正式素材授权；逐课人工审校、正式录音与真实设备验收仍待完成。具体范围见 [A1 技术预览记录](../a1/README.md#审校与来源记录) 与 [实现清单](../../09-implementation-tracker.md)。
 
 | 顺序 | 作者源文件 | 正文 | 交际目标 | 正文词数（空白分词） |
@@ -76,7 +78,7 @@ cargo run -p brioche-server -- check-release docs/content/a2/catalog.full.releas
 - 四单元联合目录：`cargo run -p brioche-server -- check-release docs/content/a2/catalog.four-units.release.json`。
 - 五单元联合目录：`cargo run -p brioche-server -- check-release docs/content/a2/catalog.five-units.release.json`。
 - 新接待图：`cargo run -p brioche-server -- asset-check docs/content/a2/assets/clinic-reception.svg image/svg+xml`。
-- 全包：`cargo test -p brioche-server --test curriculum`；十一项检查核对两级目录及十一个单元顺序、固定 revision/角色、A1/A2 共享知识一致、公开投影剥离私有字段，并使用正式 Grader 核对 132 道题的正确和合法错误答案；二十课 A2 正文检查 120–250 个空白分隔词和预期正文形式，A1/A2 两份素材清单核对真实哈希与尺寸。
+- 全包：`cargo test -p brioche-server --test curriculum`；当前十三项检查核对两级目录及十二个单元顺序、固定 revision/角色、A1/A2 共享知识一致、公开投影剥离私有字段，并使用正式 Grader 核对 144 道题的正确和合法错误答案；二十四课 A2 正文检查 120–250 个空白分隔词和预期正文形式，素材清单核对真实哈希与尺寸。
 
 作者文件含 `serverOnly.grading`，不能直接发送给公共 API 或作为静态资源。正式预览需要先登记素材，再导入课程，由 operator 查看固定版本；当前不宣称完成四课的浏览器预览或教学审校。人工法语、中文译文、难度、文化范围、练习有效性、插图适配与录音仍待审校。正式发布继续受 reviewed 元数据、注册快照、授权与实际文件校验约束。
 
