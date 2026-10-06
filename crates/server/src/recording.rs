@@ -163,6 +163,19 @@ pub async fn import_bundle(
     .await
     .map_err(anyhow::Error::msg)?
     .context("content state missing")?;
+    for (index, (spec, _, _, _)) in recordings.iter().enumerate() {
+        let existing = one(
+            &tx,
+            "SELECT revision FROM audio_assets WHERE asset_id=$1 AND revision=$2",
+            vec![spec.asset_id.clone().into(), (spec.revision as i32).into()],
+        )
+        .await
+        .map_err(anyhow::Error::msg)?;
+        ensure!(
+            existing.is_none(),
+            "/assets/{index}/revision: recording revision already registered"
+        );
+    }
     for (spec, descriptor, size, info) in recordings {
         exec(&tx, "INSERT INTO audio_assets(asset_id,revision,descriptor,provenance,sha256,extension,byte_size,duration_ms,sample_rate,channels) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)", vec![
             spec.asset_id.clone().into(), (spec.revision as i32).into(), serde_json::to_value(descriptor)?.into(),

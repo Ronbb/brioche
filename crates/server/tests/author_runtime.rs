@@ -30,6 +30,21 @@ fn write(file: &Path, value: &Value) -> String {
     std::fs::write(file, &text).unwrap();
     text
 }
+fn invoke_bundle(url: &str, root: &Path, command: &str, file: &Path, source: &Path) -> Output {
+    Command::new(env!("CARGO_BIN_EXE_brioche-server"))
+        .args([
+            command,
+            file.to_str().unwrap(),
+            source.to_str().unwrap(),
+            "protocol-test",
+        ])
+        .env("DATABASE_URL", url)
+        .env("CONTENT_MODE", "database")
+        .env("APP_ENV", "production")
+        .env("MEDIA_ROOT", root)
+        .output()
+        .unwrap()
+}
 fn located(output: Output, file: &Path, text: &str, pointer: &str, offset: usize, reason: &str) {
     let error = String::from_utf8_lossy(&output.stderr);
     let before = &text[..offset];
@@ -178,6 +193,108 @@ async fn import_and_stage_cli_locate_original_source_and_preserve_atomicity() {
         assert_eq!(count(&db, "audio_assets").await, 0);
         assert_eq!(count(&db, "audio_import_audit").await, 0);
     }
+    // Later duplicate members must not register an earlier, otherwise valid member.
+    let mut duplicate_visual = visual.clone();
+    let mut fresh_visual = visual["assets"][0].clone();
+    fresh_visual["assetId"] = json!("author-new-visual");
+    fresh_visual["revision"] = json!(7994);
+    duplicate_visual["assets"] = json!([fresh_visual, visual["assets"][0]]);
+    let text = write(&media_file, &duplicate_visual);
+    located(
+        invoke_bundle(
+            url.as_str(),
+            &root,
+            "assets-import",
+            &media_file,
+            &visual_source,
+        ),
+        &media_file,
+        &text,
+        "/assets/1/revision",
+        text.rfind("\"revision\": 1").unwrap() + "\"revision\": ".len(),
+        "asset revision already registered",
+    );
+    assert_eq!(count(&db, "media_assets").await, visual_count);
+    assert_eq!(count(&db, "asset_import_audit").await, audit_count);
+
+    let character_count = count(&db, "character_revisions").await;
+    let snapshot =
+        serde_json::to_value(brioche_server::development_fixture().unwrap().cast[0].clone())
+            .unwrap();
+    let mut fresh_character = snapshot.clone();
+    fresh_character["characterId"] = json!("author-new-character");
+    fresh_character["revision"] = json!(7995);
+    duplicate_visual["assets"] = json!([fresh_visual]);
+    duplicate_visual["characters"] = json!([
+        {"snapshot":fresh_character,"avatarRevision":1},
+        {"snapshot":snapshot,"avatarRevision":1}
+    ]);
+    let text = write(&media_file, &duplicate_visual);
+    located(
+        invoke_bundle(
+            url.as_str(),
+            &root,
+            "assets-import",
+            &media_file,
+            &visual_source,
+        ),
+        &media_file,
+        &text,
+        "/characters/1/snapshot/revision",
+        text.rfind("\"revision\": 1").unwrap() + "\"revision\": ".len(),
+        "character revision already registered",
+    );
+    assert_eq!(count(&db, "media_assets").await, visual_count);
+    assert_eq!(count(&db, "character_revisions").await, character_count);
+    assert_eq!(count(&db, "asset_import_audit").await, audit_count);
+
+    write(&media_file, &audio);
+    assert!(
+        invoke_bundle(url.as_str(), &root, "audio-import", &media_file, &root)
+            .status
+            .success()
+    );
+    let mut duplicate_audio = audio.clone();
+    let mut fresh_audio = audio["assets"][0].clone();
+    fresh_audio["assetId"] = json!("author-new-recording");
+    fresh_audio["revision"] = json!(7996);
+    duplicate_audio["assets"] = json!([fresh_audio, audio["assets"][0]]);
+    let text = write(&media_file, &duplicate_audio);
+    located(
+        invoke_bundle(url.as_str(), &root, "audio-import", &media_file, &root),
+        &media_file,
+        &text,
+        "/assets/1/revision",
+        text.rfind("\"revision\": 1").unwrap() + "\"revision\": ".len(),
+        "recording revision already registered",
+    );
+    assert_eq!(count(&db, "audio_assets").await, 1);
+    assert_eq!(count(&db, "audio_import_audit").await, 1);
+
+    let mut concurrent_audio = audio.clone();
+    concurrent_audio["assets"][0]["assetId"] = json!("author-concurrent-recording");
+    let text = write(&media_file, &concurrent_audio);
+    let outputs = std::thread::scope(|scope| {
+        let a =
+            scope.spawn(|| invoke_bundle(url.as_str(), &root, "audio-import", &media_file, &root));
+        let b =
+            scope.spawn(|| invoke_bundle(url.as_str(), &root, "audio-import", &media_file, &root));
+        [a.join().unwrap(), b.join().unwrap()]
+    });
+    assert_eq!(outputs.iter().filter(|o| o.status.success()).count(), 1);
+    for output in outputs.into_iter().filter(|o| !o.status.success()) {
+        located(
+            output,
+            &media_file,
+            &text,
+            "/assets/0/revision",
+            text.find("\"revision\": 1").unwrap() + "\"revision\": ".len(),
+            "recording revision already registered",
+        );
+    }
+    assert_eq!(count(&db, "audio_assets").await, 2);
+    assert_eq!(count(&db, "audio_import_audit").await, 2);
+
     let lesson_file = root.join("lesson.json");
     let release_file = root.join("release.json");
     let mut source = brioche_server::development_source().unwrap();

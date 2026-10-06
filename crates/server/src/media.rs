@@ -542,6 +542,37 @@ pub async fn import_bundle(
     .await
     .map_err(anyhow::Error::msg)?
     .context("content state missing")?;
+    // Official imports share this lock, so duplicate diagnostics remain stable under concurrency.
+    // Check every revision before registering any member of the batch.
+    for (index, spec) in bundle.assets.iter().enumerate() {
+        let existing = one(
+            &tx,
+            "SELECT revision FROM media_assets WHERE asset_id=$1 AND revision=$2",
+            vec![spec.asset_id.clone().into(), (spec.revision as i32).into()],
+        )
+        .await
+        .map_err(anyhow::Error::msg)?;
+        ensure!(
+            existing.is_none(),
+            "/assets/{index}/revision: asset revision already registered"
+        );
+    }
+    for (index, character) in bundle.characters.iter().enumerate() {
+        let existing = one(
+            &tx,
+            "SELECT revision FROM character_revisions WHERE character_id=$1 AND revision=$2",
+            vec![
+                character.snapshot.character_id.clone().into(),
+                (character.snapshot.revision as i32).into(),
+            ],
+        )
+        .await
+        .map_err(anyhow::Error::msg)?;
+        ensure!(
+            existing.is_none(),
+            "/characters/{index}/snapshot/revision: character revision already registered"
+        );
+    }
     for (spec, (descriptor, ext, size)) in bundle.assets.iter().zip(&descriptors) {
         exec(&tx,"INSERT INTO media_assets(asset_id,revision,descriptor,provenance,sha256,extension,byte_size) VALUES($1,$2,$3,$4,$5,$6,$7)",vec![spec.asset_id.clone().into(),(spec.revision as i32).into(),serde_json::to_value(descriptor)?.into(),serde_json::to_value(spec)?.into(),spec.sha256.clone().into(),ext.clone().into(),(*size as i64).into()]).await.map_err(anyhow::Error::msg)?;
     }

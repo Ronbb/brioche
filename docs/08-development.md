@@ -31,7 +31,7 @@ cargo run -p brioche-server -- asset-check docs/content/a1/assets/first-conversa
 
 `asset-check <file> <MIME>` 支持 image/svg+xml、image/png、image/jpeg、image/webp，输出 JSON（sha256、byteLength、mimeType、width、height）。复用正式素材导入的格式解码与安全 SVG 白名单、32 MiB 文件和尺寸/内存限制，拒绝伪装 MIME；文件检查在 blocking worker 完成。它不登记文件或证明授权。首版新场景源文件与 planned 清单见 [课程素材记录](content/a1/README.md)。
 
-`assets-import` 和 `audio-import` 保留原 JSON 文件位置索引，在连接数据库前检查包类型与导入元数据：ID/revision、状态/授权/署名、MIME、哈希格式、相对路径、尺寸或时长；视觉包另检查角色快照。错误显示原文件行/列和字段 JSON pointer。正式导入复用同一元数据检查；实际文件不存在、越界、格式不符、哈希或尺寸/时长不匹配也定位该清单项，角色缺头像 revision 或非正方形头像定位角色引用。仍须连接数据库检查已登记版本；存储/数据库基础设施错误可能定位根容器，不能把根错误理解为事务一定未提交，应核对登记状态后重试。
+`assets-import` 和 `audio-import` 保留原 JSON 文件位置索引，在连接数据库前检查包类型与导入元数据：ID/revision、状态/授权/署名、MIME、哈希格式、相对路径、尺寸或时长；视觉包另检查角色快照。错误显示原文件行/列和字段 JSON pointer。正式导入复用同一元数据检查；实际文件不存在、越界、格式不符、哈希或尺寸/时长不匹配也定位该清单项，角色缺头像 revision 或非正方形头像定位角色引用。已登记的图片/录音版本定位 `/assets/<index>/revision`，已登记角色定位 `/characters/<index>/snapshot/revision`；整批版本检查在同一登记事务和现有内容锁内完成，官方导入并发时仍保留准确错误位置，后项重复不会登记前项或新增审计。文件按哈希写入发生在事务之前，失败可能留下未登记对象，媒体接口不会公开它们。存储/数据库基础设施错误可能定位根容器，不能把根错误理解为事务一定未提交，应核对登记状态后重试。
 
 录音文件可先运行数据库无关的检查：
 
