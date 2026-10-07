@@ -421,6 +421,9 @@ mod tests {
             axum::serve(listener, app).await.unwrap();
         });
         // Only this private fixture accepts HTTP. Api::new still rejects HTTP production configuration.
+        // reqwest builds its TLS backend even for loopback HTTP; do not depend on
+        // another concurrently running test having called the production constructor.
+        let _ = rustls::crypto::ring::default_provider().install_default();
         let api = Api {
             client: reqwest::Client::builder()
                 .no_proxy()

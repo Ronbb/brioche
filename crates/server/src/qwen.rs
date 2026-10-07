@@ -284,6 +284,7 @@ mod tests {
             axum::serve(listener, app).await.unwrap();
         });
         // The production constructor rejects HTTP. This private test exercises the wire protocol without real credentials.
+        let _ = rustls::crypto::ring::default_provider().install_default();
         let api = Api {
             client: reqwest::Client::builder()
                 .no_proxy()
