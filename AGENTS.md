@@ -24,6 +24,7 @@
 
 ## 实现原则
 
+- 共享课程/学习/后台 Rust 契约真源已迁入 Chef，通过 `framework` 子模块固定提交引用；先 `git submodule update --init --recursive`，不在生产 `--remote`。原 `crates/course-contract` 已移除，产品中生成的 TS/Schema 由 `pnpm contracts` 从固定框架生成，禁止改生成物代替改框架源。框架变更在 Chef 仓库提交/验证/推送后再更新产品 gitlink；暂保留 v1 法语字段与内部包名，不据此声称粤语适配或完整框架已经完成。
 - 领域规则集中在服务端；课程解释器不执行作者代码，不接受任意 HTML/MDX/JS。
 - 课程词汇搜索使用 `content::catalog_matching`，同一数据库快照读取当前目录与公开词汇，保留教学顺序/撤回过滤，索引不进入公共契约。搜索可统一重音、全角、大小写与弯直撇号；这不是判分归一化规则，不能据此去除填空答案重音。
 - Rust/TS 共享生成的公共契约；Rust Serde 类型是实现期真源，Schema/TS/OpenAPI 生成物不得手改。Web 不导入答案、数据库代码和 secrets。

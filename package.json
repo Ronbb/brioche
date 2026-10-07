@@ -13,7 +13,7 @@
     "test:browser:ssr": "node --test apps/web/browser-ssr-tests/*.test.mjs",
     "test:ops": "node --test scripts/tests/*.test.mjs",
     "health:check": "node scripts/health-check.mjs",
-    "contracts": "cargo run -p brioche-course-contract --example export && cargo run -p brioche-server --example export_author_schema"
+    "contracts": "cargo run --manifest-path framework/Cargo.toml --locked -p brioche-course-contract --example export -- --output packages/contracts/src/generated && cargo run -p brioche-server --locked --example export_author_schema"
   },
   "devDependencies": {
     "agent-browser": "0.27.0",

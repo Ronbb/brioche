@@ -66,4 +66,6 @@ Hargow 目标语言采用粤语 `yue-Hant-HK`，面向中文学习者；繁体�
 - [Hargow](https://github.com/Ronbb/hargow)：品牌与产品配置起点，无运行应用或已配置域名。
 - [粤语课程](https://github.com/Ronbb/hargow-courses)：空课程目录与架构说明，无正式课程或语音。
 
-生产未切换，账号/数据库未迁移；四仓库初始化和课源抽取不代表全部拆分完成。
+共享契约首步抽取：Chef 已拥有 `crates/course-contract` 及生成的 TS/Schema，暂保留原内部包名与 v1 法语字段。Brioche 使用固定 Chef 提交的 `framework` 子模块，Rust path dependency 指向其中的 crate；原本地 Rust 契约副本移除，生成快照由 `pnpm contracts` 从固定框架生成。首次检出必须初始化子模块；CI checkout recursive，API Docker 构建显式复制框架源码，不依赖开发机相邻目录。
+
+账号/数据库未迁移；契约抽取与四仓库初始化不代表完整框架、身份服务或双语言能力已完成。

@@ -1,5 +1,6 @@
 [workspace]
-members = ["crates/course-contract", "crates/server", "crates/migration"]
+members = ["crates/server", "crates/migration"]
+exclude = ["framework"]
 resolver = "3"
 
 [workspace.package]

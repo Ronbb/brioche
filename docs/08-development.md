@@ -59,6 +59,8 @@
 
 ## 本机开发
 
+共享契约已迁入 [Chef](https://github.com/Ronbb/chef)，通过 `framework` Git submodule 固定提交引用。首次检出或切换版本后先执行 `git submodule update --init --recursive`；不要在生产使用 `--remote` 跟随框架主分支。Rust 服务直接依赖 `framework/crates/course-contract`，本产品的 `packages/contracts/src/generated` 是由该固定版本生成的构建快照，使用 `pnpm contracts` 更新，不再在 Brioche 修改契约 Rust 源。Chef 暂保留 v1 法语字段与包名；语言中立契约和独立身份服务还未完成。
+
 首页仅在课程的 reviewItemIds 对应有效词汇时显示可展开表达卡片；没有表达时仍保留账号复习与续学入口。卡片切换取消上一段高度动画，并从当前视觉高度开始；离页清理动画和待执行帧，减少动态效果设置下直接展开。课程搜索保留原输入节点和键盘焦点，等待中重复提交被拦截；结果返回时保留等待期间新输入的草稿，查看全部课程则同步清空输入。
 
 作者课程 `check <lesson.json>` 与目录 `check-release <manifest.json>` 保留原 JSON 的位置索引，类型错误与带 JSON pointer 的语义错误输出 `文件:行:列: /字段/路径: 原因`。行/列从 1 开始，列按原文件 Unicode 字符计数，CRLF、转义键与数组索引均保留；定位在投影之前建立，不使用重序列化课程的行号。没有对应字段时定位最近存在的父值；私有规则支持缺失/多余规则、kind、反馈、选项引用、accepted 项与排序 token 项的路径，release 支持各层 ID/名称/版本/重复引用与数量上限路径。正文流程校验定位角色快照字段、句子/段落/语块 ID、空句子的 segments、解释目标中出错的 blockId/entryId/segmentId、题目字段和步骤字段；重复数组引用定位第二次出现的项，不可达教学块定位其 id。题目字段位于 block 根部，路径不加入不存在的 exercise 层。严格 JSON/重复字段/2 MiB 限制保持；离线课程位置索引最多 100000 个值。课程导入和目录 staging 已接入原文件索引；素材/录音导入包及媒体发布内部诊断仍需细化，不表示作者工具全部完成。

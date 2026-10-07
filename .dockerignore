@@ -1,4 +1,5 @@
 .git
+**/.git
 .local
 AGENTS.local.md
 .env
@@ -6,5 +7,6 @@ AGENTS.local.md
 node_modules
 **/node_modules
 target
+**/target
 **/build
 **/.react-router
