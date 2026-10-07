@@ -4132,6 +4132,45 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
             .0,
         403
     );
+    let local_import = brioche_server::speech_alignments::import_local(
+        &backend,
+        actor,
+        root.clone(),
+        serde_json::from_value(import_request.clone()).unwrap(),
+    )
+    .await
+    .unwrap();
+    assert!(
+        local_import
+            .clips
+            .iter()
+            .all(|clip| clip.accepted.is_none())
+    );
+    assert_eq!(
+        brioche_server::speech_alignments::import_local(
+            &backend,
+            actor,
+            root.clone(),
+            serde_json::from_value(import_request.clone()).unwrap(),
+        )
+        .await
+        .unwrap()
+        .id,
+        local_import.id
+    );
+    assert!(
+        brioche_server::speech_alignments::import_local(
+            &backend,
+            -1,
+            root.clone(),
+            serde_json::from_value(import_request.clone()).unwrap(),
+        )
+        .await
+        .is_err()
+    );
+    let mut import_request = import_request;
+    import_request["reason"] =
+        json!("[local-cli] Synthetic alignment import, not a production hearing");
     let imported_alignment = operator
         .send("POST", alignment_path, Some(import_request.clone()), true)
         .await;

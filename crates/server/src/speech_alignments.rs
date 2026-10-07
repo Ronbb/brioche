@@ -390,6 +390,36 @@ async fn import(
     Json(request): Json<AdminAlignmentImport>,
 ) -> Result<Json<AdminAlignment>, AppError> {
     require_operator(&auth)?;
+    Ok(Json(
+        import_for_actor(&b, owner(&auth)?, root, permits, request).await?,
+    ))
+}
+
+/// Import real predictions without declaring human timing acceptance.
+pub async fn import_local(
+    b: &Backend,
+    actor: i64,
+    root: PathBuf,
+    mut request: AdminAlignmentImport,
+) -> Result<AdminAlignment, AppError> {
+    request.reason = format!("[local-cli] {}", request.reason);
+    import_for_actor(
+        b,
+        actor,
+        root,
+        Arc::new(tokio::sync::Semaphore::new(2)),
+        request,
+    )
+    .await
+}
+
+async fn import_for_actor(
+    b: &Backend,
+    actor: i64,
+    root: PathBuf,
+    permits: Arc<tokio::sync::Semaphore>,
+    request: AdminAlignmentImport,
+) -> Result<AdminAlignment, AppError> {
     crate::admin::reason(&request.reason)?;
     if !hex(&request.id, 32) || !hex(&request.plan_id, 32) || !hex(&request.expected_plan_hash, 64)
     {
@@ -405,7 +435,6 @@ async fn import(
     let report_hash =
         crate::media::digest(&serde_json::to_vec(&value).map_err(|_| AppError::InvalidInput)?);
     let request_json = serde_json::to_value(&request).map_err(|_| AppError::InvalidInput)?;
-    let actor = owner(&auth)?;
     let tx = b.db.begin().await.map_err(|_| AppError::Unavailable)?;
     lock_operator(&tx, actor).await?;
     exec(
@@ -426,7 +455,7 @@ async fn import(
         {
             return Err(AppError::Conflict);
         }
-        return Ok(Json(view(&tx, &load(&tx, &request.id).await?).await?));
+        return view(&tx, &load(&tx, &request.id).await?).await;
     }
     let _permit = permits
         .try_acquire_owned()
@@ -446,7 +475,7 @@ async fn import(
     exec(&tx,"INSERT INTO speech_alignments(id,plan_id,request,report,report_hash,actor_id,reason)VALUES($1,$2,$3,$4,$5,$6,$7)",vec![request.id.clone().into(),request.plan_id.into(),request_json.into(),value.into(),report_hash.into(),actor.into(),request.reason.into()]).await?;
     let view = view(&tx, &load(&tx, &request.id).await?).await?;
     tx.commit().await.map_err(|_| AppError::Unavailable)?;
-    Ok(Json(view))
+    Ok(view)
 }
 async fn read(
     auth: AuthSession,

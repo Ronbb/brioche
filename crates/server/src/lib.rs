@@ -24,7 +24,7 @@ pub mod qwen;
 pub mod recording;
 pub mod reviews;
 pub mod session_store;
-mod speech_alignments;
+pub mod speech_alignments;
 pub mod speech_clips;
 pub mod speech_export;
 mod speech_media;

@@ -100,3 +100,5 @@
 - 本机speech-plan-preview/save与speech-clip-generate复用网页固定版本、operator、幂等及收费事务，顺序生成，不自动接受审听。备份必须包含全部ready课程片段的原始/修复WAV，包含已退回或被后续版本替代的记录；恢复除核对哈希，还须核对恢复数据库引用的媒体完整性。仅manifest校验通过不证明没有漏项，见角色库说明。
 
 - 本机voice-audition-review/speech-clip-review只代录明确的人类反馈，复用网页审核事务与当前operator，理由标注local-cli；候选重复决定冲突，片段仅精确重试。speech-plan-export复用全部最新已接受片段/实际媒体/交付前后权限和来源核对，私有输出不可覆盖，失败文件不能当完成包。试听音质批准不能自动timingsChecked或最终整课接受。
+
+- speech-alignment-import共用网页导入与实际媒体/来源包哈希核对，只保留预测和异常，不能写人工时间审核。相同actor/固定ID/完整请求重试返回原回执，理由标注local-cli，不生成账号会话。批量课程生成保持固定尝试，顺序调用，unknown停止；不能在收费任务仍运行时重建生产server打断它。

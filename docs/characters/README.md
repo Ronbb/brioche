@@ -251,3 +251,6 @@ API options/list/read 只读，POST preview 仅编译，POST save 追加不可�
 2026-10-07 用户在三段试听后明确回复「听到了，OK」，已代录 Léa 候选及咖啡课程八句对白、九个知识片段的音质接受。生产新增 Léa 固定声音 v1 和17条片段接受记录，审核理由明确仅音质，不包括逐词或整课最终审核；没有再次调用TTS，没有登记或发布正式录音。此前候选「等待反馈」段落为当时记录，现以本段为当前状态。
 
 生产API已更新，本机入口的4项实际PostgreSQL管理员测试、53项server单元测试、fmt/Clippy通过，两HTTPS入口healthy。审核前后数据库与41媒体备份均verify。实际已接受咖啡片段导出并经本机校验、固定离线模型推理：17段中15段预测范围通过，2段有重叠（Avec du lait ? 与 Un thé, sans lait.），原预测保留，全部reviewRequired。这份报告尚未导入后台或人工校时，正式课程录音仍0，六课已发布版本保持不变。
+
+
+本机 `speech-alignment-import <id> <operator-email> <request.json>` 复用网页导入事务；请求ID必须与参数一致，理由标注 `[local-cli]`。读取实际已接受片段与媒体、重新打包比对来源SHA-256，并保留全部原预测/异常。只导入待人工核对记录，不写任何片段时间审核、不勾选timingsChecked、不登记或发布录音。同actor/完整请求精确重试返回原回执，不创建登录会话。隔离PostgreSQL验证本机导入、精确重试、无权限拒绝、网页同回执及全部clip.accepted=null。

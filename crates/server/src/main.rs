@@ -219,7 +219,10 @@ async fn main() -> Result<()> {
         )
     };
     match command.as_str() {
-        "voice-audition-review" | "speech-clip-review" | "speech-plan-export" => {
+        "voice-audition-review"
+        | "speech-clip-review"
+        | "speech-plan-export"
+        | "speech-alignment-import" => {
             let args: Vec<String> = std::env::args().skip(2).collect();
             if args.len() != 3 {
                 bail!(
@@ -267,6 +270,28 @@ async fn main() -> Result<()> {
                 return Ok(());
             }
             let document = brioche_server::author_json::Document::load(&args[2])?;
+            if command == "speech-alignment-import" {
+                let request: brioche_course_contract::AdminAlignmentImport =
+                    brioche_server::author_json::from_value(document.value, "")?;
+                if request.id != args[0] {
+                    bail!("alignment id must match the fixed request");
+                }
+                let result = brioche_server::speech_alignments::import_local(
+                    &backend,
+                    actor,
+                    brioche_server::media::media_root(),
+                    request,
+                )
+                .await
+                .map_err(|_| {
+                    anyhow::anyhow!("alignment import not confirmed; inspect the fixed request")
+                })?;
+                println!(
+                    "{}",
+                    serde_json::json!({"id":result.id,"planId":result.plan_id,"reviewRequired":true,"published":false})
+                );
+                return Ok(());
+            }
             let accepted = if command == "voice-audition-review" {
                 brioche_server::voice_auditions::review_local(
                     &backend,
