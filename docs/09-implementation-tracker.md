@@ -759,3 +759,11 @@ Chef18bbdbeea99ac5c38b2c1fb9398fcb3128eb399e已实际normal push，共享Rust Ac
 14项专用真实PostgreSQL与HTTP回归完整通过（68792终态0含Clippy），新增B/H同账号昵称跨入口同步、两产品并发同expectedAccountVersion只有200/409、原产品设置version1不推进、身份流程prefs行数0、空白/超长/控制字符拒绝，以及settings/userId/role注入422。常规Rust工作区49574终态0（20contract/62lib+2专用PGignored/25CLI/13curriculum/2speechplan）/fmt/check均通过。Rust exporter94451终态0，只新增3份TS，无现有v1载荷变化；pnpm严格TS7 typecheck32660终态0。专用PG容器chef-account-profile-tests-20261008标签核对后stop/remove90e9f6终态0，无生产数据/env/provider调用/镜像部署/产品pin/域名/端口/dev变更。
 
 当前共享Web仍是个人资料+学习日常组合编辑，未切到新账号API；新登录AccountAuthResult也需组合读取产品profile，前端交互及对应真实浏览器回归是后续工作，本次不宣称完整账号UI或双服务发布完成。产品后台事务权限与账户管理、完整schema/最小权限、其余产品事实/目录/媒体、语言中立/粤语Hargow、真实设备与异盘ops仍未完成。远端Chef最新CI37673375168和前成员37671868670/消费者37670082800实际读取仍in_progress，不能称其全绿；全部本机句柄终态，goal保持active。
+
+## 共享账号编辑与产品设置拆分（2026-10-08）
+
+Chef 093b70399cf3ba7fa7106f3b2a17b35b53b3e23f 已提交推送共享个人页的独立编辑：摘要入口只修改账号昵称，学习目标/时区入口只修改产品偏好。账号先 GET /account 再以 expectedAccountVersion 保存；学习保存不含 displayName，并继续使用产品设置版本。账号响应不覆盖产品角色/版本，迟到的设置响应保留新昵称。冲突/未确认写入只读回并保留草稿，要求显式重试；账号切换、会话丢失或卸载取消旧请求和迟到的 CSRF。
+
+严格 TypeScript 检查、Web 单元测试、29 项 SSR 及最终串行 10 项个人页浏览器回归通过，包含两资源并行保存、版本/角色不混用、迟到响应、旧 CSRF 取消、过期登录、冲突恢复及离页/退出保护。新增测试首跑曾失败，修正测试的隐藏输入定位并停止在受测源码热更新时运行回归后，最终整组真实退出码 0。产品没有新增页面或账号实现副本，没有更改框架固定提交、生产数据库/镜像/入口。独立登录响应组合、后台身份/产品权限事务、完整产品事实与语言契约、Hargow 和生产双服务装配仍待完成，完整目标保持进行中。
+
+前后端账号接口提交 18bbdbe 的 CI 37673375168、产品成员提交 46e5194 的 CI 37671868670 均已实际读取 completed/success；最新 UI 提交的远端 CI 尚未确认，不能推广旧 CI 结果。
