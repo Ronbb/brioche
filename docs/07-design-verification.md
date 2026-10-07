@@ -868,3 +868,13 @@ Brioche `1cceb05` 实际推送：移除原迁移/业务/测试副本，Rust仅�
 
 DockerAPI实际release构建完成，HTTPS+TTS三覆盖up server --wait实际healthy/0restart。当前实际Image `sha256:aad948cf294f73d1ff53cdec70b140777ca13bc2311642785e907fbe8a3b986c`；Web保持旧镜像。release-status仍48课正式录音目录/generation10，五service/四HTTPhealth健康，D盘空闲420444209152bytes。两域目录48、courses/ready200、匿名admin401/no-store通过。没有数据库schema/内容/账号迁移、DNS更改或恢复30075；独立身份与双产品隔离及Web抽取继续进行。Brioche新CI37654716488当次in_progress，前3bfcd84及4c657c9真实green，不将旧CI结论推广新提交。
 两HTTPS全部48固定revision公开课源进一步实际读取200、id/revision与目录一致、无serverOnly、48/48正式audio字段存在，证据.local/private/chef-backend-20261008/all-courses-verified.json。本次只核对课源/录音描述，没有重新下载407音频或声明人工听感。
+
+## Chef 共享 Web 抽取实际验证（2026-10-08）
+
+Chef 真源已推送至 `1f285538b83a89f7e5bd41e64b2704a385abaf2e`，Brioche 实际产品提交 `cb94ea32bf524305ce8c5e54623560ed605c8526` 固定引用它。通用路由、学习/复习、播放器、身份界面、管理员界面及通用 Web 回归已迁入 Chef；产品保留品牌配置、主题、图标、入口和部署装配。本次产品253文件变更、31320行删除。原148个契约文件与固定框架提交逐字节一致后删除副本；依赖沿用原锁文件外部版本，没有技术栈升级。
+
+最终使用 React Router 外部 appDirectory 与 TypeScript rootDirs，Vite 仅配置产品别名与 React 去重；未保留试验中的 preserveSymlinks。初次外部类型生成/fixture目录深度配置失败已修复，独立 Chef fixture 和全新远端递归产品 checkout 的 frozen install、TS7、SSR build 均实际终态成功，未依赖邻接本机仓库。Chef 与 Brioche 均最终通过28单元及29 SSR测试。Brioche实际5项SSR浏览器回归通过，覆盖后台/上传/手机外壳/中等宽度阅读；最终12项精选交互浏览器回归通过。首次12项中部分录音错误toast因慢速并发操作消失导致1失败；单项重跑通过，改为观察实际DOM toast消息后最终12项全部通过，未放宽媒体/发音断言。Chef独立fixture修复图标路径后实际1项SSR浏览器外壳测试通过。不是完整浏览器或真实iPhone验收。
+
+最终 Docker Web image 为 `sha256:364b5cd844385a5379c53fb246b65ae02ca9c2eb4be2033dcdd56db78d163148`，HTTPS+TTS三覆盖 up --wait 已实际 healthy/0restart。API保持 `sha256:aad948cf294f73d1ff53cdec70b140777ca13bc2311642785e907fbe8a3b986c`；五服务/四HTTP healthy，release仍48课正式录音/generation10。两个既有HTTPS入口首页、目录、品牌SVG、CSS均200，匿名admin401/private no-store，目录各48课。实际390×844匿名Chromium首页截图已查看，品牌与主卡片无可见溢出。没有内容/媒体/账号/数据库迁移、付费生成、DNS或不安全端口变更。证据仅在本机私有目录 `.local/private/chef-web-20261008`。
+
+远端 Chef CI37658166111 与 Brioche CI37658317014 在本次收尾读取时仍in_progress，不能声称这两次完整CI已通过。独立身份服务、按产品隔离数据库/授权/草稿、语言中立契约及粤语课源/Hargow实际入口尚未完成；课程与运维源码继续迁出产品，原设备/异盘恢复验收仍待完成。

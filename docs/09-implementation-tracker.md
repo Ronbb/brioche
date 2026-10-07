@@ -703,3 +703,7 @@ API新镜像sha256:267525e158bcc78a678ea0932ec1259a22e854601b7744c86a6bf8f878b08
 ## 共享后端迁入 Chef（2026-10-08）
 
 Chef已拥有学习/账号/后台/配音API、CLI、显式迁移和完整后端回归；Brioche仅薄启动/Schema装配，删除约3万行实现。已固定Chef900375c与课程7a84c18，实际工作区/Clippy/11隔离PG/生成diff/TS7/28Web回归与生产Docker启动通过，48课程generation10保持，验证见docs07。通用Web/播放器/管理员界面仍在Brioche；独立身份服务、产品数据库隔离、语言中立适配及Hargow真实课程/入口未完成，继续推进，不能称整体拆分或完整目标达成。
+
+## 共享 Web 与产品减重（2026-10-08）
+
+实际 Chef `1f28553` 拥有通用 Web、播放器、后台及通用测试，并有可独立构建/测试的 synthetic fixture；Brioche `cb94ea3` 使用外部共享 appDirectory 与独立品牌配置，移除原通用 Web/测试/契约副本，本次删除31320行。全新递归远端checkout、严格TS7、SSR build、28单元/29SSR、5 SSR浏览器/12精选交互回归通过，Web已在生产三覆盖Compose启动，48课程/generation10不变。具体失败修复与真实镜像证据见docs07。两个最新远端CI收尾仍in_progress。下一阶段继续课源/通用运维迁出、独立身份服务、产品隔离及粤语/Hargow实际入口；不能以抽取完Web宣称多产品整体迁移已完成。
