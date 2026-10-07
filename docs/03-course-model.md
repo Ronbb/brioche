@@ -155,7 +155,7 @@ v1 只做线性流程。用户可以回到已访问步骤、预览目录和退�
 
 正常版采用媒体 manifest 的审校音频与可选时间标注，未配置时不伪造同步；浏览器 TTS 为概念稿演示，其设备声音可用性和 boundary 事件不能当作统一跨设备保证。
 
-### 已接入的录音契约（尚未接通播放）
+### 固定录音契约与播放
 
 公共课程可选 `audio` 与 `audioTracks`，为空时不序列化，保留原有不可变课程文档形状。AudioAsset 包含固定 ID/revision、SHA-256、MP3/WAV MIME、durationMs、creditZh 和同源内容哈希 URL；当前限定单文件最长 30 分钟，登记与发布时均以实际解码核对时长。
 
@@ -163,5 +163,7 @@ AudioTrack 将一份录音绑定到 dialogue/article block；cues 使用 entryId
 
 Rust 校验音频/正文引用、重复目标、时间区间、父子范围和单词边界，Schema/TS 从 DTO 生成。录音登记使用 `audio-import`：原始来源、授权、创作者和确认状态保存在私有不可变记录中；`audioRefs` 固定素材 ID/revision，由导入工具填充公共 `audio` 描述。`audio-check` 与发布校验使用 [Symphonia 0.6.1](https://docs.rs/symphonia/0.6.1/symphonia/) 完整解码，按实际样本帧核对时长；发布还比较已登记描述与磁盘哈希，拒绝伪造/缺失/损坏录音。公开 `/api/audio` 仅提供已发布且未撤回课程引用的素材，管理员预览使用课程范围内的私有 URL，两者支持有界单段 Range 请求。
 
-前端现优先选用正文的固定录音：头像选择整句 cue；点词将 Intl.Segmenter 的 UTF-16 偏移转换为 Unicode scalar 后精确匹配 wordRange。无单词 cue 时仅合成该词，不扩大为整句。全文将同源录音的所有整句区间合成一次连续播放，保留真实停顿，按媒体 currentTime 更新进度/句子/可选单词高亮；缺少单词时间标注不伪造高亮。播放标识包含课程/revision/block/entry/segment，避免不同正文复用相同 segment ID 时串联。录音调速保持 currentTime，暂停/恢复保持位置。单个 Audio 元素复用，监听/播放 Promise/帧回调均受 generation 约束；正文卸载、路由/预览版本切换与身份改变会取消播放。文件失败时有法语设备声音则转 TTS，否则 toast 并停止；自动播放权限拒绝提示再次点击。HTMLMediaElement 时间与定时边界用于片段控制，浏览器量化/调度不提供样本级剪辑保证。参考 [currentTime](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/currentTime)、[WebKit 用户手势策略](https://webkit.org/blog/6784/new-video-policies-for-ios/)。完整私有预览前端、真实 iPhone 与有声音设备上的回退继续验收。
+词汇与语法例句可选 `recording: { asset, startMs, endMs }`。asset 包含完整固定录音描述，必须逐字段与课程 `audio` 中同 ID 的登记描述一致，且区间位于实际时长内；独立知识录音也计入有效素材引用。收藏与复习卡复制词汇完整快照，因此保留当时的录音版本、哈希及区间，不从最新课程补取声音。旧快照没有 recording 时继续显示缺录音提示，不自动变更。管理员预览同时将这些内嵌描述改为当前课程固定 revision 的私有地址；源文档和公开投影不变。
+
+前端现优先选用正文的固定录音：头像选择整句 cue；点词将 Intl.Segmenter 的 UTF-16 偏移转换为 Unicode scalar 后精确匹配 wordRange。无单词 cue 时显示缺录音 toast，不调用浏览器发音或扩大为整句。全文将同源录音的所有整句区间合成一次连续播放，保留真实停顿，按媒体 currentTime 更新进度/句子/可选单词高亮；缺少单词时间标注不伪造高亮。播放标识包含课程/revision/block/entry/segment，避免不同正文复用相同 segment ID 时串联。录音调速保持 currentTime，暂停/恢复保持位置。单个 Audio 元素复用，监听/播放 Promise/帧回调均受 generation 约束；正文卸载、路由/预览版本切换与身份改变会取消播放。文件失败时显示 toast 并停止，只有明确点击才重试；自动播放权限拒绝提示再次点击。HTMLMediaElement 时间与定时边界用于片段控制，浏览器量化/调度不提供样本级剪辑保证。参考 [currentTime](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/currentTime)、[WebKit 用户手势策略](https://webkit.org/blog/6784/new-video-policies-for-ios/)。私有预览已接入；真实 iPhone、真实法语录音与辅助技术仍待验收。
 

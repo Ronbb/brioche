@@ -5,6 +5,7 @@ import type { ReviewRating } from "@brioche/contracts/ReviewRating";
 import type { ReviewAttemptRequest } from "@brioche/contracts/ReviewAttemptRequest";
 import type { ReviewAttemptResult } from "@brioche/contracts/ReviewAttemptResult";
 import { getPrivate } from "../lib/api.server";
+import { knowledgeUnit } from "../lib/recording-playback";
 import {
   privateRequest,
   ApiRequestError,
@@ -283,15 +284,11 @@ export default function Reviews({ loaderData }: Route.ComponentProps) {
     setRevealed(!revealed);
     if (!revealed && term)
       audio.play([
-        {
-          id: "review-" + term.id,
-          text:
-            (term.vocabulary.gender === "feminine"
-              ? "une "
-              : term.vocabulary.gender === "masculine"
-                ? "un "
-                : "") + term.vocabulary.lemma,
-        },
+        knowledgeUnit(
+          "review-" + term.id,
+          term.vocabulary.lemma,
+          term.vocabulary.recording,
+        ),
       ]);
     else audio.stop();
     requestAnimationFrame(() => {

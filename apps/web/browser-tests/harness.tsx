@@ -627,6 +627,29 @@ const reviewQueue: ReviewQueue = {
   timeZone: "Asia/Shanghai",
 };
 qa.reviewFixture = reviewQueue;
+if (new URL(location.href).searchParams.has("knowledge-recording")) {
+  const recording = { asset: lesson.audio![0], startMs: 1200, endMs: 1800 };
+  reviewQueue.items[0].vocabulary.recording = recording;
+  lesson.knowledge.vocabulary = [reviewQueue.items[0].vocabulary];
+  lesson.knowledge.grammar = [
+    {
+      id: "qa-grammar",
+      titleZh: "日常问候",
+      bodyZh: "自动化录音协议样例",
+      examples: [{ fr: "Bonjour !", zh: "你好！", recording }],
+    },
+  ];
+  lesson.blocks.push(
+    { type: "vocabulary", id: "qa-vocabulary-block", entryIds: ["qa-word"] },
+    { type: "grammar", id: "qa-grammar-block", entryIds: ["qa-grammar"] },
+  );
+  lesson.steps.push({
+    id: "qa-explore",
+    kind: "explore",
+    titleZh: "表达",
+    blockIds: ["qa-vocabulary-block", "qa-grammar-block"],
+  });
+}
 if (stress) reviewQueue.items[0].vocabulary.lemma = "anticonstitutionnellement";
 const reviewUser: UserProfile = {
   id: "qa-account",

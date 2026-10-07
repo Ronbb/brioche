@@ -75,8 +75,11 @@ dto!(Title {
     fr: String,
     zh: String
 });
-dto!(Vocabulary { id: String, lemma: String, part_of_speech: String, gender: Option<String>, meaning_zh: String, note_zh: String });
-dto!(Grammar { id: String, title_zh: String, body_zh: String, examples: Vec<Title> });
+dto!(Vocabulary { id: String, lemma: String, part_of_speech: String, gender: Option<String>, meaning_zh: String, note_zh: String,
+    #[serde(default, skip_serializing_if="Option::is_none")] recording: Option<KnowledgeRecording> });
+dto!(GrammarExample { fr: String, zh: String,
+    #[serde(default, skip_serializing_if="Option::is_none")] recording: Option<KnowledgeRecording> });
+dto!(Grammar { id: String, title_zh: String, body_zh: String, examples: Vec<GrammarExample> });
 dto!(Knowledge { vocabulary: Vec<Vocabulary>, grammar: Vec<Grammar> });
 dto!(Character {
     character_id: String,
@@ -104,6 +107,13 @@ dto!(AudioAsset {
     duration_ms: u32,
     credit_zh: String,
     url: String
+});
+// Inline fixed descriptors survive vocabulary snapshots in saved items and review cards.
+// They must exactly match this lesson's registered audio registry.
+dto!(KnowledgeRecording {
+    asset: AudioAsset,
+    start_ms: u32,
+    end_ms: u32
 });
 // Unicode scalar offsets within the referenced segment, never UTF-16 offsets.
 dto!(AudioWordRange {

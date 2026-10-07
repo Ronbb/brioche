@@ -8,6 +8,7 @@ import { getPrivate } from "../lib/api.server";
 import { ApiRequestError, privateRequest } from "../lib/api.client";
 import { useOwnedWrite } from "../components/owned-write";
 import { useLearning } from "../components/learning";
+import { knowledgeUnit } from "../lib/recording-playback";
 import { Bookmark } from "../components/bookmark";
 import { Enroll } from "../components/enroll";
 import { Icon } from "../components/icon";
@@ -214,7 +215,11 @@ function SavedRow({
           setOpen(!open);
           if (!open && current.vocabulary)
             audio.play([
-              { id: "saved-" + current.id, text: current.vocabulary.lemma },
+              knowledgeUnit(
+                "saved-" + current.id,
+                current.vocabulary.lemma,
+                current.vocabulary.recording,
+              ),
             ]);
         }}
       >
@@ -415,7 +420,11 @@ function ManagedCard({ initial }: { initial: ReviewCard }) {
           setOpen(!open);
           if (!open)
             audio.play([
-              { id: "managed-" + card.id, text: card.vocabulary.lemma },
+              knowledgeUnit(
+                "managed-" + card.id,
+                card.vocabulary.lemma,
+                card.vocabulary.recording,
+              ),
             ]);
         }}
       >

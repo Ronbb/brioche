@@ -167,6 +167,26 @@ async fn read(backend: &Backend, id: &str, revision: u32) -> Result<PublicLesson
         }
         asset.url = format!("/api/v1/operator/lessons/{id}/revisions/{revision}/audio/{name}");
     }
+    for recording in lesson
+        .knowledge
+        .vocabulary
+        .iter_mut()
+        .filter_map(|v| v.recording.as_mut())
+        .chain(
+            lesson
+                .knowledge
+                .grammar
+                .iter_mut()
+                .flat_map(|g| g.examples.iter_mut().filter_map(|e| e.recording.as_mut())),
+        )
+    {
+        let asset = lesson
+            .audio
+            .iter()
+            .find(|asset| asset.asset_id == recording.asset.asset_id)
+            .ok_or(AppError::Unavailable)?;
+        recording.asset.url = asset.url.clone();
+    }
     Ok(lesson)
 }
 async fn lesson(

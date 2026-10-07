@@ -1,6 +1,7 @@
 import type { AudioCue } from "@brioche/contracts/AudioCue";
 import type { Block } from "@brioche/contracts/Block";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
+import type { KnowledgeRecording } from "@brioche/contracts/KnowledgeRecording";
 
 export type TimelineCue = {
   startMs: number;
@@ -20,6 +21,43 @@ export type SpeechUnit = {
   locale?: string;
   recording?: RecordingClip;
 };
+export function knowledgeUnit(
+  id: string,
+  text: string,
+  recording?: KnowledgeRecording | null,
+): SpeechUnit {
+  const unit: SpeechUnit = { id, text };
+  if (!recording) return unit;
+  const { asset, startMs, endMs } = recording;
+  const extension =
+    asset.mimeType === "audio/wav"
+      ? "wav"
+      : asset.mimeType === "audio/mpeg"
+        ? "mp3"
+        : null;
+  if (
+    !extension ||
+    !/^[a-f0-9]{64}$/.test(asset.sha256) ||
+    !/^\/api\/(?:audio\/|v1\/operator\/lessons\/[a-zA-Z0-9_-]+\/revisions\/[1-9][0-9]*\/audio\/)[a-f0-9]{64}\.(?:mp3|wav)$/.test(
+      asset.url,
+    ) ||
+    !asset.url.endsWith(`/${asset.sha256}.${extension}`) ||
+    !Number.isInteger(startMs) ||
+    !Number.isInteger(endMs) ||
+    !Number.isInteger(asset.durationMs) ||
+    startMs < 0 ||
+    startMs >= endMs ||
+    endMs > asset.durationMs
+  )
+    return unit;
+  unit.recording = {
+    url: asset.url,
+    startMs,
+    endMs,
+    cues: [{ id, startMs, endMs }],
+  };
+  return unit;
+}
 export const readingScope = (lesson: PublicLesson, blockId: string) =>
   `${lesson.id}:${lesson.revision}:${blockId}:`;
 export const wordId = (

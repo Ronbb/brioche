@@ -12,7 +12,11 @@ import { Icon } from "../components/icon";
 import { ResponsiveKnowledge } from "../components/responsive-knowledge";
 import { PendingNavigation } from "../components/pending-navigation";
 import { usePendingOwnedWrites } from "../components/pending-owned-writes";
-import { readingUnits, wordUnit } from "../lib/recording-playback";
+import {
+  readingUnits,
+  wordUnit,
+  knowledgeUnit,
+} from "../lib/recording-playback";
 import type { Route } from "./+types/lesson";
 export async function loader({ params }: Route.LoaderArgs) {
   const [lesson, catalog] = await Promise.all([
@@ -365,7 +369,9 @@ function LessonContent({
                   <button
                     lang="fr"
                     onClick={() =>
-                      learning.play([{ id: grammar.id + i, text: e.fr }])
+                      learning.play([
+                        knowledgeUnit(grammar.id + ":" + i, e.fr, e.recording),
+                      ])
                     }
                   >
                     {e.fr}

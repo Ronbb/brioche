@@ -303,6 +303,45 @@ test("a partially recorded reading sequence does not begin a misleading incomple
   );
 });
 
+test("knowledge recordings play fixed intervals in teaching notes, saved cards and the review queue", async () => {
+  for (const [kind, selector, expand] of [
+    [
+      "reading",
+      ".vocabulary-list dt button",
+      '.lesson-note[data-kind="vocabulary"] > summary',
+    ],
+    [
+      "reading",
+      ".grammar-example button",
+      '.lesson-note[data-kind="grammar"] > summary',
+    ],
+    ["library", ".library-entry-heading", null],
+    ["managed-library", ".library-entry-heading", null],
+    ["reviews", ".review-flashcard", null],
+  ]) {
+    await open(kind + "&knowledge-recording=1");
+    if (expand) {
+      await browser("focus", expand);
+      await press("Enter");
+    }
+    await browser("focus", selector);
+    await press("Enter");
+    await browser("wait", "--fn", "qa.mediaPlays.length===1");
+    const clip = await evaluate("qa.mediaPlays[0]");
+    assert.equal(
+      new URL(clip.url).pathname,
+      "/api/audio/" + "1".repeat(64) + ".wav",
+    );
+    assert.ok(Math.abs(clip.time - 1.2) < 0.02, JSON.stringify(clip));
+    await browser(
+      "wait",
+      "--fn",
+      "qa.media[0].paused && qa.media[0].currentTime>=1.8",
+    );
+    assert.deepEqual(await evaluate("qa.spoken"), []);
+  }
+});
+
 test("recording pause and speed changes preserve the same audio position and explicit resume", async () => {
   await open("reading");
   await browser("focus", ".playback-line");

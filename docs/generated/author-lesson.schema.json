@@ -575,7 +575,7 @@
         },
         "examples": {
           "items": {
-            "$ref": "#/$defs/Title"
+            "$ref": "#/$defs/GrammarExample"
           },
           "type": "array"
         },
@@ -591,6 +591,32 @@
         "titleZh",
         "bodyZh",
         "examples"
+      ],
+      "type": "object"
+    },
+    "GrammarExample": {
+      "additionalProperties": false,
+      "properties": {
+        "fr": {
+          "type": "string"
+        },
+        "recording": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/KnowledgeRecording"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "zh": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "fr",
+        "zh"
       ],
       "type": "object"
     },
@@ -613,6 +639,30 @@
       "required": [
         "vocabulary",
         "grammar"
+      ],
+      "type": "object"
+    },
+    "KnowledgeRecording": {
+      "additionalProperties": false,
+      "properties": {
+        "asset": {
+          "$ref": "#/$defs/AudioAsset"
+        },
+        "endMs": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "startMs": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "asset",
+        "startMs",
+        "endMs"
       ],
       "type": "object"
     },
@@ -966,6 +1016,16 @@
         },
         "partOfSpeech": {
           "type": "string"
+        },
+        "recording": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/KnowledgeRecording"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [

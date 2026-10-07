@@ -213,6 +213,10 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
         .map(|(i, turn)| json!({"entryId":turn.id,"startMs":i*100,"endMs":(i+1)*100}))
         .collect();
     hydrated["audioTracks"] = json!([{"blockId":id,"assetId":"audio-protocol","cues":cues}]);
+    hydrated["knowledge"]["vocabulary"][0]["recording"] =
+        json!({"asset":descriptor,"startMs":50,"endMs":900});
+    hydrated["knowledge"]["grammar"][0]["examples"][0]["recording"] =
+        json!({"asset":descriptor,"startMs":100,"endMs":800});
     let lesson = brioche_server::project_source(hydrated.clone()).unwrap();
     assert_eq!(lesson.audio[0].revision, 1);
     assert!(
@@ -373,6 +377,14 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
     let draft: Value =
         serde_json::from_slice(&draft.into_body().collect().await.unwrap().to_bytes()).unwrap();
     assert_eq!(draft["audio"][0]["url"], private_url);
+    assert_eq!(
+        draft["knowledge"]["vocabulary"][0]["recording"]["asset"]["url"],
+        private_url
+    );
+    assert_eq!(
+        draft["knowledge"]["grammar"][0]["examples"][0]["recording"]["asset"]["url"],
+        private_url
+    );
     let clip = response(
         &app,
         &private_url,
@@ -426,6 +438,14 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
     other.id = "a1-other-protocol".into();
     other.audio.clear();
     other.audio_tracks.clear();
+    for vocabulary in &mut other.knowledge.vocabulary {
+        vocabulary.recording = None;
+    }
+    for grammar in &mut other.knowledge.grammar {
+        for example in &mut grammar.examples {
+            example.recording = None;
+        }
+    }
     let other_id = other.id.clone();
     db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO lesson_revisions(lesson_id,revision,published,public_document,server_document) VALUES($1,1,false,$2,$3)",[other_id.into(),serde_json::to_value(other).unwrap().into(),json!({}).into()])).await.unwrap();
     assert_eq!(
@@ -494,6 +514,49 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
     )
     .await
     .unwrap();
+    let csrf_response = response(&app, "/api/v1/auth/csrf", "GET", &[("cookie", &learner)]).await;
+    let csrf_body: Value = serde_json::from_slice(
+        &csrf_response
+            .into_body()
+            .collect()
+            .await
+            .unwrap()
+            .to_bytes(),
+    )
+    .unwrap();
+    let knowledge_id = &lesson.knowledge.vocabulary[0].id;
+    for (method, path, payload) in [
+        (
+            "PUT",
+            format!("/api/v1/me/saved-items/{knowledge_id}"),
+            json!({"sourceLessonId":lesson.id,"sourceRevision":lesson.revision,"saved":true,"version":0,"idempotencyKey":"knowledge-recording-save"}),
+        ),
+        (
+            "POST",
+            "/api/v1/me/review-enrollments".into(),
+            json!({"knowledgeId":knowledge_id,"sourceLessonId":lesson.id,"sourceRevision":lesson.revision,"idempotencyKey":"knowledge-recording-enroll"}),
+        ),
+    ] {
+        let request = Request::builder()
+            .method(method)
+            .uri(path)
+            .header("cookie", &learner)
+            .header("origin", "http://localhost:5173")
+            .header("x-csrf-token", csrf_body["csrfToken"].as_str().unwrap())
+            .header("content-type", "application/json")
+            .body(Body::from(serde_json::to_vec(&payload).unwrap()))
+            .unwrap();
+        let result = app.clone().oneshot(request).await.unwrap();
+        assert_eq!(result.status(), 200);
+        let body: Value =
+            serde_json::from_slice(&result.into_body().collect().await.unwrap().to_bytes())
+                .unwrap();
+        assert_eq!(body["sourceRevision"], lesson.revision);
+        assert_eq!(
+            body["vocabulary"]["recording"],
+            serde_json::to_value(&lesson.knowledge.vocabulary[0].recording).unwrap()
+        );
+    }
     let full = response(&app, &url, "GET", &[]).await;
     assert_eq!(full.status(), 200);
     assert_eq!(full.headers()["content-type"], "audio/mpeg");

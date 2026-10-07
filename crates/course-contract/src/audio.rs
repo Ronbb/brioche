@@ -59,6 +59,28 @@ impl PublicLesson {
         }
         let mut blocks = BTreeSet::new();
         let mut used_assets = BTreeSet::new();
+        for (i, vocabulary) in self.knowledge.vocabulary.iter().enumerate() {
+            if let Some(recording) = &vocabulary.recording {
+                validate_knowledge(
+                    recording,
+                    &assets,
+                    &format!("/knowledge/vocabulary/{i}/recording"),
+                )?;
+                used_assets.insert(&recording.asset.asset_id);
+            }
+        }
+        for (gi, grammar) in self.knowledge.grammar.iter().enumerate() {
+            for (ei, example) in grammar.examples.iter().enumerate() {
+                if let Some(recording) = &example.recording {
+                    validate_knowledge(
+                        recording,
+                        &assets,
+                        &format!("/knowledge/grammar/{gi}/examples/{ei}/recording"),
+                    )?;
+                    used_assets.insert(&recording.asset.asset_id);
+                }
+            }
+        }
         for (index, track) in self.audio_tracks.iter().enumerate() {
             let path = format!("/audioTracks/{index}");
             if !blocks.insert(&track.block_id) {
@@ -187,11 +209,35 @@ impl PublicLesson {
                 .position(|asset| !used_assets.contains(&asset.asset_id))
                 .unwrap();
             return Err(format!(
-                "/audio/{index}/assetId: recording has no reading track"
+                "/audio/{index}/assetId: recording has no reading or knowledge target"
             ));
         }
         Ok(())
     }
+}
+
+fn validate_knowledge(
+    recording: &crate::KnowledgeRecording,
+    assets: &BTreeMap<&String, &crate::AudioAsset>,
+    path: &str,
+) -> Result<(), String> {
+    let registered = assets
+        .get(&recording.asset.asset_id)
+        .ok_or_else(|| format!("{path}/asset/assetId: unknown recording"))?;
+    // Compare all public fields, including version, credit and same-origin hash URL.
+    if serde_json::to_value(&recording.asset).unwrap() != serde_json::to_value(registered).unwrap()
+    {
+        return Err(format!(
+            "{path}/asset: descriptor disagrees with the lesson recording registry"
+        ));
+    }
+    if recording.start_ms >= recording.end_ms {
+        return Err(format!("{path}/endMs: end must follow start"));
+    }
+    if recording.end_ms > registered.duration_ms {
+        return Err(format!("{path}/endMs: interval outside recording duration"));
+    }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -366,5 +412,85 @@ mod tests {
         let value = serde_json::to_value(lesson).unwrap();
         assert!(value.get("audio").is_none());
         assert!(value.get("audioTracks").is_none());
+        assert!(
+            value["knowledge"]["vocabulary"][0]
+                .get("recording")
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn knowledge_recordings_use_exact_registered_versions_and_bounded_intervals() {
+        let mut lesson = fixture();
+        let mut asset = lesson.audio[0].clone();
+        asset.asset_id = "audio-knowledge".into();
+        asset.sha256 = "b".repeat(64);
+        asset.url = format!("/api/audio/{}.mp3", asset.sha256);
+        asset.duration_ms = 1000;
+        lesson.audio.push(asset.clone());
+        let clip = crate::KnowledgeRecording {
+            asset,
+            start_ms: 50,
+            end_ms: 900,
+        };
+        lesson.knowledge.vocabulary[0].recording = Some(clip.clone());
+        lesson.knowledge.grammar[0].examples[0].recording = Some(clip.clone());
+        lesson.validate().unwrap();
+        let saved: crate::Vocabulary =
+            serde_json::from_value(serde_json::to_value(&lesson.knowledge.vocabulary[0]).unwrap())
+                .unwrap();
+        assert_eq!(saved.recording.unwrap().asset.revision, clip.asset.revision);
+        for altered in ["revision", "sha256", "url", "creditZh"] {
+            let mut value = serde_json::to_value(&lesson).unwrap();
+            value["knowledge"]["vocabulary"][0]["recording"]["asset"][altered] =
+                if altered == "revision" {
+                    serde_json::json!(2)
+                } else {
+                    serde_json::json!("different")
+                };
+            let bad: PublicLesson = serde_json::from_value(value).unwrap();
+            assert!(
+                bad.validate()
+                    .unwrap_err()
+                    .starts_with("/knowledge/vocabulary/0/recording/asset:")
+            );
+        }
+        let mut bad = lesson.clone();
+        bad.knowledge.vocabulary[0]
+            .recording
+            .as_mut()
+            .unwrap()
+            .end_ms = 1001;
+        assert!(
+            bad.validate()
+                .unwrap_err()
+                .starts_with("/knowledge/vocabulary/0/recording/endMs:")
+        );
+        let mut bad = lesson.clone();
+        bad.knowledge.grammar[0].examples[0]
+            .recording
+            .as_mut()
+            .unwrap()
+            .start_ms = 900;
+        assert!(
+            bad.validate()
+                .unwrap_err()
+                .starts_with("/knowledge/grammar/0/examples/0/recording/endMs:")
+        );
+        let mut bad = lesson.clone();
+        bad.audio.pop();
+        assert!(
+            bad.validate()
+                .unwrap_err()
+                .starts_with("/knowledge/vocabulary/0/recording/asset/assetId:")
+        );
+        lesson.knowledge.vocabulary[0].recording = None;
+        lesson.knowledge.grammar[0].examples[0].recording = None;
+        assert!(
+            lesson
+                .validate()
+                .unwrap_err()
+                .starts_with("/audio/1/assetId:")
+        );
     }
 }

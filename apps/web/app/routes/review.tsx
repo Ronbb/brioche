@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Link, redirect } from "react-router";
 import { getCatalog, getLesson } from "../lib/api.server";
 import { useLearning } from "../components/learning";
+import { knowledgeUnit } from "../lib/recording-playback";
 import { Icon } from "../components/icon";
 import type { Route } from "./+types/review";
 export async function loader({ params }: Route.LoaderArgs) {
@@ -40,7 +41,8 @@ export default function Review({
     const start = card.current?.getBoundingClientRect().height;
     motion.current?.cancel();
     setRevealed(!revealed);
-    if (!revealed) learning.play([{ id: term.id, text: title }]);
+    if (!revealed)
+      learning.play([knowledgeUnit(term.id, term.lemma, term.recording)]);
     else learning.stop();
     requestAnimationFrame(() => {
       if (

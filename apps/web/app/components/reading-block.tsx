@@ -11,7 +11,11 @@ import {
 } from "../routes/lesson";
 import { Player, useLearning } from "./learning";
 import { Icon } from "./icon";
-import { readingScope, readingUnits } from "../lib/recording-playback";
+import {
+  readingScope,
+  readingUnits,
+  knowledgeUnit,
+} from "../lib/recording-playback";
 export function ReadingBlock({
   block,
   lesson,
@@ -202,10 +206,11 @@ export function ReadingBlock({
                   lang="fr"
                   onClick={() =>
                     learning.play([
-                      {
-                        id: scope + "grammar:" + grammar.id + ":" + index,
-                        text: example.fr,
-                      },
+                      knowledgeUnit(
+                        scope + "grammar:" + grammar.id + ":" + index,
+                        example.fr,
+                        example.recording,
+                      ),
                     ])
                   }
                 >

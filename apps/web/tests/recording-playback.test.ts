@@ -8,6 +8,7 @@ import {
   readingScope,
   wordUnit,
   continuousRecording,
+  knowledgeUnit,
   type RecordingClip,
 } from "../app/lib/recording-playback.ts";
 const url = "/api/audio/" + "a".repeat(64) + ".mp3";
@@ -20,6 +21,41 @@ const clip: RecordingClip = {
     { startMs: 1200, endMs: 1500, id: "sentence", wordId: "word" },
   ],
 };
+test("knowledge snapshots preserve fixed intervals and reject unsafe media references", () => {
+  const recording = {
+    asset: {
+      assetId: "audio-term",
+      revision: 2,
+      sha256: "a".repeat(64),
+      mimeType: "audio/mpeg",
+      durationMs: 1000,
+      creditZh: "Synthetic protocol fixture",
+      url,
+    },
+    startMs: 50,
+    endMs: 900,
+  };
+  const unit = knowledgeUnit("saved-term", "une baguette", recording);
+  assert.equal(unit.recording?.url, url);
+  assert.equal(unit.recording?.startMs, 50);
+  assert.equal(unit.recording?.endMs, 900);
+  assert.equal(unit.recording?.cues[0].id, "saved-term");
+  assert.equal(knowledgeUnit("old", "bonjour").recording, undefined);
+  for (const altered of [
+    { ...recording, endMs: 1001 },
+    { ...recording, startMs: 900 },
+    { ...recording, startMs: -1 },
+    {
+      ...recording,
+      asset: { ...recording.asset, url: "https://example.test/audio.mp3" },
+    },
+    { ...recording, asset: { ...recording.asset, sha256: "b".repeat(64) } },
+  ])
+    assert.equal(
+      knowledgeUnit("unsafe", "bonjour", altered).recording,
+      undefined,
+    );
+});
 class FakeMedia {
   src = "";
   preload = "";

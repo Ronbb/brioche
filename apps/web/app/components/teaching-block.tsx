@@ -3,6 +3,7 @@ import type { PublicLesson } from "@brioche/contracts/PublicLesson";
 import { useLearning } from "./learning";
 import { Illustration, illustration } from "./illustration";
 import { LessonNote } from "./lesson-note";
+import { knowledgeUnit } from "../lib/recording-playback";
 
 type TeachingBlock = Exclude<
   Block,
@@ -57,7 +58,11 @@ export function TeachingBlock({
                     <button
                       type="button"
                       lang="fr"
-                      onClick={() => learning.play([{ id, text: word.lemma }])}
+                      onClick={() =>
+                        learning.play([
+                          knowledgeUnit(id, word.lemma, word.recording),
+                        ])
+                      }
                     >
                       {word.lemma}
                     </button>
@@ -86,7 +91,13 @@ export function TeachingBlock({
                       type="button"
                       lang="fr"
                       onClick={() =>
-                        learning.play([{ id: id + i, text: example.fr }])
+                        learning.play([
+                          knowledgeUnit(
+                            id + ":" + i,
+                            example.fr,
+                            example.recording,
+                          ),
+                        ])
                       }
                     >
                       {example.fr}

@@ -39,3 +39,5 @@ python -m unittest discover -s scripts/alignment -p test_align.py -v
 
 
 `rust-plan.fixture.json` 是实际 Rust 编译器输出的测试向量，来自公开面包店示例与测试用 Léa 档案，不是生产声音选型或审听决定。用于防止 Python 对 JSONB 字段排序或请求哈希的处理与 Rust 漂移；更改编译器版本时重新生成并核对。CI 只运行标准库校验测试，不下载模型、不生成新音频。
+
+2026-10-07 依赖检查：当前锁定的本机 Python 对齐环境中，OSV 检出 accelerate、setuptools、torch、transformers 共9项唯一 GHSA 告警。该环境不在生产 Web/API 镜像内；固定 safetensors、离线模式和不启用远程代码不能代替修复依赖。qwen-asr 0.0.6 的上游元数据固定旧 Transformers/Accelerate；独立试验环境升级后遇到 check_model_inputs 装饰器 API 不兼容，尚未通过真实对齐验收，因此没有切换正式工具或更新依赖锁。继续修复兼容性后，应复验固定模型、真实录音和导入版本约束；不要把新环境安装成功当作安全修复完成。
