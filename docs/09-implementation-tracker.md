@@ -717,3 +717,11 @@ Brioche已固定独立curriculum，移除139份重复课源/历史目录/示例�
 运维/TTS/离线对齐与通用回归真源迁入Chef，Brioche只保留兼容入口和装配验证，再移除约4100行。31通用Node+1真实隔离Docker恢复、19Python及1产品兼容回归实际通过；全新递归检出兼容入口也通过。私有输出根与嵌套框架源码分开，不复制真实备份/媒体/密钥，不引入收费请求或自动定时任务。身份仍和学习API同进程，跨产品数据库/客户端授权隔离及粤语/Hargow尚未完成，继续推进完整目标。
 
 身份边界实际检查：当前Backend仍将账号数据库、密码验证与UserSettings放在同一状态里，业务/后台直接依赖axum_login AuthSession与当前operator判断，账户路由还包裹学习路由。独立服务需要真实受验证内网会话验证边界及产品settings分离、同步失效/权限回归，不以新增容器或共享一个用户表冒充拆分完成。后续优先实施该边界与双产品数据库隔离。
+
+## 独立账号进程及轻量产品边界（2026-10-08）
+
+Chef 4feb66d2586e926f37aa9dad3f56b592629ee863 已提交并实际推送独立 chef-identity、专用 Dockerfile、账号-only HTTP DTO、受保护的内网会话验证及产品绑定 SessionStore。两个产品共用账号 ID/密码，Cookie 与服务器会话固定产品；跨产品重命名 Cookie 拒绝，退出只撤销当前产品，密码重置撤销全部产品，权限每次读取。Brioche 保留旧 Cookie 名称及无产品会话兼容。新进程不含学习/课程/媒体/后台路由；产品库不增加身份实现，仍只装配固定框架。
+
+Rust 常规工作区、fmt/Clippy 全目标、生成契约 diff 和12项真实专用 PostgreSQL 集成测试实际通过；独立非 root Linux Docker 健康/就绪/CSRF 200、匿名/无凭据内省401、学习/后台404，测试资源已核对标签后清理。完整证据见docs07，配置及迁移限制见Chef docs/identity-service.md。生产没有切换版本、迁移数据或改变域名。Chef该提交远端CI37667231222实际仍in_progress，不称全绿。
+
+学习 API 内省消费者、产品settings/成员授权/schema/数据库角色分离未实现；Backend仍兼容旧users.settings，仅账号HTTP载荷分离。Brioche framework未更新到该迁移中提交。继续实施数据库及客户端产品隔离、语言中立契约、粤语真实课源与Hargow实际入口，不能以独立进程代替完整拆分验收。

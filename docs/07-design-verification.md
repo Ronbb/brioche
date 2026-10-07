@@ -900,3 +900,11 @@ Chef和固定产品子模块实际通用Node回归31通过、1 Docker跳过；�
 Docker入口补齐在产品17568ae另行提交推送；之前5a10b54尚含已删除产品JSON的COPY，不作为独立Docker构建完成证据。最终工作树三覆盖API release build已实际终态成功，up --wait healthy/0restart，实际Image `sha256:5960df7e2b56894f166ba16b45ef89d22980d66cda11297b0ad1858743d76fd0`；Web保持既有364b5c镜像。旧产品health入口实际转发到框架巡检，2026-10-07T18:02:51.384Z五服务/四HTTPhealthy，Dfree415643598848bytes，release仍48正式录音/generation10。无数据库迁移/生产数据写入、DNS或不安全端口更改。Chef af1789a 的完整CI37662516117实际completed/success，contracts与web两job均成功；单独Graph Update成功不代替完整CI。全新远端17568ae Docker构建另外执行，终态另记。
 
 远端独立checkout17568ae的Linux Docker构建实际终态0，验证镜像434cc719仅用于构建核对、未切换生产。与生产实际brioche-server二进制SHA256逐字节相同：14046506c869971f595c84902cfb48a916dbdf62307466376665be5ccb1e3fb4。两既有HTTPS目录实际各48，checkout gitclean。Brioche17568ae最新完整CI37663681970仍in_progress，不把Chef全绿推广至本产品。
+
+## 独立身份进程隔离验证（2026-10-08）
+
+共享框架Chef 4feb66d2586e926f37aa9dad3f56b592629ee863 actual normal push成功。新增独立identity二进制/镜像和固定产品服务器会话，不迁移生产。新PG测试使用任务自建loopback随机端口专用库，既有11项及新增1项实际全部通过：共享账号/两产品Cookie、跨产品重命名拒绝、实时角色、单产品logout、全局reset、旧会话只允许Brioche、范围save/delete拒绝及过期会话。Rust工作区20契约+61lib+25CLI+13curriculum+2speechplan通过；Clippy所有目标与fmt通过；Schema/TS再导出无生成diff。首编译digest类型错误修正、首新测试误断言删除Cookie必须HttpOnly后改为只检查有效Cookie；最终完整测试通过，不把先前失败计成功。
+
+独立Linux Docker release构建终态0，镜像sha256:d00d4b8186e706498cc13260b3c5a84cf5930f50f931009f863e150246b14b16；实际启动于隔离任务网络、非root chef、0restart。真实HTTP /health、/ready、/api/v1/auth/csrf为200；内省无客户端凭据与有效客户端匿名均401/private,no-store；不存在的学习/后台404。容器和网络按com.chef.task=identity-service-20261008核对后stop/removal全部成功，隔离数据库也清除，没有读取生产.env、账号或私有声音。产品生产仍使用旧已验证5960df7 API/364b5c Web，不改HTTPS入口、DNS、端口、课程发布及媒体。
+
+账号-only响应不含settings/passwordHash，服务密钥仅digest且恒定时间比较，错误凭据/产品在数据库读取前拒绝（断开数据库unit实际通过）。底层仍复用旧users.settings解码和全局role；学习消费者、产品成员授权、学习设置与数据库角色隔离尚未完成。最新Chef完整CI37667231222和Brioche既有17568ae CI37663681970读取均in_progress，不能称其已成功。所有本机build/test/export/push/cleanup句柄已经终态；后续文档push需另确认。
