@@ -344,11 +344,32 @@ async fn review(
     Json(request): Json<AdminSpeechClipReview>,
 ) -> Result<Json<AdminSpeechClip>, AppError> {
     require_operator(&auth)?;
+    Ok(Json(
+        review_for_actor(&b, owner(&auth)?, id, request).await?,
+    ))
+}
+
+/// Record an explicit human decision through the same transaction as the HTTP route.
+pub async fn review_local(
+    b: &Backend,
+    actor: i64,
+    id: String,
+    mut request: AdminSpeechClipReview,
+) -> Result<AdminSpeechClip, AppError> {
+    request.reason = format!("[local-cli] {}", request.reason);
+    review_for_actor(b, actor, id, request).await
+}
+
+async fn review_for_actor(
+    b: &Backend,
+    actor: i64,
+    id: String,
+    request: AdminSpeechClipReview,
+) -> Result<AdminSpeechClip, AppError> {
     crate::admin::reason(&request.reason)?;
     if !hex(&id, 32) || !request.heard {
         return Err(AppError::InvalidInput);
     }
-    let actor = owner(&auth)?;
     let tx = b.db.begin().await.map_err(|_| AppError::Unavailable)?;
     lock_operator(&tx, actor).await?;
     exec(
@@ -374,10 +395,10 @@ async fn review(
         {
             return Err(AppError::Conflict);
         }
-        return Ok(Json(clip));
+        return Ok(clip);
     }
     exec(&tx,"INSERT INTO course_speech_clip_reviews(clip_id,accepted,actor_id,reason)VALUES($1,$2,$3,$4)",vec![id.clone().into(),request.accepted.into(),actor.into(),request.reason.into()]).await?;
     let clip = item(&load(&tx, &id).await?)?;
     tx.commit().await.map_err(|_| AppError::Unavailable)?;
-    Ok(Json(clip))
+    Ok(clip)
 }

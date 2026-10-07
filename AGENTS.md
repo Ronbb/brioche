@@ -98,3 +98,5 @@
 - 本机voice-audition-generate复用持久化试听与当前operator校验，理由标注local-cli；固定尝试ID精确重试不重发收费。245秒等待不是退款/回滚证明，submitted/unknown须查固定记录；不创建会话或自动审听通过。
 
 - 本机speech-plan-preview/save与speech-clip-generate复用网页固定版本、operator、幂等及收费事务，顺序生成，不自动接受审听。备份必须包含全部ready课程片段的原始/修复WAV，包含已退回或被后续版本替代的记录；恢复除核对哈希，还须核对恢复数据库引用的媒体完整性。仅manifest校验通过不证明没有漏项，见角色库说明。
+
+- 本机voice-audition-review/speech-clip-review只代录明确的人类反馈，复用网页审核事务与当前operator，理由标注local-cli；候选重复决定冲突，片段仅精确重试。speech-plan-export复用全部最新已接受片段/实际媒体/交付前后权限和来源核对，私有输出不可覆盖，失败文件不能当完成包。试听音质批准不能自动timingsChecked或最终整课接受。

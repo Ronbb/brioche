@@ -131,6 +131,36 @@ async fn export(
     let _permit = permits
         .try_acquire_owned()
         .map_err(|_| AppError::RateLimited)?;
+    let bytes = export_for_actor(&b, actor, id.clone(), root).await?;
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        "content-type",
+        HeaderValue::from_static("application/x-tar"),
+    );
+    headers.insert(
+        "content-disposition",
+        HeaderValue::from_str(&format!("attachment; filename=\"speech-{id}.tar\""))
+            .map_err(|_| AppError::Unavailable)?,
+    );
+    headers.insert(
+        "cache-control",
+        HeaderValue::from_static("private, no-store"),
+    );
+    let mut response = Response::new(Body::from(bytes));
+    *response.headers_mut() = headers;
+    Ok(response)
+}
+
+/// Local private delivery keeps the HTTP export's media and current-operator checks.
+pub async fn export_for_actor(
+    b: &Backend,
+    actor: i64,
+    id: String,
+    root: PathBuf,
+) -> Result<Vec<u8>, AppError> {
+    let tx = b.db.begin().await.map_err(|_| AppError::Unavailable)?;
+    lock_operator(&tx, actor).await?;
+    tx.commit().await.map_err(|_| AppError::Unavailable)?;
     let tx =
         b.db.begin_with_config(Some(IsolationLevel::RepeatableRead), None)
             .await
@@ -154,21 +184,5 @@ async fn export(
         return Err(AppError::Conflict);
     }
     tx.commit().await.map_err(|_| AppError::Unavailable)?;
-    let mut headers = HeaderMap::new();
-    headers.insert(
-        "content-type",
-        HeaderValue::from_static("application/x-tar"),
-    );
-    headers.insert(
-        "content-disposition",
-        HeaderValue::from_str(&format!("attachment; filename=\"speech-{id}.tar\""))
-            .map_err(|_| AppError::Unavailable)?,
-    );
-    headers.insert(
-        "cache-control",
-        HeaderValue::from_static("private, no-store"),
-    );
-    let mut response = Response::new(Body::from(bytes));
-    *response.headers_mut() = headers;
-    Ok(response)
+    Ok(bytes)
 }

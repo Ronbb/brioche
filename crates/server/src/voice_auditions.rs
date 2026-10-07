@@ -346,11 +346,32 @@ async fn review(
     Json(request): Json<AdminAuditionReview>,
 ) -> Result<Json<AdminAudition>, AppError> {
     require_operator(&auth)?;
+    Ok(Json(
+        review_for_actor(&b, owner(&auth)?, id, request).await?,
+    ))
+}
+
+/// Record an explicit human decision through the same transaction as the HTTP route.
+pub async fn review_local(
+    b: &Backend,
+    actor: i64,
+    id: String,
+    mut request: AdminAuditionReview,
+) -> Result<AdminAudition, AppError> {
+    request.reason = format!("[local-cli] {}", request.reason);
+    review_for_actor(b, actor, id, request).await
+}
+
+async fn review_for_actor(
+    b: &Backend,
+    actor: i64,
+    id: String,
+    request: AdminAuditionReview,
+) -> Result<AdminAudition, AppError> {
     crate::admin::reason(&request.reason)?;
     if !hex(&id, 32) || !request.heard {
         return Err(AppError::InvalidInput);
     }
-    let actor = owner(&auth)?;
     let tx = b.db.begin().await.map_err(|_| AppError::Unavailable)?;
     lock_operator(&tx, actor).await?;
     exec(
@@ -391,5 +412,5 @@ async fn review(
     exec(&tx,"INSERT INTO voice_audition_reviews(audition_id,accepted,character_id,character_revision,voice_revision,actor_id,reason) VALUES($1,$2,$3,$4,$5,$6,$7)",vec![id.clone().into(),request.accepted.into(),audition.character_id.into(),(audition.character_revision as i32).into(),voice.into(),actor.into(),request.reason.into()]).await?;
     let result = item(&load(&tx, &id).await?)?;
     tx.commit().await.map_err(|_| AppError::Unavailable)?;
-    Ok(Json(result))
+    Ok(result)
 }

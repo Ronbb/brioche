@@ -219,6 +219,85 @@ async fn main() -> Result<()> {
         )
     };
     match command.as_str() {
+        "voice-audition-review" | "speech-clip-review" | "speech-plan-export" => {
+            let args: Vec<String> = std::env::args().skip(2).collect();
+            if args.len() != 3 {
+                bail!(
+                    "usage: {command} <id> <operator-email> <review.json|new-private-output.tar>"
+                );
+            }
+            let database = db.as_ref().unwrap();
+            let row = database
+                .query_one_raw(sea_orm::Statement::from_sql_and_values(
+                    sea_orm::DbBackend::Postgres,
+                    "SELECT id FROM users WHERE email=$1 AND role='operator'",
+                    vec![args[1].clone().into()],
+                ))
+                .await
+                .map_err(|_| anyhow::anyhow!("operator lookup failed"))?
+                .ok_or_else(|| anyhow::anyhow!("operator not found"))?;
+            let actor: i64 = row.try_get("", "id")?;
+            let backend = brioche_server::identity::Backend::new(database.clone()).await?;
+            if command == "speech-plan-export" {
+                let mut options = std::fs::OpenOptions::new();
+                options.write(true).create_new(true);
+                #[cfg(unix)]
+                {
+                    use std::os::unix::fs::OpenOptionsExt;
+                    options.mode(0o600);
+                }
+                let mut output = options
+                    .open(&args[2])
+                    .map_err(|_| anyhow::anyhow!("private output must be a new writable file"))?;
+                let bytes = brioche_server::speech_export::export_for_actor(
+                    &backend,
+                    actor,
+                    args[0].clone(),
+                    brioche_server::media::media_root(),
+                )
+                .await
+                .map_err(|_| anyhow::anyhow!("private export failed; output is not confirmed"))?;
+                use std::io::Write;
+                output.write_all(&bytes)?;
+                output.sync_all()?;
+                println!(
+                    "{}",
+                    serde_json::json!({"planId":args[0],"byteLength":bytes.len(),"reviewRequired":true})
+                );
+                return Ok(());
+            }
+            let document = brioche_server::author_json::Document::load(&args[2])?;
+            let accepted = if command == "voice-audition-review" {
+                brioche_server::voice_auditions::review_local(
+                    &backend,
+                    actor,
+                    args[0].clone(),
+                    brioche_server::author_json::from_value(document.value, "")?,
+                )
+                .await
+                .map_err(|_| {
+                    anyhow::anyhow!("audition review not confirmed; inspect the fixed record")
+                })?
+                .accepted
+            } else {
+                brioche_server::speech_clips::review_local(
+                    &backend,
+                    actor,
+                    args[0].clone(),
+                    brioche_server::author_json::from_value(document.value, "")?,
+                )
+                .await
+                .map_err(|_| {
+                    anyhow::anyhow!("clip review not confirmed; inspect the fixed record")
+                })?
+                .accepted
+            };
+            println!(
+                "{}",
+                serde_json::json!({"id":args[0],"accepted":accepted,"published":false})
+            );
+            return Ok(());
+        }
         "speech-plan-preview" | "speech-plan-save" => {
             let args: Vec<String> = std::env::args().skip(2).collect();
             let preview = command == "speech-plan-preview";

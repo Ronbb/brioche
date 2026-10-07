@@ -26,7 +26,7 @@ pub mod reviews;
 pub mod session_store;
 mod speech_alignments;
 pub mod speech_clips;
-mod speech_export;
+pub mod speech_export;
 mod speech_media;
 mod speech_package;
 pub mod speech_plan;

@@ -239,3 +239,10 @@ API options/list/read 只读，POST preview 仅编译，POST save 追加不可�
 按用户既有Qwen生成授权，实际生成1次Léa系统候选（Flash/longanhuan_v3.1，固定character-lea v1/baseVoice0），任务进入生产私有试听页。原始与修复WAV保持AI标识，实际解码为24kHz单声道/7280ms；本机试听副本与正式私有媒体sha256一致。尚无人工接受，声音档案仍2份、Léa声音仍0；6发布课与generation1未改变，正式录音仍0，不将候选试听冒充正式六课语音。已向用户呈现本机试听并询问音色/语速；反馈之前不自动批准。预生成备份5媒体、生成后备份7媒体及数据库均verify；不是异地恢复验收。匿名固定试听/文件401且private/no-store，独立PG已删除，开发服务与gateway保留。
 
 生成后备份已在自有无网络PostgreSQL容器及新媒体卷实际恢复，26迁移/1试听/0接受/2声音/6发布课/generation1一致；原始与修复WAV的数据库哈希、7280ms保留，恢复工具逐对象核对7份媒体哈希。实际候选WAV包含fmt / AIGC / data块。只证明本次数据库与媒体恢复，没有切换生产、使用历史用户凭据登录或宣称完整业务恢复验收。恢复临时容器和经所有权标签确认的卷已清理；生成请求和试听副本保持私有，未纳入Git。所有本批执行句柄已终态，人工音色反馈仍待回复，完整目标活动。
+
+
+### 本机记录人工试听与导出（2026-10-07）
+
+明确收到人工试听反馈后，可用 `voice-audition-review <id> <operator-email> <review.json>` 或 `speech-clip-review <id> <operator-email> <review.json>`。请求使用既有 `AdminAuditionReview` / `AdminSpeechClipReview` 契约，必须显式 heard、accepted、reason；声音候选还需 expectedVoiceRevision。命令解析已存在的 operator，以 `[local-cli]` 标明代录来源，与网页共用当前权限、固定版本及审核事务；不创建登录会话，不绕过人工反馈，不发布课程。候选重复审核返回冲突，应读取原记录；片段仅同一审核人和完整决定精确重试返回原回执。
+
+`speech-plan-export <plan-id> <operator-email> <new-private-output.tar>` 共用网页实际媒体、全部最新片段接受、打包前后权限/来源核对。输出拒绝覆盖，Unix 模式0600；失败可能留下空或不完整文件，不能当成功包。私有包仍含完整生成参数，不能入Git。导出不调用TTS；实际逐词预测继续使用本机对齐工具，heard反馈不等于 timingsChecked 或整课最终试听。

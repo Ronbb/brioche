@@ -1183,18 +1183,41 @@ async fn voice_reference_delivery_is_bounded_revocable_private_and_audited() {
             .0,
         400
     );
-    assert_eq!(
-        operator
-            .send(
-                "POST",
-                &format!("{system_path}/review"),
-                Some(approval.clone()),
-                true
-            )
-            .await
-            .1["appliedVoiceRevision"],
-        1
+    assert!(
+        brioche_server::voice_auditions::review_local(
+            &backend,
+            local_actor,
+            "f".repeat(32),
+            serde_json::from_value({
+                let mut request = approval.clone();
+                request["heard"] = json!(false);
+                request
+            })
+            .unwrap(),
+        )
+        .await
+        .is_err()
     );
+    assert!(
+        brioche_server::voice_auditions::review_local(
+            &backend,
+            -1,
+            "f".repeat(32),
+            serde_json::from_value(approval.clone()).unwrap(),
+        )
+        .await
+        .is_err()
+    );
+    let approved = brioche_server::voice_auditions::review_local(
+        &backend,
+        local_actor,
+        "f".repeat(32),
+        serde_json::from_value(approval.clone()).unwrap(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(approved.applied_voice_revision, Some(1));
+    assert_eq!(approved.accepted, Some(true));
     assert_eq!(
         operator
             .send(
@@ -3923,8 +3946,54 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
             assert_eq!(operator.send("POST", clips, Some(body), true).await.0, 200);
             settled(&mut operator, &format!("{clips}/{attempt_id}")).await
         };
-        assert_eq!(operator.send("POST", &format!("{clips}/{}/review", ready["id"].as_str().unwrap()),
-            Some(json!({"heard":true,"accepted":true,"reason":"Synthetic export fixture review"})), true).await.0, 200);
+        let review =
+            json!({"heard":true,"accepted":true,"reason":"Synthetic export fixture review"});
+        let clip_id = ready["id"].as_str().unwrap().to_owned();
+        assert!(
+            brioche_server::speech_clips::review_local(
+                &backend,
+                -1,
+                clip_id.clone(),
+                serde_json::from_value(review.clone()).unwrap(),
+            )
+            .await
+            .is_err()
+        );
+        let accepted = brioche_server::speech_clips::review_local(
+            &backend,
+            actor,
+            clip_id.clone(),
+            serde_json::from_value(review.clone()).unwrap(),
+        )
+        .await
+        .unwrap();
+        assert_eq!(accepted.accepted, Some(true));
+        assert_eq!(
+            brioche_server::speech_clips::review_local(
+                &backend,
+                actor,
+                clip_id.clone(),
+                serde_json::from_value(review.clone()).unwrap(),
+            )
+            .await
+            .unwrap()
+            .id,
+            accepted.id
+        );
+        let mut http_review = review;
+        http_review["reason"] = json!("[local-cli] Synthetic export fixture review");
+        assert_eq!(
+            operator
+                .send(
+                    "POST",
+                    &format!("{clips}/{clip_id}/review"),
+                    Some(http_review),
+                    true
+                )
+                .await
+                .0,
+            200
+        );
     }
     let response = operator
         .app
@@ -3942,6 +4011,20 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
     assert_eq!(response.headers()["content-type"], "application/x-tar");
     assert_eq!(response.headers()["cache-control"], "private, no-store");
     let bytes = response.into_body().collect().await.unwrap().to_bytes();
+    let local_export = brioche_server::speech_export::export_for_actor(
+        &backend,
+        actor,
+        id.to_owned(),
+        root.clone(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(local_export.as_slice(), bytes.as_ref());
+    assert!(
+        brioche_server::speech_export::export_for_actor(&backend, -1, id.to_owned(), root.clone())
+            .await
+            .is_err()
+    );
     let source_archive_hash = {
         use sha2::Digest;
         format!("{:x}", sha2::Sha256::digest(&bytes))
@@ -3963,7 +4046,10 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
     assert_eq!(manifest["clips"].as_array().unwrap().len(), keys.len());
     for clip in manifest["clips"].as_array().unwrap() {
         assert!(clip["review"]["actorId"].as_i64().unwrap() > 0);
-        assert_eq!(clip["review"]["reason"], "Synthetic export fixture review");
+        assert_eq!(
+            clip["review"]["reason"],
+            "[local-cli] Synthetic export fixture review"
+        );
         for (file, hash) in [("file", "sha256"), ("providerFile", "providerSha256")] {
             let name = clip[file].as_str().unwrap();
             assert_eq!(
