@@ -1,5 +1,9 @@
 # 设计验证记录
 
+## 共享Web直接发布（2026-10-08）
+
+Chef课程预览默认直接授权录音发布，人工试听为可选独立记录。受控agent-browser验证direct-publication不含heard、503后同路径同载荷重试/离开保留、成功释放，以及人工audio-review/409恢复；类型检查、Web单元/SSR和构建通过。产品无需页面副本，授权不自动激活目录；生产pin不变，完整租户/粤语/生产装配继续实施。
+
 ## 自动打包独立内容入口（2026-10-08）
 
 Chef自动打包已采用db-only/Operator kernel，CLI仅边界取本机授权；新增直接输入导出GET与自动tar POST，Rust生成请求契约。实际受限split-schema模拟音频验证私有归档、固定报告/无人工heard、learner/CSRF及二十五类等待撤权拒绝。产品没有新增配音副本，生产pin不变；完整租户/粤语、共享Web入口与生产装配待完成。
