@@ -859,3 +859,12 @@ A2语法辅助审阅（2026-10-06）：读取24课48条grammar说明/例句，�
 完整8段旧法语试听命令完成，7段范围检查通过，1段保留实际重叠（前词0.72秒结束、后词0.56秒开始），输出始终reviewRequired且退出码2。首次处理器参数出现弃用提示，改用processor_kwargs后完整复验，预测与首次完全一致，无弃用提示。私有测试包不等于真实生成/人工审听回执，未据此登记音频或发布课程。原hf-xet下载进程经同句柄确认live；官方HTTP206字节范围及4MiB读取速度实际验证后，明确改用私有有界分段下载，原进程定向终止并确认exit1、新下载核对6SHA后exit0，未因单纯观察timeout盲目重启。所有下载/推理/测试句柄现均终态。
 
 实际部署：数据库及5媒体backup/verify通过；server镜像重建，以HTTPS+TTS三个Compose文件up--wait，四长期服务healthy、migrateexit0，两HTTPS health/ready/Web/首页巡检healthy。实际API镜像dd0fa2496bde0944f4efaad7f2c388543e1c655be1ce11dc69001616dfc91bb2；Web保留e43ee1a472991e9551ae8ee7608a88866ef1623eabc7afa820da61c365ebc300。Traefik无宿主映射/30075零监听；生产只读24迁移/音频0/试听0/声音2/published6/generation1/计划0/片段0/对齐0/审核0保持。没有付费调用、账号变更、人工批准或新课发布；正式六课语音覆盖、录音包组装与新release及后台分页/运维/真实设备验收仍待完成，完整目标保持active。
+
+## Chef 后端抽取实际验证（2026-10-08）
+
+Chef `900375c` 实际完成共享后端/迁移/CLI/回归测试抽取，`brioche-courses` `7a84c18` 固定原例子与跨平台 LF。依赖按 Brioche 原锁文件保持版本；第一轮缺少课程 example、第二轮旧 checkout SVG 换行导致失败，固定课源 pin 与精确字节后最终工作区20契约+59引擎单元+25作者CLI+13课程+2配音计划测试通过，Clippy全部targets与公共导出diff通过。隔离 PostgreSQL18.6 实际11项 ignored回归全部通过，覆盖admin4/author_runtime1/identity1/learning3/postgres1/recording1，测试库容器已停止清理。没有真实生产账号修改或收费调用。Chef远端CI37654153831实际completed/success。
+
+Brioche `1cceb05` 实际推送：移除原迁移/业务/测试副本，Rust仅保留薄启动和Schema导出；95文件变更、30552行删除。固定Chef与课程递归子模块在全新远端checkout取得，Cargo metadata仅本产品启动member，不依赖相邻本机Chef。最终产品fmt/workspace test/Clippy/生成diff通过，固定子模块工作区常规测试再次通过，TS7及28Web测试通过；只改合成录音fixture引用，未重跑完整浏览器，不扩大为iPhone验收。
+
+DockerAPI实际release构建完成，HTTPS+TTS三覆盖up server --wait实际healthy/0restart。当前实际Image `sha256:aad948cf294f73d1ff53cdec70b140777ca13bc2311642785e907fbe8a3b986c`；Web保持旧镜像。release-status仍48课正式录音目录/generation10，五service/四HTTPhealth健康，D盘空闲420444209152bytes。两域目录48、courses/ready200、匿名admin401/no-store通过。没有数据库schema/内容/账号迁移、DNS更改或恢复30075；独立身份与双产品隔离及Web抽取继续进行。Brioche新CI37654716488当次in_progress，前3bfcd84及4c657c9真实green，不将旧CI结论推广新提交。
+两HTTPS全部48固定revision公开课源进一步实际读取200、id/revision与目录一致、无serverOnly、48/48正式audio字段存在，证据.local/private/chef-backend-20261008/all-courses-verified.json。本次只核对课源/录音描述，没有重新下载407音频或声明人工听感。
