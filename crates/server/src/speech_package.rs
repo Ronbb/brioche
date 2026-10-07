@@ -1,4 +1,4 @@
-//! Private assembly artifacts. Export never registers or publishes a course.
+//! Private assembly artifacts and atomic draft imports. Neither operation publishes a course.
 use crate::{
     AppError,
     identity::{AuthSession, Backend, require_operator},
@@ -8,15 +8,16 @@ use crate::{
 use axum::{
     Extension, Json, Router,
     body::Body,
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::{HeaderMap, HeaderValue},
     response::Response,
-    routing::post,
+    routing::{get, post},
 };
 use brioche_course_contract::{
-    AdminSpeechPackageRequest, AudioAsset, AudioCue, AudioTrack, AudioWordRange, Block,
+    AdminSpeechPackageImport, AdminSpeechPackageRequest, AdminSpeechPackageResult,
+    AdminSpeechPackageResults, AudioAsset, AudioCue, AudioTrack, AudioWordRange, Block,
 };
-use sea_orm::{ConnectionTrait, IsolationLevel, TransactionTrait};
+use sea_orm::{ConnectionTrait, DbBackend, IsolationLevel, Statement, TransactionTrait};
 use serde_json::{Value, json};
 use std::{
     collections::{BTreeMap, BTreeSet},
@@ -26,10 +27,196 @@ use std::{
 
 const MAX_PACKAGE: usize = 128 * 1024 * 1024;
 pub fn router() -> Router<Backend> {
-    Router::new().route(
-        "/api/v1/operator/speech-alignments/{id}/package",
-        post(export),
+    Router::new()
+        .route(
+            "/api/v1/operator/speech-alignments/{id}/package",
+            post(export),
+        )
+        .route(
+            "/api/v1/operator/speech-alignments/{id}/package/import",
+            post(import),
+        )
+        .route(
+            "/api/v1/operator/speech-alignments/{id}/packages",
+            get(list),
+        )
+}
+fn import_error(error: anyhow::Error) -> AppError {
+    if error.is::<sea_orm::DbErr>() {
+        return AppError::Unavailable;
+    }
+    if error.is::<crate::author_import::RevisionConflict>() {
+        return AppError::Conflict;
+    }
+    match error.downcast_ref::<AppError>() {
+        Some(AppError::Forbidden) => AppError::Forbidden,
+        Some(AppError::Conflict) => AppError::Conflict,
+        Some(_) => AppError::Unavailable,
+        None => AppError::InvalidInput,
+    }
+}
+async fn replay(
+    db: &impl ConnectionTrait,
+    alignment: &str,
+    actor: i64,
+    request: &AdminSpeechPackageImport,
+) -> Result<Option<AdminSpeechPackageResult>, AppError> {
+    let row = one(
+        db,
+        "SELECT actor_id,alignment_id,request,result FROM speech_package_imports WHERE id=$1",
+        vec![request.id.clone().into()],
     )
+    .await?;
+    let Some(row) = row else {
+        return Ok(None);
+    };
+    if field::<i64>(&row, "actor_id")? != actor
+        || field::<String>(&row, "alignment_id")? != alignment
+        || field::<Value>(&row, "request")?
+            != serde_json::to_value(request).map_err(|_| AppError::Unavailable)?
+    {
+        return Err(AppError::Conflict);
+    }
+    Ok(Some(
+        serde_json::from_value(field(&row, "result")?).map_err(|_| AppError::Unavailable)?,
+    ))
+}
+async fn import(
+    auth: AuthSession,
+    State(b): State<Backend>,
+    Path(id): Path<String>,
+    Extension(root): Extension<PathBuf>,
+    Extension(permits): Extension<Arc<tokio::sync::Semaphore>>,
+    Json(request): Json<AdminSpeechPackageImport>,
+) -> Result<Json<AdminSpeechPackageResult>, AppError> {
+    require_operator(&auth)?;
+    settings(&request.package)?;
+    if !hex(&id, 32) || !hex(&request.id, 32) {
+        return Err(AppError::InvalidInput);
+    }
+    let actor = owner(&auth)?;
+    let tx =
+        b.db.begin_with_config(Some(IsolationLevel::RepeatableRead), None)
+            .await
+            .map_err(|_| AppError::Unavailable)?;
+    lock_operator(&tx, actor).await?;
+    if let Some(result) = replay(&tx, &id, actor, &request).await? {
+        tx.commit().await.map_err(|_| AppError::Unavailable)?;
+        return Ok(Json(result));
+    }
+    let original = snapshot(&tx, &id, &request.package).await?;
+    tx.commit().await.map_err(|_| AppError::Unavailable)?;
+    let _permit = permits
+        .try_acquire_many_owned(2)
+        .map_err(|_| AppError::RateLimited)?;
+    let expected = original.clone();
+    let config = request.package.clone();
+    let (assembled, recordings) = tokio::task::spawn_blocking(move || -> Result<_, AppError> {
+        let mut assembled = assemble(&root, original, &config, actor)?;
+        let recordings = crate::recording::prepare_recordings(
+            &assembled.bundle,
+            &root,
+            &format!("user:{actor}"),
+            |spec, _| {
+                let bytes = assembled
+                    .files
+                    .get(&spec.file)
+                    .ok_or_else(|| anyhow::anyhow!("missing assembled recording"))?;
+                let info = crate::audio::inspect(bytes, &spec.mime_type)?;
+                Ok((bytes.clone(), info))
+            },
+        )
+        .map_err(|_| AppError::Unavailable)?;
+        assembled.files.clear();
+        Ok((assembled, recordings))
+    })
+    .await
+    .map_err(|_| AppError::Unavailable)??;
+    let tx = b.db.begin().await.map_err(|_| AppError::Unavailable)?;
+    lock_operator(&tx, actor).await?;
+    exec(
+        &tx,
+        "SELECT singleton FROM content_state WHERE singleton FOR UPDATE",
+        vec![],
+    )
+    .await?;
+    if let Some(result) = replay(&tx, &id, actor, &request).await? {
+        tx.commit().await.map_err(|_| AppError::Unavailable)?;
+        return Ok(Json(result));
+    }
+    if snapshot(&tx, &id, &request.package).await? != expected {
+        return Err(AppError::Conflict);
+    }
+    let actor_name = format!("user:{actor}");
+    crate::recording::register_transaction(
+        &tx,
+        &assembled.bundle,
+        recordings,
+        &actor_name,
+        Some((actor, &request.package.reason)),
+        true,
+    )
+    .await
+    .map_err(import_error)?;
+    let imported = crate::author_import::import_transaction(
+        &tx,
+        assembled.source,
+        &actor_name,
+        &request.package.reason,
+        false,
+    )
+    .await
+    .map_err(import_error)?;
+    let result = AdminSpeechPackageResult {
+        id: request.id.clone(),
+        lesson_id: imported.lesson_id,
+        revision: imported.revision,
+        recording_count: assembled.bundle.assets.len() as u32,
+    };
+    exec(&tx,"INSERT INTO speech_package_imports(id,alignment_id,actor_id,request,result,manifest,reason,lesson_id,revision) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+        vec![request.id.clone().into(),id.into(),actor.into(),serde_json::to_value(&request).map_err(|_|AppError::Unavailable)?.into(),
+        serde_json::to_value(&result).map_err(|_|AppError::Unavailable)?.into(),assembled.manifest.into(),request.package.reason.into(),
+        result.lesson_id.clone().into(),(result.revision as i32).into()]).await?;
+    tx.commit().await.map_err(|_| AppError::Unavailable)?;
+    Ok(Json(result))
+}
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Cursor {
+    after: Option<String>,
+}
+async fn list(
+    auth: AuthSession,
+    State(b): State<Backend>,
+    Path(id): Path<String>,
+    Query(query): Query<Cursor>,
+) -> Result<Json<AdminSpeechPackageResults>, AppError> {
+    require_operator(&auth)?;
+    let after = query.after.unwrap_or_default();
+    if !hex(&id, 32) || (!after.is_empty() && !hex(&after, 32)) {
+        return Err(AppError::InvalidInput);
+    }
+    one(
+        &b.db,
+        "SELECT id FROM speech_alignments WHERE id=$1",
+        vec![id.clone().into()],
+    )
+    .await?
+    .ok_or(AppError::NotFound)?;
+    let rows=b.db.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,
+        "SELECT result FROM speech_package_imports WHERE alignment_id=$1 AND id>$2 ORDER BY id LIMIT 21",vec![id.into(),after.into()]))
+        .await.map_err(|_|AppError::Unavailable)?;
+    let items = rows
+        .iter()
+        .take(20)
+        .map(|row| serde_json::from_value(field(row, "result")?).map_err(|_| AppError::Unavailable))
+        .collect::<Result<Vec<AdminSpeechPackageResult>, AppError>>()?;
+    let next = if rows.len() > 20 {
+        items.last().map(|r| r.id.clone())
+    } else {
+        None
+    };
+    Ok(Json(AdminSpeechPackageResults { items, next }))
 }
 fn settings(r: &AdminSpeechPackageRequest) -> Result<(), AppError> {
     if !hex(&r.expected_report_hash, 64)
@@ -267,12 +454,18 @@ fn asset(
     add_file(files, file, bytes)?;
     Ok(public)
 }
-fn pack(
+struct Assembled {
+    files: BTreeMap<String, Vec<u8>>,
+    source: Value,
+    bundle: crate::recording::AudioBundle,
+    manifest: Value,
+}
+fn assemble(
     root: &FilePath,
     mut manifest: Value,
     r: &AdminSpeechPackageRequest,
     actor: i64,
-) -> Result<Vec<u8>, AppError> {
+) -> Result<Assembled, AppError> {
     settings(r)?;
     let mut source = manifest["source"].clone();
     let lesson = crate::project_source(source.clone()).map_err(|_| AppError::Unavailable)?;
@@ -509,8 +702,22 @@ fn pack(
         "manifest.json".into(),
         serde_json::to_vec_pretty(&manifest).map_err(|_| AppError::Unavailable)?,
     )?;
+    Ok(Assembled {
+        files,
+        source,
+        bundle: typed,
+        manifest,
+    })
+}
+fn pack(
+    root: &FilePath,
+    manifest: Value,
+    request: &AdminSpeechPackageRequest,
+    actor: i64,
+) -> Result<Vec<u8>, AppError> {
+    let assembled = assemble(root, manifest, request, actor)?;
     let mut tar = tar::Builder::new(Vec::new());
-    for (name, bytes) in files {
+    for (name, bytes) in assembled.files {
         if tar
             .get_ref()
             .len()

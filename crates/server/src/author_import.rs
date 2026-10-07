@@ -3,7 +3,7 @@ use crate::{
     AppError,
     learning::{exec, field, one},
 };
-use sea_orm::{DatabaseConnection, TransactionTrait};
+use sea_orm::{ConnectionTrait, DatabaseConnection, TransactionTrait};
 use serde_json::Value;
 #[derive(Debug)]
 pub struct RevisionConflict;
@@ -36,6 +36,20 @@ async fn import_impl(
     reason: &str,
     allow_identical_retry: bool,
 ) -> anyhow::Result<brioche_course_contract::AdminImportResult> {
+    let tx = db.begin().await.map_err(|_| AppError::Unavailable)?;
+    let result = import_transaction(&tx, source, actor, reason, allow_identical_retry).await?;
+    tx.commit().await.map_err(|_| AppError::Unavailable)?;
+    Ok(result)
+}
+/// The caller owns the transaction, allowing recording registration and draft import
+/// to commit together. CLI and standalone imports use this same validation path.
+pub(crate) async fn import_transaction(
+    db: &impl ConnectionTrait,
+    source: Value,
+    actor: &str,
+    reason: &str,
+    allow_identical_retry: bool,
+) -> anyhow::Result<brioche_course_contract::AdminImportResult> {
     anyhow::ensure!(
         !actor.trim().is_empty() && actor.len() <= 1000 && !actor.chars().any(char::is_control),
         "/: invalid import actor"
@@ -51,17 +65,16 @@ async fn import_impl(
     let source = crate::recording::hydrate_source(db, source).await?;
     let lesson = crate::project_source(source.clone())?;
     crate::grading::Grader::from_author_source(&lesson, &source)?;
-    let tx = db.begin().await.map_err(|_| AppError::Unavailable)?;
     // Serialize import retries by their immutable identity, independent of the directory lock.
     exec(
-        &tx,
+        db,
         "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
         vec![format!("lesson-import:{}:{}", lesson.id, lesson.revision).into()],
     )
     .await?;
     let identity = vec![lesson.id.clone().into(), (lesson.revision as i32).into()];
     if let Some(existing) = one(
-        &tx,
+        db,
         "SELECT server_document FROM lesson_revisions WHERE lesson_id=$1 AND revision=$2",
         identity,
     )
@@ -71,9 +84,9 @@ async fn import_impl(
             return Err(RevisionConflict.into());
         }
     } else {
-        exec(&tx,"INSERT INTO lesson_revisions(lesson_id,revision,published,public_document,server_document) VALUES($1,$2,false,$3,$4)",vec![lesson.id.clone().into(),(lesson.revision as i32).into(),serde_json::to_value(&lesson)?.into(),source.into()]).await?;
+        exec(db,"INSERT INTO lesson_revisions(lesson_id,revision,published,public_document,server_document) VALUES($1,$2,false,$3,$4)",vec![lesson.id.clone().into(),(lesson.revision as i32).into(),serde_json::to_value(&lesson)?.into(),source.into()]).await?;
         exec(
-            &tx,
+            db,
             "INSERT INTO lesson_import_audit(lesson_id,revision,actor,reason) VALUES($1,$2,$3,$4)",
             vec![
                 lesson.id.clone().into(),
@@ -84,7 +97,6 @@ async fn import_impl(
         )
         .await?;
     }
-    tx.commit().await.map_err(|_| AppError::Unavailable)?;
     Ok(brioche_course_contract::AdminImportResult {
         lesson_id: lesson.id,
         revision: lesson.revision,

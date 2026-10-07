@@ -498,6 +498,8 @@ async fn history(
             UNION ALL
             SELECT 'alignmentReview:'||alignment_id||':'||clip_id,CASE WHEN accepted THEN 'alignmentAccepted' ELSE 'alignmentRejected' END,alignment_id||':'||clip_id,'user:'||actor_id,reason,created_at FROM speech_alignment_reviews
             UNION ALL
+            SELECT 'speechPackage:'||id,'speechPackageImport',lesson_id||' v'||revision,'user:'||actor_id,reason,created_at FROM speech_package_imports
+            UNION ALL
             SELECT 'speechClip:'||id, 'speechClip', id, 'user:'||actor_id, reason, created_at FROM course_speech_clips
             UNION ALL
             SELECT 'speechClipReview:'||clip_id, CASE WHEN accepted THEN 'speechClipAccepted' ELSE 'speechClipRejected' END, clip_id, 'user:'||actor_id, reason, created_at FROM course_speech_clip_reviews

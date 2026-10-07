@@ -182,28 +182,14 @@ async fn import_bundle_impl(
     operator: Option<(i64, &str)>,
 ) -> Result<()> {
     bundle.validate_author(actor)?;
-    let bundle_hash = hash(&bundle).map_err(anyhow::Error::msg)?;
     let source_root = source_root.canonicalize()?;
     let store = store.to_path_buf();
-    let specs = bundle.assets.clone();
+    let prepared_bundle = bundle.clone();
+    let prepared_actor = actor.to_owned();
     let recordings = tokio::task::spawn_blocking(move || -> Result<Vec<_>> {
-        let mut result = Vec::new();
-        for (index, spec) in specs.into_iter().enumerate() {
-            let (bytes, info) = inspect_source_file(&source_root, &spec, index)?;
-            let ext = audio::extension(&spec.mime_type)?;
-            media::store_file(&store, &bytes, &spec.sha256, ext)?;
-            let descriptor = AudioAsset {
-                asset_id: spec.asset_id.clone(),
-                revision: spec.revision,
-                sha256: spec.sha256.clone(),
-                mime_type: spec.mime_type.clone(),
-                duration_ms: info.duration_ms,
-                credit_zh: spec.credit_zh.clone(),
-                url: format!("/api/audio/{}.{}", spec.sha256, ext),
-            };
-            result.push((spec, descriptor, bytes.len(), info));
-        }
-        Ok(result)
+        prepare_recordings(&prepared_bundle, &store, &prepared_actor, |spec, index| {
+            inspect_source_file(&source_root, spec, index)
+        })
     })
     .await??;
     let tx = db.begin().await?;
@@ -233,14 +219,80 @@ async fn import_bundle_impl(
     .await
     .map_err(anyhow::Error::msg)?
     .context("content state missing")?;
+    register_transaction(&tx, &bundle, recordings, actor, operator, false).await?;
+    tx.commit().await?;
+    Ok(())
+}
+pub(crate) type PreparedRecordings = Vec<(AudioSpec, AudioAsset, usize, audio::RecordingInfo)>;
+/// Blocking file preparation shared by uploads, CLI bundles and assembled courses.
+pub(crate) fn prepare_recordings(
+    bundle: &AudioBundle,
+    store: &Path,
+    actor: &str,
+    mut read: impl FnMut(&AudioSpec, usize) -> Result<(Vec<u8>, audio::RecordingInfo)>,
+) -> Result<PreparedRecordings> {
+    bundle.validate_author(actor)?;
+    let mut result = Vec::new();
+    for (index, spec) in bundle.assets.iter().enumerate() {
+        let (bytes, info) = read(spec, index)?;
+        ensure!(
+            media::digest(&bytes) == spec.sha256 && info.duration_ms == spec.duration_ms,
+            "/assets/{index}: recording does not match fixed metadata"
+        );
+        let ext = audio::extension(&spec.mime_type)?;
+        media::store_file(store, &bytes, &spec.sha256, ext)?;
+        let descriptor = AudioAsset {
+            asset_id: spec.asset_id.clone(),
+            revision: spec.revision,
+            sha256: spec.sha256.clone(),
+            mime_type: spec.mime_type.clone(),
+            duration_ms: info.duration_ms,
+            credit_zh: spec.credit_zh.clone(),
+            url: format!("/api/audio/{}.{}", spec.sha256, ext),
+        };
+        result.push((spec.clone(), descriptor, bytes.len(), info));
+    }
+    Ok(result)
+}
+/// The caller must hold the content lock and reauthorize its operator.
+pub(crate) async fn register_transaction(
+    db: &impl ConnectionTrait,
+    bundle: &AudioBundle,
+    recordings: PreparedRecordings,
+    actor: &str,
+    operator: Option<(i64, &str)>,
+    reuse_identical: bool,
+) -> Result<()> {
+    bundle.validate_author(actor)?;
+    let bundle_hash = hash(bundle).map_err(anyhow::Error::msg)?;
+    let mut reused = BTreeSet::new();
     for (index, (spec, _, _, _)) in recordings.iter().enumerate() {
         let existing = one(
-            &tx,
-            "SELECT revision FROM audio_assets WHERE asset_id=$1 AND revision=$2",
+            db,
+            "SELECT descriptor,provenance,byte_size,sample_rate,channels FROM audio_assets WHERE asset_id=$1 AND revision=$2",
             vec![spec.asset_id.clone().into(), (spec.revision as i32).into()],
         )
         .await
         .map_err(anyhow::Error::msg)?;
+        if let Some(row) = existing.as_ref().filter(|_| reuse_identical) {
+            let (_, descriptor, size, info) = &recordings[index];
+            let registered: AudioSpec = serde_json::from_value(field(row, "provenance")?)?;
+            let mut candidate = spec.clone();
+            // A local bundle path is transport metadata, not recording identity
+            // or rights. Keep the original registered path and audit unchanged.
+            candidate.file = registered.file.clone();
+            if field::<serde_json::Value>(row, "descriptor")? != serde_json::to_value(descriptor)?
+                || field::<serde_json::Value>(row, "provenance")?
+                    != serde_json::to_value(candidate)?
+                || field::<i64>(row, "byte_size")? != *size as i64
+                || field::<i32>(row, "sample_rate")? != info.sample_rate as i32
+                || field::<i32>(row, "channels")? != info.channels as i32
+            {
+                return Err(crate::AppError::Conflict.into());
+            }
+            reused.insert((spec.asset_id.clone(), spec.revision));
+            continue;
+        }
         if existing.is_some() && operator.is_some() {
             return Err(crate::AppError::Conflict.into());
         }
@@ -250,14 +302,17 @@ async fn import_bundle_impl(
         );
     }
     for (spec, descriptor, size, info) in recordings {
-        exec(&tx, "INSERT INTO audio_assets(asset_id,revision,descriptor,provenance,sha256,extension,byte_size,duration_ms,sample_rate,channels) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)", vec![
+        if reused.contains(&(spec.asset_id.clone(), spec.revision)) {
+            continue;
+        }
+        exec(db, "INSERT INTO audio_assets(asset_id,revision,descriptor,provenance,sha256,extension,byte_size,duration_ms,sample_rate,channels) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)", vec![
             spec.asset_id.clone().into(), (spec.revision as i32).into(), serde_json::to_value(descriptor)?.into(),
             serde_json::to_value(&spec)?.into(), spec.sha256.into(), audio::extension(&spec.mime_type)?.into(),
             (size as i64).into(), (info.duration_ms as i32).into(), (info.sample_rate as i32).into(), (info.channels as i32).into(),
         ]).await.map_err(anyhow::Error::msg)?;
     }
     exec(
-        &tx,
+        db,
         "INSERT INTO audio_import_audit(actor,bundle_hash,asset_count,actor_id,reason,target) VALUES($1,$2,$3,$4,$5,$6)",
         vec![
             actor.into(),
@@ -270,7 +325,6 @@ async fn import_bundle_impl(
     )
     .await
     .map_err(anyhow::Error::msg)?;
-    tx.commit().await?;
     Ok(())
 }
 

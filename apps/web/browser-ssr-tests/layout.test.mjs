@@ -107,6 +107,8 @@ let speechClips = [],
 let alignmentResult = null,
   alignmentLostImport = false,
   alignmentLostReview = false;
+let packageReceipts = [],
+  packageLostReply = false;
 let speechPlans = [],
   speechLostReply = false;
 const speechVoices = lesson.cast.map((character) => ({
@@ -137,13 +139,34 @@ const api = createServer((request, response) => {
     return;
   }
   if (request.url.startsWith("/api/v1/operator/speech-alignments")) {
+    if (request.url.includes("/packages")) {
+      response.end(JSON.stringify({ items: packageReceipts, next: null }));
+      return;
+    }
     if (request.method === "POST") {
       let body = "";
       request.on("data", (c) => (body += c));
       request.on("end", () => {
         const payload = JSON.parse(body);
         adminWrites.push({ operation: request.url, ...payload });
-        if (request.url.endsWith("/package")) {
+        if (request.url.endsWith("/package/import")) {
+          const result = {
+            id: payload.id,
+            lessonId: lesson.id,
+            revision: payload.package.lessonRevision,
+            recordingCount: 3,
+          };
+          if (!packageReceipts.some((item) => item.id === payload.id))
+            packageReceipts.push(result);
+          if (packageLostReply) {
+            packageLostReply = false;
+            response.statusCode = 503;
+            response.end("{}");
+            return;
+          }
+          response.end(JSON.stringify(result));
+          return;
+        } else if (request.url.endsWith("/package")) {
           response.setHeader("Content-Type", "application/x-tar");
           response.end(Buffer.alloc(1024));
           return;
@@ -3208,6 +3231,30 @@ test("speech alignment imports and human corrections preserve exact requests aft
     assert.equal(adminWrites[4].gapMs, 250);
     assert.equal(adminWrites[4].rightsConfirmed, true);
     assert.equal(adminWrites[4].reason, "Controlled assembly");
+    packageLostReply = true;
+    await act("button", "登记录音并导入草稿");
+    await browser("wait", "--text", "核对同一课包导入请求");
+    assert.equal(adminWrites.length, 6);
+    assert.equal(
+      await evaluate("document.querySelector('input[type=number]').disabled"),
+      true,
+    );
+    await act("button", "核对同一课包导入请求");
+    await browser("wait", "--text", "已登记录音并导入课程 v2 草稿");
+    assert.equal(adminWrites.length, 7);
+    assert.deepEqual(adminWrites[5], adminWrites[6]);
+    assert.equal(
+      adminWrites[5].package.expectedReportHash,
+      alignmentResult.reportHash,
+    );
+    assert.equal(packageReceipts.length, 1);
+    await browser("wait", "--text", "3 条录音");
+    assert.equal(
+      await evaluate(
+        "Array.from(document.querySelectorAll('a')).find(a=>a.textContent==='预览新草稿')?.getAttribute('href')",
+      ),
+      `/author-preview?lessonId=${lesson.id}&revision=2`,
+    );
     for (const width of [320, 390, 678]) {
       await browser("set", "viewport", String(width), "844");
       assert.equal(
@@ -3224,6 +3271,8 @@ test("speech alignment imports and human corrections preserve exact requests aft
     alignmentResult = null;
     alignmentLostImport = false;
     alignmentLostReview = false;
+    packageReceipts = [];
+    packageLostReply = false;
     await browser("cookies", "clear");
   }
 });

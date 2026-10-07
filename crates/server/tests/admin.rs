@@ -4102,6 +4102,254 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
         409
     );
     package_request["lessonRevision"] = json!(revision + 2);
+    let package_import_path = format!("{package_path}/import");
+    let package_records_path = format!("{read_alignment}/packages");
+    let mut package_import = json!({"id":"ab".repeat(16),"package":package_request});
+    package_import["package"]["creditZh"] = json!("Synthetic atomic import attribution");
+    assert_eq!(
+        visitor
+            .send(
+                "POST",
+                &package_import_path,
+                Some(package_import.clone()),
+                true
+            )
+            .await
+            .0,
+        401
+    );
+    assert_eq!(
+        learner
+            .send(
+                "POST",
+                &package_import_path,
+                Some(package_import.clone()),
+                true
+            )
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                &package_import_path,
+                Some(package_import.clone()),
+                false
+            )
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        visitor
+            .send("GET", &package_records_path, None, false)
+            .await
+            .0,
+        401
+    );
+    assert_eq!(
+        learner
+            .send("GET", &package_records_path, None, false)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send(
+                "GET",
+                &format!("{package_records_path}?after=invalid"),
+                None,
+                false
+            )
+            .await
+            .0,
+        400
+    );
+    assert_eq!(
+        operator
+            .send("GET", &package_records_path, None, false)
+            .await
+            .1["items"],
+        json!([])
+    );
+    let count_sql = "SELECT (SELECT count(*) FROM audio_assets) AS audio_count,(SELECT count(*) FROM audio_import_audit) AS audio_audits,(SELECT count(*) FROM lesson_import_audit) AS lesson_audits,(SELECT count(*) FROM speech_package_imports) AS packages";
+    let counts_before = db
+        .query_one_raw(Statement::from_string(DbBackend::Postgres, count_sql))
+        .await
+        .unwrap()
+        .unwrap();
+    // Fail after registration SQL to prove the shared transaction rolls back all
+    // registry/audit rows when draft insertion fails. This is our isolated schema.
+    db.execute_unprepared(&format!("CREATE FUNCTION reject_package_test() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.revision={} THEN RAISE EXCEPTION 'controlled package import failure'; END IF; RETURN NEW; END $$; CREATE TRIGGER reject_package_test BEFORE INSERT ON lesson_revisions FOR EACH ROW EXECUTE FUNCTION reject_package_test()",revision+2)).await.unwrap();
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                &package_import_path,
+                Some(package_import.clone()),
+                true
+            )
+            .await
+            .0,
+        503
+    );
+    let counts_failed = db
+        .query_one_raw(Statement::from_string(DbBackend::Postgres, count_sql))
+        .await
+        .unwrap()
+        .unwrap();
+    for column in ["audio_count", "audio_audits", "lesson_audits", "packages"] {
+        assert_eq!(
+            counts_before.try_get::<i64>("", column).unwrap(),
+            counts_failed.try_get::<i64>("", column).unwrap()
+        );
+    }
+    db.execute_unprepared(
+        "DROP TRIGGER reject_package_test ON lesson_revisions; DROP FUNCTION reject_package_test()",
+    )
+    .await
+    .unwrap();
+    let mut concurrent_operator = Browser {
+        app: app.clone(),
+        cookie: operator.cookie.clone(),
+        csrf: operator.csrf.clone(),
+    };
+    let (first, concurrent) = tokio::join!(
+        concurrent_operator.send(
+            "POST",
+            &package_import_path,
+            Some(package_import.clone()),
+            true
+        ),
+        operator.send(
+            "POST",
+            &package_import_path,
+            Some(package_import.clone()),
+            true
+        )
+    );
+    assert!([200, 429].contains(&first.0) && [200, 429].contains(&concurrent.0));
+    assert!(first.0 == 200 || concurrent.0 == 200);
+    let saved = operator
+        .send(
+            "POST",
+            &package_import_path,
+            Some(package_import.clone()),
+            true,
+        )
+        .await;
+    assert_eq!(saved.0, 200, "{:?}", saved.1);
+    assert_eq!(saved.1["revision"], revision + 2);
+    assert_eq!(saved.1["lessonId"], lesson_id);
+    assert!(saved.1["recordingCount"].as_u64().unwrap() > 0);
+    let replayed = operator
+        .send(
+            "POST",
+            &package_import_path,
+            Some(package_import.clone()),
+            true,
+        )
+        .await;
+    assert_eq!(saved, replayed);
+    assert_eq!(
+        second
+            .send(
+                "POST",
+                &package_import_path,
+                Some(package_import.clone()),
+                true
+            )
+            .await
+            .0,
+        409
+    );
+    let counts_after = db
+        .query_one_raw(Statement::from_string(DbBackend::Postgres, count_sql))
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(counts_after.try_get::<i64>("", "packages").unwrap(), 1);
+    assert_eq!(
+        counts_after.try_get::<i64>("", "audio_audits").unwrap(),
+        counts_before.try_get::<i64>("", "audio_audits").unwrap() + 1
+    );
+    assert_eq!(
+        counts_after.try_get::<i64>("", "lesson_audits").unwrap(),
+        counts_before.try_get::<i64>("", "lesson_audits").unwrap() + 1
+    );
+    let records = operator
+        .send("GET", &package_records_path, None, false)
+        .await;
+    assert_eq!(records.0, 200);
+    assert_eq!(records.1["items"], json!([saved.1]));
+    assert!(
+        !serde_json::to_string(&records.1)
+            .unwrap()
+            .contains("serverOnly")
+    );
+    let mut changed = package_import.clone();
+    changed["package"]["reason"] = json!("Changed immutable request");
+    assert_eq!(
+        operator
+            .send("POST", &package_import_path, Some(changed), true)
+            .await
+            .0,
+        409
+    );
+    let fixed=db.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,
+        "SELECT published,server_document->'editorial'->>'status' AS status FROM lesson_revisions WHERE lesson_id=$1 AND revision=$2",
+        vec![lesson_id.clone().into(),((revision+2) as i32).into()])).await.unwrap().unwrap();
+    assert!(!fixed.try_get::<bool>("", "published").unwrap());
+    assert_eq!(fixed.try_get::<String>("", "status").unwrap(), "draft");
+    assert!(
+        db.execute_unprepared("UPDATE speech_package_imports SET reason='changed'")
+            .await
+            .is_err()
+    );
+    assert!(
+        db.execute_unprepared("DELETE FROM speech_package_imports")
+            .await
+            .is_err()
+    );
+    for index in 0..21 {
+        let mut extra = package_import.clone();
+        extra["id"] = json!(format!("ad{index:030x}"));
+        extra["package"]["lessonRevision"] = json!(revision + 3 + index);
+        assert_eq!(
+            operator
+                .send("POST", &package_import_path, Some(extra), true)
+                .await
+                .0,
+            200
+        );
+    }
+    let page_one = operator
+        .send("GET", &package_records_path, None, false)
+        .await;
+    assert_eq!(page_one.1["items"].as_array().unwrap().len(), 20);
+    let cursor = page_one.1["next"].as_str().unwrap();
+    let page_two = operator
+        .send(
+            "GET",
+            &format!("{package_records_path}?after={cursor}"),
+            None,
+            false,
+        )
+        .await;
+    assert_eq!(page_two.1["items"].as_array().unwrap().len(), 2);
+    assert!(page_two.1["next"].is_null());
+    let ids: std::collections::BTreeSet<_> = page_one.1["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .chain(page_two.1["items"].as_array().unwrap())
+        .map(|item| item["id"].as_str().unwrap())
+        .collect();
+    assert_eq!(ids.len(), 22);
+    package_request["lessonRevision"] = json!(revision + 24);
     assert!(
         db.execute_unprepared("UPDATE speech_alignments SET reason='overwrite'")
             .await
@@ -4142,6 +4390,30 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
             .0,
         503
     );
+    let fresh_package = json!({"id":"ac".repeat(16),"package":package_request});
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                &package_import_path,
+                Some(fresh_package.clone()),
+                true
+            )
+            .await
+            .0,
+        503
+    );
+    assert_eq!(
+        operator
+            .send(
+                "POST",
+                &package_import_path,
+                Some(package_import.clone()),
+                true
+            )
+            .await,
+        saved
+    );
     let mut broken_import = import_request.clone();
     broken_import["id"] = json!("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee3");
     assert_eq!(
@@ -4159,6 +4431,19 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
     ))
     .await
     .unwrap();
+    assert_eq!(
+        operator
+            .send("POST", &package_import_path, Some(fresh_package), true)
+            .await
+            .0,
+        404
+    );
+    assert_eq!(
+        operator
+            .send("POST", &package_import_path, Some(package_import), true)
+            .await,
+        saved
+    );
     assert_eq!(
         operator
             .send("GET", &format!("{path}/{id}"), None, true)
