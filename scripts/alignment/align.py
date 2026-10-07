@@ -19,6 +19,7 @@ import wave
 ROOT = Path(__file__).resolve().parents[2]
 MODEL = json.loads(Path(__file__).with_name("model.json").read_text(encoding="utf-8"))
 RUNTIME = json.loads(Path(__file__).with_name("runtime.json").read_text(encoding="utf-8"))
+ALIASES = json.loads(Path(__file__).with_name("transcript-aliases.json").read_text(encoding="utf-8"))
 MAX_ARCHIVE = 128 * 1024 * 1024
 MAX_MEDIA = 16 * 1024 * 1024
 MAX_JSON = 4 * 1024 * 1024
@@ -234,13 +235,34 @@ def model_token(text):
     return "".join(c for c in text if c == "'" or unicodedata.category(c)[0] in "LN")
 
 
-def predictions(words, raw, duration):
+def transcript_aliases(words):
+    # Only unambiguous, single-token cardinal spellings; no expansion or contraction.
+    return [{"wordIndex": i, "sourceText": w["text"], "modelToken": ALIASES["cardinals"][w["text"]]}
+            for i, w in enumerate(words) if w["text"] in ALIASES["cardinals"]]
+
+
+def model_tokens(words, aliases=()):
+    tokens = [model_token(w["text"]) for w in words]
+    previous = -1
+    for alias in aliases:
+        require(set(alias) == {"wordIndex", "sourceText", "modelToken"}, "invalid transcript alias fields")
+        i = alias["wordIndex"]
+        require(type(i) is int and previous < i < len(words), "invalid transcript alias index")
+        require(alias["sourceText"] == words[i]["text"] and
+                ALIASES["cardinals"].get(alias["sourceText"]) == alias["modelToken"], "invalid cardinal alias")
+        tokens[i] = alias["modelToken"]
+        previous = i
+    return tokens
+
+
+def predictions(words, raw, duration, aliases=()):
+    tokens = model_tokens(words, aliases)
     issues, output = [], []
     if len(raw) != len(words):
         return [], ["wordCountMismatch"]
     previous = 0
-    for word, item in zip(words, raw):
-        if item["text"] != model_token(word["text"]):
+    for word, token, item in zip(words, tokens, raw):
+        if item["text"] != token:
             issues.append("wordTextMismatch")
             continue
         start, end = item["startSeconds"], item["endSeconds"]
@@ -289,14 +311,15 @@ def load_model(directory):
     return NativeAligner(directory), versions
 
 
-def align_export(manifest, members, archive_hash, model, versions, direct=False):
+def align_export(manifest, members, archive_hash, model, versions, direct=False, spoken_cardinals=False):
     results = []
     for index, clip in enumerate(manifest["clips"]):
         payload, duration = pcm(members[clip["file"]])
-        tokens = [model_token(w["text"]) for w in clip["words"]]
+        aliases = transcript_aliases(clip["words"]) if spoken_cardinals else []
+        tokens = model_tokens(clip["words"], aliases)
         require(all(tokens), "empty model token")
         raw = model.predict(payload, tokens)
-        words, issues = predictions(clip["words"], raw, duration)
+        words, issues = predictions(clip["words"], raw, duration, aliases)
         targets = []
         for target in manifest["plan"]["targets"]:
             if target["generationKey"] != clip["generationKey"]:
@@ -307,11 +330,13 @@ def align_export(manifest, members, archive_hash, model, versions, direct=False)
         results.append({"clipId": clip["id"], "generationKey": clip["generationKey"],
                         "sha256": clip["result"]["sha256"], "durationMs": duration,
                         "rawPredictions": raw, "words": words, "issues": issues, "targets": targets})
+        if aliases:
+            results[-1]["transcriptAliases"] = aliases
         print(f"Aligned clip {index + 1}/{len(manifest['clips'])}", file=sys.stderr, flush=True)
     return {"schemaVersion": "1.0", "kind": "brioche-automatic-alignment-predictions" if direct else "brioche-alignment-predictions", "planId": manifest["planId"],
             "planHash": manifest["plan"]["planHash"], "sourceArchiveSha256": archive_hash,
             "engine": {**MODEL, "versions": versions, "device": "cpu", "dtype": "float32", "attention": "eager",
-                       "transcript": "NFC source word units, apostrophes normalized; original scalar ranges retained; raw timestamp classes without interpolation"},
+                       "transcript": ALIASES["policy"] if spoken_cardinals else "NFC source word units, apostrophes normalized; original scalar ranges retained; raw timestamp classes without interpolation"},
             "reviewRequired": not direct, "clips": results}
 
 
@@ -333,6 +358,7 @@ def main():
     parser.add_argument("export", type=Path)
     parser.add_argument("--check", action="store_true", help="validate without loading model")
     parser.add_argument("--direct", action="store_true", help="use owner-authorized inputs without a human hearing declaration")
+    parser.add_argument("--spoken-cardinals", action="store_true", help="explicit one-to-one French cardinal model tokens; retain raw predictions and source ranges")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--model", type=Path, default=ROOT / ".local/models/qwen3-forced-aligner-0.6b-hf" / MODEL["revision"])
     args = parser.parse_args()
@@ -344,7 +370,7 @@ def main():
         require(args.output is not None and not args.output.exists(), "provide a new private output path")
         require(args.output.resolve().is_relative_to((ROOT / ".local/private").resolve()), "output must remain private")
         model, versions = load_model(args.model)
-        report = align_export(manifest, members, archive_hash, model, versions, args.direct)
+        report = align_export(manifest, members, archive_hash, model, versions, args.direct, args.spoken_cardinals)
         write_private(args.output, report)
         invalid = sum(bool(c["issues"] or any(t["issues"] for t in c["targets"])) for c in report["clips"])
         print(json.dumps({"clips": len(report["clips"]), "clipsWithIssues": invalid, "reviewRequired": not args.direct}))

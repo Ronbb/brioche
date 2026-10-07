@@ -8,6 +8,93 @@ use brioche_course_contract::{AdminAlignmentWord, AdminSpeechPackageRequest};
 use sea_orm::{ConnectionTrait, IsolationLevel, TransactionTrait};
 use serde_json::{Value, json};
 use std::{collections::BTreeSet, path::PathBuf};
+use unicode_normalization::UnicodeNormalization;
+
+const LEGACY_TRANSCRIPT: &str = "NFC source word units, apostrophes normalized; original scalar ranges retained; raw timestamp classes without interpolation";
+
+fn alias_policy() -> Result<Value, AppError> {
+    serde_json::from_str(include_str!(
+        "../../../scripts/alignment/transcript-aliases.json"
+    ))
+    .map_err(|_| AppError::Unavailable)
+}
+
+fn model_token(source: &str) -> String {
+    source
+        .nfc()
+        .map(|c| match c {
+            '’' | 'ʼ' | '‘' => '\'',
+            _ => c,
+        })
+        .filter(|c| *c == '\'' || c.is_alphabetic() || c.is_numeric())
+        .collect()
+}
+
+// The native model emits integer 80 ms classes. Check their exact class value,
+// never interpolate, shift or silently replace the timestamps for an alias.
+fn raw_class_ms(value: &Value) -> Result<u32, AppError> {
+    let seconds = value.as_f64().ok_or(AppError::InvalidInput)?;
+    let class = seconds * 1000.0 / 80.0;
+    if !class.is_finite() || !(0.0..5000.0).contains(&class) || (class - class.round()).abs() > 1e-9
+    {
+        return Err(AppError::InvalidInput);
+    }
+    Ok(class.round() as u32 * 80)
+}
+
+fn check_aliases(
+    report: &Value,
+    clip: &Value,
+    expected: &[AdminAlignmentWord],
+    words: &[AdminAlignmentWord],
+) -> Result<(), AppError> {
+    let Some(aliases) = clip.get("transcriptAliases") else {
+        return Ok(());
+    };
+    let policy = alias_policy()?;
+    let aliases = aliases
+        .as_array()
+        .filter(|a| !a.is_empty())
+        .ok_or(AppError::InvalidInput)?;
+    if report["engine"]["transcript"] != policy["policy"] {
+        return Err(AppError::InvalidInput);
+    }
+    let mut tokens: Vec<_> = expected.iter().map(|w| model_token(&w.text)).collect();
+    let mut previous = None;
+    for alias in aliases {
+        let index = alias["wordIndex"]
+            .as_u64()
+            .and_then(|n| usize::try_from(n).ok())
+            .ok_or(AppError::InvalidInput)?;
+        let word = expected.get(index).ok_or(AppError::InvalidInput)?;
+        if alias.as_object().is_none_or(|v| v.len() != 3)
+            || previous.is_some_and(|p| p >= index)
+            || alias["sourceText"] != word.text
+            || policy["cardinals"].get(&word.text).is_none()
+            || alias["modelToken"] != policy["cardinals"][&word.text]
+        {
+            return Err(AppError::InvalidInput);
+        }
+        tokens[index] = text(alias, "modelToken")?.to_owned();
+        previous = Some(index);
+    }
+    let raw = clip["rawPredictions"]
+        .as_array()
+        .ok_or(AppError::InvalidInput)?;
+    if raw.len() != expected.len() || words.len() != expected.len() {
+        return Err(AppError::InvalidInput);
+    }
+    for ((prediction, token), word) in raw.iter().zip(tokens).zip(words) {
+        if prediction.as_object().is_none_or(|v| v.len() != 3)
+            || prediction["text"] != token
+            || Some(raw_class_ms(&prediction["startSeconds"])?) != word.start_ms
+            || Some(raw_class_ms(&prediction["endSeconds"])?) != word.end_ms
+        {
+            return Err(AppError::InvalidInput);
+        }
+    }
+    Ok(())
+}
 
 fn text<'a>(value: &'a Value, key: &str) -> Result<&'a str, AppError> {
     value[key].as_str().ok_or(AppError::InvalidInput)
@@ -20,6 +107,7 @@ fn check_report(report: &Value, request: &AdminSpeechPackageRequest) -> Result<(
         serde_json::from_str(include_str!("../../../scripts/alignment/runtime.json"))
             .map_err(|_| AppError::Unavailable)?;
     let engine = &report["engine"];
+    let aliases = alias_policy()?;
     if serde_json::to_vec(report)
         .map_err(|_| AppError::InvalidInput)?
         .len()
@@ -40,8 +128,7 @@ fn check_report(report: &Value, request: &AdminSpeechPackageRequest) -> Result<(
         || engine["device"] != "cpu"
         || engine["dtype"] != "float32"
         || engine["attention"] != "eager"
-        || engine["transcript"]
-            != "NFC source word units, apostrophes normalized; original scalar ranges retained; raw timestamp classes without interpolation"
+        || (engine["transcript"] != LEGACY_TRANSCRIPT && engine["transcript"] != aliases["policy"])
     {
         return Err(AppError::InvalidInput);
     }
@@ -118,6 +205,7 @@ fn manifest(snapshot: &Value, report: &Value) -> Result<Value, AppError> {
             .and_then(|n| u32::try_from(n).ok())
             .ok_or(AppError::InvalidInput)?;
         crate::speech_alignments::validate_words(&words, &expected, duration, true)?;
+        check_aliases(report, prediction, &expected, &words)?;
         let targets = prediction["targets"]
             .as_array()
             .ok_or(AppError::InvalidInput)?;
@@ -212,4 +300,58 @@ pub async fn assemble_for_actor(
     }
     tx.commit().await.map_err(|_| AppError::Unavailable)?;
     Ok(bytes)
+}
+
+#[cfg(test)]
+mod alias_tests {
+    use super::*;
+
+    #[test]
+    fn cardinal_alias_keeps_exact_native_classes_and_source_binding() {
+        let expected = vec![AdminAlignmentWord {
+            text: "20".into(),
+            start: 3,
+            end: 5,
+            start_ms: None,
+            end_ms: None,
+        }];
+        let words = vec![AdminAlignmentWord {
+            text: "20".into(),
+            start: 3,
+            end: 5,
+            start_ms: Some(80),
+            end_ms: Some(240),
+        }];
+        let report = json!({"engine":{"transcript":alias_policy().unwrap()["policy"]}});
+        let clip = json!({"transcriptAliases":[{"wordIndex":0,"sourceText":"20","modelToken":"vingt"}],"rawPredictions":[{"text":"vingt","startSeconds":0.08,"endSeconds":0.24}]});
+        check_aliases(&report, &clip, &expected, &words).unwrap();
+        for case in 0..7 {
+            let mut bad = clip.clone();
+            match case {
+                0 => bad["transcriptAliases"][0]["modelToken"] = json!("trente"),
+                1 => bad["transcriptAliases"][0]["sourceText"] = json!("30"),
+                2 => bad["transcriptAliases"][0]["wordIndex"] = json!(1),
+                3 => bad["rawPredictions"][0]["text"] = json!("20"),
+                4 => bad["rawPredictions"][0]["endSeconds"] = json!(0.32),
+                5 => bad["rawPredictions"][0]["startSeconds"] = json!(0.081),
+                _ => bad["transcriptAliases"]
+                    .as_array_mut()
+                    .unwrap()
+                    .push(clip["transcriptAliases"][0].clone()),
+            }
+            assert!(
+                check_aliases(&report, &bad, &expected, &words).is_err(),
+                "case {case}"
+            );
+        }
+        assert!(
+            check_aliases(
+                &json!({"engine":{"transcript":LEGACY_TRANSCRIPT}}),
+                &clip,
+                &expected,
+                &words
+            )
+            .is_err()
+        );
+    }
 }

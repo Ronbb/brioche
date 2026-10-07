@@ -244,5 +244,34 @@ class TimingTests(unittest.TestCase):
             self.assertEqual(json.loads(path.read_text()), {"reviewRequired": True})
 
 
+
+
+
+class CardinalAliasTests(unittest.TestCase):
+    def test_cardinal_preserves_source_and_raw_timestamp_classes(self):
+        words = [{"text": "20", "start": 3, "end": 5}]
+        raw = [{"text": "vingt", "startSeconds": 0.08, "endSeconds": 0.24}]
+        original = copy.deepcopy(raw)
+        aliases = align.transcript_aliases(words)
+        mapped, issues = align.predictions(words, raw, 1000, aliases)
+        self.assertEqual(issues, [])
+        self.assertEqual(mapped, [{**words[0], "startMs": 80, "endMs": 240}])
+        self.assertEqual(raw, original)
+        self.assertEqual(align.predictions(words, raw, 1000)[1], ["wordTextMismatch"])
+        for alias in [{"wordIndex": 0, "sourceText": "20", "modelToken": "trente"},
+                      {"wordIndex": 0, "sourceText": "30", "modelToken": "trente"},
+                      {"wordIndex": True, "sourceText": "20", "modelToken": "vingt"}]:
+            with self.assertRaises(ValueError):
+                align.model_tokens(words, [alias])
+        with self.assertRaises(ValueError):
+            align.model_tokens(words, aliases * 2)
+        raw[0]["endSeconds"] = raw[0]["startSeconds"]
+        self.assertEqual(align.predictions(words, raw, 1000, aliases)[1], ["invalidTimeRange"])
+
+    def test_ambiguous_or_multiple_token_numbers_are_not_aliased(self):
+        for text in ["1", "21", "01", "70", "20e", "20,5"]:
+            self.assertEqual(align.transcript_aliases([{"text": text}]), [])
+
+
 if __name__ == "__main__":
     unittest.main()

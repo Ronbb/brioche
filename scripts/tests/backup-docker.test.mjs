@@ -91,6 +91,10 @@ test(
                 "exec",
                 id,
                 "pg_isready",
+                // The image's initialization server accepts Unix sockets before
+                // shutting down. TCP readiness proves the final server is up.
+                "-h",
+                "127.0.0.1",
                 "-U",
                 "postgres",
                 "-d",

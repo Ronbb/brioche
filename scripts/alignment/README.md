@@ -57,3 +57,7 @@ python -m unittest discover -s scripts/alignment -p test_align.py -v
 ```
 
 这类报告标识为 `brioche-automatic-alignment-predictions`、reviewRequired=false，保留同样的真实模型原始预测、异常和固定来源包哈希。取消人工门槛不会取消模型、媒体、词范围或时间区间校验，也不会自动修补异常或登记/发布课程。旧人工报告导入API仍要求原类型；直接报告的正式组装入口尚在接入中，不能直接送入旧审核API。
+
+### 显式法语数字输入映射
+
+`--spoken-cardinals` 使用固定 `transcript-aliases.json` 中的单词数词拼写，例如源词 `20` 对应模型输入 `vingt`。数字仍保持原词文本及 Unicode scalar 区间；`rawPredictions` 保留实际模型输入文字和80ms分类，不改写为数字。每个使用映射的片段记录 `transcriptAliases`，引擎声明独立策略；服务端核对固定字典、原词/索引、无重复、实际预测文字及原始分类毫秒与结果完全相同，旧策略不能携带别名。1涉及性别，复合数词需要多个模型词，均不在此一对一策略内；不按猜测扩展。词数、重叠、零时长、越界检查保持。此选项不声明人类审听，也不保证模型推理一定通过。
