@@ -1173,7 +1173,12 @@ const api = createServer((request, response) => {
           uploaded.document.includes("preflight-invalid-marker")
             ? {
                 valid: false,
-                issue: { pointer: "/title/fr", line: 4, column: 12 },
+                issue: {
+                  pointer: "/title/fr",
+                  line: 4,
+                  column: 12,
+                  messageZh: "登记素材版本不存在。",
+                },
               }
             : { valid: true, issue: null },
         ),
@@ -2742,6 +2747,7 @@ test("operator enters admin from profile and approves using the centered dialog"
       "--text",
       "文件需要修改：第 4 行，第 12 列，字段 /title/fr。",
     );
+    await browser("wait", "--text", "登记素材版本不存在。");
     assert.equal(
       adminWrites.filter(
         (item) => item.operation === "/api/v1/operator/lessons/import",

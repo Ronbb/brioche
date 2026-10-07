@@ -137,10 +137,23 @@ impl Document {
 
 /// Authenticated Web preflight returns positions only, never author values,
 /// private answers, filesystem paths or raw parser/provider/database errors.
+#[cfg(test)]
 pub(crate) fn check_uploaded(
     bytes: &[u8],
     release: bool,
 ) -> brioche_course_contract::AdminDocumentCheck {
+    match prepare_uploaded(bytes, release) {
+        Ok(_) => brioche_course_contract::AdminDocumentCheck {
+            valid: true,
+            issue: None,
+        },
+        Err(report) => report,
+    }
+}
+pub(crate) fn prepare_uploaded(
+    bytes: &[u8],
+    release: bool,
+) -> std::result::Result<Document, brioche_course_contract::AdminDocumentCheck> {
     use brioche_course_contract::{AdminDocumentCheck, AdminDocumentIssue};
     let document = match Document::from_bytes(Path::new("uploaded.json"), bytes) {
         Ok(document) => document,
@@ -148,28 +161,27 @@ pub(crate) fn check_uploaded(
             let position = error
                 .chain()
                 .find_map(|cause| cause.downcast_ref::<serde_json::Error>());
-            return AdminDocumentCheck {
+            return Err(AdminDocumentCheck {
                 valid: false,
                 issue: Some(AdminDocumentIssue {
                     pointer: "/".into(),
                     line: position.map_or(1, |error| error.line().max(1)) as u32,
                     column: position.map_or(1, |error| error.column().max(1)) as u32,
+                    message_zh: "JSON 格式不正确、字段重复或文件超过限制。".into(),
                 }),
-            };
+            });
         }
     };
     let validation = if release {
         from_value::<crate::content::ReleaseManifest>(document.value.clone(), "")
             .and_then(|manifest| manifest.validate_author())
     } else {
-        crate::validate_source_schema(document.value.clone())
-            .and_then(|()| crate::author_source::check_source(&document.value).map(|_| ()))
+        crate::media::source_asset_refs(&document.value)
+            .and_then(|_| crate::recording::source_audio_refs(&document.value))
+            .and_then(|_| crate::validate_source_schema(document.value.clone()))
     };
     match validation {
-        Ok(()) => AdminDocumentCheck {
-            valid: true,
-            issue: None,
-        },
+        Ok(()) => Ok(document),
         Err(error) => {
             let pointer = error
                 .chain()
@@ -182,15 +194,47 @@ pub(crate) fn check_uploaded(
                     .then(|| pointer.to_owned())
                 })
                 .unwrap_or_else(|| "/".into());
-            let (line, column) = document.location(&pointer);
-            AdminDocumentCheck {
-                valid: false,
-                issue: Some(AdminDocumentIssue {
-                    pointer,
-                    line: line as u32,
-                    column: column as u32,
-                }),
+            Err(document.uploaded_issue(&pointer, "字段类型、课程结构或引用规则不符合要求。"))
+        }
+    }
+}
+impl Document {
+    pub(crate) fn uploaded_issue(
+        &self,
+        pointer: &str,
+        message: &str,
+    ) -> brioche_course_contract::AdminDocumentCheck {
+        let mut pointer = if pointer.starts_with('/')
+            && pointer.len() <= 1024
+            && !pointer.chars().any(char::is_control)
+        {
+            pointer.to_owned()
+        } else {
+            "/".into()
+        };
+        // Hydrated registry descriptors are not author fields. Point back to the
+        // actual reference object in the uploaded source, not an invented field.
+        for (hydrated, authored) in [("media", "assetRefs"), ("audio", "audioRefs")] {
+            if self.value.get(authored).is_some()
+                && let Some(rest) = pointer.strip_prefix(&format!("/{hydrated}/"))
+            {
+                let index = rest.split('/').next().unwrap_or("");
+                if let Ok(index) = index.parse::<usize>()
+                    && self.value[authored].get(index).is_some()
+                {
+                    pointer = format!("/{authored}/{index}");
+                }
             }
+        }
+        let (line, column) = self.location(&pointer);
+        brioche_course_contract::AdminDocumentCheck {
+            valid: false,
+            issue: Some(brioche_course_contract::AdminDocumentIssue {
+                pointer,
+                line: line as u32,
+                column: column as u32,
+                message_zh: message.into(),
+            }),
         }
     }
 }
@@ -541,6 +585,21 @@ fn uploaded_preflight_locates_fields_without_returning_private_values() {
     let mut source = crate::development_source().unwrap();
     let valid = serde_json::to_vec(&source).unwrap();
     assert!(check_uploaded(&valid, false).valid);
+    let mut referenced = source.clone();
+    referenced["assetRefs"] = serde_json::json!([{"assetId":"art-bakery-morning","revision":1}]);
+    referenced["media"] = serde_json::json!("registered placeholder");
+    referenced["audioRefs"] = serde_json::json!([]);
+    referenced["audio"] = serde_json::json!("registered placeholder");
+    let text = serde_json::to_vec(&referenced).unwrap();
+    let prepared = prepare_uploaded(&text, false).unwrap();
+    assert_eq!(
+        prepared
+            .uploaded_issue("/media/0/sha256", "safe message")
+            .issue
+            .unwrap()
+            .pointer,
+        "/assetRefs/0"
+    );
     source["serverOnly"]["grading"]["exercise-intention"]["correctOptionId"] =
         serde_json::json!("private-answer-marker");
     let text = serde_json::to_string_pretty(&source)

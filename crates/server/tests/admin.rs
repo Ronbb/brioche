@@ -5,7 +5,7 @@ use brioche_server::{
     identity::{self, Backend},
 };
 use http_body_util::BodyExt;
-use sea_orm::{ConnectOptions, ConnectionTrait, Database, DbBackend, Statement};
+use sea_orm::{ConnectOptions, ConnectionTrait, Database, DbBackend, Statement, TransactionTrait};
 use sea_orm_migration::MigratorTrait;
 use serde_json::{Value, json};
 use tower::ServiceExt;
@@ -158,7 +158,23 @@ async fn voice_reference_delivery_is_bounded_revocable_private_and_audited() {
         .register(&backend, "reference-learner@example.test", false)
         .await;
     let check_path = "/api/v1/operator/documents/lesson/check";
-    let check_request = json!({"document":serde_json::to_string(&brioche_server::development_source().unwrap()).unwrap(),"reason":"Read-only isolated preflight"});
+    let mut check_source = brioche_server::development_source().unwrap();
+    check_source["assetRefs"] = assets::fixture_refs();
+    check_source["media"] = json!("placeholder replaced from registry");
+    check_source["audioRefs"] = json!([]);
+    check_source["audio"] = json!("placeholder replaced from registry");
+    let check_request = json!({"document":serde_json::to_string(&check_source).unwrap(),"reason":"Read-only isolated preflight"});
+    let counts_sql = "SELECT jsonb_build_object('lessons',(SELECT count(*) FROM lesson_revisions),'imports',(SELECT count(*) FROM lesson_import_audit),'releases',(SELECT count(*) FROM content_releases),'entries',(SELECT count(*) FROM release_entries),'assets',(SELECT count(*) FROM media_assets),'audio',(SELECT count(*) FROM audio_assets),'assetAudit',(SELECT count(*) FROM asset_import_audit),'audioAudit',(SELECT count(*) FROM audio_import_audit),'reviews',(SELECT count(*) FROM editorial_reviews),'generation',(SELECT generation FROM content_state WHERE singleton)) AS counts";
+    let before_check: Value = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            counts_sql.to_owned(),
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get("", "counts")
+        .unwrap();
     assert_eq!(
         visitor
             .send("POST", check_path, Some(check_request.clone()), true)
@@ -185,6 +201,146 @@ async fn voice_reference_delivery_is_bounded_revocable_private_and_audited() {
         .await;
     assert_eq!(status, 200);
     assert_eq!(report, json!({"valid":true,"issue":null}));
+    for (pointer, value, expected, message) in [
+        (
+            "/assetRefs/0/revision",
+            json!(7991),
+            "/assetRefs/0/revision",
+            "图片素材未登记",
+        ),
+        (
+            "/audioRefs",
+            json!([{"assetId":"missing-recording","revision":7992}]),
+            "/audioRefs/0/revision",
+            "录音未登记",
+        ),
+        (
+            "/cast/0/revision",
+            json!(7993),
+            "/cast/0/revision",
+            "素材、角色或录音未登记",
+        ),
+    ] {
+        let mut source = check_source.clone();
+        *source.pointer_mut(pointer).unwrap() = value;
+        let text = serde_json::to_string_pretty(&source)
+            .unwrap()
+            .replace('\n', "\r\n");
+        let (status, report) = operator
+            .send(
+                "POST",
+                check_path,
+                Some(json!({"document":text,"reason":"Read-only reference mismatch"})),
+                true,
+            )
+            .await;
+        assert_eq!(status, 200);
+        assert_eq!(report["valid"], false);
+        assert_eq!(report["issue"]["pointer"], expected);
+        assert!(
+            report["issue"]["messageZh"]
+                .as_str()
+                .unwrap()
+                .contains(message)
+        );
+        assert!(report["issue"]["line"].as_u64().unwrap() > 1);
+        assert!(!report.to_string().contains("missing-recording"));
+    }
+    let asset: Value = db.query_one_raw(Statement::from_string(DbBackend::Postgres, "SELECT descriptor FROM media_assets WHERE asset_id='art-bakery-morning' AND revision=1".to_owned())).await.unwrap().unwrap().try_get("", "descriptor").unwrap();
+    let media_file = root.join(format!("{}.svg", asset["sha256"].as_str().unwrap()));
+    let original_media = std::fs::read(&media_file).unwrap();
+    std::fs::write(&media_file, "broken private test bytes").unwrap();
+    let (status, report) = operator.send("POST", check_path, Some(json!({"document":serde_json::to_string(&check_source).unwrap(),"reason":"Read-only corrupt object"})), true).await;
+    std::fs::write(&media_file, original_media).unwrap();
+    assert_eq!(status, 200);
+    assert_eq!(report["valid"], false);
+    assert_eq!(report["issue"]["pointer"], "/assetRefs/0");
+    assert!(
+        report["issue"]["messageZh"]
+            .as_str()
+            .unwrap()
+            .contains("素材文件缺失、损坏")
+    );
+    assert!(
+        !report
+            .to_string()
+            .contains(asset["sha256"].as_str().unwrap())
+    );
+    let after_check: Value = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            counts_sql.to_owned(),
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get("", "counts")
+        .unwrap();
+    assert_eq!(before_check, after_check);
+    // Real blocked registry reads prove cancelling HTTP work cannot bypass the
+    // two-job admission limit. Only this disposable schema is locked.
+    let lock = db.begin().await.unwrap();
+    lock.execute_unprepared("LOCK TABLE media_assets IN ACCESS EXCLUSIVE MODE")
+        .await
+        .unwrap();
+    let request_body = json!({"document":serde_json::to_string(&check_source).unwrap(),"reason":"Read-only cancellation admission"});
+    let mut waiting = Vec::new();
+    for _ in 0..2 {
+        let app = app.clone();
+        let request = Request::builder()
+            .method("POST")
+            .uri(check_path)
+            .header("cookie", &operator.cookie)
+            .header("origin", "http://localhost:5173")
+            .header("x-csrf-token", &operator.csrf)
+            .header("content-type", "application/json")
+            .body(Body::from(serde_json::to_vec(&request_body).unwrap()))
+            .unwrap();
+        waiting.push(tokio::spawn(async move { app.oneshot(request).await }));
+    }
+    tokio::time::timeout(std::time::Duration::from_secs(5), async {
+        loop {
+            let n = db.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,
+                "SELECT count(*) AS n FROM pg_locks l JOIN pg_class c ON c.oid=l.relation JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname=$1 AND c.relname='media_assets' AND NOT l.granted", [schema.clone().into()]))
+                .await.unwrap().unwrap().try_get::<i64>("", "n").unwrap();
+            if n == 2 { break; }
+            tokio::time::sleep(std::time::Duration::from_millis(20)).await;
+        }
+    }).await.unwrap();
+    assert_eq!(
+        operator
+            .send("POST", check_path, Some(request_body.clone()), true)
+            .await
+            .0,
+        429
+    );
+    for request in waiting {
+        request.abort();
+        assert!(request.await.unwrap_err().is_cancelled());
+    }
+    assert_eq!(
+        operator
+            .send("POST", check_path, Some(request_body.clone()), true)
+            .await
+            .0,
+        429
+    );
+    lock.rollback().await.unwrap();
+    tokio::time::timeout(std::time::Duration::from_secs(5), async {
+        loop {
+            let (status, report) = operator
+                .send("POST", check_path, Some(request_body.clone()), true)
+                .await;
+            if status == 200 {
+                assert_eq!(report["valid"], true);
+                break;
+            }
+            assert_eq!(status, 429);
+            tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+        }
+    })
+    .await
+    .unwrap();
     let (status, report) = operator
         .send(
             "POST",

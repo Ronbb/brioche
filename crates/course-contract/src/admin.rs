@@ -88,6 +88,7 @@ pub struct AdminDocumentIssue {
     pub pointer: String,
     pub line: u32,
     pub column: u32,
+    pub message_zh: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]

@@ -559,7 +559,9 @@ async fn history(
 }
 async fn check_document(
     auth: AuthSession,
+    State(backend): State<Backend>,
     Path(kind): Path<String>,
+    axum::Extension(root): axum::Extension<std::path::PathBuf>,
     axum::Extension(permits): axum::Extension<std::sync::Arc<tokio::sync::Semaphore>>,
     Json(request): Json<AdminDocumentRequest>,
 ) -> Result<Json<brioche_course_contract::AdminDocumentCheck>, AppError> {
@@ -574,13 +576,40 @@ async fn check_document(
         .clone()
         .try_acquire_owned()
         .map_err(|_| AppError::RateLimited)?;
-    let result = tokio::task::spawn_blocking(move || {
-        let _permit = permit; // Cancellation must not release admission while parsing continues.
-        crate::author_json::check_uploaded(request.document.as_bytes(), release)
+    // A disconnected request must not free admission while detached blocking
+    // file work or database checks continue. The bounded job owns the permit.
+    let report = tokio::spawn(async move {
+        let _permit = permit;
+        let prepared = tokio::task::spawn_blocking(move || {
+            crate::author_json::prepare_uploaded(request.document.as_bytes(), release)
+        })
+        .await
+        .map_err(|_| AppError::Unavailable)?;
+        let document = match prepared {
+            Ok(document) => document,
+            Err(report) => return Ok(report),
+        };
+        if release {
+            return Ok(brioche_course_contract::AdminDocumentCheck {
+                valid: true,
+                issue: None,
+            });
+        }
+        let tx = backend
+            .db
+            .begin_with_config(
+                Some(IsolationLevel::RepeatableRead),
+                Some(sea_orm::AccessMode::ReadOnly),
+            )
+            .await
+            .map_err(|_| AppError::Unavailable)?;
+        let report = crate::author_import::check_registered(&tx, &document, &root).await?;
+        tx.rollback().await.map_err(|_| AppError::Unavailable)?;
+        Ok(report)
     })
     .await
-    .map_err(|_| AppError::Unavailable)?;
-    Ok(Json(result))
+    .map_err(|_| AppError::Unavailable)??;
+    Ok(Json(report))
 }
 async fn import_lesson(
     auth: AuthSession,

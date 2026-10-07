@@ -7,6 +7,70 @@ use sea_orm::{ConnectionTrait, DatabaseConnection, TransactionTrait};
 use serde_json::Value;
 #[derive(Debug)]
 pub struct RevisionConflict;
+
+/// Read-only registry/media check. The caller holds a read-only snapshot; no
+/// lesson, approval, release, audit or media object is created by this path.
+pub(crate) async fn check_registered(
+    db: &impl ConnectionTrait,
+    document: &crate::author_json::Document,
+    root: &std::path::Path,
+) -> Result<brioche_course_contract::AdminDocumentCheck, AppError> {
+    fn issue(
+        document: &crate::author_json::Document,
+        error: anyhow::Error,
+        message: &str,
+    ) -> Result<brioche_course_contract::AdminDocumentCheck, AppError> {
+        if error.downcast_ref::<AppError>().is_some() {
+            return Err(AppError::Unavailable);
+        }
+        let pointer = error
+            .chain()
+            .find_map(|cause| {
+                let text = cause.to_string();
+                text.split_once(": ")
+                    .filter(|(pointer, _)| pointer.starts_with('/'))
+                    .map(|(pointer, _)| pointer.to_owned())
+            })
+            .unwrap_or_else(|| "/".into());
+        Ok(document.uploaded_issue(&pointer, message))
+    }
+    let source = match crate::media::hydrate_source(db, document.value.clone()).await {
+        Ok(source) => source,
+        Err(error) => return issue(document, error, "图片素材未登记，或引用版本不存在。"),
+    };
+    let source = match crate::recording::hydrate_source(db, source).await {
+        Ok(source) => source,
+        Err(error) => return issue(document, error, "录音未登记，或引用版本不存在。"),
+    };
+    let lesson = match crate::author_source::check_source(&source) {
+        Ok(lesson) => lesson,
+        Err(error) => return issue(document, error, "登记素材与课程结构或引用不匹配。"),
+    };
+    if let Err(error) = crate::media::validate_lesson_detailed(db, &lesson, root).await {
+        match error.runtime {
+            AppError::InvalidInput => {
+                let pointer = error
+                    .diagnostic
+                    .strip_prefix("imported lesson ")
+                    .and_then(|text| text.split_once(": "))
+                    .map_or("/", |(pointer, _)| pointer);
+                let message = if error.diagnostic.contains("stored ")
+                    || error.diagnostic.contains("decode")
+                {
+                    "素材文件缺失、损坏或解码信息与登记不一致。"
+                } else {
+                    "素材、角色或录音未登记，或版本信息不一致。"
+                };
+                return Ok(document.uploaded_issue(pointer, message));
+            }
+            other => return Err(other),
+        }
+    }
+    Ok(brioche_course_contract::AdminDocumentCheck {
+        valid: true,
+        issue: None,
+    })
+}
 impl std::fmt::Display for RevisionConflict {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         formatter.write_str("/revision: lesson revision already exists; revisions are immutable")

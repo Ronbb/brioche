@@ -145,7 +145,7 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
           const issue = checked.issue;
           setError(
             issue
-              ? `文件需要修改：第 ${issue.line} 行，第 ${issue.column} 列，字段 ${issue.pointer}。`
+              ? `文件需要修改：第 ${issue.line} 行，第 ${issue.column} 列，字段 ${issue.pointer}。${issue.messageZh ?? ""}`
               : "文件检查未通过，请修改后重新提交。",
           );
           return;
