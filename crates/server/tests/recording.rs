@@ -321,6 +321,19 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
     assert_eq!(status["required"], true);
     assert_eq!(status["accepted"], false);
     assert_eq!(status["version"], 0);
+    let overview = response(
+        &app,
+        "/api/v1/operator/overview",
+        "GET",
+        &[("cookie", &operator)],
+    )
+    .await;
+    let overview: Value =
+        serde_json::from_slice(&overview.into_body().collect().await.unwrap().to_bytes()).unwrap();
+    assert_eq!(overview["lessons"][0]["contentApproved"], true);
+    assert_eq!(overview["lessons"][0]["audioRequired"], true);
+    assert_eq!(overview["lessons"][0]["audioAccepted"], false);
+    assert_eq!(overview["lessons"][0]["approved"], false);
     assert!(
         brioche_server::content::stage(
             &db,
@@ -365,6 +378,18 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
         let saved = post(&app, &final_review, &declaration, &headers).await;
         assert_eq!(saved.status(), 200);
     }
+    let overview = response(
+        &app,
+        "/api/v1/operator/overview",
+        "GET",
+        &[("cookie", &operator)],
+    )
+    .await;
+    let overview: Value =
+        serde_json::from_slice(&overview.into_body().collect().await.unwrap().to_bytes()).unwrap();
+    assert_eq!(overview["lessons"][0]["contentApproved"], true);
+    assert_eq!(overview["lessons"][0]["audioAccepted"], true);
+    assert_eq!(overview["lessons"][0]["approved"], true);
     let mut rejected = declaration.clone();
     rejected["version"] = json!(1);
     rejected["accepted"] = json!(false);

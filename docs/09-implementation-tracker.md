@@ -445,3 +445,9 @@ pre-course-speech-clips-20261007数据库+5媒体backup/verify完成。API镜像
 本批验证与部署：Rust工作区常规、Clippy/fmt、4项隔离PG管理员与完整迁移测试通过；录音PG覆盖缺听过/错误哈希/CSRF/当前角色、不可变审计、损坏文件拒绝新决定、原回执、审批/stage/activate门槛、发布后精确重试与新决定拒绝。测试清理改为期待有审计的迁移拒绝删除，并只删除自有隔离schema/容器。28Web/29SSR/TS7/build/格式通过；最终整课试听Chromium46.47秒、原题目预览两项66.13秒通过，包含丢失回执冻结、同请求重试、离页Stay及320/390/678/1024px无溢出。测试均非真实法语审听。
 
 数据库及5媒体备份 pre-final-listening-20261007 已校验；HTTPS+TTS三Compose实际build/up--wait完成，迁移26 exit0、四长期服务healthy、两个HTTPS健康。匿名试听API401且private/no-store；Traefik无宿主端口、30075零监听，开发API ready200。只读26迁移/0整课试听/0正式录音/0试听任务/2声音档案/6发布课/generation1，未调用真实收费TTS或修改生产账号、声音、课程审批。隔离PG已删除，所有本批句柄终态；首六课实际语音与人工确认、设备及运维验收继续待完成，完整目标保持活动。
+
+2026-10-07 内容与录音状态分开：后台overview返回contentApproved/audioRequired/audioAccepted，并保持approved为全部发布审批条件通过。无录音的课程不要求试听；有录音时缺少接受记录不能显示批准操作，提供固定版本「预览与整课试听」入口和明确原因。已有内容批准仍可以退回修改，不再因录音退回丢失该操作；曾发布和撤回状态保持优先。前端限制不能代替服务端审批/stage/activate重查。字段只投影审批布尔值，不返回私有课源、答案或声音参数。正式首六课语音生成及人工确认继续待完成。
+
+本批验证与生产：固定API的实际PG验证内容approved保持true、整课未听approved=false，通过后组合approved=true；4项管理员与录音链路测试通过，Rust工作区常规/Clippy/fmt、TS7/build、28Web/29SSR/格式通过。最终Chromium四种内容/录音组合及实际内容退回66.35秒通过，分页/搜索同批通过；320/390/678/1024px无横向溢出。协议fixture未声称真实审听。
+
+pre-approval-status-20261007数据库及5媒体备份已verify；HTTPS+TTS三Compose实际build/up--wait完成，四长期healthy、迁移exit0、两个HTTPS巡检healthy。生产只读26迁移/0正式录音/0整课审批/2声音档案/6发布课/generation1保持；overview匿名401且private/no-store，Traefik无宿主端口、30075零监听，开发API ready200。实际API镜像148fdd7f6f7f6ccb5348ae5d5dc52a37faef7b87c4969a0e02760d470e910de0，Web93517465e3c91906d8efcd746da3993101a76e56c40c10f77e7f089527124433。隔离PG及卷已删除，所有本批测试/构建/启动句柄终态；未请求新付费TTS或修改实际用户/角色/课程，完整目标仍活动。独立gateway和原开发服务保留，其他会话部署/ADR文档不提交。

@@ -20,7 +20,7 @@ pub fn router() -> Router<Backend> {
         get(read).post(review),
     )
 }
-fn required(source: &Value) -> bool {
+pub(crate) fn required(source: &Value) -> bool {
     source["audio"].as_array().is_some_and(|a| !a.is_empty())
 }
 pub(crate) async fn accepted(

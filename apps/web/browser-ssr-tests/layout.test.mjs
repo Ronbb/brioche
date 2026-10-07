@@ -109,6 +109,7 @@ let finalStatus = {
   actor: null,
 };
 let adminApproved = false;
+let adminAudio = { required: false, accepted: false };
 let adminPaged = false;
 let overviewReads = [];
 let adminWrites = [];
@@ -955,6 +956,9 @@ const api = createServer((request, response) => {
                 published: false,
                 withdrawn: false,
                 approved: false,
+                contentApproved: false,
+                audioRequired: false,
+                audioAccepted: false,
                 reviewVersion: 0,
                 reviewNote: "隔离分页测试",
               }))
@@ -985,7 +989,11 @@ const api = createServer((request, response) => {
             unit: lesson.unitId,
             published: false,
             withdrawn: false,
-            approved: adminApproved,
+            approved:
+              adminApproved && (!adminAudio.required || adminAudio.accepted),
+            contentApproved: adminApproved,
+            audioRequired: adminAudio.required,
+            audioAccepted: adminAudio.accepted,
             reviewVersion: adminApproved ? 1 : 0,
             reviewNote: "隔离管理员界面测试",
           },
@@ -2338,6 +2346,77 @@ test("operator confirms final lesson listening with explicit declaration and exa
     assert.deepEqual(serverErrors, []);
   } finally {
     finalListening = false;
+    accounts = false;
+    operatorAccount = false;
+  }
+});
+
+test("operator distinguishes content approval from final listening without losing rejection", async () => {
+  accounts = true;
+  operatorAccount = true;
+  adminPaged = false;
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("set", "viewport", "390", "844");
+    for (const [content, audio, approve, reject] of [
+      [true, false, false, true],
+      [false, false, false, false],
+      [false, true, true, false],
+      [true, true, false, true],
+    ]) {
+      adminApproved = content;
+      adminAudio = { required: true, accepted: audio };
+      await browser("open", origin + "/admin");
+      await browser("wait", ".admin-card");
+      const texts = await evaluate(
+        "[...document.querySelectorAll('.admin-card button')].map(b=>b.textContent)",
+      );
+      assert.equal(texts.includes("批准课程"), approve);
+      assert.equal(texts.includes("退回修改"), reject);
+      assert.equal(
+        await evaluate(
+          "document.querySelector('.admin-card').textContent.includes('整课试听尚未通过')",
+        ),
+        !audio,
+      );
+      assert.equal(
+        await evaluate(
+          "document.querySelector('.admin-card a').getAttribute('href')",
+        ),
+        `/author-preview?lessonId=${lesson.id}&revision=1`,
+      );
+      for (const width of [320, 390, 678, 1024]) {
+        await browser("set", "viewport", String(width), "844");
+        assert.equal(
+          await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+          true,
+        );
+      }
+      if (content && !audio) {
+        adminWrites = [];
+        await browser("scrollintoview", ".admin-card button");
+        await browser("click", ".admin-card button");
+        await browser("wait", ".admin-dialog[open]");
+        await browser(
+          "fill",
+          "#admin-reason",
+          "仅协议测试：内容退回独立于试听",
+        );
+        await browser("focus", ".admin-dialog .primary");
+        await browser("press", "Enter");
+        await browser(
+          "wait",
+          "--fn",
+          "!document.querySelector('.admin-dialog').open",
+        );
+        assert.equal(adminWrites.length, 1);
+        assert.equal(adminWrites[0].approved, false);
+      }
+    }
+  } finally {
+    adminAudio = { required: false, accepted: false };
+    adminApproved = false;
     accounts = false;
     operatorAccount = false;
   }

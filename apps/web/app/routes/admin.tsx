@@ -337,18 +337,33 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
                       ? "曾发布"
                       : lesson.approved
                         ? "已批准"
-                        : "待批准"}
+                        : lesson.contentApproved
+                          ? "待整课试听"
+                          : "待批准"}
                 </span>
               </div>
               <h2>{lesson.title}</h2>
               <p className="admin-note">{lesson.reviewNote}</p>
+              {!lesson.withdrawn &&
+                !lesson.published &&
+                lesson.audioRequired && (
+                  <p className="admin-note">
+                    {lesson.audioAccepted
+                      ? "整课试听已通过"
+                      : "整课试听尚未通过，完成试听后才能批准发布。"}
+                  </p>
+                )}
               <div className="admin-card-actions">
                 {!lesson.withdrawn && (
                   <Link
                     className="text-button"
                     to={`/author-preview?lessonId=${lesson.id}&revision=${lesson.revision}`}
                   >
-                    打开预览
+                    {lesson.audioRequired &&
+                    !lesson.audioAccepted &&
+                    !lesson.published
+                      ? "预览与整课试听"
+                      : "打开预览"}
                   </Link>
                 )}
                 {!lesson.withdrawn && (
@@ -359,21 +374,27 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
                     课程配音
                   </Link>
                 )}
-                {!lesson.withdrawn && !lesson.published && (
-                  <>
-                    <button
-                      className="text-button"
-                      onClick={() =>
-                        open({
-                          lesson,
-                          operation: lesson.approved ? "reject" : "approve",
-                        })
-                      }
-                    >
-                      {lesson.approved ? "退回修改" : "批准课程"}
-                    </button>
-                  </>
-                )}
+                {!lesson.withdrawn &&
+                  !lesson.published &&
+                  (lesson.contentApproved ||
+                    !lesson.audioRequired ||
+                    lesson.audioAccepted) && (
+                    <>
+                      <button
+                        className="text-button"
+                        onClick={() =>
+                          open({
+                            lesson,
+                            operation: lesson.contentApproved
+                              ? "reject"
+                              : "approve",
+                          })
+                        }
+                      >
+                        {lesson.contentApproved ? "退回修改" : "批准课程"}
+                      </button>
+                    </>
+                  )}
                 {!lesson.withdrawn && lesson.published && (
                   <button
                     className="text-button"

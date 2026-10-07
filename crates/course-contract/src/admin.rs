@@ -29,6 +29,9 @@ pub struct AdminLesson {
     pub published: bool,
     pub withdrawn: bool,
     pub approved: bool,
+    pub content_approved: bool,
+    pub audio_required: bool,
+    pub audio_accepted: bool,
     pub review_version: u32,
     pub review_note: String,
 }

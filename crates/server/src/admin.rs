@@ -701,6 +701,18 @@ async fn overview(
     for row in rows.into_iter().take(20) {
         let public: Value = field(&row, "public_document")?;
         let editorial: Value = field(&row, "editorial")?;
+        let source: Value = field(&row, "source")?;
+        let content_approved =
+            field::<Option<bool>>(&row, "approved")?.unwrap_or(editorial["status"] == "reviewed");
+        let audio_required = crate::lesson_audio_reviews::required(&source);
+        let audio_accepted = audio_required
+            && crate::lesson_audio_reviews::accepted(
+                &tx,
+                &field::<String>(&row, "lesson_id")?,
+                field::<i32>(&row, "revision")? as u32,
+                &source,
+            )
+            .await?;
         lessons.push(AdminLesson {
             id: field(&row, "lesson_id")?,
             revision: field::<i32>(&row, "revision")? as u32,
@@ -718,15 +730,10 @@ async fn overview(
                 .into(),
             published: field(&row, "published")?,
             withdrawn: field(&row, "withdrawn")?,
-            approved: field::<Option<bool>>(&row, "approved")?
-                .unwrap_or(editorial["status"] == "reviewed")
-                && crate::lesson_audio_reviews::accepted(
-                    &tx,
-                    &field::<String>(&row, "lesson_id")?,
-                    field::<i32>(&row, "revision")? as u32,
-                    &field::<Value>(&row, "source")?,
-                )
-                .await?,
+            approved: content_approved && (!audio_required || audio_accepted),
+            content_approved,
+            audio_required,
+            audio_accepted,
             review_version: field::<Option<i32>>(&row, "version")?.unwrap_or(0) as u32,
             review_note: field::<Option<String>>(&row, "reason")?
                 .unwrap_or_else(|| editorial["note"].as_str().unwrap_or("").into()),
