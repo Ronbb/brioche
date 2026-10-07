@@ -1,10 +1,14 @@
-# 第一轮工程实现
+# 工程开发与运行说明
+
+更新日期：2026-10-07。生产已上线 A1/A2 各 24 课，共 12 单元、48 课及全部正式预生成语音。当前固定目录是 `brioche-all-courses-audio-forty-eight-20261007`，generation 10；后续维护必须读取实际 `release-status`，不能把此数值作为写入预期硬编码。完整发布记录见 [课程生产发布](content/releases/README.md)，剩余验收见 [实现清单](09-implementation-tracker.md)。
+
+现行生产使用 `compose.yaml`、`compose.https.yaml`、`compose.tts.yaml` 三个文件，外层独立 HTTPS 网关接入内部 Traefik。所有维护命令应保持这组三覆盖，不恢复宿主 HTTP 30075。课程和录音按所有者直接发布授权处理，保留真实媒体、时间轴、来源、版本和审计校验；不再等待所有者逐项审批，也不伪造人工试听。
 
 当前完整备份可使用 `scripts/backup-seal.mjs` 生成认证加密副本，独立验证密文并解密回原恢复格式；操作与失败输出处理见 [加密备份副本](13-encrypted-backups.md)。生产1496对象快照已实际完成加密/校验/解密摘要验证，异盘目的地、每日执行、保留与异地恢复仍未完成。
 
-录音课包组装已接入时间轴后台：全部片段通过人工核对后，输出完整正文录音、词级区间、知识录音、新草稿和登记清单，保持固定来源与真实审听记录。下载不写登记/课源数据库；网页现可把正式录音登记、新版本草稿与不可变回执放在同一事务中导入，并按固定版本预览及每20条浏览回执，详见 `docs/characters/README.md`。最终人工试听、审批及目录发布保持独立，真实首六课语音覆盖继续待完成。
+录音课包组装已接入时间轴后台，保留历史人工核对流程及其真实记录；直接发布工具另记录所有者授权和实际模型分析证据。输出完整正文录音、词级区间、知识录音、新草稿和登记清单。下载不写登记/课源数据库；网页可把正式录音登记、新版本草稿与不可变回执放在同一事务中导入，并按固定版本预览及每20条浏览回执，详见 [角色与声音档案](characters/README.md)。组装、导入与目录激活是独立步骤；全部48课正式语音现已实际发布。
 
-2026-10-07 当前语音实现：课程播放器仅播放固定录音，已移除浏览器发音及失败回退。缺音频和不完整正文不播放半段，显示toast；媒体失败停止，用户明确点击才重试。暂无正式课程录音，因此首六课朗读暂不可用。预生成TTS覆盖、语音审听/对齐、固定版本登记与新目录发布继续待完成，以下历史记录中的浏览器回退不代表当前策略。
+当前课程播放器仅播放固定录音，已移除浏览器发音及失败回退。全部48课当前发布版本提供正式预生成语音；旧学习/收藏快照继续固定原版本，不自动补音频。缺音频和不完整正文不播放半段，显示toast；媒体失败停止，用户明确点击才重试。以下历史记录中的浏览器回退不代表当前策略。真实 iPhone 音频输出与人工听感验收仍未完成。
 
 填空提示可选：hintZh 为空或只有空白时，账号练习与演示练习都不显示提示入口。提示 API 对空提示返回 404，不记录 hintUsed 或改变学习进度；有内容的提示保持原幂等记录。键盘主动展开提示后焦点移至提示内容，初始已显示的提示不抢焦点。对应独立浏览器与 PostgreSQL 回归已补齐。
 
@@ -14,7 +18,7 @@
 
 选择题作者检查拒绝归一化后相同的选项文字：NFC、空白和法语撇号等价，大小写与重音保留。`check` 与 `import` 均在数据库访问前给出第二个重复选项的 `/blocks/.../options/.../text` 和原文件行列；正式导入仍完整验证登记素材与课程语义。排序题允许重复显示语块，共用同一个 Rust 文本归一化函数，避免作者校验与判分规则漂移。
 
-更新日期：2026-10-06。这是工程基础与课程阅读链路，尚未完成多用户学习产品。
+多用户账号、固定版本学习、收藏复习及管理员后台已实现并有隔离验收证据；完整目标仍需设备、辅助技术和异盘运维验收，不能以课程全部发布代替这些要求。
 
 ## 已实现
 
@@ -33,8 +37,7 @@
 - pnpm / Cargo workspace、锁文件、Rust 1.99.0 工具链、TypeScript 7 独立类型检查。
 - React Router Framework Mode + Vite SSR；正式客户端包含首页、课程阅读、固定版本账号学习、`/reviews` 账号复习与 `/profile`；单课 `/practice/:lessonId`、`/review/:lessonId` 仅在 developmentFixture 模式提供演示。
 - 迁移确认过的视觉与主要阅读交互：角色介绍、头像整句、点词朗读和词汇解释、短文、全文播放/暂停/长按调速、复习卡片、统一设置、toast、动效和覆盖式滚动条。
-- 录音失败转浏览器语音时保持用户暂停意图：暂停期间迟到的媒体错误不会开始语音等待或朗读，明确恢复才从当前句以最新倍速尝试；无语音仍保留实际失败提示。等待中的切词/离页取消旧监听与回调。
-- 当前系统语音语句返回终止错误（含 canceled/interrupted）时停止播放器并用 toast 提示明确重试，不继续显示播放或推进下一句；应用停止/切词/调速导致的旧语句错误仍按播放代次和语句身份忽略。
+- 固定录音播放器按真实媒体时钟同步进度/高亮/片段结束；暂停、切词、调速、离页和身份变化隔离旧媒体回调。播放拒绝、短媒体或提前 EOF 显示 toast 并停止，明确点击才重试，不回退浏览器语音。
 - Axum 公共目录和课程 API、health/readiness、SIGINT/SIGTERM 优雅退出。
 - Rust Serde 公共 DTO，生成 TS 联合类型和公共课程 JSON Schema；Web 只导入公共契约。私有答案与编辑状态不进入课程响应。
 - 课程块拒绝未知字段：10 类块及三种练习均严格解析，现有平铺练习格式不变。`check`/`import` 在连接前拒绝额外字段，诊断定位原文件对应字段的 JSON Pointer 与值的行列，并显示未知字段名；生成的公共/作者 Schema 同步约束额外属性。
@@ -209,18 +212,28 @@ cargo test -p brioche-server --test learning -- --ignored
 
 ## Docker Compose
 
-用户已确认部署可使用 Docker Compose。复制 `infra/production.env.example` 为根目录 `.env`，填写随机数据库秘密和 `PUBLIC_APP_URL`；密码使用字母数字或正确 URL 编码。`PUBLIC_APP_URL` 必须是浏览器最终访问的 origin，如外部 HTTPS 域名；后端由此选择 Secure Cookie 和 CSRF allowlist，内部网关仍为 HTTP。手机开发访问可用 `ADDITIONAL_APP_ORIGINS` 显式补充实际 LAN origin，不接受通配符。然后先检查并构建：
+用户已确认部署可使用 Docker Compose。新环境从 `infra/production.env.example` 创建私有配置文件，填写随机数据库秘密和 `PUBLIC_APP_URL`；当前机器已经使用 `.local/docker.env`，不要重建或覆盖。密码使用字母数字或正确 URL 编码。`PUBLIC_APP_URL` 必须是浏览器最终访问的 origin，如外部 HTTPS 域名；后端由此选择 Secure Cookie 和 CSRF allowlist，内部网关仍为 HTTP。额外入口使用 `ADDITIONAL_APP_ORIGINS` 显式补充实际 origin，不接受通配符。然后先检查并构建：
 
 ```sh
-docker compose config --quiet
-docker compose build
+docker compose --env-file .local/docker.env --project-name brioche -f compose.yaml -f compose.https.yaml -f compose.tts.yaml config --quiet
+docker compose --env-file .local/docker.env --project-name brioche -f compose.yaml -f compose.https.yaml -f compose.tts.yaml build
 ```
 
-准备好部署参数、核对项目与端口占用后，启动方式为 `docker compose up -d --wait --wait-timeout 180`，再核对 `docker compose ps --all` 和 `pnpm health:check --project brioche`。用户要求工程收尾后实际启动并保留应用在 Docker 中运行；具体验收见 [部署说明](05-deployment.md#工程收尾后的实际启动)。未发布正式内容时支持空目录与管理员私有预览，不能为启动伪造人工审校。访问 `http://<宿主机地址>:30075`；对外 HTTPS、域名和路由器由用户处理。Compose 内不申请证书，也不开放 HTTPS 端口。
+本机生产参数保存在忽略的 `.local/docker.env`；其他机器使用自己的私有配置路径，不提交秘密。当前生产维护与检查：
 
-Web 镜像用 `pnpm deploy --prod` 保留生产依赖，使用 React Router Node 服务，API 为 Linux release 二进制。入口使用官方 `traefik:v3.7.13` 镜像，固定发布 `30075:8080`。配置位于 `infra/traefik`，file provider 保留 API 路径前缀、页面走 SSR；没有 Docker socket、公开 dashboard 或证书卷。版本依据：[Traefik 3.7.13](https://github.com/traefik/traefik/releases/tag/v3.7.13)、[PostgreSQL 18.6](https://www.postgresql.org/docs/release/18.6/)。
+```sh
+docker compose --env-file .local/docker.env --project-name brioche -f compose.yaml -f compose.https.yaml -f compose.tts.yaml up -d --wait --wait-timeout 180
+docker compose --env-file .local/docker.env --project-name brioche -f compose.yaml -f compose.https.yaml -f compose.tts.yaml ps --all
+docker compose --env-file .local/docker.env --project-name brioche -f compose.yaml -f compose.https.yaml -f compose.tts.yaml exec -T server brioche-server release-status
+pnpm health:check --project brioche --origin https://your-app.example --disk-path /your/workspace --minimum-free-gib 5
+docker port brioche-traefik-1
+```
 
-数据库和媒体持久卷、备份/新目标恢复已接入并实际演练。Rust/Node/Debian/PostgreSQL 与既有 Traefik 的基础镜像固定 index digest，版本与更新方式见 [镜像说明](../infra/images.md)。完整 Compose 已在独立 brioche-compose-qa 项目验证：生产空目录、一次性迁移退出 0、四个长期服务 healthy、仅 HTTP 30075 发布、非 root Web/API 和可写媒体卷；同入口的邀请/注册/登录/退出、精确 Origin 拒绝、SSR/静态资源，以及恢复后的学习/收藏/复习/音频/幂等重放均通过。恢复的测试源只用于协议验收，不作为已审校正式课程。生产参数、容量、用户外部入口与公网验收继续待完成；TLS/DNS/路由器设置尚未修改。
+巡检的 origin 和磁盘路径替换为实际部署值；最后一条应没有宿主端口映射。生产已在 Docker 实际运行，独立 HTTPS 网关维护见 [网关接入](../infra/https-gateway.md)。未发布内容时仍支持空目录与管理员私有预览，不为启动伪造审校。基础 Compose 的 HTTP30075 只属于最初独立运行方案，现行生产必须保留 HTTPS 覆盖。
+
+Web 镜像用 `pnpm deploy --prod` 保留生产依赖，使用 React Router Node 服务，API 为 Linux release 二进制。入口使用固定 digest 的官方 Traefik 镜像，HTTP8080 保持 Docker 内部访问。配置位于 `infra/traefik`，file provider 保留 API 路径前缀、页面走 SSR；没有 Docker socket、公开 dashboard 或证书卷。实际版本以 Compose 和 [镜像说明](../infra/images.md) 为准。
+
+数据库和媒体持久卷、备份/新目标恢复已接入并实际演练。当前生产规模的48课数据库与1496媒体对象完成隔离恢复，真实公开/私有媒体和全课程学习闭环已验证；20账号混合读写容量基线见实现清单。此前 brioche-compose-qa 的 HTTP30075、空目录及合成课程是历史验证，不是现行生产配置。异盘加密副本、每日RPO/保留策略与真实设备验收仍待落实；基础镜像固定 index digest，不自动修改外部 TLS/DNS/路由器。
 
 ## 账号与课程入口
 
@@ -359,6 +372,10 @@ Compose 所有五个服务使用 Docker local 日志驱动，配置 max-size=10m
 
 `pnpm health:check --project <Compose 项目名>` 检查指定项目的五个服务与 HTTP 入口，默认访问 `http://127.0.0.1:30075`。`--origin` 可指定实际入口，`--disk-path` 和 `--minimum-free-gib` 可检查指定宿主文件系统空间。Node CLI 的退出码为 0（健康）、1（检出故障）、2（参数/脚本失败），stdout 为一行 JSON；不读取环境秘密到报告，不发送通知或自动修复。完整参数、范围与定时执行边界见 [部署巡检说明](05-deployment.md#运行巡检)。`pnpm test:ops` 会执行巡检单元和真实 HTTP 协议测试，已有 CI 命令自动包含它们；Docker 生产演练与外部告警另行验收。
 
+
+## 历史实现与验证记录
+
+以下保留各批次执行时的状态、失败与局限，不表示当前仍停留在当时的课程数量、人工门槛或浏览器语音策略。现行状态见本文件开头、实现清单及生产发布记录。
 
 ### 媒体发布失败定位
 
