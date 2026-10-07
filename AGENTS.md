@@ -63,7 +63,7 @@
 
 - 课源网页预检允许assetRefs/audioRefs占位字段，先校验内在结构再只读水合登记版本，复用媒体发布校验。水合位置需映射回原引用对象，错误中文使用固定安全说明，不回传值/哈希/原异常。准入许可由整个检查任务持有，不能因HTTP取消而绕过；只读预检不能替代最终import/stage事务或审批条件。
 
-- 网页课源/目录预检使用operator documents/{lesson|release}/check，共用本地作者验证及原源位置索引，只返回字段路径和行/列，不输出私有值/原异常/服务器路径。预检成功不证明媒体登记或发布可行，不跳过原导入/staging事务；阻塞解析准入permit需由实际任务持有直到完成，不能因客户端取消而提前释放。
+- 网页课源/目录预检使用operator documents/{lesson|release}/check，共用本地作者验证及原源位置索引，返回字段路径、行/列及固定安全中文，不输出私有值/原异常/服务器路径。目录预检与staging共用checked_entries的导入版本、撤回、发布条件、公共投影/目录归属、判分与真实媒体检查；RepeatableRead只读检查不能FOR SHARE，正式staging仍持有content_state→revision锁并原子提交。预检成功只是当次快照，不能替代最终事务或保证随后发布成功；准入permit需由整个实际任务持有直到完成，不能因HTTP取消而提前释放。
 
 - `scripts/backup-seal.mjs`只封装已验证的离线快照，不连接生产DB或上传。密钥是私有32字节文件，不放入副本或Git；错误/日志不输出秘密。输出必须新建，完整标记最后发布；失败明文仍私有，不自动清理。加密往返和同盘副本不证明异盘恢复、每日RPO或NTFS ACL，见docs/13-encrypted-backups.md。
 

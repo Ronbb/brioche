@@ -352,6 +352,163 @@ async fn voice_reference_delivery_is_bounded_revocable_private_and_audited() {
     assert_eq!(status, 200);
     assert_eq!(report["valid"], false);
     assert!(!report.to_string().contains("private-marker"));
+    // Synthetic editorial statuses below exist only in this disposable schema;
+    // the check itself never approves, imports, stages or activates content.
+    for (id, status) in [
+        ("check-reviewed", "reviewed"),
+        ("check-draft", "draft"),
+        ("check-withdrawn", "reviewed"),
+    ] {
+        let mut source = check_source.clone();
+        source["id"] = json!(id);
+        source["editorial"]["status"] = json!(status);
+        brioche_server::author_import::import(
+            &db,
+            source,
+            "isolated-test",
+            "Synthetic release check fixture",
+        )
+        .await
+        .unwrap();
+    }
+    let manifest = json!({"id":"check-existing-release","schemaVersion":"1.0","levels":[{
+    "id":check_source["levelId"],"label":"A1 入门","units":[{
+        "id":check_source["unitId"],"titleZh":"测试单元","lessons":[{"lessonId":"check-reviewed","revision":1}]
+    }]}]});
+    let typed = serde_json::from_value(manifest.clone()).unwrap();
+    brioche_server::content::stage(
+        &db,
+        &typed,
+        "isolated-test",
+        "Synthetic release check fixture",
+        &root,
+    )
+    .await
+    .unwrap();
+    brioche_server::content::withdraw(
+        &db,
+        "check-withdrawn",
+        1,
+        0,
+        "isolated-test",
+        "Synthetic withdrawal fixture",
+    )
+    .await
+    .unwrap();
+    let mut valid_manifest = manifest.clone();
+    valid_manifest["id"] = json!("check-new-release");
+    let release_check_path = "/api/v1/operator/documents/release/check";
+    let mut cases = vec![
+        (valid_manifest.clone(), None),
+        (manifest, Some(("/id", "编号已存在"))),
+    ];
+    for (pointer, value, expected, message) in [
+        (
+            "/levels/0/units/0/lessons/0/revision",
+            json!(7999),
+            "/levels/0/units/0/lessons/0/revision",
+            "尚未导入",
+        ),
+        (
+            "/levels/0/units/0/lessons/0/lessonId",
+            json!("check-withdrawn"),
+            "/levels/0/units/0/lessons/0/revision",
+            "已撤回",
+        ),
+        (
+            "/levels/0/units/0/lessons/0/lessonId",
+            json!("check-draft"),
+            "/levels/0/units/0/lessons/0",
+            "未满足发布条件",
+        ),
+        (
+            "/levels/0/units/0/id",
+            json!("other-unit"),
+            "/levels/0/units/0/lessons/0",
+            "未满足发布条件",
+        ),
+    ] {
+        let mut manifest = valid_manifest.clone();
+        *manifest.pointer_mut(pointer).unwrap() = value;
+        cases.push((manifest, Some((expected, message))));
+    }
+    let release_counts_sql = "SELECT jsonb_build_object('business',(".to_owned()
+        + counts_sql
+            .trim_end_matches(" AS counts")
+            .trim_start_matches("SELECT ")
+        + "),'audit',(SELECT count(*) FROM content_audit),'withdrawals',(SELECT count(*) FROM content_withdrawals)) AS counts";
+    let before_release: Value = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            release_counts_sql.clone(),
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get("", "counts")
+        .unwrap();
+    for (manifest, expected) in cases {
+        let text = serde_json::to_string_pretty(&manifest)
+            .unwrap()
+            .replace('\n', "\r\n");
+        let request = json!({"document":text,"reason":"Read-only release preflight"});
+        assert_eq!(
+            visitor
+                .send("POST", release_check_path, Some(request.clone()), true)
+                .await
+                .0,
+            401
+        );
+        assert_eq!(
+            learner
+                .send("POST", release_check_path, Some(request.clone()), true)
+                .await
+                .0,
+            403
+        );
+        let (status, report) = operator
+            .send("POST", release_check_path, Some(request), true)
+            .await;
+        assert_eq!(status, 200);
+        if let Some((pointer, message)) = expected {
+            assert_eq!(report["valid"], false);
+            assert_eq!(report["issue"]["pointer"], pointer);
+            assert!(
+                report["issue"]["messageZh"]
+                    .as_str()
+                    .unwrap()
+                    .contains(message)
+            );
+            assert!(report["issue"]["line"].as_u64().unwrap() > 1);
+            assert!(!report.to_string().contains("check-reviewed"));
+        } else {
+            assert_eq!(report, json!({"valid":true,"issue":null}));
+        }
+    }
+    let original_media = std::fs::read(&media_file).unwrap();
+    std::fs::write(&media_file, b"corrupt release check fixture").unwrap();
+    let (status, report) = operator.send("POST", release_check_path, Some(json!({"document":serde_json::to_string(&valid_manifest).unwrap(),"reason":"Read-only release media failure"})), true).await;
+    std::fs::write(&media_file, original_media).unwrap();
+    assert_eq!(status, 200);
+    assert_eq!(report["valid"], false);
+    assert_eq!(report["issue"]["pointer"], "/levels/0/units/0/lessons/0");
+    assert!(
+        !report
+            .to_string()
+            .contains(asset["sha256"].as_str().unwrap())
+    );
+    assert!(!report.to_string().contains("corrupt release"));
+    let after_release: Value = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            release_counts_sql,
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get("", "counts")
+        .unwrap();
+    assert_eq!(before_release, after_release);
     // Five seconds of synthetic PCM solely for protocol validation, no real speaker/consent claim.
     let mut wav = vec![0u8; 160044];
     wav[..4].copy_from_slice(b"RIFF");

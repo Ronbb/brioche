@@ -589,12 +589,6 @@ async fn check_document(
             Ok(document) => document,
             Err(report) => return Ok(report),
         };
-        if release {
-            return Ok(brioche_course_contract::AdminDocumentCheck {
-                valid: true,
-                issue: None,
-            });
-        }
         let tx = backend
             .db
             .begin_with_config(
@@ -603,7 +597,11 @@ async fn check_document(
             )
             .await
             .map_err(|_| AppError::Unavailable)?;
-        let report = crate::author_import::check_registered(&tx, &document, &root).await?;
+        let report = if release {
+            crate::content::check_registered_release(&tx, &document, &root).await?
+        } else {
+            crate::author_import::check_registered(&tx, &document, &root).await?
+        };
         tx.rollback().await.map_err(|_| AppError::Unavailable)?;
         Ok(report)
     })

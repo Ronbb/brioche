@@ -203,12 +203,14 @@ pub async fn stage_author(
 struct ReleaseFailure {
     runtime: AppError,
     diagnostic: Option<String>,
+    pointer: Option<String>,
 }
 impl From<AppError> for ReleaseFailure {
     fn from(runtime: AppError) -> Self {
         Self {
             runtime,
             diagnostic: None,
+            pointer: None,
         }
     }
 }
@@ -217,38 +219,25 @@ impl ReleaseFailure {
         Self {
             runtime,
             diagnostic: Some(format!("{pointer}: {message}")),
+            pointer: Some(pointer.to_owned()),
         }
     }
 }
-async fn stage_impl(
-    db: &DatabaseConnection,
-    manifest: &ReleaseManifest,
-    actor: &str,
-    reason: &str,
+// The same publication gates run in both staging and the read-only upload check.
+// PostgreSQL read-only transactions cannot acquire row locks; staging retains
+// its singleton lock and revision FOR SHARE locks until the atomic commit.
+async fn checked_entries<'a>(
+    db: &impl ConnectionTrait,
+    manifest: &'a ReleaseManifest,
     media_root: &std::path::Path,
-) -> Result<(), ReleaseFailure> {
-    manifest.validate_author().map_err(|error| ReleaseFailure {
-        runtime: AppError::InvalidInput,
-        diagnostic: Some(error.to_string()),
-    })?;
-    if !text(actor) || !text(reason) {
-        return Err(ReleaseFailure::at(
-            AppError::InvalidInput,
-            "/",
-            "actor and reason must be nonempty, without control characters, at most 1000 bytes",
-        ));
+    lock_revisions: bool,
+) -> Result<(Vec<&'a RevisionRef>, Vec<String>), ReleaseFailure> {
+    let mut revision_query = "SELECT public_document,server_document,EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(r.lesson_id,r.revision)) AS withdrawn FROM lesson_revisions r WHERE lesson_id=$1 AND revision=$2".to_owned();
+    if lock_revisions {
+        revision_query.push_str(" FOR SHARE");
     }
-    let tx = db.begin().await.map_err(|_| AppError::Unavailable)?;
-    // All content mutations lock the singleton before revision rows: no activation/withdrawal deadlock.
-    let state = one(
-        &tx,
-        "SELECT generation FROM content_state WHERE singleton FOR UPDATE",
-        vec![],
-    )
-    .await?
-    .ok_or(AppError::Unavailable)?;
     if one(
-        &tx,
+        db,
         "SELECT id FROM content_releases WHERE id=$1",
         vec![manifest.id.clone().into()],
     )
@@ -268,7 +257,22 @@ async fn stage_impl(
             for (ri, entry) in unit.lessons.iter().enumerate() {
                 let path = format!("/levels/{li}/units/{ui}/lessons/{ri}");
                 let revision_path = format!("{path}/revision");
-                let row=one(&tx,"SELECT public_document,server_document,EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(r.lesson_id,r.revision)) AS withdrawn FROM lesson_revisions r WHERE lesson_id=$1 AND revision=$2 FOR SHARE",vec![entry.lesson_id.clone().into(),(entry.revision as i32).into()]).await?.ok_or_else(|| ReleaseFailure::at(AppError::NotFound, &revision_path, "referenced lesson revision has not been imported"))?;
+                let row = one(
+                    db,
+                    &revision_query,
+                    vec![
+                        entry.lesson_id.clone().into(),
+                        (entry.revision as i32).into(),
+                    ],
+                )
+                .await?
+                .ok_or_else(|| {
+                    ReleaseFailure::at(
+                        AppError::NotFound,
+                        &revision_path,
+                        "referenced lesson revision has not been imported",
+                    )
+                })?;
                 if field::<bool>(&row, "withdrawn")? {
                     return Err(ReleaseFailure::at(
                         AppError::Gone,
@@ -277,7 +281,7 @@ async fn stage_impl(
                     ));
                 }
                 let source: serde_json::Value = field(&row, "server_document")?;
-                if !crate::admin::approved(&tx, &entry.lesson_id, entry.revision, &source).await? {
+                if !crate::admin::approved(db, &entry.lesson_id, entry.revision, &source).await? {
                     return Err(ReleaseFailure::at(
                         AppError::InvalidInput,
                         &path,
@@ -311,7 +315,7 @@ async fn stage_impl(
                         &format!("imported lesson grading validation failed: {error}"),
                     )
                 })?;
-                crate::media::validate_lesson_detailed(&tx, &lesson, media_root)
+                crate::media::validate_lesson_detailed(db, &lesson, media_root)
                     .await
                     .map_err(|error| ReleaseFailure::at(error.runtime, &path, &error.diagnostic))?;
                 source_hashes.push(hash(&source)?);
@@ -319,6 +323,65 @@ async fn stage_impl(
             }
         }
     }
+    Ok((entries, source_hashes))
+}
+
+pub(crate) async fn check_registered_release(
+    db: &impl ConnectionTrait,
+    document: &crate::author_json::Document,
+    media_root: &std::path::Path,
+) -> Result<brioche_course_contract::AdminDocumentCheck, AppError> {
+    let manifest: ReleaseManifest =
+        serde_json::from_value(document.value.clone()).map_err(|_| AppError::InvalidInput)?;
+    match checked_entries(db, &manifest, media_root, false).await {
+        Ok(_) => Ok(brioche_course_contract::AdminDocumentCheck {
+            valid: true,
+            issue: None,
+        }),
+        Err(error) => {
+            let message = match error.runtime {
+                AppError::NotFound => "该课程版本尚未导入。",
+                AppError::Gone => "该课程版本已撤回，请选择可发布的版本。",
+                AppError::Conflict => "发布目录编号已存在，请使用新的编号。",
+                AppError::InvalidInput => {
+                    "该课程未满足发布条件，请核对发布授权、等级与单元、题目和登记素材。"
+                }
+                runtime => return Err(runtime),
+            };
+            Ok(document.uploaded_issue(error.pointer.as_deref().unwrap_or("/"), message))
+        }
+    }
+}
+
+async fn stage_impl(
+    db: &DatabaseConnection,
+    manifest: &ReleaseManifest,
+    actor: &str,
+    reason: &str,
+    media_root: &std::path::Path,
+) -> Result<(), ReleaseFailure> {
+    manifest.validate_author().map_err(|error| ReleaseFailure {
+        runtime: AppError::InvalidInput,
+        diagnostic: Some(error.to_string()),
+        pointer: None,
+    })?;
+    if !text(actor) || !text(reason) {
+        return Err(ReleaseFailure::at(
+            AppError::InvalidInput,
+            "/",
+            "actor and reason must be nonempty, without control characters, at most 1000 bytes",
+        ));
+    }
+    let tx = db.begin().await.map_err(|_| AppError::Unavailable)?;
+    // All content mutations lock the singleton before revision rows: no activation/withdrawal deadlock.
+    let state = one(
+        &tx,
+        "SELECT generation FROM content_state WHERE singleton FOR UPDATE",
+        vec![],
+    )
+    .await?
+    .ok_or(AppError::Unavailable)?;
+    let (entries, source_hashes) = checked_entries(&tx, manifest, media_root, true).await?;
     exec(
         &tx,
         "INSERT INTO content_releases(id,manifest,content_hash) VALUES($1,$2,$3)",
@@ -452,6 +515,7 @@ async fn activate_impl(
                     "lesson {}@{}: {}",
                     lesson.id, lesson.revision, error.diagnostic
                 )),
+                pointer: None,
             })?;
     }
     exec(&tx,"UPDATE lesson_revisions r SET published=true FROM release_entries e WHERE e.release_id=$1 AND (r.lesson_id,r.revision)=(e.lesson_id,e.revision)",vec![id.into()]).await?;
