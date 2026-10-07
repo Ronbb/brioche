@@ -1999,6 +1999,37 @@ button.primary {
 .admin-dialog::backdrop { background: rgb(50 35 20 / .3); backdrop-filter: blur(8px); }
 .admin-dialog form { display: grid; gap: 14px; margin-top: 24px; }
 .admin-dialog textarea { width: 100%; min-height: 100px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); resize: vertical; }
+.admin-page { min-width: 0; }
+.admin-heading > div, .admin-card, .admin-toolbar > *, .admin-card-heading > * { min-width: 0; }
+.admin-heading { align-items: flex-start; flex-wrap: wrap; }
+.admin-heading h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.25; }
+.admin-heading > .text-button { flex-shrink: 0; }
+.admin-sections { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 10px; margin: 0 0 28px; }
+.admin-section-link { display: flex; align-items: center; min-height: 54px; padding: 12px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+.admin-section-link:hover { background: var(--soft); }
+.admin-page .reader-mode { display: inline-flex; flex-wrap: wrap; gap: 4px; max-width: 100%; padding: 4px; background: var(--soft); border-radius: 18px; }
+.admin-toolbar { flex-wrap: wrap; margin-bottom: 24px; }
+.admin-toolbar > label { display: grid; gap: 8px; flex: 1 1 240px; color: var(--muted); }
+.admin-toolbar > .secondary, .admin-toolbar > .text-button { flex-shrink: 0; }
+.admin-tool { flex: 1 1 240px; }
+.admin-page input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), .admin-page textarea { min-width: 0; max-width: 100%; }
+.admin-toolbar input[type="search"], .admin-page .course-search input { width: 100%; min-height: 48px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 14px; color: var(--ink); background: var(--surface); }
+.admin-page .course-search { display: grid; gap: 10px; margin-bottom: 24px; }
+.admin-page .course-search > button { justify-self: end; }
+.admin-page > .admin-tool { margin-bottom: 24px; }
+.admin-card > .text-button { display: inline-flex; align-items: center; min-height: 44px; margin: 8px 20px 8px 0; }
+form.admin-toolbar { align-items: flex-end; }
+.admin-card-heading { flex-wrap: wrap; }
+.admin-card h2, .admin-card p { overflow-wrap: anywhere; }
+.admin-card-actions { justify-content: flex-start; gap: 12px 20px; }
+@media (max-width: 600px) {
+  .admin-page { padding: 28px 20px max(64px, env(safe-area-inset-bottom)); }
+  .admin-sections { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-section-link { padding: 12px; font-size: 14px; }
+  .admin-card { padding: 20px; }
+  .admin-toolbar > label { flex-basis: 100%; }
+  form.admin-toolbar > .secondary { margin-left: auto; }
+}
 .setting-row {
   display: flex;
   align-items: center;

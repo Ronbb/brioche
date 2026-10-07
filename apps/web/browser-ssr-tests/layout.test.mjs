@@ -2438,6 +2438,43 @@ test("operator searches and paginates fixed course versions using the real admin
       await evaluate("document.querySelectorAll('.admin-card').length"),
       20,
     );
+    for (const width of [320, 390, 528, 678, 1024]) {
+      await browser("set", "viewport", String(width), "884");
+      const layout = await evaluate(`(() => {
+        const links = [...document.querySelectorAll('.admin-sections a')];
+        const rects = links.map(a => a.getBoundingClientRect());
+        const input = document.querySelector('input[name=q]');
+        const label = input.closest('label');
+        const range = document.createRange();
+        range.selectNode(label.firstChild);
+        const text = range.getBoundingClientRect();
+        const tool = document.querySelector('.admin-tool').getBoundingClientRect();
+        const card = document.querySelector('.admin-card').getBoundingClientRect();
+        return {
+          tools: links.length,
+          overlap: rects.some((a, i) => rects.slice(i + 1).some(b =>
+            Math.min(a.right, b.right) > Math.max(a.left, b.left) &&
+            Math.min(a.bottom, b.bottom) > Math.max(a.top, b.top))),
+          targets: rects.every(r => r.height >= 44),
+          searchSeparated: input.getBoundingClientRect().top >= text.bottom + 4,
+          cardSeparated: card.top >= tool.bottom + 16,
+          noOverflow: document.documentElement.scrollWidth <= innerWidth
+        };
+      })()`);
+      assert.deepEqual(
+        layout,
+        {
+          tools: 8,
+          overlap: false,
+          targets: true,
+          searchSeparated: true,
+          cardSeparated: true,
+          noOverflow: true,
+        },
+        `admin layout at ${width}px: ${JSON.stringify(layout)}`,
+      );
+    }
+    await browser("set", "viewport", "390", "844");
     await browser("fill", "input[name=q]", "Pagination");
     await browser("focus", "input[name=q]");
     await browser("press", "Enter");

@@ -225,30 +225,32 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
         <strong>{overview.activeRelease ?? "尚未发布课程"}</strong>
         <span>版本 {overview.generation}</span>
       </div>
-      <Link className="text-button" to="/admin/history">
-        审批与发布记录
-      </Link>
-      <Link className="text-button" to="/admin/accounts">
-        账号管理
-      </Link>
-      <Link className="text-button" to="/admin/characters">
-        角色库
-      </Link>
-      <Link className="text-button" to="/admin/assets">
-        图片素材
-      </Link>
-      <Link className="text-button" to="/admin/recordings">
-        录音管理
-      </Link>
-      <Link className="text-button" to="/admin/voice-references">
-        参考录音交付
-      </Link>
-      <Link className="text-button" to="/admin/voice-jobs">
-        音色创建任务
-      </Link>
-      <Link className="text-button" to="/admin/voice-auditions">
-        角色声音试听
-      </Link>
+      <nav className="admin-sections" aria-label="后台工具">
+        <Link className="admin-section-link" to="/admin/history">
+          审批与发布记录
+        </Link>
+        <Link className="admin-section-link" to="/admin/accounts">
+          账号管理
+        </Link>
+        <Link className="admin-section-link" to="/admin/characters">
+          角色库
+        </Link>
+        <Link className="admin-section-link" to="/admin/assets">
+          图片素材
+        </Link>
+        <Link className="admin-section-link" to="/admin/recordings">
+          录音管理
+        </Link>
+        <Link className="admin-section-link" to="/admin/voice-references">
+          参考录音交付
+        </Link>
+        <Link className="admin-section-link" to="/admin/voice-jobs">
+          音色创建任务
+        </Link>
+        <Link className="admin-section-link" to="/admin/voice-auditions">
+          角色声音试听
+        </Link>
+      </nav>
       <nav className="reader-mode" aria-label="管理内容">
         <Link
           to="/admin"
@@ -308,7 +310,7 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
           刷新列表
         </button>
       </div>
-      <p role="status">{notice}</p>
+      {notice && <p role="status">{notice}</p>}
       {tab === "lessons" ? (
         <div className="admin-list">
           {!overview.lessons.length && (
