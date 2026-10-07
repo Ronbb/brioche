@@ -881,6 +881,102 @@ test("learning step and completion preserve waiting focus and retry their exact 
   assert.equal(await evaluate("qa.learningWrites.length"), 4);
 });
 
+test("completion survives navigation with its exact request and respects remote completion", async () => {
+  const confirmed = {
+    id: "qa-session",
+    lessonId: "reading-protocol",
+    revision: 1,
+    version: 2,
+    lastStepId: "read",
+    confirmedStepIds: ["read"],
+    hintedExerciseIds: [],
+    attempts: [],
+    completedAt: null,
+    firstCompletedAt: null,
+  };
+  const completed = {
+    ...confirmed,
+    version: 3,
+    completedAt: "2026-10-06T00:00:00Z",
+    firstCompletedAt: "2026-10-06T00:00:00Z",
+  };
+  for (const outcome of ["lost-receipt", "remote-completion"]) {
+    await open("session");
+    await browser("focus", ".learning-actions .primary");
+    await press("Enter");
+    await browser("wait", "--fn", "qa.learningWrites.length===1");
+    await evaluate(`qa.learningRelease[0](${JSON.stringify(confirmed)})`);
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('.learning-actions .primary')?.textContent.includes('完成本课')",
+    );
+    await browser("focus", ".learning-actions .primary");
+    await press("Enter");
+    await browser("wait", "--fn", "qa.learningWrites.length===2");
+    const original = await evaluate("qa.learningWrites[1]");
+    assert.deepEqual(await evaluate("qa.learningPaths[1]"), {
+      path: "/api/v1/learning-sessions/qa-session/complete",
+      method: "POST",
+    });
+    if (outcome === "remote-completion") {
+      await evaluate("qa.learningRelease[1](409)");
+      await browser("wait", "--fn", "qa.learningReads.length===1");
+      await evaluate(`qa.learningReads[0](${JSON.stringify(completed)})`);
+    } else {
+      await evaluate("qa.learningRelease[1](503)");
+      await browser(
+        "wait",
+        "--fn",
+        "document.querySelector('.learning-actions .primary')?.textContent.includes('重试保存')",
+      );
+      await evaluate("qa.navigate('/login')");
+      await browser("wait", ".pending-navigation[open]");
+      await browser("focus", ".pending-navigation .text-button");
+      await press("Enter");
+      await browser("wait", "--fn", "qa.route==='/login'");
+      await evaluate("qa.navigate('/')");
+      await browser(
+        "wait",
+        "--fn",
+        "document.querySelector('.learning-actions .primary')?.textContent.includes('重试保存')",
+      );
+      await browser("focus", ".learning-actions .primary");
+      await press("Enter");
+      await browser("wait", "--fn", "qa.learningWrites.length===3");
+      assert.deepEqual(await evaluate("qa.learningWrites[2]"), original);
+      assert.deepEqual(
+        await evaluate("qa.learningPaths[2]"),
+        await evaluate("qa.learningPaths[1]"),
+      );
+      await evaluate(`qa.learningRelease[2](${JSON.stringify(completed)})`);
+    }
+    await browser(
+      "wait",
+      "--fn",
+      "document.activeElement.textContent==='本课已完成'",
+    );
+    assert.equal(
+      await evaluate("document.querySelectorAll('.learning-actions').length"),
+      0,
+    );
+    assert.equal(
+      await evaluate(
+        "sessionStorage.getItem('brioche.learning.v1:qa-account:qa-session:1:pending')",
+      ),
+      null,
+    );
+    assert.equal(
+      await evaluate("qa.learningWrites.length"),
+      outcome === "lost-receipt" ? 3 : 2,
+    );
+    assert.equal(
+      await evaluate("qa.learningReads.length"),
+      outcome === "lost-receipt" ? 0 : 1,
+    );
+  }
+});
+
 test("restored multi-step confirmation advances once without another write", async () => {
   await open("session-multi");
   await browser("focus", ".learning-actions .primary");
