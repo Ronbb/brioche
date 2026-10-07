@@ -1,5 +1,17 @@
 # 课程生产发布
 
+## 当前47课正式录音（2026-10-07）
+
+`audio-forty-seven.release.json` 已实际激活generation9，全部48课内容公开；周末经历和讲述昨天新增revision2，源在`audio-forty-seven/`。两个不连续异常词组采用独立真实PCM窗口、实际模型预测及明确偏移，窗口外保留原预测，完整词序与有限分析样本/PCM复验通过，原播放不变且无新TTS费用。新增13去重资产和2独立授权，总396录音资产/47正式语音/47授权；33课revision2、14课revision3、预约课仍revision1，语音继续处理。直连两课源/SSR/时间轴及20去重引用WAV实际SHA/AIGC/206通过；45课阶段数据库与1465媒体对象备份已verify。
+
+
+## 当前45课正式语音（2026-10-07）
+
+`audio-forty-five.release.json` 已生产激活为generation8，全部48课内容保持公开；新增共同生活习惯revision2、评价体验revision3、简述工作经历revision3，作者源在`audio-forty-five/`。严格实际媒体/完整词/固定模型时间轴检查后登记27份新去重资产和3独立直接授权，当前383录音资产、45正式语音、45授权；31课revision2、14课revision3、3课仍revision1。后两课仅修正L’ambiance/J’ai完整词标注，原句/翻译/角色/声音不变，真实已保存预测复用，原播放不经过变速或裁剪。
+
+直连HTTPS3课源/SSR/时间轴及33引用去重WAV真实SHA/AIGC/206通过。42课阶段数据库及1462媒体对象备份verify，本批独立备份进行中。全部课包私有声音配置、模型证据和原始WAV保持私有，不把实际媒体/模型校验当作人工审听。
+
+
 ## 当前全量目录与42课正式录音（2026-10-07）
 
 `audio-forty-two.release.json`是已在生产实际激活的完整48课目录，generation7；A1/A2各24课、12单元全部上架。相较38课目录新增共同生活规则、改约时间、说明服务问题、面包店买早餐的正式录音，公有作者源在`audio-forty-two/`。当前30课revision2、12课revision3，剩余6课仍revision1且内容可学，正式语音待处理。

@@ -1,0 +1,2566 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-home-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-5c51ae6f6e19b686c7f9432081d89aa30467258546af392c56dc366b1c0bc5b4",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "07f3e9eae541ca456b8c0a85ccb029fe4113ac1414652df1c352c3259d90ecd1",
+      "url": "/api/audio/07f3e9eae541ca456b8c0a85ccb029fe4113ac1414652df1c352c3259d90ecd1.wav"
+    },
+    {
+      "assetId": "speech-6a47caf9e5ceec12f7c2432b420729a425d14e4f17f7ce1a5f54f3ae10014279",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 53810,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "0a1f3da780bf351ca69e4b219f1408f8c7120d75340d6ba71231677147ac3abe",
+      "url": "/api/audio/0a1f3da780bf351ca69e4b219f1408f8c7120d75340d6ba71231677147ac3abe.wav"
+    },
+    {
+      "assetId": "speech-7ea3588915f3efedab3a4b368084b0e9ba843d2cea54389d94074dd4c8c607a3",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "e0ce330d8b7d6c51e6992b729a68ba281cf1a90cdf6369424747bd207979d2e4",
+      "url": "/api/audio/e0ce330d8b7d6c51e6992b729a68ba281cf1a90cdf6369424747bd207979d2e4.wav"
+    },
+    {
+      "assetId": "speech-8496e2eea899eb0c3f9d09733d2930e69f7e2cc936e5edf0a0eafacb15330626",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "1160e194fa01126bf1141962fa5e73ca257e0c5def0709244d94a531a2ee69cd",
+      "url": "/api/audio/1160e194fa01126bf1141962fa5e73ca257e0c5def0709244d94a531a2ee69cd.wav"
+    },
+    {
+      "assetId": "speech-8665501e20dec83a08a808967cfb9adf6bf3f9248f42bd4cb69df23059e54993",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1760,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "05bb7839754c0ad210c1748b2c5a46600044f81527fce21095f0ca8b5b76c3ca",
+      "url": "/api/audio/05bb7839754c0ad210c1748b2c5a46600044f81527fce21095f0ca8b5b76c3ca.wav"
+    },
+    {
+      "assetId": "speech-92da76536146e49031146effcf366ac41069af83359a7b9f93cade3fa936c6df",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "0e50ae9b7c97ab8f77d23c0552bdb636f431a7f16bcc29bb6fd58f6de8c01e64",
+      "url": "/api/audio/0e50ae9b7c97ab8f77d23c0552bdb636f431a7f16bcc29bb6fd58f6de8c01e64.wav"
+    },
+    {
+      "assetId": "speech-9c33ce8bab14c7df64270cceeb5f034062b1ec1e31dd0b3903221b187134b82f",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 2480,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "ddf5f7ec0b329e825bc64f32faa76ea14a355fd51e13ca9d8777e69fafe09065",
+      "url": "/api/audio/ddf5f7ec0b329e825bc64f32faa76ea14a355fd51e13ca9d8777e69fafe09065.wav"
+    },
+    {
+      "assetId": "speech-b1240188d18ae7633f38cc3bf143d38a624ce133de1cce1e8baacc1132a4dd14",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "684b4a3573b823daa8c375de22c813f34de148facf32fd2afa323c8e6e0bcabf",
+      "url": "/api/audio/684b4a3573b823daa8c375de22c813f34de148facf32fd2afa323c8e6e0bcabf.wav"
+    },
+    {
+      "assetId": "speech-ce390b5bafb715ebc34f3cfd9a68f362e827211c9e6c5b53fa0240975a291375",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 960,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "63032adca97c0bd68c54c9cbe5192301c621c1807b7f780a075b0fa30ab922b3",
+      "url": "/api/audio/63032adca97c0bd68c54c9cbe5192301c621c1807b7f780a075b0fa30ab922b3.wav"
+    },
+    {
+      "assetId": "speech-d6cb2d9dc7e64627dc2b6e83f247427f6d230c76dd3d47c245fa3fd679b04bcc",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "4aabb8114027d50834b5f0451e5661ed2073f220312ddb7d4767f92e1f0c3a20",
+      "url": "/api/audio/4aabb8114027d50834b5f0451e5661ed2073f220312ddb7d4767f92e1f0c3a20.wav"
+    },
+    {
+      "assetId": "speech-f7f0e2a4e7a3fec4bf68962ff05222249b29111b58a9620d19fd1ba2f6fa57f2",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1280,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "c42411ef34594674744dce95266b74b0dff750d3b9d1df71719e606d0ca75ff4",
+      "url": "/api/audio/c42411ef34594674744dce95266b74b0dff750d3b9d1df71719e606d0ca75ff4.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-5c51ae6f6e19b686c7f9432081d89aa30467258546af392c56dc366b1c0bc5b4",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-6a47caf9e5ceec12f7c2432b420729a425d14e4f17f7ce1a5f54f3ae10014279",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-7ea3588915f3efedab3a4b368084b0e9ba843d2cea54389d94074dd4c8c607a3",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-8496e2eea899eb0c3f9d09733d2930e69f7e2cc936e5edf0a0eafacb15330626",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-8665501e20dec83a08a808967cfb9adf6bf3f9248f42bd4cb69df23059e54993",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-92da76536146e49031146effcf366ac41069af83359a7b9f93cade3fa936c6df",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-9c33ce8bab14c7df64270cceeb5f034062b1ec1e31dd0b3903221b187134b82f",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-b1240188d18ae7633f38cc3bf143d38a624ce133de1cce1e8baacc1132a4dd14",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-ce390b5bafb715ebc34f3cfd9a68f362e827211c9e6c5b53fa0240975a291375",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-d6cb2d9dc7e64627dc2b6e83f247427f6d230c76dd3d47c245fa3fd679b04bcc",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-f7f0e2a4e7a3fec4bf68962ff05222249b29111b58a9620d19fd1ba2f6fa57f2",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-6a47caf9e5ceec12f7c2432b420729a425d14e4f17f7ce1a5f54f3ae10014279",
+      "blockId": "article-main",
+      "cues": [
+        {
+          "endMs": 9840,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 9600,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 400,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 480,
+          "wordRange": {
+            "end": 10,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 960,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 560,
+          "wordRange": {
+            "end": 14,
+            "start": 11
+          }
+        },
+        {
+          "endMs": 1520,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 1120,
+          "wordRange": {
+            "end": 21,
+            "start": 15
+          }
+        },
+        {
+          "endMs": 1680,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 1520,
+          "wordRange": {
+            "end": 26,
+            "start": 22
+          }
+        },
+        {
+          "endMs": 1760,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 1680,
+          "wordRange": {
+            "end": 29,
+            "start": 27
+          }
+        },
+        {
+          "endMs": 2000,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 1760,
+          "wordRange": {
+            "end": 34,
+            "start": 30
+          }
+        },
+        {
+          "endMs": 2720,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 2000,
+          "wordRange": {
+            "end": 46,
+            "start": 35
+          }
+        },
+        {
+          "endMs": 3330,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 3210,
+          "wordRange": {
+            "end": 52,
+            "start": 48
+          }
+        },
+        {
+          "endMs": 3410,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 3330,
+          "wordRange": {
+            "end": 56,
+            "start": 53
+          }
+        },
+        {
+          "endMs": 3530,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 3410,
+          "wordRange": {
+            "end": 62,
+            "start": 57
+          }
+        },
+        {
+          "endMs": 3730,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 3530,
+          "wordRange": {
+            "end": 66,
+            "start": 63
+          }
+        },
+        {
+          "endMs": 4250,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 3730,
+          "wordRange": {
+            "end": 77,
+            "start": 67
+          }
+        },
+        {
+          "endMs": 4370,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 4250,
+          "wordRange": {
+            "end": 81,
+            "start": 78
+          }
+        },
+        {
+          "endMs": 4530,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 4370,
+          "wordRange": {
+            "end": 87,
+            "start": 82
+          }
+        },
+        {
+          "endMs": 5170,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 4610,
+          "wordRange": {
+            "end": 97,
+            "start": 88
+          }
+        },
+        {
+          "endMs": 6010,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 5770,
+          "wordRange": {
+            "end": 102,
+            "start": 99
+          }
+        },
+        {
+          "endMs": 6290,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 6050,
+          "wordRange": {
+            "end": 110,
+            "start": 103
+          }
+        },
+        {
+          "endMs": 6370,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 6290,
+          "wordRange": {
+            "end": 113,
+            "start": 111
+          }
+        },
+        {
+          "endMs": 6690,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 6490,
+          "wordRange": {
+            "end": 119,
+            "start": 114
+          }
+        },
+        {
+          "endMs": 7280,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 6800,
+          "wordRange": {
+            "end": 128,
+            "start": 120
+          }
+        },
+        {
+          "endMs": 7520,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 7280,
+          "wordRange": {
+            "end": 133,
+            "start": 129
+          }
+        },
+        {
+          "endMs": 8080,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 7520,
+          "wordRange": {
+            "end": 143,
+            "start": 134
+          }
+        },
+        {
+          "endMs": 8160,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 8080,
+          "wordRange": {
+            "end": 147,
+            "start": 144
+          }
+        },
+        {
+          "endMs": 8560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 8160,
+          "wordRange": {
+            "end": 155,
+            "start": 148
+          }
+        },
+        {
+          "endMs": 8720,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 8560,
+          "wordRange": {
+            "end": 160,
+            "start": 156
+          }
+        },
+        {
+          "endMs": 8880,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 8720,
+          "wordRange": {
+            "end": 164,
+            "start": 161
+          }
+        },
+        {
+          "endMs": 9280,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 8880,
+          "wordRange": {
+            "end": 172,
+            "start": 165
+          }
+        },
+        {
+          "endMs": 9600,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 9280,
+          "wordRange": {
+            "end": 180,
+            "start": 173
+          }
+        },
+        {
+          "endMs": 17450,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 10090,
+          "wordRange": null
+        },
+        {
+          "endMs": 10890,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 10170,
+          "wordRange": null
+        },
+        {
+          "endMs": 10570,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 10170,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10890,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 10570,
+          "wordRange": {
+            "end": 13,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 11290,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 10890,
+          "wordRange": null
+        },
+        {
+          "endMs": 11290,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 10890,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11370,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 11290,
+          "wordRange": null
+        },
+        {
+          "endMs": 11370,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 11290,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 11770,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4",
+          "startMs": 11370,
+          "wordRange": null
+        },
+        {
+          "endMs": 11770,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4",
+          "startMs": 11370,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 15610,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 12170,
+          "wordRange": null
+        },
+        {
+          "endMs": 12330,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 12170,
+          "wordRange": {
+            "end": 4,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 12570,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 12330,
+          "wordRange": {
+            "end": 11,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 12650,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 12570,
+          "wordRange": {
+            "end": 14,
+            "start": 12
+          }
+        },
+        {
+          "endMs": 12970,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 12650,
+          "wordRange": {
+            "end": 21,
+            "start": 15
+          }
+        },
+        {
+          "endMs": 13050,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 12970,
+          "wordRange": {
+            "end": 23,
+            "start": 22
+          }
+        },
+        {
+          "endMs": 13290,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 13050,
+          "wordRange": {
+            "end": 28,
+            "start": 24
+          }
+        },
+        {
+          "endMs": 13610,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 13290,
+          "wordRange": {
+            "end": 35,
+            "start": 29
+          }
+        },
+        {
+          "endMs": 13770,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 13690,
+          "wordRange": {
+            "end": 38,
+            "start": 36
+          }
+        },
+        {
+          "endMs": 14170,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 13770,
+          "wordRange": {
+            "end": 46,
+            "start": 39
+          }
+        },
+        {
+          "endMs": 14490,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 14250,
+          "wordRange": {
+            "end": 52,
+            "start": 47
+          }
+        },
+        {
+          "endMs": 14570,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 14490,
+          "wordRange": {
+            "end": 55,
+            "start": 53
+          }
+        },
+        {
+          "endMs": 14970,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 14570,
+          "wordRange": {
+            "end": 61,
+            "start": 56
+          }
+        },
+        {
+          "endMs": 15370,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 15210,
+          "wordRange": {
+            "end": 65,
+            "start": 63
+          }
+        },
+        {
+          "endMs": 15610,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 15370,
+          "wordRange": {
+            "end": 71,
+            "start": 66
+          }
+        },
+        {
+          "endMs": 16090,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-6",
+          "startMs": 15610,
+          "wordRange": null
+        },
+        {
+          "endMs": 16090,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-6",
+          "startMs": 15610,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 17290,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-7",
+          "startMs": 16170,
+          "wordRange": null
+        },
+        {
+          "endMs": 16250,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-7",
+          "startMs": 16170,
+          "wordRange": {
+            "end": 2,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 16330,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-7",
+          "startMs": 16250,
+          "wordRange": {
+            "end": 5,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 16730,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-7",
+          "startMs": 16330,
+          "wordRange": {
+            "end": 12,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 16890,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-7",
+          "startMs": 16810,
+          "wordRange": {
+            "end": 14,
+            "start": 13
+          }
+        },
+        {
+          "endMs": 17290,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-7",
+          "startMs": 16890,
+          "wordRange": {
+            "end": 19,
+            "start": 15
+          }
+        },
+        {
+          "endMs": 26340,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 17700,
+          "wordRange": null
+        },
+        {
+          "endMs": 18660,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 17780,
+          "wordRange": null
+        },
+        {
+          "endMs": 17940,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 17780,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 18660,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 17940,
+          "wordRange": {
+            "end": 11,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 26100,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 18980,
+          "wordRange": null
+        },
+        {
+          "endMs": 19300,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 18980,
+          "wordRange": {
+            "end": 9,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 19700,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 19300,
+          "wordRange": {
+            "end": 19,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 19780,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 19700,
+          "wordRange": {
+            "end": 21,
+            "start": 20
+          }
+        },
+        {
+          "endMs": 19860,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 19780,
+          "wordRange": {
+            "end": 24,
+            "start": 22
+          }
+        },
+        {
+          "endMs": 20260,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 19860,
+          "wordRange": {
+            "end": 31,
+            "start": 25
+          }
+        },
+        {
+          "endMs": 21220,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 20980,
+          "wordRange": {
+            "end": 37,
+            "start": 33
+          }
+        },
+        {
+          "endMs": 21780,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 21300,
+          "wordRange": {
+            "end": 45,
+            "start": 38
+          }
+        },
+        {
+          "endMs": 21940,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 21780,
+          "wordRange": {
+            "end": 49,
+            "start": 46
+          }
+        },
+        {
+          "endMs": 22260,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 21940,
+          "wordRange": {
+            "end": 56,
+            "start": 50
+          }
+        },
+        {
+          "endMs": 22580,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 22260,
+          "wordRange": {
+            "end": 62,
+            "start": 57
+          }
+        },
+        {
+          "endMs": 22660,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 22580,
+          "wordRange": {
+            "end": 67,
+            "start": 63
+          }
+        },
+        {
+          "endMs": 22820,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 22660,
+          "wordRange": {
+            "end": 70,
+            "start": 68
+          }
+        },
+        {
+          "endMs": 23300,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 22820,
+          "wordRange": {
+            "end": 78,
+            "start": 71
+          }
+        },
+        {
+          "endMs": 23540,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 23380,
+          "wordRange": {
+            "end": 81,
+            "start": 79
+          }
+        },
+        {
+          "endMs": 23860,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 23540,
+          "wordRange": {
+            "end": 87,
+            "start": 82
+          }
+        },
+        {
+          "endMs": 24020,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 23860,
+          "wordRange": {
+            "end": 90,
+            "start": 88
+          }
+        },
+        {
+          "endMs": 24420,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 24020,
+          "wordRange": {
+            "end": 96,
+            "start": 91
+          }
+        },
+        {
+          "endMs": 24660,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 24500,
+          "wordRange": {
+            "end": 102,
+            "start": 97
+          }
+        },
+        {
+          "endMs": 24820,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 24740,
+          "wordRange": {
+            "end": 107,
+            "start": 103
+          }
+        },
+        {
+          "endMs": 25380,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 24820,
+          "wordRange": {
+            "end": 117,
+            "start": 108
+          }
+        },
+        {
+          "endMs": 25460,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 25380,
+          "wordRange": {
+            "end": 119,
+            "start": 118
+          }
+        },
+        {
+          "endMs": 25540,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 25460,
+          "wordRange": {
+            "end": 123,
+            "start": 120
+          }
+        },
+        {
+          "endMs": 26100,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 25540,
+          "wordRange": {
+            "end": 131,
+            "start": 124
+          }
+        },
+        {
+          "endMs": 34350,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 26590,
+          "wordRange": null
+        },
+        {
+          "endMs": 27390,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 26670,
+          "wordRange": null
+        },
+        {
+          "endMs": 26750,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 26670,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 26910,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 26750,
+          "wordRange": {
+            "end": 8,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 27390,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 26910,
+          "wordRange": {
+            "end": 14,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 30110,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 27470,
+          "wordRange": null
+        },
+        {
+          "endMs": 27550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 27470,
+          "wordRange": {
+            "end": 5,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 27870,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 27630,
+          "wordRange": {
+            "end": 13,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 27950,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 27870,
+          "wordRange": {
+            "end": 16,
+            "start": 14
+          }
+        },
+        {
+          "endMs": 28270,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 27950,
+          "wordRange": {
+            "end": 24,
+            "start": 17
+          }
+        },
+        {
+          "endMs": 28510,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 28270,
+          "wordRange": {
+            "end": 30,
+            "start": 25
+          }
+        },
+        {
+          "endMs": 28590,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 28510,
+          "wordRange": {
+            "end": 33,
+            "start": 31
+          }
+        },
+        {
+          "endMs": 28910,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 28590,
+          "wordRange": {
+            "end": 39,
+            "start": 34
+          }
+        },
+        {
+          "endMs": 29710,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 29470,
+          "wordRange": {
+            "end": 44,
+            "start": 41
+          }
+        },
+        {
+          "endMs": 30110,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 29710,
+          "wordRange": {
+            "end": 52,
+            "start": 45
+          }
+        },
+        {
+          "endMs": 30430,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 30110,
+          "wordRange": null
+        },
+        {
+          "endMs": 30430,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 30110,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 34190,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 30430,
+          "wordRange": null
+        },
+        {
+          "endMs": 30510,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 30430,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 30830,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 30510,
+          "wordRange": {
+            "end": 12,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 31230,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 30830,
+          "wordRange": {
+            "end": 19,
+            "start": 13
+          }
+        },
+        {
+          "endMs": 31550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 31310,
+          "wordRange": {
+            "end": 27,
+            "start": 20
+          }
+        },
+        {
+          "endMs": 31630,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 31550,
+          "wordRange": {
+            "end": 31,
+            "start": 28
+          }
+        },
+        {
+          "endMs": 32030,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 31630,
+          "wordRange": {
+            "end": 39,
+            "start": 32
+          }
+        },
+        {
+          "endMs": 32350,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 32030,
+          "wordRange": {
+            "end": 47,
+            "start": 40
+          }
+        },
+        {
+          "endMs": 32510,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 32350,
+          "wordRange": {
+            "end": 50,
+            "start": 48
+          }
+        },
+        {
+          "endMs": 32910,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 32510,
+          "wordRange": {
+            "end": 60,
+            "start": 51
+          }
+        },
+        {
+          "endMs": 32990,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 32910,
+          "wordRange": {
+            "end": 63,
+            "start": 61
+          }
+        },
+        {
+          "endMs": 33390,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 32990,
+          "wordRange": {
+            "end": 73,
+            "start": 64
+          }
+        },
+        {
+          "endMs": 33550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 33390,
+          "wordRange": {
+            "end": 77,
+            "start": 74
+          }
+        },
+        {
+          "endMs": 33710,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 33550,
+          "wordRange": {
+            "end": 81,
+            "start": 78
+          }
+        },
+        {
+          "endMs": 34190,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 33710,
+          "wordRange": {
+            "end": 91,
+            "start": 82
+          }
+        },
+        {
+          "endMs": 43160,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 34600,
+          "wordRange": null
+        },
+        {
+          "endMs": 35240,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 34680,
+          "wordRange": null
+        },
+        {
+          "endMs": 35240,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 34680,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 43000,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 35240,
+          "wordRange": null
+        },
+        {
+          "endMs": 35480,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 35240,
+          "wordRange": {
+            "end": 5,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 35880,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 35480,
+          "wordRange": {
+            "end": 14,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 35960,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 35880,
+          "wordRange": {
+            "end": 18,
+            "start": 15
+          }
+        },
+        {
+          "endMs": 36280,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 35960,
+          "wordRange": {
+            "end": 23,
+            "start": 19
+          }
+        },
+        {
+          "endMs": 36360,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 36280,
+          "wordRange": {
+            "end": 25,
+            "start": 24
+          }
+        },
+        {
+          "endMs": 36680,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 36360,
+          "wordRange": {
+            "end": 31,
+            "start": 26
+          }
+        },
+        {
+          "endMs": 36760,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 36680,
+          "wordRange": {
+            "end": 34,
+            "start": 32
+          }
+        },
+        {
+          "endMs": 37240,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 36760,
+          "wordRange": {
+            "end": 41,
+            "start": 35
+          }
+        },
+        {
+          "endMs": 37880,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 37720,
+          "wordRange": {
+            "end": 46,
+            "start": 43
+          }
+        },
+        {
+          "endMs": 38280,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 37880,
+          "wordRange": {
+            "end": 56,
+            "start": 47
+          }
+        },
+        {
+          "endMs": 38680,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 38280,
+          "wordRange": {
+            "end": 65,
+            "start": 57
+          }
+        },
+        {
+          "endMs": 38760,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 38680,
+          "wordRange": {
+            "end": 67,
+            "start": 66
+          }
+        },
+        {
+          "endMs": 39320,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 38760,
+          "wordRange": {
+            "end": 76,
+            "start": 68
+          }
+        },
+        {
+          "endMs": 39480,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 39400,
+          "wordRange": {
+            "end": 79,
+            "start": 77
+          }
+        },
+        {
+          "endMs": 39880,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 39480,
+          "wordRange": {
+            "end": 87,
+            "start": 80
+          }
+        },
+        {
+          "endMs": 39960,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 39880,
+          "wordRange": {
+            "end": 90,
+            "start": 88
+          }
+        },
+        {
+          "endMs": 40280,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 39960,
+          "wordRange": {
+            "end": 96,
+            "start": 91
+          }
+        },
+        {
+          "endMs": 40840,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 40280,
+          "wordRange": {
+            "end": 103,
+            "start": 97
+          }
+        },
+        {
+          "endMs": 41240,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 41080,
+          "wordRange": {
+            "end": 108,
+            "start": 104
+          }
+        },
+        {
+          "endMs": 41480,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 41240,
+          "wordRange": {
+            "end": 114,
+            "start": 109
+          }
+        },
+        {
+          "endMs": 41640,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 41480,
+          "wordRange": {
+            "end": 117,
+            "start": 115
+          }
+        },
+        {
+          "endMs": 41800,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 41640,
+          "wordRange": {
+            "end": 123,
+            "start": 118
+          }
+        },
+        {
+          "endMs": 41880,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 41800,
+          "wordRange": {
+            "end": 126,
+            "start": 124
+          }
+        },
+        {
+          "endMs": 42360,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 41880,
+          "wordRange": {
+            "end": 135,
+            "start": 127
+          }
+        },
+        {
+          "endMs": 43000,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 42360,
+          "wordRange": {
+            "end": 144,
+            "start": 136
+          }
+        },
+        {
+          "endMs": 53810,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 43410,
+          "wordRange": null
+        },
+        {
+          "endMs": 44050,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 43570,
+          "wordRange": null
+        },
+        {
+          "endMs": 43730,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 43570,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 43970,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 43730,
+          "wordRange": {
+            "end": 8,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 44050,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 43970,
+          "wordRange": {
+            "end": 11,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 44530,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 44050,
+          "wordRange": null
+        },
+        {
+          "endMs": 44530,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 44050,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 45730,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 44610,
+          "wordRange": null
+        },
+        {
+          "endMs": 44770,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 44610,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 45010,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 44770,
+          "wordRange": {
+            "end": 8,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 45170,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 45010,
+          "wordRange": {
+            "end": 12,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 45730,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 45170,
+          "wordRange": {
+            "end": 20,
+            "start": 13
+          }
+        },
+        {
+          "endMs": 53570,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 46210,
+          "wordRange": null
+        },
+        {
+          "endMs": 46370,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 46210,
+          "wordRange": {
+            "end": 4,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 46770,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 46370,
+          "wordRange": {
+            "end": 13,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 47170,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 46770,
+          "wordRange": {
+            "end": 19,
+            "start": 14
+          }
+        },
+        {
+          "endMs": 47810,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 47570,
+          "wordRange": {
+            "end": 23,
+            "start": 21
+          }
+        },
+        {
+          "endMs": 48130,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 47810,
+          "wordRange": {
+            "end": 27,
+            "start": 24
+          }
+        },
+        {
+          "endMs": 48370,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 48210,
+          "wordRange": {
+            "end": 31,
+            "start": 28
+          }
+        },
+        {
+          "endMs": 48770,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 48370,
+          "wordRange": {
+            "end": 38,
+            "start": 32
+          }
+        },
+        {
+          "endMs": 49330,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 49250,
+          "wordRange": {
+            "end": 43,
+            "start": 40
+          }
+        },
+        {
+          "endMs": 49810,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 49330,
+          "wordRange": {
+            "end": 55,
+            "start": 44
+          }
+        },
+        {
+          "endMs": 50050,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 49810,
+          "wordRange": {
+            "end": 58,
+            "start": 56
+          }
+        },
+        {
+          "endMs": 50290,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 50050,
+          "wordRange": {
+            "end": 64,
+            "start": 59
+          }
+        },
+        {
+          "endMs": 50610,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 50290,
+          "wordRange": {
+            "end": 71,
+            "start": 65
+          }
+        },
+        {
+          "endMs": 51170,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 50610,
+          "wordRange": {
+            "end": 80,
+            "start": 72
+          }
+        },
+        {
+          "endMs": 51890,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 51570,
+          "wordRange": {
+            "end": 88,
+            "start": 83
+          }
+        },
+        {
+          "endMs": 52690,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 51890,
+          "wordRange": {
+            "end": 101,
+            "start": 89
+          }
+        },
+        {
+          "endMs": 53090,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 52770,
+          "wordRange": {
+            "end": 107,
+            "start": 102
+          }
+        },
+        {
+          "endMs": 53570,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 53090,
+          "wordRange": {
+            "end": 114,
+            "start": 108
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-home-morning",
+      "placeZh": "两位合住者的一周生活",
+      "situationZh": "比较 Camille 和 Luc 的重复安排，找到经常、偶尔和每周一次的活动。",
+      "type": "scene"
+    },
+    {
+      "id": "article-main",
+      "narratorId": "character-camille",
+      "paragraphs": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Camille et Luc vivent dans le même appartement, mais ils n’ont pas exactement les mêmes habitudes. Ils parlent de leurs horaires pour organiser les moments dans les espaces communs."
+            }
+          ],
+          "translationZh": "Camille 和 Luc 住在同一套公寓，但习惯并不完全相同。他们会聊各自的时间，安排使用共同空间的时段。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Luc travaille "
+            },
+            {
+              "grammarId": "grammar-a2-frequency-adverbs",
+              "id": "segment-2-2",
+              "text": "souvent",
+              "vocabularyId": "word-souvent"
+            },
+            {
+              "id": "segment-2-3",
+              "text": " au "
+            },
+            {
+              "id": "segment-2-4",
+              "text": "bureau",
+              "vocabularyId": "word-bureau"
+            },
+            {
+              "id": "segment-2-5",
+              "text": ". Il quitte la maison à huit heures et revient avant le dîner. Il mange "
+            },
+            {
+              "id": "segment-2-6",
+              "text": "rarement",
+              "vocabularyId": "word-rarement"
+            },
+            {
+              "id": "segment-2-7",
+              "text": " à la maison à midi."
+            }
+          ],
+          "translationZh": "Luc 经常在办公室工作。他八点出门，晚饭前回来。他中午很少在家吃饭。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "grammarId": "grammar-le-weekday-habit",
+              "id": "segment-3-1",
+              "text": "Le mercredi"
+            },
+            {
+              "id": "segment-3-2",
+              "text": ", Camille travaille à la maison. Elle utilise une petite table dans sa chambre et ferme la porte quand elle participe à une réunion."
+            }
+          ],
+          "translationZh": "Camille 每周三在家工作。她在卧室用一张小桌子，参加会议时会关门。"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Tous les soirs",
+              "vocabularyId": "expr-tous-les-soirs"
+            },
+            {
+              "id": "segment-4-2",
+              "text": ", ils rangent la cuisine après le repas. Luc prépare "
+            },
+            {
+              "id": "segment-4-3",
+              "text": "toujours",
+              "vocabularyId": "word-toujours"
+            },
+            {
+              "id": "segment-4-4",
+              "text": " une boisson chaude pendant que Camille regarde le programme du lendemain sur son téléphone."
+            }
+          ],
+          "translationZh": "每天晚上，他们饭后整理厨房。Luc 总是准备一杯热饮，Camille 则在手机上查看第二天的安排。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Parfois",
+              "vocabularyId": "word-parfois"
+            },
+            {
+              "id": "segment-5-2",
+              "text": ", ils invitent une amie à dîner le samedi. Ils préfèrent prévenir à l’avance et choisir un repas simple pour avoir le temps de discuter ensemble."
+            }
+          ],
+          "translationZh": "有时，他们周六邀请一位女性朋友来吃晚饭。他们更愿意提前通知，并选简单的饭菜，留出聊天时间。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Ils font le "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "ménage",
+              "vocabularyId": "word-menage"
+            },
+            {
+              "id": "segment-6-3",
+              "text": " "
+            },
+            {
+              "id": "segment-6-4",
+              "text": "une fois par semaine",
+              "vocabularyId": "expr-une-fois-par-semaine"
+            },
+            {
+              "id": "segment-6-5",
+              "text": ", le dimanche matin. Si Luc est absent, ils choisissent un autre moment ensemble ; cette organisation reste souple."
+            }
+          ],
+          "translationZh": "他们每周做一次清洁，在周日上午。如果 Luc 不在，他们会一起选另一个时间；安排保持灵活。"
+        }
+      ],
+      "titleZh": "描述生活习惯",
+      "type": "article"
+    },
+    {
+      "bodyZh": "souvent、rarement、toujours 分别是经常、很少、总是。Parfois 在句首表示有时；une fois par semaine 给出每周一次，tous les soirs 给出每晚。Le mercredi 表示每周三，区别于某一次星期三。avoir le temps de discuter 表示有时间聊天。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "article-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2"
+        },
+        {
+          "blockId": "article-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "这是个人虚构习惯；工作地点、邀请朋友和清洁频率不代表所有合住者或法语地区的习惯。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-souvent",
+        "word-parfois",
+        "word-rarement",
+        "word-toujours",
+        "expr-une-fois-par-semaine",
+        "expr-tous-les-soirs",
+        "word-menage",
+        "word-bureau"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-a2-frequency-adverbs",
+        "grammar-le-weekday-habit"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "每天早晨"
+        },
+        {
+          "id": "correct",
+          "text": "每周一次"
+        },
+        {
+          "id": "distractor-b",
+          "text": "每月一次"
+        }
+      ],
+      "promptZh": "两人通常多久做一次清洁？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "une fois par semaine 表示每周一次。",
+      "id": "exercise-fill",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Une fois ___ semaine.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "au bureau."
+        },
+        {
+          "id": "token-1",
+          "text": "Luc travaille"
+        },
+        {
+          "id": "token-2",
+          "text": "souvent"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。",
+      "id": "habit-main",
+      "taskZh": "用 souvent、parfois 或 rarement 写两句虚构习惯，再加一句明确频率。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能区分习惯频率。",
+        "我能用频率副词描述动作。",
+        "我能复习 le 加星期的重复安排。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-luc-v1",
+      "characterId": "character-luc",
+      "displayName": "Luc",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner authorized direct publication; actual fixed-model cropped tempo analysis with explicit rate/crop/padding offsets; original playback unchanged and finite analysis samples reproduced; no new synthesis or human hearing asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 16,
+  "id": "a2-home-shared-routine",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "本课简单现在时常把 souvent、toujours、rarement 放在变位动词后；Parfois 也可置于句首。这些词表示频率，不是具体的钟点。",
+        "examples": [
+          {
+            "fr": "Luc travaille souvent au bureau.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-8665501e20dec83a08a808967cfb9adf6bf3f9248f42bd4cb69df23059e54993",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1760,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "05bb7839754c0ad210c1748b2c5a46600044f81527fce21095f0ca8b5b76c3ca",
+                "url": "/api/audio/05bb7839754c0ad210c1748b2c5a46600044f81527fce21095f0ca8b5b76c3ca.wav"
+              },
+              "endMs": 1760,
+              "startMs": 0
+            },
+            "zh": "Luc 经常在办公室工作。"
+          }
+        ],
+        "id": "grammar-a2-frequency-adverbs",
+        "titleZh": "说动作的频率"
+      },
+      {
+        "bodyZh": "本课 Le mercredi, elle travaille à la maison 表示每周三的安排。说某一次星期三可直接用 mercredi；本课练习重复的每周习惯。",
+        "examples": [
+          {
+            "fr": "Le mercredi, elle travaille à la maison.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-9c33ce8bab14c7df64270cceeb5f034062b1ec1e31dd0b3903221b187134b82f",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 2480,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "ddf5f7ec0b329e825bc64f32faa76ea14a355fd51e13ca9d8777e69fafe09065",
+                "url": "/api/audio/ddf5f7ec0b329e825bc64f32faa76ea14a355fd51e13ca9d8777e69fafe09065.wav"
+              },
+              "endMs": 2480,
+              "startMs": 0
+            },
+            "zh": "她每周三在家工作。"
+          }
+        ],
+        "id": "grammar-le-weekday-habit",
+        "titleZh": "le + 星期：每周的习惯"
+      }
+    ],
+    "vocabulary": [
+      {
+        "id": "word-souvent",
+        "lemma": "souvent",
+        "meaningZh": "经常",
+        "noteZh": "本课放在简单时态的变位动词后。",
+        "partOfSpeech": "adverb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-b1240188d18ae7633f38cc3bf143d38a624ce133de1cce1e8baacc1132a4dd14",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "684b4a3573b823daa8c375de22c813f34de148facf32fd2afa323c8e6e0bcabf",
+            "url": "/api/audio/684b4a3573b823daa8c375de22c813f34de148facf32fd2afa323c8e6e0bcabf.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-parfois",
+        "lemma": "parfois",
+        "meaningZh": "有时",
+        "noteZh": "本课句首 Parfois 引出偶尔的安排。",
+        "partOfSpeech": "adverb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-d6cb2d9dc7e64627dc2b6e83f247427f6d230c76dd3d47c245fa3fd679b04bcc",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "4aabb8114027d50834b5f0451e5661ed2073f220312ddb7d4767f92e1f0c3a20",
+            "url": "/api/audio/4aabb8114027d50834b5f0451e5661ed2073f220312ddb7d4767f92e1f0c3a20.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-rarement",
+        "lemma": "rarement",
+        "meaningZh": "很少",
+        "noteZh": "与经常或总是区别，仍可能发生。",
+        "partOfSpeech": "adverb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-92da76536146e49031146effcf366ac41069af83359a7b9f93cade3fa936c6df",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "0e50ae9b7c97ab8f77d23c0552bdb636f431a7f16bcc29bb6fd58f6de8c01e64",
+            "url": "/api/audio/0e50ae9b7c97ab8f77d23c0552bdb636f431a7f16bcc29bb6fd58f6de8c01e64.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-toujours",
+        "lemma": "toujours",
+        "meaningZh": "总是",
+        "noteZh": "本课表达重复习惯。",
+        "partOfSpeech": "adverb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-5c51ae6f6e19b686c7f9432081d89aa30467258546af392c56dc366b1c0bc5b4",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "07f3e9eae541ca456b8c0a85ccb029fe4113ac1414652df1c352c3259d90ecd1",
+            "url": "/api/audio/07f3e9eae541ca456b8c0a85ccb029fe4113ac1414652df1c352c3259d90ecd1.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-une-fois-par-semaine",
+        "lemma": "une fois par semaine",
+        "meaningZh": "每周一次",
+        "noteZh": "fois 表示次数，par semaine 表示每周。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-f7f0e2a4e7a3fec4bf68962ff05222249b29111b58a9620d19fd1ba2f6fa57f2",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 1280,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "c42411ef34594674744dce95266b74b0dff750d3b9d1df71719e606d0ca75ff4",
+            "url": "/api/audio/c42411ef34594674744dce95266b74b0dff750d3b9d1df71719e606d0ca75ff4.wav"
+          },
+          "endMs": 1280,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-tous-les-soirs",
+        "lemma": "tous les soirs",
+        "meaningZh": "每天晚上",
+        "noteZh": "tous les + 时间单位表示重复发生。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-ce390b5bafb715ebc34f3cfd9a68f362e827211c9e6c5b53fa0240975a291375",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 960,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "63032adca97c0bd68c54c9cbe5192301c621c1807b7f780a075b0fa30ab922b3",
+            "url": "/api/audio/63032adca97c0bd68c54c9cbe5192301c621c1807b7f780a075b0fa30ab922b3.wav"
+          },
+          "endMs": 960,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-menage",
+        "lemma": "ménage",
+        "meaningZh": "家务；清洁",
+        "noteZh": "faire le ménage 表示做清洁。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-8496e2eea899eb0c3f9d09733d2930e69f7e2cc936e5edf0a0eafacb15330626",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "1160e194fa01126bf1141962fa5e73ca257e0c5def0709244d94a531a2ee69cd",
+            "url": "/api/audio/1160e194fa01126bf1141962fa5e73ca257e0c5def0709244d94a531a2ee69cd.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-bureau",
+        "lemma": "bureau",
+        "meaningZh": "书桌；办公室",
+        "noteZh": "un bureau 可指书桌；au bureau 在本单元的工作场景中表示在办公室。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-7ea3588915f3efedab3a4b368084b0e9ba843d2cea54389d94074dd4c8c607a3",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "e0ce330d8b7d6c51e6992b729a68ba281cf1a90cdf6369424747bd207979d2e4",
+            "url": "/api/audio/e0ce330d8b7d6c51e6992b729a68ba281cf1a90cdf6369424747bd207979d2e4.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a2",
+  "media": [
+    {
+      "altZh": "晨光照进虚构公寓，书桌上有书和杯子，旁边是扶手椅与绿植",
+      "assetId": "art-home-morning",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "aa1458e135b40b1df9c1f47aff2c4fd7f1a19ffc40a14af98467b93e1a2df652",
+      "url": "/api/media/aa1458e135b40b1df9c1f47aff2c4fd7f1a19ffc40a14af98467b93e1a2df652.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Luc 的头像",
+      "assetId": "avatar-luc-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b",
+      "url": "/api/media/75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "区分习惯频率",
+    "用频率副词描述动作",
+    "复习 le 加星期的重复安排"
+  ],
+  "reviewItemIds": [
+    "word-souvent",
+    "word-rarement",
+    "expr-une-fois-par-semaine"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：每周一次。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "par"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "une fois par semaine 表示每周一次。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Luc travaille souvent au bureau.",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "article-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段短文"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "比较 Camille 和 Luc 的重复安排，找到经常、偶尔和每周一次的活动。",
+  "title": {
+    "fr": "Nos habitudes à la maison",
+    "zh": "描述生活习惯"
+  },
+  "unitId": "a2-shared-living"
+}

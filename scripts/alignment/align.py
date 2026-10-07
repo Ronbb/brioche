@@ -133,7 +133,9 @@ def pcm(data):
         require(0 < frames <= 24000 * 180, "audio duration exceeds limit")
         payload = w.readframes(frames)
         require(len(payload) == frames * 2, "incomplete PCM samples")
-        return payload, frames * 1000 // 24000
+        # Match the server's integer ceiling of actual decoded PCM duration.
+        # A fractional final millisecond must not invalidate its fixed media receipt.
+        return payload, (frames * 1000 + 23999) // 24000
 
 
 def words_valid(text, words):

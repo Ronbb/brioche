@@ -1,0 +1,560 @@
+{
+  "schemaVersion": "1.0",
+  "id": "a2-services-book-appointment",
+  "revision": 2,
+  "levelId": "a2",
+  "unitId": "a2-daily-services",
+  "title": {
+    "fr": "Un rendez-vous au centre",
+    "zh": "预约服务"
+  },
+  "summaryZh": "为报名活动预约咨询，确认日期、时间和要带的文件。",
+  "estimatedMinutes": 16,
+  "objectivesZh": [
+    "说明预约目的",
+    "确认日期和时刻",
+    "用 pouvez-vous 请求确认"
+  ],
+  "knowledge": {
+    "vocabulary": [
+      {
+        "id": "word-rendez-vous",
+        "lemma": "rendez-vous",
+        "partOfSpeech": "noun",
+        "meaningZh": "约见；预约",
+        "noteZh": "le rendez-vous；本课表示朋友约好的见面。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-accueil",
+        "lemma": "accueil",
+        "partOfSpeech": "noun",
+        "meaningZh": "接待处；接待",
+        "noteZh": "搭配冠词学习 accueil。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-date",
+        "lemma": "date",
+        "partOfSpeech": "noun",
+        "meaningZh": "日期",
+        "noteZh": "搭配冠词学习 date。",
+        "gender": "feminine"
+      },
+      {
+        "id": "word-juin",
+        "lemma": "juin",
+        "partOfSpeech": "noun",
+        "meaningZh": "六月",
+        "noteZh": "月份名称通常小写；本课日期没有指定年份。",
+        "gender": "masculine"
+      },
+      {
+        "id": "word-disponible",
+        "lemma": "disponible",
+        "partOfSpeech": "adjective",
+        "meaningZh": "可用的；有空的",
+        "noteZh": "本课指可安排的时间。"
+      },
+      {
+        "id": "word-confirmer",
+        "lemma": "confirmer",
+        "partOfSpeech": "verb",
+        "meaningZh": "确认",
+        "noteZh": "confirmer un rendez-vous 表示确认预约。"
+      },
+      {
+        "id": "word-annuler",
+        "lemma": "annuler",
+        "partOfSpeech": "verb",
+        "meaningZh": "取消",
+        "noteZh": "annuler un rendez-vous 表示取消预约。"
+      },
+      {
+        "id": "word-document",
+        "lemma": "document",
+        "partOfSpeech": "noun",
+        "meaningZh": "文件；资料",
+        "noteZh": "搭配冠词学习 document。",
+        "gender": "masculine"
+      }
+    ],
+    "grammar": [
+      {
+        "id": "grammar-a2-pouvoir-service-request",
+        "titleZh": "Pouvez-vous + 原形：请求服务",
+        "bodyZh": "vous 搭配 pouvoir 的现在时 pouvez。Pouvez-vous 接动词原形，用倒装问句礼貌请求对方做某事。pouvoir 没有命令式；本课不把 pouvez 当作命令式。",
+        "examples": [
+          {
+            "fr": "Pouvez-vous confirmer la date ?",
+            "zh": "您能确认日期吗？"
+          }
+        ]
+      },
+      {
+        "id": "grammar-a2-appointment-date",
+        "titleZh": "le + 日期，à + 时刻：确认预约",
+        "bodyZh": "本课用 le 18 juin 表示六月十八日的具体日期，à quatorze heures 表示十四点；星期几需另按具体年份核对。日期省略年份是情境设定，不用于推断真实日历。",
+        "examples": [
+          {
+            "fr": "Le rendez-vous est le 18 juin à quatorze heures.",
+            "zh": "预约在六月十八日十四点。"
+          }
+        ]
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "id": "scene-main",
+      "type": "scene",
+      "placeZh": "虚构社区中心的电话",
+      "situationZh": "为报名活动预约咨询，确认日期、时间和要带的文件。",
+      "illustrationId": "art-city-morning"
+    },
+    {
+      "id": "dialogue-main",
+      "type": "dialogue",
+      "titleZh": "预约服务",
+      "speakers": [
+        {
+          "id": "speaker-1",
+          "labelZh": "来电咨询者 Camille",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "avatarId": "avatar-camille-v1"
+        },
+        {
+          "id": "speaker-2",
+          "labelZh": "社区中心接待员 Luc",
+          "characterId": "character-luc",
+          "displayName": "Luc",
+          "avatarId": "avatar-luc-v1"
+        }
+      ],
+      "turns": [
+        {
+          "id": "entry-1",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Bonjour, je voudrais prendre un "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "rendez-vous",
+              "vocabularyId": "word-rendez-vous"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " pour parler des activités du centre. Je préfère venir dans l’après-midi, après mon travail."
+            }
+          ],
+          "translationZh": "您好，我想预约，聊聊中心的活动。我更愿意下午下班后过来。"
+        },
+        {
+          "id": "entry-2",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Bonjour. "
+            },
+            {
+              "id": "segment-2-2",
+              "text": "L’accueil",
+              "vocabularyId": "word-accueil"
+            },
+            {
+              "id": "segment-2-3",
+              "text": " propose un rendez-vous "
+            },
+            {
+              "id": "segment-2-4",
+              "text": "le 18 juin",
+              "grammarId": "grammar-a2-appointment-date"
+            },
+            {
+              "id": "segment-2-5",
+              "text": " à quatorze heures, ou le 20 juin à seize heures. Quelle "
+            },
+            {
+              "id": "segment-2-6",
+              "text": "date",
+              "vocabularyId": "word-date"
+            },
+            {
+              "id": "segment-2-7",
+              "text": " vous convient ?"
+            }
+          ],
+          "translationZh": "您好。接待处可以安排六月十八日十四点，或六月二十日十六点。哪个日期适合您？"
+        },
+        {
+          "id": "entry-3",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Le 20 "
+            },
+            {
+              "id": "segment-3-2",
+              "text": "juin",
+              "vocabularyId": "word-juin"
+            },
+            {
+              "id": "segment-3-3",
+              "text": " à seize heures me convient. "
+            },
+            {
+              "id": "segment-3-4",
+              "text": "Pouvez-vous",
+              "grammarId": "grammar-a2-pouvoir-service-request"
+            },
+            {
+              "id": "segment-3-5",
+              "text": " "
+            },
+            {
+              "id": "segment-3-6",
+              "text": "confirmer",
+              "vocabularyId": "word-confirmer"
+            },
+            {
+              "id": "segment-3-7",
+              "text": " que ce moment est encore "
+            },
+            {
+              "id": "segment-3-8",
+              "text": "disponible",
+              "vocabularyId": "word-disponible"
+            },
+            {
+              "id": "segment-3-9",
+              "text": " ? Je vais noter la date dans mon agenda."
+            }
+          ],
+          "translationZh": "六月二十日十六点适合我。您能确认这个时段还有空位吗？我会把日期记在日程本里。"
+        },
+        {
+          "id": "entry-4",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Oui, il est disponible. Le rendez-vous dure environ vingt minutes. Vous pouvez apporter la liste des activités qui vous intéressent pour préparer vos questions."
+            }
+          ],
+          "translationZh": "是的，有空位。咨询大约二十分钟。您可以带上感兴趣的活动清单，准备要问的问题。"
+        },
+        {
+          "id": "entry-5",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Très bien. Est-ce que je dois apporter un "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "document",
+              "vocabularyId": "word-document"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " particulier ? Je souhaite seulement obtenir des informations, sans terminer une inscription aujourd’hui."
+            }
+          ],
+          "translationZh": "很好。我需要带什么特别文件吗？我只想了解信息，今天不完成报名。"
+        },
+        {
+          "id": "entry-6",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Pour cette discussion, aucun document particulier n’est demandé. Nous allons regarder les activités ensemble et vous expliquer les étapes si vous souhaitez vous inscrire ensuite."
+            }
+          ],
+          "translationZh": "这次咨询不要求特别文件。我们会一起看活动，如果您之后想报名，再向您说明步骤。"
+        },
+        {
+          "id": "entry-7",
+          "speakerId": "speaker-1",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Merci. Si je dois "
+            },
+            {
+              "id": "segment-7-2",
+              "text": "annuler",
+              "vocabularyId": "word-annuler"
+            },
+            {
+              "id": "segment-7-3",
+              "text": " le rendez-vous, comment puis-je vous prévenir ? Je préfère connaître la procédure avant de confirmer définitivement."
+            }
+          ],
+          "translationZh": "谢谢。如果必须取消预约，我该怎么通知您？正式确认前，我想先知道流程。"
+        },
+        {
+          "id": "entry-8",
+          "speakerId": "speaker-2",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Vous pouvez nous appeler à l’accueil. Je confirme donc votre rendez-vous le 20 juin à seize heures et je vous envoie un message avec ces informations."
+            }
+          ],
+          "translationZh": "您可以打电话到接待处。那么，我确认您六月二十日十六点的预约，并给您发送这些信息。"
+        }
+      ]
+    },
+    {
+      "id": "explanation-main",
+      "type": "explanation",
+      "titleZh": "这句话如何使用",
+      "bodyZh": "两项可选时刻分别是十八日十四点、二十日十六点，Camille 选择第二项。Pouvez-vous confirmer 接原形 confirmer，倒装中的连字符要保留。comment puis-je 为“我怎样才能”的正式问法，本课先理解整句；puis 是 pouvoir 在这种倒装中的形式。",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4"
+        }
+      ]
+    },
+    {
+      "id": "culture-context",
+      "type": "culture",
+      "titleZh": "场景中的细节",
+      "bodyZh": "预约长度、不要求特别文件与取消方式是虚构中心此次咨询的设定，实际机构要求应另行确认。",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。"
+    },
+    {
+      "id": "vocabulary-targets",
+      "type": "vocabulary",
+      "entryIds": [
+        "word-rendez-vous",
+        "word-accueil",
+        "word-date",
+        "word-juin",
+        "word-disponible",
+        "word-confirmer",
+        "word-annuler",
+        "word-document"
+      ]
+    },
+    {
+      "id": "grammar-targets",
+      "type": "grammar",
+      "entryIds": [
+        "grammar-a2-pouvoir-service-request",
+        "grammar-a2-appointment-date"
+      ]
+    },
+    {
+      "id": "exercise-comprehension",
+      "type": "exercise",
+      "exerciseType": "single-choice",
+      "promptZh": "Camille 最后确认了哪个预约？",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "六月十八日十四点"
+        },
+        {
+          "id": "correct",
+          "text": "六月二十日十六点"
+        },
+        {
+          "id": "distractor-b",
+          "text": "六月二十日十四点"
+        }
+      ]
+    },
+    {
+      "id": "exercise-fill",
+      "type": "exercise",
+      "exerciseType": "fill-blank",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "___-vous confirmer la date ?",
+      "hintZh": "vous 搭配 pouvoir 的现在时是 pouvez，接原形 confirmer。"
+    },
+    {
+      "id": "exercise-order",
+      "type": "exercise",
+      "exerciseType": "order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "à seize heures."
+        },
+        {
+          "id": "token-1",
+          "text": "Le rendez-vous est"
+        },
+        {
+          "id": "token-2",
+          "text": "le 20 juin"
+        }
+      ]
+    },
+    {
+      "id": "habit-main",
+      "type": "habit",
+      "taskZh": "为虚构机构写一句预约请求，再写一句日期和时刻确认。",
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。"
+    },
+    {
+      "id": "summary-main",
+      "type": "summary",
+      "takeawaysZh": [
+        "我能说明预约目的。",
+        "我能确认日期和时刻。",
+        "我能用 pouvez-vous 请求确认。"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景",
+      "blockIds": [
+        "scene-main"
+      ]
+    },
+    {
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话",
+      "blockIds": [
+        "dialogue-main"
+      ]
+    },
+    {
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达",
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ]
+    },
+    {
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用",
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ]
+    },
+    {
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常",
+      "blockIds": [
+        "habit-main"
+      ]
+    },
+    {
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课",
+      "blockIds": [
+        "summary-main"
+      ]
+    }
+  ],
+  "completion": {
+    "strategy": "attempt-all",
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ]
+  },
+  "reviewItemIds": [
+    "word-rendez-vous",
+    "word-confirmer",
+    "word-annuler"
+  ],
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "kind": "choice",
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：六月二十日十六点。"
+      },
+      "exercise-fill": {
+        "kind": "text",
+        "accepted": [
+          "Pouvez"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "vous 搭配 pouvoir 的现在时是 pouvez，接原形 confirmer。"
+      },
+      "exercise-order": {
+        "kind": "order",
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Le rendez-vous est le 20 juin à seize heures."
+      }
+    }
+  },
+  "editorial": {
+    "status": "draft",
+    "note": "Owner-authorized whole-word annotation repair preserving the original French/translation/knowledge/voice; not independent expert review or human listening"
+  },
+  "assetRefs": [
+    {
+      "assetId": "art-city-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    }
+  ],
+  "cast": [
+    {
+      "characterId": "character-camille",
+      "revision": 1,
+      "displayName": "Camille",
+      "avatarId": "avatar-camille-v1",
+      "speechLocale": "fr-FR"
+    },
+    {
+      "characterId": "character-luc",
+      "revision": 1,
+      "displayName": "Luc",
+      "avatarId": "avatar-luc-v1",
+      "speechLocale": "fr-FR"
+    }
+  ]
+}

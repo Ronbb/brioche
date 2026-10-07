@@ -91,6 +91,25 @@ class ExportTests(unittest.TestCase):
         self.assertEqual(set(media), {"manifest.json", *self.members})
         self.assertEqual(sha, align.digest(self.path.read_bytes()))
 
+    def test_fractional_millisecond_duration_matches_server_receipt(self):
+        buffer = io.BytesIO()
+        with wave.open(buffer, "wb") as audio:
+            audio.setparams((1, 2, 24000, 0, "NONE", "not compressed"))
+            audio.writeframes(bytes(24001 * 2))
+        payload = buffer.getvalue()
+        sha = align.digest(payload)
+        name = f"media/{sha}.wav"
+        self.members = {name: payload}
+        clip = self.manifest["clips"][0]
+        clip.update(file=name, providerFile=name)
+        clip["result"].update(sha256=sha, providerSha256=sha,
+                              byteLength=len(payload), durationMs=1001)
+        self.assertEqual(align.pcm(payload)[1], 1001)
+        self.check()
+        clip["result"]["durationMs"] = 1000
+        with self.assertRaises(ValueError):
+            self.check()
+
     def test_direct_inputs_are_explicit_and_keep_all_media_checks(self):
         self.manifest.update(kind="brioche-speech-inputs", publicationPolicy="owner-direct-publish", humanListeningAsserted=False)
         self.manifest["clips"][0]["review"] = None

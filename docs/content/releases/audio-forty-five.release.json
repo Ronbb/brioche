@@ -1,0 +1,282 @@
+{
+  "id": "brioche-all-courses-audio-forty-five-20261007",
+  "schemaVersion": "1.0",
+  "levels": [
+    {
+      "id": "a1",
+      "label": "A1 入门",
+      "units": [
+        {
+          "id": "a1-first-conversations",
+          "titleZh": "打开法语的一天",
+          "lessons": [
+            {
+              "lessonId": "a1-greetings-meet",
+              "revision": 2
+            },
+            {
+              "lessonId": "a1-greetings-introduce",
+              "revision": 2
+            },
+            {
+              "lessonId": "a1-greetings-repeat",
+              "revision": 2
+            },
+            {
+              "lessonId": "a1-greetings-spell-name",
+              "revision": 2
+            }
+          ]
+        },
+        {
+          "id": "a1-breakfast-bakery",
+          "titleZh": "早餐与面包店",
+          "lessons": [
+            {
+              "lessonId": "a1-bakery-buy-breakfast",
+              "revision": 2
+            },
+            {
+              "lessonId": "a1-bakery-order-coffee",
+              "revision": 2
+            },
+            {
+              "lessonId": "a1-bakery-choose-quantity",
+              "revision": 2
+            },
+            {
+              "lessonId": "a1-bakery-pay",
+              "revision": 2
+            }
+          ]
+        },
+        {
+          "id": "a1-city-travel",
+          "titleZh": "在城市里移动",
+          "lessons": [
+            {
+              "lessonId": "a1-city-find-metro",
+              "revision": 3
+            },
+            {
+              "lessonId": "a1-city-buy-tickets",
+              "revision": 2
+            },
+            {
+              "lessonId": "a1-city-confirm-direction",
+              "revision": 2
+            },
+            {
+              "lessonId": "a1-city-read-departure",
+              "revision": 3
+            }
+          ]
+        },
+        {
+          "id": "a1-home-routine",
+          "titleZh": "家与日常安排",
+          "lessons": [
+            {
+              "lessonId": "a1-home-describe-room",
+              "revision": 2
+            },
+            {
+              "lessonId": "a1-home-wake-up",
+              "revision": 3
+            },
+            {
+              "lessonId": "a1-home-work-study",
+              "revision": 2
+            },
+            {
+              "lessonId": "a1-home-weekly-routine",
+              "revision": 2
+            }
+          ]
+        },
+        {
+          "id": "a1-food-shopping",
+          "titleZh": "买东西与吃饭",
+          "lessons": [
+            {
+              "lessonId": "a1-food-buy-fruit",
+              "revision": 2
+            },
+            {
+              "lessonId": "a1-food-shopping-list",
+              "revision": 3
+            },
+            {
+              "lessonId": "a1-food-order-lunch",
+              "revision": 3
+            },
+            {
+              "lessonId": "a1-food-ingredients-bill",
+              "revision": 2
+            }
+          ]
+        },
+        {
+          "id": "a1-social-meetings",
+          "titleZh": "认识与约见",
+          "lessons": [
+            {
+              "lessonId": "a1-social-introduce-friend",
+              "revision": 2
+            },
+            {
+              "lessonId": "a1-social-invite-coffee",
+              "revision": 2
+            },
+            {
+              "lessonId": "a1-social-confirm-meeting",
+              "revision": 3
+            },
+            {
+              "lessonId": "a1-social-reschedule",
+              "revision": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a2",
+      "label": "A2 进阶",
+      "units": [
+        {
+          "id": "a2-weekend-travel",
+          "titleZh": "周末与出行",
+          "lessons": [
+            {
+              "lessonId": "a2-travel-plan-weekend",
+              "revision": 2
+            },
+            {
+              "lessonId": "a2-travel-book-room",
+              "revision": 2
+            },
+            {
+              "lessonId": "a2-travel-buy-return-ticket",
+              "revision": 2
+            },
+            {
+              "lessonId": "a2-travel-tell-weekend",
+              "revision": 1
+            }
+          ]
+        },
+        {
+          "id": "a2-shared-living",
+          "titleZh": "一起生活",
+          "lessons": [
+            {
+              "lessonId": "a2-home-share-chores",
+              "revision": 3
+            },
+            {
+              "lessonId": "a2-home-common-rules",
+              "revision": 2
+            },
+            {
+              "lessonId": "a2-home-shared-routine",
+              "revision": 2
+            },
+            {
+              "lessonId": "a2-home-compare-rooms",
+              "revision": 2
+            }
+          ]
+        },
+        {
+          "id": "a2-daily-services",
+          "titleZh": "办理日常事务",
+          "lessons": [
+            {
+              "lessonId": "a2-services-book-appointment",
+              "revision": 1
+            },
+            {
+              "lessonId": "a2-services-fill-information",
+              "revision": 2
+            },
+            {
+              "lessonId": "a2-services-explain-problem",
+              "revision": 3
+            },
+            {
+              "lessonId": "a2-services-ask-next-steps",
+              "revision": 3
+            }
+          ]
+        },
+        {
+          "id": "a2-body-wellbeing",
+          "titleZh": "身体与状态",
+          "lessons": [
+            {
+              "lessonId": "a2-health-describe-discomfort",
+              "revision": 2
+            },
+            {
+              "lessonId": "a2-health-book-consultation",
+              "revision": 3
+            },
+            {
+              "lessonId": "a2-health-talk-feelings",
+              "revision": 2
+            },
+            {
+              "lessonId": "a2-health-read-instructions",
+              "revision": 3
+            }
+          ]
+        },
+        {
+          "id": "a2-work-study-experience",
+          "titleZh": "工作学习与经历",
+          "lessons": [
+            {
+              "lessonId": "a2-work-describe-experience",
+              "revision": 3
+            },
+            {
+              "lessonId": "a2-work-plan-collaboration",
+              "revision": 2
+            },
+            {
+              "lessonId": "a2-work-report-progress",
+              "revision": 2
+            },
+            {
+              "lessonId": "a2-work-tell-yesterday",
+              "revision": 1
+            }
+          ]
+        },
+        {
+          "id": "a2-expression-negotiation",
+          "titleZh": "表达与协商",
+          "lessons": [
+            {
+              "lessonId": "a2-express-evaluate-experience",
+              "revision": 3
+            },
+            {
+              "lessonId": "a2-express-explain-preference",
+              "revision": 2
+            },
+            {
+              "lessonId": "a2-express-propose-alternative",
+              "revision": 2
+            },
+            {
+              "lessonId": "a2-express-clear-misunderstanding",
+              "revision": 3
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

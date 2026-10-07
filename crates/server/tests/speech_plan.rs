@@ -1,6 +1,39 @@
 use brioche_server::{author_json, author_source, speech_plan};
 use serde_json::{Value, json};
 
+fn latest_author_source(root: &std::path::Path, path: &std::path::Path) -> author_json::Document {
+    let mut document = author_json::Document::load(path).unwrap();
+    let id = document.value["id"].as_str().unwrap().to_owned();
+    let mut directories = vec![root.join("work-in-progress")];
+    for entry in std::fs::read_dir(root.join("releases")).unwrap() {
+        let candidate = entry.unwrap().path();
+        if candidate.is_dir() {
+            directories.push(candidate);
+        }
+    }
+    for directory in directories {
+        let candidate = directory.join(format!("{id}.lesson.json"));
+        if !candidate.is_file() {
+            continue;
+        }
+        let newer = author_json::Document::load(candidate).unwrap();
+        for key in ["id", "levelId", "unitId"] {
+            assert_eq!(newer.value[key], document.value[key]);
+        }
+        let revision = newer.value["revision"].as_u64().unwrap();
+        let current = document.value["revision"].as_u64().unwrap();
+        if revision > current {
+            document = newer;
+        } else if revision == current {
+            assert_eq!(
+                newer.value, document.value,
+                "ambiguous author revision {id}"
+            );
+        }
+    }
+    document
+}
+
 fn config(lesson: &brioche_course_contract::PublicLesson) -> Value {
     let profile = json!({"personality":"Patient and friendly", "speakingStyle":"Clear conversational French", "defaultEmotion":"Calm", "provider":"qwen", "model":"qwen-audio-3.1-tts-flash", "voiceId":"longanlingxin_v3.1", "voiceKind":"system", "locale":"fr-FR", "rate":1.0,"referenceAudio":null});
     // Synthetic compiler fixtures, never registered or used for real synthesis.
@@ -17,7 +50,9 @@ fn authored_curriculum_can_be_planned_without_provider_calls() {
             if !path.to_string_lossy().ends_with(".lesson.json") {
                 continue;
             }
-            let doc = author_json::Document::load(&path).unwrap();
+            // Keep published history immutable; compile the newest authored revision,
+            // including an explicitly saved draft awaiting its final audio package.
+            let doc = latest_author_source(&root, &path);
             let lesson = author_source::check_lesson(&doc).unwrap();
             let mut cfg = config(&lesson);
             // Select only roles actually needed by this source and the explicit knowledge narrator.
