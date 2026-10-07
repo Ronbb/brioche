@@ -25,6 +25,12 @@ pub fn router() -> Router<Backend> {
 pub(crate) async fn snapshot(db: &impl ConnectionTrait, id: &str) -> Result<Value, AppError> {
     snapshot_policy(db, id, true).await
 }
+pub(crate) async fn snapshot_direct(
+    db: &impl ConnectionTrait,
+    id: &str,
+) -> Result<Value, AppError> {
+    snapshot_policy(db, id, false).await
+}
 async fn snapshot_policy(
     db: &impl ConnectionTrait,
     id: &str,

@@ -218,7 +218,7 @@ async fn list(
     };
     Ok(Json(AdminSpeechPackageResults { items, next }))
 }
-fn settings(r: &AdminSpeechPackageRequest) -> Result<(), AppError> {
+pub(crate) fn settings(r: &AdminSpeechPackageRequest) -> Result<(), AppError> {
     if !hex(&r.expected_report_hash, 64)
         || !brioche_course_contract::valid_content_revision(r.lesson_revision)
         || r.gap_ms > 1000
@@ -716,8 +716,35 @@ fn pack(
     actor: i64,
 ) -> Result<Vec<u8>, AppError> {
     let assembled = assemble(root, manifest, request, actor)?;
+    archive_files(assembled.files)
+}
+/// Reuse PCM assembly and validators with an explicit owner policy, not a human review.
+pub(crate) fn pack_automatic(
+    root: &FilePath,
+    manifest: Value,
+    request: &AdminSpeechPackageRequest,
+    actor: i64,
+) -> Result<Vec<u8>, AppError> {
+    let mut assembled = assemble(root, manifest, request, actor)?;
+    assembled.source["editorial"] = json!({"status":"reviewed","note":format!("所有者授权直接发布；未声明人工试听或独立专家审校。{}",request.reason)});
+    crate::author_source::editorial(&assembled.source).map_err(|_| AppError::InvalidInput)?;
+    assembled.manifest["assembly"]["finalListeningRequired"] = json!(false);
+    assembled.manifest["assembly"]["approvalRequired"] = json!(false);
+    assembled.manifest["assembly"]["publicationPolicy"] = json!("owner-direct-publish");
+    assembled.manifest["assembly"]["humanListeningAsserted"] = json!(false);
+    assembled.files.insert(
+        "lesson.json".into(),
+        serde_json::to_vec_pretty(&assembled.source).map_err(|_| AppError::Unavailable)?,
+    );
+    assembled.files.insert(
+        "manifest.json".into(),
+        serde_json::to_vec_pretty(&assembled.manifest).map_err(|_| AppError::Unavailable)?,
+    );
+    archive_files(assembled.files)
+}
+fn archive_files(files: BTreeMap<String, Vec<u8>>) -> Result<Vec<u8>, AppError> {
     let mut tar = tar::Builder::new(Vec::new());
-    for (name, bytes) in assembled.files {
+    for (name, bytes) in files {
         if tar
             .get_ref()
             .len()

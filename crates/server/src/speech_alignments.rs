@@ -168,7 +168,7 @@ fn source_words(text: &str) -> Vec<AdminAlignmentWord> {
         })
         .collect()
 }
-fn validate_words(
+pub(crate) fn validate_words(
     words: &[AdminAlignmentWord],
     expected: &[AdminAlignmentWord],
     duration: u32,

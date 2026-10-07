@@ -219,6 +219,53 @@ async fn main() -> Result<()> {
         )
     };
     match command.as_str() {
+        "speech-package-automatic" => {
+            let args: Vec<String> = std::env::args().skip(2).collect();
+            if args.len() != 4 {
+                bail!(
+                    "usage: speech-package-automatic <report.json> <package-request.json> <operator-email> <new-private-output.tar>"
+                );
+            }
+            let database = db.as_ref().unwrap();
+            let row = database
+                .query_one_raw(sea_orm::Statement::from_sql_and_values(
+                    sea_orm::DbBackend::Postgres,
+                    "SELECT id FROM users WHERE email=$1 AND role='operator'",
+                    vec![args[2].clone().into()],
+                ))
+                .await?
+                .ok_or_else(|| anyhow::anyhow!("operator not found"))?;
+            let backend = brioche_server::identity::Backend::new(database.clone()).await?;
+            let report = brioche_server::author_json::Document::load(&args[0])?;
+            let request = brioche_server::author_json::Document::load(&args[1])?;
+            let bytes = brioche_server::speech_automatic::assemble_for_actor(
+                &backend,
+                row.try_get("", "id")?,
+                brioche_server::media::media_root(),
+                report.value,
+                brioche_server::author_json::from_value(request.value, "")?,
+            )
+            .await
+            .map_err(|_| {
+                anyhow::anyhow!("automatic package not confirmed; inspect fixed report and sources")
+            })?;
+            let mut options = std::fs::OpenOptions::new();
+            options.write(true).create_new(true);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::OpenOptionsExt;
+                options.mode(0o600);
+            }
+            use std::io::Write;
+            let mut file = options.open(&args[3])?;
+            file.write_all(&bytes)?;
+            file.sync_all()?;
+            println!(
+                "{}",
+                serde_json::json!({"byteLength":bytes.len(),"humanListeningAsserted":false,"published":false})
+            );
+            return Ok(());
+        }
         "lesson-direct-publication" => {
             let args: Vec<String> = std::env::args().skip(2).collect();
             if args.len() != 4 {

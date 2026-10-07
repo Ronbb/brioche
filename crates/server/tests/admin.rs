@@ -4157,6 +4157,143 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
         json!({"clipId":clip["id"],"generationKey":key,"sha256":clip["result"]["sha256"],"durationMs":clip["result"]["durationMs"],"rawPredictions":raw,"words":words,"issues":[],"targets":targets})
     }).collect();
     let mut report = json!({"schemaVersion":"1.0","kind":"brioche-alignment-predictions","planId":id,"planHash":saved.1["planHash"],"sourceArchiveSha256":source_archive_hash,"engine":engine,"reviewRequired":true,"clips":report_clips});
+    // Automatic assembly is independent of human alignment decisions. These
+    // timestamps are synthetic protocol data, never production audio alignment.
+    let direct_input = brioche_server::speech_export::export_direct_for_actor(
+        &backend,
+        actor,
+        id.to_owned(),
+        root.clone(),
+    )
+    .await
+    .unwrap();
+    let mut automatic = report.clone();
+    automatic["kind"] = json!("brioche-automatic-alignment-v1");
+    automatic["reviewRequired"] = json!(false);
+    automatic["humanListeningAsserted"] = json!(false);
+    automatic["originalPredictionReportSha256"] = json!("b".repeat(64));
+    let direct_archive_hash = {
+        use sha2::Digest;
+        format!("{:x}", sha2::Sha256::digest(&direct_input))
+    };
+    automatic["sourceArchiveSha256"] = json!(direct_archive_hash);
+    for clip in automatic["clips"].as_array_mut().unwrap() {
+        let words = clip["words"].clone();
+        for target in clip["targets"].as_array_mut().unwrap() {
+            let original = manifest["plan"]["targets"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|t| t["pointer"] == target["pointer"])
+                .unwrap();
+            target["words"] = json!(
+                original["words"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|unit| {
+                        let word = words
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .find(|w| {
+                                w["start"] == unit["entryStart"]
+                                    && w["end"] == unit["entryEnd"]
+                                    && w["text"] == unit["text"]
+                            })
+                            .unwrap();
+                        let mut unit = unit.clone();
+                        unit["startMs"] = word["startMs"].clone();
+                        unit["endMs"] = word["endMs"].clone();
+                        unit
+                    })
+                    .collect::<Vec<_>>()
+            );
+        }
+    }
+    let automatic_request = |report: &Value| {
+        use sha2::Digest;
+        brioche_course_contract::AdminSpeechPackageRequest {
+            expected_report_hash: format!(
+                "{:x}",
+                sha2::Sha256::digest(serde_json::to_vec(report).unwrap())
+            ),
+            lesson_revision: revision + 1,
+            gap_ms: 250,
+            rights_confirmed: true,
+            source: "Synthetic fixed protocol audio".into(),
+            license: "LicenseRef-TestOnly".into(),
+            creator: "Brioche test".into(),
+            credit_zh: "测试录音".into(),
+            reason: "Synthetic owner authorization; no human hearing claimed".into(),
+        }
+    };
+    let automatic_bytes = brioche_server::speech_automatic::assemble_for_actor(
+        &backend,
+        actor,
+        root.clone(),
+        automatic.clone(),
+        automatic_request(&automatic),
+    )
+    .await
+    .unwrap();
+    let mut automatic_archive = tar::Archive::new(std::io::Cursor::new(automatic_bytes));
+    let mut automatic_files = std::collections::BTreeMap::new();
+    for entry in automatic_archive.entries().unwrap() {
+        use std::io::Read;
+        let mut entry = entry.unwrap();
+        let name = entry.path().unwrap().to_str().unwrap().to_owned();
+        let mut data = Vec::new();
+        entry.read_to_end(&mut data).unwrap();
+        automatic_files.insert(name, data);
+    }
+    let automatic_source: Value = serde_json::from_slice(&automatic_files["lesson.json"]).unwrap();
+    let automatic_manifest: Value =
+        serde_json::from_slice(&automatic_files["manifest.json"]).unwrap();
+    assert_eq!(automatic_source["editorial"]["status"], "reviewed");
+    assert_eq!(
+        automatic_manifest["assembly"]["humanListeningAsserted"],
+        false
+    );
+    assert_eq!(automatic_manifest["assembly"]["approvalRequired"], false);
+    assert_eq!(
+        automatic_manifest["assembly"]["finalListeningRequired"],
+        false
+    );
+    assert_eq!(automatic_manifest["automaticAlignment"], automatic);
+    assert!(
+        brioche_server::speech_automatic::assemble_for_actor(
+            &backend,
+            -1,
+            root.clone(),
+            automatic.clone(),
+            automatic_request(&automatic)
+        )
+        .await
+        .is_err()
+    );
+    for case in 0..4 {
+        let mut invalid = automatic.clone();
+        match case {
+            0 => invalid["clips"][0]["issues"] = json!(["invalidTimeRange"]),
+            1 => invalid["clips"][0]["clipId"] = json!("invalid-latest-clip"),
+            2 => invalid["sourceArchiveSha256"] = json!("0".repeat(64)),
+            3 => invalid["humanListeningAsserted"] = json!(true),
+            _ => unreachable!(),
+        }
+        assert!(
+            brioche_server::speech_automatic::assemble_for_actor(
+                &backend,
+                actor,
+                root.clone(),
+                invalid.clone(),
+                automatic_request(&invalid)
+            )
+            .await
+            .is_err(),
+            "automatic case {case}"
+        );
+    }
     let corrected = report["clips"][0]["words"].clone();
     report["clips"][0]["words"] = json!([]);
     report["clips"][0]["issues"] = json!(["invalidTimeRange"]);
