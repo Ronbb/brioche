@@ -1,0 +1,1311 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-bakery-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-316fb6b1a65f42679f58a74af97b2ed1ecbf4a54a7e511b804ba23f5cc204fe0",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 10630,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "e9329c02952eaac626aee73b645feafd56938e99709b082ff1294a6fd360417e",
+      "url": "/api/audio/e9329c02952eaac626aee73b645feafd56938e99709b082ff1294a6fd360417e.wav"
+    },
+    {
+      "assetId": "speech-4d8c76dbb7b01f9e9f0c1d60267684882bf610c508c1025650da9fb1d7f421ee",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "5e6f0a42d3fad69998842fd6231b1de52bc5981e1b83f3fda3d0773be436b08d",
+      "url": "/api/audio/5e6f0a42d3fad69998842fd6231b1de52bc5981e1b83f3fda3d0773be436b08d.wav"
+    },
+    {
+      "assetId": "speech-4fe9d193e3324cc88d4718cf7b238986e7ee2ffce84843026b253d14cb4f9144",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "588d47e1b9f0c92816c780445d8ebc0f3c2b1882ac5ec27e9915081b72dc77d0",
+      "url": "/api/audio/588d47e1b9f0c92816c780445d8ebc0f3c2b1882ac5ec27e9915081b72dc77d0.wav"
+    },
+    {
+      "assetId": "speech-624ac135af113558b6d5c4902a10875dd8017f682b38f6a682781e892361cd69",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "26d7ae5977fda70c0925fac40c2e77b490fffa3852e2655b799a53490c54a590",
+      "url": "/api/audio/26d7ae5977fda70c0925fac40c2e77b490fffa3852e2655b799a53490c54a590.wav"
+    },
+    {
+      "assetId": "speech-81f62d426ceeb436361c41f919a2962ac145452b763d5520d488989d3818b875",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "d6fa9b7e64d3d82de03faca52a1844218362aa6b2d51b93e7a24857e2b6229d8",
+      "url": "/api/audio/d6fa9b7e64d3d82de03faca52a1844218362aa6b2d51b93e7a24857e2b6229d8.wav"
+    },
+    {
+      "assetId": "speech-8fe271c835fd996a5a9c4304eaf27bbb77b5aa7058840f26a8d96450c02d94ff",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1360,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "06246ec82d9097b4eab866280390682bbc5d5206b04642fb0701cfecfa6fccce",
+      "url": "/api/audio/06246ec82d9097b4eab866280390682bbc5d5206b04642fb0701cfecfa6fccce.wav"
+    },
+    {
+      "assetId": "speech-aba0d4786b7929663821a22ec223a7db1398a8840a28b9cd9188bec9509ead1f",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1680,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "ea69d692092d77b2c21165aa014fa206f7d9e7a40eb63bf45b831b0b3daefc50",
+      "url": "/api/audio/ea69d692092d77b2c21165aa014fa206f7d9e7a40eb63bf45b831b0b3daefc50.wav"
+    },
+    {
+      "assetId": "speech-b2026a147f0c334803e4155e16a88dc765322c4258c5a8b17b5234ef6e50baba",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 560,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "1ce0802411228aa044a16b6c17ad0ab1521367b36a2f188bf2a0aa8277ea3a2f",
+      "url": "/api/audio/1ce0802411228aa044a16b6c17ad0ab1521367b36a2f188bf2a0aa8277ea3a2f.wav"
+    },
+    {
+      "assetId": "speech-bdd03cf58d2d2cf93f9c20962333fa701f659603823b9c86d1ecab64c9498923",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426",
+      "url": "/api/audio/6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426.wav"
+    },
+    {
+      "assetId": "speech-e39d292374ff2ca4a422e6a96646c2c5ac9b8f183bc4946874a099e3b48d2885",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 480,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "a989ce3120935ee00ce627789d76ca5934697e616cffd52054daf4744f68846a",
+      "url": "/api/audio/a989ce3120935ee00ce627789d76ca5934697e616cffd52054daf4744f68846a.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-316fb6b1a65f42679f58a74af97b2ed1ecbf4a54a7e511b804ba23f5cc204fe0",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-4d8c76dbb7b01f9e9f0c1d60267684882bf610c508c1025650da9fb1d7f421ee",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-4fe9d193e3324cc88d4718cf7b238986e7ee2ffce84843026b253d14cb4f9144",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-624ac135af113558b6d5c4902a10875dd8017f682b38f6a682781e892361cd69",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-81f62d426ceeb436361c41f919a2962ac145452b763d5520d488989d3818b875",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-8fe271c835fd996a5a9c4304eaf27bbb77b5aa7058840f26a8d96450c02d94ff",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-aba0d4786b7929663821a22ec223a7db1398a8840a28b9cd9188bec9509ead1f",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-b2026a147f0c334803e4155e16a88dc765322c4258c5a8b17b5234ef6e50baba",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-bdd03cf58d2d2cf93f9c20962333fa701f659603823b9c86d1ecab64c9498923",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-e39d292374ff2ca4a422e6a96646c2c5ac9b8f183bc4946874a099e3b48d2885",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-316fb6b1a65f42679f58a74af97b2ed1ecbf4a54a7e511b804ba23f5cc204fe0",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 720,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2330,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 970,
+          "wordRange": null
+        },
+        {
+          "endMs": 1210,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1050,
+          "wordRange": null
+        },
+        {
+          "endMs": 1210,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1050,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1530,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 1210,
+          "wordRange": null
+        },
+        {
+          "endMs": 1530,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 1210,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2090,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 1530,
+          "wordRange": null
+        },
+        {
+          "endMs": 1770,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 1530,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1930,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 1770,
+          "wordRange": {
+            "end": 9,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 2090,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 1930,
+          "wordRange": {
+            "end": 15,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 3460,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 2580,
+          "wordRange": null
+        },
+        {
+          "endMs": 2980,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 2660,
+          "wordRange": null
+        },
+        {
+          "endMs": 2980,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 2660,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3140,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 2980,
+          "wordRange": null
+        },
+        {
+          "endMs": 3140,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 2980,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 3300,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3140,
+          "wordRange": null
+        },
+        {
+          "endMs": 3300,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3140,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 5230,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 3710,
+          "wordRange": null
+        },
+        {
+          "endMs": 4030,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 3790,
+          "wordRange": null
+        },
+        {
+          "endMs": 4030,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 3790,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4670,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 4350,
+          "wordRange": null
+        },
+        {
+          "endMs": 4670,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 4350,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4830,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 4670,
+          "wordRange": null
+        },
+        {
+          "endMs": 4830,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 4670,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 5070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 4830,
+          "wordRange": null
+        },
+        {
+          "endMs": 5070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 4830,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6440,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 5480,
+          "wordRange": null
+        },
+        {
+          "endMs": 6280,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 5560,
+          "wordRange": null
+        },
+        {
+          "endMs": 5640,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 5560,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 5800,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 5640,
+          "wordRange": {
+            "end": 7,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 6040,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 5800,
+          "wordRange": {
+            "end": 13,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 6280,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 6040,
+          "wordRange": {
+            "end": 18,
+            "start": 14
+          }
+        },
+        {
+          "endMs": 8290,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 6690,
+          "wordRange": null
+        },
+        {
+          "endMs": 6930,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 6770,
+          "wordRange": null
+        },
+        {
+          "endMs": 6930,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 6770,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7250,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 6930,
+          "wordRange": null
+        },
+        {
+          "endMs": 7250,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 6930,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7890,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 7650,
+          "wordRange": null
+        },
+        {
+          "endMs": 7890,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 7650,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8130,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-7",
+          "startMs": 7890,
+          "wordRange": null
+        },
+        {
+          "endMs": 8130,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-7",
+          "startMs": 7890,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9100,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 8540,
+          "wordRange": null
+        },
+        {
+          "endMs": 8860,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 8540,
+          "wordRange": null
+        },
+        {
+          "endMs": 8700,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 8540,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8860,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 8700,
+          "wordRange": {
+            "end": 9,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 10630,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 9350,
+          "wordRange": null
+        },
+        {
+          "endMs": 10310,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 9430,
+          "wordRange": null
+        },
+        {
+          "endMs": 9830,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 9430,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10150,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 9990,
+          "wordRange": {
+            "end": 9,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 10310,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 10150,
+          "wordRange": {
+            "end": 16,
+            "start": 10
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-bakery-morning",
+      "placeZh": "一家社区面包店",
+      "situationZh": "点咖啡或茶，并说明是否加牛奶。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-luc-v1",
+          "characterId": "character-luc",
+          "displayName": "Luc",
+          "id": "speaker-1",
+          "labelZh": "店员"
+        },
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-2",
+          "labelZh": "顾客"
+        }
+      ],
+      "titleZh": "再来一杯饮品",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Bonjour !"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "您好！"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "grammarId": "grammar-drink-un",
+              "id": "segment-2-1",
+              "text": "Un"
+            },
+            {
+              "id": "segment-2-2",
+              "text": " "
+            },
+            {
+              "id": "segment-2-3",
+              "text": "café",
+              "vocabularyId": "word-cafe"
+            },
+            {
+              "id": "segment-2-4",
+              "text": ", "
+            },
+            {
+              "id": "segment-2-5",
+              "text": "s’il vous plaît",
+              "vocabularyId": "expr-sil-vous-plait"
+            },
+            {
+              "id": "segment-2-6",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "请给我一杯咖啡。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Avec",
+              "vocabularyId": "word-avec"
+            },
+            {
+              "id": "segment-3-2",
+              "text": " du "
+            },
+            {
+              "id": "segment-3-3",
+              "text": "lait",
+              "vocabularyId": "word-lait"
+            },
+            {
+              "id": "segment-3-4",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "加牛奶吗？"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Oui",
+              "vocabularyId": "word-oui"
+            },
+            {
+              "id": "segment-4-2",
+              "text": ", "
+            },
+            {
+              "id": "segment-4-3",
+              "text": "avec",
+              "vocabularyId": "word-avec"
+            },
+            {
+              "id": "segment-4-4",
+              "text": " du "
+            },
+            {
+              "id": "segment-4-5",
+              "text": "lait",
+              "vocabularyId": "word-lait"
+            },
+            {
+              "id": "segment-4-6",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "是的，加牛奶。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Et pour votre amie ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "您的朋友呢？"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "grammarId": "grammar-drink-un",
+              "id": "segment-6-1",
+              "text": "Un"
+            },
+            {
+              "id": "segment-6-2",
+              "text": " "
+            },
+            {
+              "id": "segment-6-3",
+              "text": "thé",
+              "vocabularyId": "word-the"
+            },
+            {
+              "id": "segment-6-4",
+              "text": ", "
+            },
+            {
+              "grammarId": "grammar-drink-sans",
+              "id": "segment-6-5",
+              "text": "sans",
+              "vocabularyId": "word-sans"
+            },
+            {
+              "id": "segment-6-6",
+              "text": " "
+            },
+            {
+              "id": "segment-6-7",
+              "text": "lait",
+              "vocabularyId": "word-lait"
+            },
+            {
+              "id": "segment-6-8",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "一杯茶，不加奶。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Très bien."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "好的。"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Merci, au revoir."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "谢谢，再见。"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "café 和 thé 是阳性名词，本课点一杯时用 un café / un thé。其他饮品的冠词需按名词性别选择。\n\n加奶说 avec du lait；本例的不加奶说 sans lait。先记住这两个搭配，部分冠词的完整规则后续学习。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "饮品与加奶方式是本课的具体选择，菜单和可提供的饮品依店铺而异。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-cafe",
+        "word-the",
+        "word-lait",
+        "word-avec",
+        "word-sans",
+        "expr-sil-vous-plait",
+        "word-oui"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-drink-un",
+        "grammar-drink-sans"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "加奶的咖啡"
+        },
+        {
+          "id": "correct",
+          "text": "不加奶的茶"
+        },
+        {
+          "id": "distractor-b",
+          "text": "牛奶"
+        }
+      ],
+      "promptZh": "顾客为朋友点了什么？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "sans lait 表示不加牛奶。",
+      "id": "exercise-fill",
+      "promptZh": "根据对话补完整“不加奶的茶”。",
+      "templateFr": "Un thé, ___ lait.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句可以在本课场景中使用的话。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "s’il vous plaît."
+        },
+        {
+          "id": "token-2",
+          "text": "avec du lait,"
+        },
+        {
+          "id": "token-1",
+          "text": "Un café,"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "如果暂时没有合适场景，可以在家用虚构信息练说，不需要真实购物或出行。",
+      "id": "habit-main",
+      "taskZh": "准备饮品时，用 avec du lait 或 sans lait 描述自己的选择。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能点一杯咖啡或茶。",
+        "我能说明加奶或不加奶。",
+        "我能确认饮品选择。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-luc-v1",
+      "characterId": "character-luc",
+      "displayName": "Luc",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner instructed direct publication of courses and recordings without manual approval; actual fixed-model alignment validated; no human listening or independent expert review asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-bakery-order-coffee",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "café 和 thé 是阳性名词，本课点一杯时用 un café / un thé。其他饮品的冠词需按名词性别选择。",
+        "examples": [
+          {
+            "fr": "Un café, s’il vous plaît.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-8fe271c835fd996a5a9c4304eaf27bbb77b5aa7058840f26a8d96450c02d94ff",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1360,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "06246ec82d9097b4eab866280390682bbc5d5206b04642fb0701cfecfa6fccce",
+                "url": "/api/audio/06246ec82d9097b4eab866280390682bbc5d5206b04642fb0701cfecfa6fccce.wav"
+              },
+              "endMs": 1360,
+              "startMs": 0
+            },
+            "zh": "请给我一杯咖啡。"
+          }
+        ],
+        "id": "grammar-drink-un",
+        "titleZh": "un：点一杯饮品"
+      },
+      {
+        "bodyZh": "加奶说 avec du lait；本例的不加奶说 sans lait。先记住这两个搭配，部分冠词的完整规则后续学习。",
+        "examples": [
+          {
+            "fr": "Un thé, sans lait.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-aba0d4786b7929663821a22ec223a7db1398a8840a28b9cd9188bec9509ead1f",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1680,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "ea69d692092d77b2c21165aa014fa206f7d9e7a40eb63bf45b831b0b3daefc50",
+                "url": "/api/audio/ea69d692092d77b2c21165aa014fa206f7d9e7a40eb63bf45b831b0b3daefc50.wav"
+              },
+              "endMs": 1680,
+              "startMs": 0
+            },
+            "zh": "一杯茶，不加奶。"
+          }
+        ],
+        "id": "grammar-drink-sans",
+        "titleZh": "avec du lait / sans lait"
+      }
+    ],
+    "vocabulary": [
+      {
+        "gender": "masculine",
+        "id": "word-cafe",
+        "lemma": "café",
+        "meaningZh": "咖啡",
+        "noteZh": "本课指饮品；un café 可以表示一杯咖啡。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-4d8c76dbb7b01f9e9f0c1d60267684882bf610c508c1025650da9fb1d7f421ee",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "5e6f0a42d3fad69998842fd6231b1de52bc5981e1b83f3fda3d0773be436b08d",
+            "url": "/api/audio/5e6f0a42d3fad69998842fd6231b1de52bc5981e1b83f3fda3d0773be436b08d.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-the",
+        "lemma": "thé",
+        "meaningZh": "茶",
+        "noteZh": "un thé 在本课表示一杯茶。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-b2026a147f0c334803e4155e16a88dc765322c4258c5a8b17b5234ef6e50baba",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 560,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "1ce0802411228aa044a16b6c17ad0ab1521367b36a2f188bf2a0aa8277ea3a2f",
+            "url": "/api/audio/1ce0802411228aa044a16b6c17ad0ab1521367b36a2f188bf2a0aa8277ea3a2f.wav"
+          },
+          "endMs": 560,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-lait",
+        "lemma": "lait",
+        "meaningZh": "牛奶",
+        "noteZh": "du lait 表示一些牛奶；本课先理解整个搭配。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-e39d292374ff2ca4a422e6a96646c2c5ac9b8f183bc4946874a099e3b48d2885",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 480,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "a989ce3120935ee00ce627789d76ca5934697e616cffd52054daf4744f68846a",
+            "url": "/api/audio/a989ce3120935ee00ce627789d76ca5934697e616cffd52054daf4744f68846a.wav"
+          },
+          "endMs": 480,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-avec",
+        "lemma": "avec",
+        "meaningZh": "和；带有",
+        "noteZh": "avec du lait 表示加牛奶。",
+        "partOfSpeech": "preposition",
+        "recording": {
+          "asset": {
+            "assetId": "speech-4fe9d193e3324cc88d4718cf7b238986e7ee2ffce84843026b253d14cb4f9144",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "588d47e1b9f0c92816c780445d8ebc0f3c2b1882ac5ec27e9915081b72dc77d0",
+            "url": "/api/audio/588d47e1b9f0c92816c780445d8ebc0f3c2b1882ac5ec27e9915081b72dc77d0.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-sans",
+        "lemma": "sans",
+        "meaningZh": "没有；不加",
+        "noteZh": "sans lait 表示不加牛奶，sans 后本例不加冠词。",
+        "partOfSpeech": "preposition",
+        "recording": {
+          "asset": {
+            "assetId": "speech-624ac135af113558b6d5c4902a10875dd8017f682b38f6a682781e892361cd69",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "26d7ae5977fda70c0925fac40c2e77b490fffa3852e2655b799a53490c54a590",
+            "url": "/api/audio/26d7ae5977fda70c0925fac40c2e77b490fffa3852e2655b799a53490c54a590.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-sil-vous-plait",
+        "lemma": "s’il vous plaît",
+        "meaningZh": "请",
+        "noteZh": "这里使用 vous，适用于不熟悉的人和服务场景。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-bdd03cf58d2d2cf93f9c20962333fa701f659603823b9c86d1ecab64c9498923",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426",
+            "url": "/api/audio/6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-oui",
+        "lemma": "oui",
+        "meaningZh": "是的",
+        "noteZh": "用于肯定回答。",
+        "partOfSpeech": "adverb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-81f62d426ceeb436361c41f919a2962ac145452b763d5520d488989d3818b875",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "d6fa9b7e64d3d82de03faca52a1844218362aa6b2d51b93e7a24857e2b6229d8",
+            "url": "/api/audio/d6fa9b7e64d3d82de03faca52a1844218362aa6b2d51b93e7a24857e2b6229d8.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "社区面包店的清晨",
+      "assetId": "art-bakery-morning",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "2154bad9ebb6f592e210e24eacc5dd97cf0be05d5f8b33fedd313e1e58ba5412",
+      "url": "/api/media/2154bad9ebb6f592e210e24eacc5dd97cf0be05d5f8b33fedd313e1e58ba5412.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Luc 的头像",
+      "assetId": "avatar-luc-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b",
+      "url": "/api/media/75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "点一杯咖啡或茶",
+    "说明加奶或不加奶",
+    "确认饮品选择"
+  ],
+  "reviewItemIds": [
+    "word-cafe",
+    "word-the",
+    "word-lait"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：不加奶的茶。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "sans"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "sans lait 表示不加牛奶。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Un café, avec du lait, s’il vous plaît. 点咖啡或茶，并说明是否加牛奶。",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "点咖啡或茶，并说明是否加牛奶。",
+  "title": {
+    "fr": "Un café avec du lait",
+    "zh": "再来一杯饮品"
+  },
+  "unitId": "a1-breakfast-bakery"
+}

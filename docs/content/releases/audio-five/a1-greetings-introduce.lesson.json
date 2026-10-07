@@ -1,0 +1,1299 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-first-conversations",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-0c864cf93ad0d81330d61d3f21c7a65bf374eacb0596a0511164bbfb7d219658",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1360,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "c235281de8895b5606610f39a1439672e2c16f119812e2d17ee1953fa0496dd6",
+      "url": "/api/audio/c235281de8895b5606610f39a1439672e2c16f119812e2d17ee1953fa0496dd6.wav"
+    },
+    {
+      "assetId": "speech-1f657be25e66024a1f0327661fc828f37caad8b2d240f4c4520150689d8dc37f",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "27df44533f1e81cfaba3ece02772d6cb1cc9d793780dee074d64c3c47259db02",
+      "url": "/api/audio/27df44533f1e81cfaba3ece02772d6cb1cc9d793780dee074d64c3c47259db02.wav"
+    },
+    {
+      "assetId": "speech-20155f6c05594a8ff6ce997633fb97145cb394eaff156161db4c7cca5f26d250",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1040,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "aa0b040ecd3c24a8ff9840885bca82817eea32d2ddc06021c27ee64d9c368271",
+      "url": "/api/audio/aa0b040ecd3c24a8ff9840885bca82817eea32d2ddc06021c27ee64d9c368271.wav"
+    },
+    {
+      "assetId": "speech-2a4782aa7418d723d0681a27ee978843c1832b006d174fb05cfa02be56078008",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 13190,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "07b71801716de8c9400779b09dfe2a1c60724e70eb2c671b1ba2f823e6bf763d",
+      "url": "/api/audio/07b71801716de8c9400779b09dfe2a1c60724e70eb2c671b1ba2f823e6bf763d.wav"
+    },
+    {
+      "assetId": "speech-62a3e3d6d38b7c3f274cbc678d09dc23b46e5188bea0c9793124f4a6d57a3769",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1040,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "37f8bfd5270e70ef0f2bd8bf9dae86295062ce99b5df69b256958741d619e11e",
+      "url": "/api/audio/37f8bfd5270e70ef0f2bd8bf9dae86295062ce99b5df69b256958741d619e11e.wav"
+    },
+    {
+      "assetId": "speech-6e1fdbf48bf5ed0f284baeb7c727a6fb08d79015867ebd1e967953c43e29f583",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "00341bb0c1f34f6f6e8956978fbc79d9c0cc72196789be574b8566a2f56d0d79",
+      "url": "/api/audio/00341bb0c1f34f6f6e8956978fbc79d9c0cc72196789be574b8566a2f56d0d79.wav"
+    },
+    {
+      "assetId": "speech-81f62d426ceeb436361c41f919a2962ac145452b763d5520d488989d3818b875",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "d6fa9b7e64d3d82de03faca52a1844218362aa6b2d51b93e7a24857e2b6229d8",
+      "url": "/api/audio/d6fa9b7e64d3d82de03faca52a1844218362aa6b2d51b93e7a24857e2b6229d8.wav"
+    },
+    {
+      "assetId": "speech-a3f4dd93e8ceb10d56eb702587f89893e0b45c03ef5d76ce6dedc97f53bba58e",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 960,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "c56735a2249fd2fcbce8f1b9cee1fcf71a1dc055b3c66009ffb3f9ec158b50ce",
+      "url": "/api/audio/c56735a2249fd2fcbce8f1b9cee1fcf71a1dc055b3c66009ffb3f9ec158b50ce.wav"
+    },
+    {
+      "assetId": "speech-b3b4813d6b325cbcb2c1df490b99f64e5bea3028ea523da0ea71f3c85ed8369a",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "0b02e4a2e51a372087ab7bb504c0880db26d3094e6f8f99b4efeffa282f2dfc5",
+      "url": "/api/audio/0b02e4a2e51a372087ab7bb504c0880db26d3094e6f8f99b4efeffa282f2dfc5.wav"
+    },
+    {
+      "assetId": "speech-f37cbc39b2594a71e202be65dbb1af942cca9c532ce117b87941ed1f1ee768f8",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "5d09378817d7addeef7a046965de8ced9db6bc05b88c71b67525ed67f29ae77c",
+      "url": "/api/audio/5d09378817d7addeef7a046965de8ced9db6bc05b88c71b67525ed67f29ae77c.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-0c864cf93ad0d81330d61d3f21c7a65bf374eacb0596a0511164bbfb7d219658",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-1f657be25e66024a1f0327661fc828f37caad8b2d240f4c4520150689d8dc37f",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-20155f6c05594a8ff6ce997633fb97145cb394eaff156161db4c7cca5f26d250",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-2a4782aa7418d723d0681a27ee978843c1832b006d174fb05cfa02be56078008",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-62a3e3d6d38b7c3f274cbc678d09dc23b46e5188bea0c9793124f4a6d57a3769",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-6e1fdbf48bf5ed0f284baeb7c727a6fb08d79015867ebd1e967953c43e29f583",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-81f62d426ceeb436361c41f919a2962ac145452b763d5520d488989d3818b875",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-a3f4dd93e8ceb10d56eb702587f89893e0b45c03ef5d76ce6dedc97f53bba58e",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-b3b4813d6b325cbcb2c1df490b99f64e5bea3028ea523da0ea71f3c85ed8369a",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-f37cbc39b2594a71e202be65dbb1af942cca9c532ce117b87941ed1f1ee768f8",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-2a4782aa7418d723d0681a27ee978843c1832b006d174fb05cfa02be56078008",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 1360,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 240,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 240,
+          "wordRange": {
+            "end": 12,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 1120,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 560,
+          "wordRange": null
+        },
+        {
+          "endMs": 1120,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 560,
+          "wordRange": {
+            "end": 8,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 3050,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 1610,
+          "wordRange": null
+        },
+        {
+          "endMs": 2810,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1690,
+          "wordRange": null
+        },
+        {
+          "endMs": 1930,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1690,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2490,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 2250,
+          "wordRange": {
+            "end": 10,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 2810,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 2490,
+          "wordRange": {
+            "end": 14,
+            "start": 11
+          }
+        },
+        {
+          "endMs": 4820,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 3300,
+          "wordRange": null
+        },
+        {
+          "endMs": 3780,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 3380,
+          "wordRange": null
+        },
+        {
+          "endMs": 3780,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 3380,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4180,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3780,
+          "wordRange": null
+        },
+        {
+          "endMs": 3860,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3780,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4180,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3860,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 4500,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 4180,
+          "wordRange": null
+        },
+        {
+          "endMs": 4260,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 4180,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4500,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 4420,
+          "wordRange": {
+            "end": 7,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 7230,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 5070,
+          "wordRange": null
+        },
+        {
+          "endMs": 5950,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 5230,
+          "wordRange": null
+        },
+        {
+          "endMs": 5470,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 5230,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 5950,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 5470,
+          "wordRange": {
+            "end": 9,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 6670,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 6270,
+          "wordRange": null
+        },
+        {
+          "endMs": 6670,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 6270,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6990,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 6670,
+          "wordRange": null
+        },
+        {
+          "endMs": 6750,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 6670,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6990,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 6750,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 8840,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 7480,
+          "wordRange": null
+        },
+        {
+          "endMs": 7960,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 7560,
+          "wordRange": null
+        },
+        {
+          "endMs": 7720,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 7560,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7960,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 7720,
+          "wordRange": {
+            "end": 7,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 8680,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 7960,
+          "wordRange": null
+        },
+        {
+          "endMs": 8680,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 7960,
+          "wordRange": {
+            "end": 9,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10370,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 9090,
+          "wordRange": null
+        },
+        {
+          "endMs": 9330,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 9170,
+          "wordRange": null
+        },
+        {
+          "endMs": 9330,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 9170,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9730,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 9330,
+          "wordRange": null
+        },
+        {
+          "endMs": 9730,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 9330,
+          "wordRange": {
+            "end": 9,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10130,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 9730,
+          "wordRange": null
+        },
+        {
+          "endMs": 9810,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 9730,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10130,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 9810,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 12460,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 10620,
+          "wordRange": null
+        },
+        {
+          "endMs": 12220,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 10700,
+          "wordRange": null
+        },
+        {
+          "endMs": 10940,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 10700,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11420,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 10940,
+          "wordRange": {
+            "end": 13,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 11500,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11420,
+          "wordRange": {
+            "end": 18,
+            "start": 14
+          }
+        },
+        {
+          "endMs": 11660,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11500,
+          "wordRange": {
+            "end": 21,
+            "start": 19
+          }
+        },
+        {
+          "endMs": 11900,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11660,
+          "wordRange": {
+            "end": 26,
+            "start": 22
+          }
+        },
+        {
+          "endMs": 12220,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11900,
+          "wordRange": {
+            "end": 32,
+            "start": 27
+          }
+        },
+        {
+          "endMs": 13190,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 12710,
+          "wordRange": null
+        },
+        {
+          "endMs": 13030,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 12790,
+          "wordRange": null
+        },
+        {
+          "endMs": 13030,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 12790,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-first-conversations",
+      "placeZh": "一次社区活动中的初次交谈",
+      "situationZh": "说明居住城市和当前身份，并把问题转给对方。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-1",
+          "labelZh": "初次相识"
+        },
+        {
+          "avatarId": "avatar-lea-v1",
+          "characterId": "character-lea",
+          "displayName": "Léa",
+          "id": "speaker-2",
+          "labelZh": "初次相识"
+        }
+      ],
+      "titleZh": "说说自己",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Je m’appelle",
+              "vocabularyId": "expr-je-mappelle"
+            },
+            {
+              "id": "segment-1-2",
+              "text": " Camille."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "我叫 Camille。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Moi, c’est Léa."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "我叫 Léa。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "J’habite",
+              "vocabularyId": "expr-jhabite"
+            },
+            {
+              "id": "segment-3-2",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-habiter-city",
+              "id": "segment-3-3",
+              "text": "à Lyon"
+            },
+            {
+              "id": "segment-3-4",
+              "text": ". "
+            },
+            {
+              "id": "segment-3-5",
+              "text": "Et vous",
+              "vocabularyId": "expr-et-vous"
+            },
+            {
+              "id": "segment-3-6",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "我住在里昂。您呢？"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Moi aussi, "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "j’habite",
+              "vocabularyId": "expr-jhabite"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-habiter-city",
+              "id": "segment-4-4",
+              "text": "à Lyon"
+            },
+            {
+              "id": "segment-4-5",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "我也住在里昂。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "grammarId": "grammar-etre-identity",
+              "id": "segment-5-1",
+              "text": "Je suis",
+              "vocabularyId": "expr-je-suis"
+            },
+            {
+              "id": "segment-5-2",
+              "text": " "
+            },
+            {
+              "id": "segment-5-3",
+              "text": "étudiante",
+              "vocabularyId": "word-etudiante"
+            },
+            {
+              "id": "segment-5-4",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "我是女学生。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Je "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "travaille",
+              "vocabularyId": "word-travailler"
+            },
+            {
+              "id": "segment-6-3",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-habiter-city",
+              "id": "segment-6-4",
+              "text": "à Lyon"
+            },
+            {
+              "id": "segment-6-5",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "我在里昂工作。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Nous habitons dans la même ville."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "我们住在同一座城市。"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Oui",
+              "vocabularyId": "word-oui"
+            },
+            {
+              "id": "segment-8-2",
+              "text": " !"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "是的！"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "suis 是 être 的第一人称单数现在时。Je suis étudiante 中，表示职业或身份的名词前通常不用冠词；本例的女性形式是 étudiante。\n\nJ’habite à Lyon 说明居住在里昂。换成自己的城市时可以说 J’habite à + 城市名；国家名称的介词另行学习。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "城市与学生身份是本课虚构的角色设定，不要求学习者透露真实住址或个人信息。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "expr-je-mappelle",
+        "expr-et-vous",
+        "expr-jhabite",
+        "expr-je-suis",
+        "word-etudiante",
+        "word-travailler",
+        "word-oui"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-etre-identity",
+        "grammar-habiter-city"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "巴黎"
+        },
+        {
+          "id": "correct",
+          "text": "里昂"
+        },
+        {
+          "id": "distractor-b",
+          "text": "对话没有提到"
+        }
+      ],
+      "promptZh": "Camille 住在哪里？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "城市名称 Lyon 前用 à。",
+      "id": "exercise-fill",
+      "promptZh": "填入表示居住城市的介词。",
+      "templateFr": "J’habite ___ Lyon.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句可以在本课场景中使用的话。",
+      "tokens": [
+        {
+          "id": "token-2",
+          "text": "étudiante."
+        },
+        {
+          "id": "token-1",
+          "text": "Je suis"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "如果暂时没有合适场景，可以在家用虚构信息练说，不需要真实购物或出行。",
+      "id": "habit-main",
+      "taskZh": "想想自己的城市，用 J’habite à… 练说一句。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能说出居住城市。",
+        "我能用一句话介绍身份。",
+        "我能询问对方的情况。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner instructed direct publication of courses and recordings without manual approval; actual fixed-model alignment validated; no human listening or independent expert review asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-greetings-introduce",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "suis 是 être 的第一人称单数现在时。Je suis étudiante 中，表示职业或身份的名词前通常不用冠词；本例的女性形式是 étudiante。",
+        "examples": [
+          {
+            "fr": "Je suis étudiante.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-0c864cf93ad0d81330d61d3f21c7a65bf374eacb0596a0511164bbfb7d219658",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1360,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "c235281de8895b5606610f39a1439672e2c16f119812e2d17ee1953fa0496dd6",
+                "url": "/api/audio/c235281de8895b5606610f39a1439672e2c16f119812e2d17ee1953fa0496dd6.wav"
+              },
+              "endMs": 1360,
+              "startMs": 0
+            },
+            "zh": "我是女学生。"
+          }
+        ],
+        "id": "grammar-etre-identity",
+        "titleZh": "Je suis：说身份"
+      },
+      {
+        "bodyZh": "J’habite à Lyon 说明居住在里昂。换成自己的城市时可以说 J’habite à + 城市名；国家名称的介词另行学习。",
+        "examples": [
+          {
+            "fr": "J’habite à Lyon.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-62a3e3d6d38b7c3f274cbc678d09dc23b46e5188bea0c9793124f4a6d57a3769",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1040,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "37f8bfd5270e70ef0f2bd8bf9dae86295062ce99b5df69b256958741d619e11e",
+                "url": "/api/audio/37f8bfd5270e70ef0f2bd8bf9dae86295062ce99b5df69b256958741d619e11e.wav"
+              },
+              "endMs": 1040,
+              "startMs": 0
+            },
+            "zh": "我住在里昂。"
+          }
+        ],
+        "id": "grammar-habiter-city",
+        "titleZh": "à + 城市名称"
+      }
+    ],
+    "vocabulary": [
+      {
+        "id": "expr-je-mappelle",
+        "lemma": "je m’appelle",
+        "meaningZh": "我叫……",
+        "noteZh": "介绍名字的常用语块，后面接名字。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-20155f6c05594a8ff6ce997633fb97145cb394eaff156161db4c7cca5f26d250",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 1040,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "aa0b040ecd3c24a8ff9840885bca82817eea32d2ddc06021c27ee64d9c368271",
+            "url": "/api/audio/aa0b040ecd3c24a8ff9840885bca82817eea32d2ddc06021c27ee64d9c368271.wav"
+          },
+          "endMs": 1040,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-et-vous",
+        "lemma": "et vous",
+        "meaningZh": "您呢？",
+        "noteZh": "把刚才的问题转问对方。本组对话中双方尚不熟悉。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-6e1fdbf48bf5ed0f284baeb7c727a6fb08d79015867ebd1e967953c43e29f583",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "00341bb0c1f34f6f6e8956978fbc79d9c0cc72196789be574b8566a2f56d0d79",
+            "url": "/api/audio/00341bb0c1f34f6f6e8956978fbc79d9c0cc72196789be574b8566a2f56d0d79.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-jhabite",
+        "lemma": "j’habite",
+        "meaningZh": "我住……",
+        "noteZh": "habiter 的第一人称单数现在时，后接居住地点。",
+        "partOfSpeech": "other",
+        "recording": {
+          "asset": {
+            "assetId": "speech-1f657be25e66024a1f0327661fc828f37caad8b2d240f4c4520150689d8dc37f",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "27df44533f1e81cfaba3ece02772d6cb1cc9d793780dee074d64c3c47259db02",
+            "url": "/api/audio/27df44533f1e81cfaba3ece02772d6cb1cc9d793780dee074d64c3c47259db02.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-je-suis",
+        "lemma": "je suis",
+        "meaningZh": "我是……",
+        "noteZh": "être 的第一人称单数现在时，后面可以接身份。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-b3b4813d6b325cbcb2c1df490b99f64e5bea3028ea523da0ea71f3c85ed8369a",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "0b02e4a2e51a372087ab7bb504c0880db26d3094e6f8f99b4efeffa282f2dfc5",
+            "url": "/api/audio/0b02e4a2e51a372087ab7bb504c0880db26d3094e6f8f99b4efeffa282f2dfc5.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-etudiante",
+        "lemma": "étudiante",
+        "meaningZh": "女学生",
+        "noteZh": "本课角色以女学生身份自我介绍；男性形式为 étudiant。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-a3f4dd93e8ceb10d56eb702587f89893e0b45c03ef5d76ce6dedc97f53bba58e",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 960,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "c56735a2249fd2fcbce8f1b9cee1fcf71a1dc055b3c66009ffb3f9ec158b50ce",
+            "url": "/api/audio/c56735a2249fd2fcbce8f1b9cee1fcf71a1dc055b3c66009ffb3f9ec158b50ce.wav"
+          },
+          "endMs": 960,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-travailler",
+        "lemma": "travailler",
+        "meaningZh": "工作",
+        "noteZh": "正文的 je travaille 表示“我工作”。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-f37cbc39b2594a71e202be65dbb1af942cca9c532ce117b87941ed1f1ee768f8",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "5d09378817d7addeef7a046965de8ced9db6bc05b88c71b67525ed67f29ae77c",
+            "url": "/api/audio/5d09378817d7addeef7a046965de8ced9db6bc05b88c71b67525ed67f29ae77c.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-oui",
+        "lemma": "oui",
+        "meaningZh": "是的",
+        "noteZh": "用于肯定回答。",
+        "partOfSpeech": "adverb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-81f62d426ceeb436361c41f919a2962ac145452b763d5520d488989d3818b875",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "d6fa9b7e64d3d82de03faca52a1844218362aa6b2d51b93e7a24857e2b6229d8",
+            "url": "/api/audio/d6fa9b7e64d3d82de03faca52a1844218362aa6b2d51b93e7a24857e2b6229d8.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "Camille 和 Léa 在社区活动室初次交谈",
+      "assetId": "art-first-conversations",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "97f2f556d706d35ec0211f426b8c9f2c35956f164fa13a70a800964c80f8ced0",
+      "url": "/api/media/97f2f556d706d35ec0211f426b8c9f2c35956f164fa13a70a800964c80f8ced0.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "说出居住城市",
+    "用一句话介绍身份",
+    "询问对方的情况"
+  ],
+  "reviewItemIds": [
+    "expr-je-mappelle",
+    "expr-et-vous",
+    "expr-jhabite"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：里昂。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "à"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "城市名称 Lyon 前用 à。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2"
+        ],
+        "feedbackZh": "Je suis étudiante. 说明居住城市和当前身份，并把问题转给对方。",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "说明居住城市和当前身份，并把问题转给对方。",
+  "title": {
+    "fr": "J’habite à Lyon",
+    "zh": "说说自己"
+  },
+  "unitId": "a1-first-conversations"
+}

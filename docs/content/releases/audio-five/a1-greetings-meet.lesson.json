@@ -1,0 +1,1091 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-first-conversations",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-1f6d07b4246e869768bcc8e504041e63895d43628041e19b4f77f12efa53a745",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "26aa465404901ec77201a44928377559b96f0ce3f18ddbb8c57b5588c172488d",
+      "url": "/api/audio/26aa465404901ec77201a44928377559b96f0ce3f18ddbb8c57b5588c172488d.wav"
+    },
+    {
+      "assetId": "speech-20155f6c05594a8ff6ce997633fb97145cb394eaff156161db4c7cca5f26d250",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1040,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "aa0b040ecd3c24a8ff9840885bca82817eea32d2ddc06021c27ee64d9c368271",
+      "url": "/api/audio/aa0b040ecd3c24a8ff9840885bca82817eea32d2ddc06021c27ee64d9c368271.wav"
+    },
+    {
+      "assetId": "speech-3c71e24e3a315f0b0d270a88d84e369732680e03da8162b73f6944a50901c009",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 960,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "e5ee4c5ef4b6d4217bfc210b25f69e650afd7d1a843eaab9155b8047213aebb6",
+      "url": "/api/audio/e5ee4c5ef4b6d4217bfc210b25f69e650afd7d1a843eaab9155b8047213aebb6.wav"
+    },
+    {
+      "assetId": "speech-6e1fdbf48bf5ed0f284baeb7c727a6fb08d79015867ebd1e967953c43e29f583",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "00341bb0c1f34f6f6e8956978fbc79d9c0cc72196789be574b8566a2f56d0d79",
+      "url": "/api/audio/00341bb0c1f34f6f6e8956978fbc79d9c0cc72196789be574b8566a2f56d0d79.wav"
+    },
+    {
+      "assetId": "speech-8c7ae17be29cf659144ffc3873f8a201d1b34e65433bbe975e7a0b3d21ddcfe2",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "8996112b0403d186539da0e315dcec6d0fe8af7c6859925e375887db8ec02f60",
+      "url": "/api/audio/8996112b0403d186539da0e315dcec6d0fe8af7c6859925e375887db8ec02f60.wav"
+    },
+    {
+      "assetId": "speech-a11f88c7cd9d01c1874d2ba77256fa87290ba845387fe3143365bf3bea58bda4",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1360,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "4faa56247a62cc84bdb4043d856ea442b6f377a3ae5b5e5b9cfda1cbf153b193",
+      "url": "/api/audio/4faa56247a62cc84bdb4043d856ea442b6f377a3ae5b5e5b9cfda1cbf153b193.wav"
+    },
+    {
+      "assetId": "speech-b73b8bf8b16f06231e6339076f21953a8e60482c5e06e6f0679df2c8520e16ff",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "bf2528f9360391b0164a54c1a154a2a2b61155d3bd8e77703c9727e9bbdd74d5",
+      "url": "/api/audio/bf2528f9360391b0164a54c1a154a2a2b61155d3bd8e77703c9727e9bbdd74d5.wav"
+    },
+    {
+      "assetId": "speech-c7f4d38785a57afac425ac57c61cff7a707e053dd845513d9e767ef2adb2ffa8",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 10950,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "828331db351806c110736d9ce018e50ee9fff5ce1f438b243c57f028607a7f9e",
+      "url": "/api/audio/828331db351806c110736d9ce018e50ee9fff5ce1f438b243c57f028607a7f9e.wav"
+    },
+    {
+      "assetId": "speech-dac8d47660d151ae887bc5d8011e29ef98dfc742b5308c17e1557af49ea56d85",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "39e7ca2f9acf0f4ec809c3fdbf89c01b4ce7e30a80c4a116fcf0e4ff9edb9e57",
+      "url": "/api/audio/39e7ca2f9acf0f4ec809c3fdbf89c01b4ce7e30a80c4a116fcf0e4ff9edb9e57.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-1f6d07b4246e869768bcc8e504041e63895d43628041e19b4f77f12efa53a745",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-20155f6c05594a8ff6ce997633fb97145cb394eaff156161db4c7cca5f26d250",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-3c71e24e3a315f0b0d270a88d84e369732680e03da8162b73f6944a50901c009",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-6e1fdbf48bf5ed0f284baeb7c727a6fb08d79015867ebd1e967953c43e29f583",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-8c7ae17be29cf659144ffc3873f8a201d1b34e65433bbe975e7a0b3d21ddcfe2",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-a11f88c7cd9d01c1874d2ba77256fa87290ba845387fe3143365bf3bea58bda4",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-b73b8bf8b16f06231e6339076f21953a8e60482c5e06e6f0679df2c8520e16ff",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-c7f4d38785a57afac425ac57c61cff7a707e053dd845513d9e767ef2adb2ffa8",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-dac8d47660d151ae887bc5d8011e29ef98dfc742b5308c17e1557af49ea56d85",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-c7f4d38785a57afac425ac57c61cff7a707e053dd845513d9e767ef2adb2ffa8",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 720,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 400,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 400,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1850,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 970,
+          "wordRange": null
+        },
+        {
+          "endMs": 1770,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1050,
+          "wordRange": null
+        },
+        {
+          "endMs": 1770,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1050,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3860,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 2100,
+          "wordRange": null
+        },
+        {
+          "endMs": 2660,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 2180,
+          "wordRange": null
+        },
+        {
+          "endMs": 2260,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 2180,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2660,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 2260,
+          "wordRange": {
+            "end": 12,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 3140,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 2660,
+          "wordRange": null
+        },
+        {
+          "endMs": 3140,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 2660,
+          "wordRange": {
+            "end": 8,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 3620,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3220,
+          "wordRange": null
+        },
+        {
+          "endMs": 3380,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3220,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3620,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3380,
+          "wordRange": {
+            "end": 7,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 5230,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 4110,
+          "wordRange": null
+        },
+        {
+          "endMs": 4670,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 4190,
+          "wordRange": null
+        },
+        {
+          "endMs": 4350,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 4190,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4670,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 4350,
+          "wordRange": {
+            "end": 12,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 5070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 4670,
+          "wordRange": null
+        },
+        {
+          "endMs": 5070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 4670,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 6600,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 5480,
+          "wordRange": null
+        },
+        {
+          "endMs": 6120,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 5560,
+          "wordRange": null
+        },
+        {
+          "endMs": 6120,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 5560,
+          "wordRange": {
+            "end": 9,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6440,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 6120,
+          "wordRange": null
+        },
+        {
+          "endMs": 6440,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 6120,
+          "wordRange": {
+            "end": 5,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 8850,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 6850,
+          "wordRange": null
+        },
+        {
+          "endMs": 7650,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 6930,
+          "wordRange": null
+        },
+        {
+          "endMs": 7650,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 6930,
+          "wordRange": {
+            "end": 9,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8610,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 8130,
+          "wordRange": null
+        },
+        {
+          "endMs": 8610,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 8130,
+          "wordRange": {
+            "end": 9,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 9900,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 9100,
+          "wordRange": null
+        },
+        {
+          "endMs": 9580,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 9180,
+          "wordRange": null
+        },
+        {
+          "endMs": 9260,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 9180,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9580,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 9260,
+          "wordRange": {
+            "end": 9,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 10950,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 10150,
+          "wordRange": null
+        },
+        {
+          "endMs": 10790,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 10230,
+          "wordRange": null
+        },
+        {
+          "endMs": 10310,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 10230,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10790,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 10310,
+          "wordRange": {
+            "end": 9,
+            "start": 3
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-first-conversations",
+      "placeZh": "一次社区活动中的初次交谈",
+      "situationZh": "用问候和名字开启第一次交谈，再自然地道别。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-1",
+          "labelZh": "初次相识"
+        },
+        {
+          "avatarId": "avatar-lea-v1",
+          "characterId": "character-lea",
+          "displayName": "Léa",
+          "id": "speaker-2",
+          "labelZh": "初次相识"
+        }
+      ],
+      "titleZh": "第一次打招呼",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Bonjour",
+              "vocabularyId": "word-bonjour"
+            },
+            {
+              "id": "segment-1-2",
+              "text": " !"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "您好！"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Bonjour",
+              "vocabularyId": "word-bonjour"
+            },
+            {
+              "id": "segment-2-2",
+              "text": " !"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "您好！"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "grammarId": "grammar-name-first-person",
+              "id": "segment-3-1",
+              "text": "Je m’appelle",
+              "vocabularyId": "expr-je-mappelle"
+            },
+            {
+              "id": "segment-3-2",
+              "text": " Camille. "
+            },
+            {
+              "grammarId": "grammar-address-vous",
+              "id": "segment-3-3",
+              "text": "Et vous",
+              "vocabularyId": "expr-et-vous"
+            },
+            {
+              "id": "segment-3-4",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "我叫 Camille。您呢？"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "grammarId": "grammar-name-first-person",
+              "id": "segment-4-1",
+              "text": "Je m’appelle",
+              "vocabularyId": "expr-je-mappelle"
+            },
+            {
+              "id": "segment-4-2",
+              "text": " Léa."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "我叫 Léa。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Enchantée",
+              "vocabularyId": "word-enchantee"
+            },
+            {
+              "id": "segment-5-2",
+              "text": ", Léa."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "很高兴认识您，Léa。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Enchantée",
+              "vocabularyId": "word-enchantee"
+            },
+            {
+              "id": "segment-6-2",
+              "text": ", Camille."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "很高兴认识您，Camille。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "À bientôt",
+              "vocabularyId": "expr-a-bientot"
+            },
+            {
+              "id": "segment-7-2",
+              "text": " !"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "回头见！"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Au revoir",
+              "vocabularyId": "expr-au-revoir"
+            },
+            {
+              "id": "segment-8-2",
+              "text": " !"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "再见！"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "m’appelle 是 s’appeler 的第一人称单数现在时；先把 Je m’appelle + 名字作为整体使用。\n\n本课双方刚见面，使用 vous 称呼对方。它也可以表示复数“你们”；何时改用 tu 要结合关系与场合。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "本课模拟初次相识的两位女性；enchantée 的书写形式与说话者一致。无需把问候方式当成所有人的统一习惯。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-bonjour",
+        "expr-je-mappelle",
+        "expr-et-vous",
+        "word-enchantee",
+        "expr-a-bientot",
+        "expr-au-revoir"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-name-first-person",
+        "grammar-address-vous"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "询问价格"
+        },
+        {
+          "id": "correct",
+          "text": "介绍名字"
+        },
+        {
+          "id": "distractor-b",
+          "text": "请求重复"
+        }
+      ],
+      "promptZh": "Je m’appelle Camille 在这里做什么？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "s’appeler 的第一人称形式为 je m’appelle。",
+      "id": "exercise-fill",
+      "promptZh": "把“我叫 Camille”补完整。",
+      "templateFr": "Je m’___ Camille.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句可以在本课场景中使用的话。",
+      "tokens": [
+        {
+          "id": "token-2",
+          "text": "Camille."
+        },
+        {
+          "id": "token-1",
+          "text": "Je m’appelle"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "如果暂时没有合适场景，可以在家用虚构信息练说，不需要真实购物或出行。",
+      "id": "habit-main",
+      "taskZh": "准备开口介绍自己时，用 Je m’appelle… 加上自己的名字。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能向初次见面的人问好。",
+        "我能介绍自己的名字。",
+        "我能结束交谈并道别。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner instructed direct publication of courses and recordings without manual approval; actual fixed-model alignment validated; no human listening or independent expert review asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-greetings-meet",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "m’appelle 是 s’appeler 的第一人称单数现在时；先把 Je m’appelle + 名字作为整体使用。",
+        "examples": [
+          {
+            "fr": "Je m’appelle Camille.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-a11f88c7cd9d01c1874d2ba77256fa87290ba845387fe3143365bf3bea58bda4",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1360,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "4faa56247a62cc84bdb4043d856ea442b6f377a3ae5b5e5b9cfda1cbf153b193",
+                "url": "/api/audio/4faa56247a62cc84bdb4043d856ea442b6f377a3ae5b5e5b9cfda1cbf153b193.wav"
+              },
+              "endMs": 1360,
+              "startMs": 0
+            },
+            "zh": "我叫 Camille。"
+          }
+        ],
+        "id": "grammar-name-first-person",
+        "titleZh": "Je m’appelle：介绍名字"
+      },
+      {
+        "bodyZh": "本课双方刚见面，使用 vous 称呼对方。它也可以表示复数“你们”；何时改用 tu 要结合关系与场合。",
+        "examples": [
+          {
+            "fr": "Et vous ?",
+            "recording": {
+              "asset": {
+                "assetId": "speech-1f6d07b4246e869768bcc8e504041e63895d43628041e19b4f77f12efa53a745",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 640,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "26aa465404901ec77201a44928377559b96f0ce3f18ddbb8c57b5588c172488d",
+                "url": "/api/audio/26aa465404901ec77201a44928377559b96f0ce3f18ddbb8c57b5588c172488d.wav"
+              },
+              "endMs": 640,
+              "startMs": 0
+            },
+            "zh": "您呢？"
+          }
+        ],
+        "id": "grammar-address-vous",
+        "titleZh": "vous：本课的礼貌称呼"
+      }
+    ],
+    "vocabulary": [
+      {
+        "id": "word-bonjour",
+        "lemma": "bonjour",
+        "meaningZh": "你好；您好",
+        "noteZh": "白天问候。进入店内时可先用它向店员打招呼。",
+        "partOfSpeech": "interjection",
+        "recording": {
+          "asset": {
+            "assetId": "speech-b73b8bf8b16f06231e6339076f21953a8e60482c5e06e6f0679df2c8520e16ff",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "bf2528f9360391b0164a54c1a154a2a2b61155d3bd8e77703c9727e9bbdd74d5",
+            "url": "/api/audio/bf2528f9360391b0164a54c1a154a2a2b61155d3bd8e77703c9727e9bbdd74d5.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-je-mappelle",
+        "lemma": "je m’appelle",
+        "meaningZh": "我叫……",
+        "noteZh": "介绍名字的常用语块，后面接名字。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-20155f6c05594a8ff6ce997633fb97145cb394eaff156161db4c7cca5f26d250",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 1040,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "aa0b040ecd3c24a8ff9840885bca82817eea32d2ddc06021c27ee64d9c368271",
+            "url": "/api/audio/aa0b040ecd3c24a8ff9840885bca82817eea32d2ddc06021c27ee64d9c368271.wav"
+          },
+          "endMs": 1040,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-et-vous",
+        "lemma": "et vous",
+        "meaningZh": "您呢？",
+        "noteZh": "把刚才的问题转问对方。本组对话中双方尚不熟悉。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-6e1fdbf48bf5ed0f284baeb7c727a6fb08d79015867ebd1e967953c43e29f583",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "00341bb0c1f34f6f6e8956978fbc79d9c0cc72196789be574b8566a2f56d0d79",
+            "url": "/api/audio/00341bb0c1f34f6f6e8956978fbc79d9c0cc72196789be574b8566a2f56d0d79.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-enchantee",
+        "lemma": "enchantée",
+        "meaningZh": "很高兴认识您",
+        "noteZh": "本课女性角色用 enchantée；男性说话者写 enchanté。口头发音相同。",
+        "partOfSpeech": "interjection",
+        "recording": {
+          "asset": {
+            "assetId": "speech-3c71e24e3a315f0b0d270a88d84e369732680e03da8162b73f6944a50901c009",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 960,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "e5ee4c5ef4b6d4217bfc210b25f69e650afd7d1a843eaab9155b8047213aebb6",
+            "url": "/api/audio/e5ee4c5ef4b6d4217bfc210b25f69e650afd7d1a843eaab9155b8047213aebb6.wav"
+          },
+          "endMs": 960,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-a-bientot",
+        "lemma": "à bientôt",
+        "meaningZh": "回头见；再见",
+        "noteZh": "表达期待不久后再见，不是具体约定的日期。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-8c7ae17be29cf659144ffc3873f8a201d1b34e65433bbe975e7a0b3d21ddcfe2",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "8996112b0403d186539da0e315dcec6d0fe8af7c6859925e375887db8ec02f60",
+            "url": "/api/audio/8996112b0403d186539da0e315dcec6d0fe8af7c6859925e375887db8ec02f60.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-au-revoir",
+        "lemma": "au revoir",
+        "meaningZh": "再见",
+        "noteZh": "结束交谈、离开时使用。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-dac8d47660d151ae887bc5d8011e29ef98dfc742b5308c17e1557af49ea56d85",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "39e7ca2f9acf0f4ec809c3fdbf89c01b4ce7e30a80c4a116fcf0e4ff9edb9e57",
+            "url": "/api/audio/39e7ca2f9acf0f4ec809c3fdbf89c01b4ce7e30a80c4a116fcf0e4ff9edb9e57.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "Camille 和 Léa 在社区活动室初次交谈",
+      "assetId": "art-first-conversations",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "97f2f556d706d35ec0211f426b8c9f2c35956f164fa13a70a800964c80f8ced0",
+      "url": "/api/media/97f2f556d706d35ec0211f426b8c9f2c35956f164fa13a70a800964c80f8ced0.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "向初次见面的人问好",
+    "介绍自己的名字",
+    "结束交谈并道别"
+  ],
+  "reviewItemIds": [
+    "word-bonjour",
+    "expr-je-mappelle",
+    "expr-et-vous"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：介绍名字。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "appelle"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "s’appeler 的第一人称形式为 je m’appelle。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2"
+        ],
+        "feedbackZh": "Je m’appelle Camille. 用问候和名字开启第一次交谈，再自然地道别。",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "用问候和名字开启第一次交谈，再自然地道别。",
+  "title": {
+    "fr": "Bonjour, je m’appelle Camille",
+    "zh": "第一次打招呼"
+  },
+  "unitId": "a1-first-conversations"
+}

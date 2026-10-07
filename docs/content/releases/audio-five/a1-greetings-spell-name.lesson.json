@@ -1,0 +1,1301 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-first-conversations",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-0535b4d0cac5bc775e5f1fd239f80f04c90a63073199d7fd457b315839a79441",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1840,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "f1bc032cb4aa30cacfc7d0603277f347c1c65305104ad9000bf197f44b2bfea9",
+      "url": "/api/audio/f1bc032cb4aa30cacfc7d0603277f347c1c65305104ad9000bf197f44b2bfea9.wav"
+    },
+    {
+      "assetId": "speech-0d3c2fd50fda0c0f542bd51ba274e64a2b670d084f6d0e194136115a4ebf98da",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1440,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "66d004bb6dddd89f419e48137bd303d8c5207b3ca7f84adb510130e2878378f3",
+      "url": "/api/audio/66d004bb6dddd89f419e48137bd303d8c5207b3ca7f84adb510130e2878378f3.wav"
+    },
+    {
+      "assetId": "speech-43a06caa569757c5b212711d1050059b9e9d25893ae550ab2f87fd2feb6774d4",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "3dbb671f14ee36d0eba260aac1b7cd3966601b8f44e04eac1ba47c3e58c6a615",
+      "url": "/api/audio/3dbb671f14ee36d0eba260aac1b7cd3966601b8f44e04eac1ba47c3e58c6a615.wav"
+    },
+    {
+      "assetId": "speech-80dfbf0305dea29f5e9505f847ec13e5b50b3343e036ef9dc01515e2a0225696",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 560,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "e6fc36eafa52f4eff68b7a1cd68669aeaa5b80bac2378cff853ab3873b492843",
+      "url": "/api/audio/e6fc36eafa52f4eff68b7a1cd68669aeaa5b80bac2378cff853ab3873b492843.wav"
+    },
+    {
+      "assetId": "speech-8773f1b6b8debfaa55cbfe6f1fba1975b839a3bb9a2b8dfe89d6f72c2e531ca4",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 560,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "f7570a61f24446df74d286a860680116c9d2823b66473eeedcb2bb921d43acff",
+      "url": "/api/audio/f7570a61f24446df74d286a860680116c9d2823b66473eeedcb2bb921d43acff.wav"
+    },
+    {
+      "assetId": "speech-88b53a2fc662f421d8175f7be8b9aa25c73626d6e2a66dc0c6c62153647ff582",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "66b2bc05a7caefc56d70bcf5e0ee34ddb00907c1cf6a7a1ec44ffbff80abcbb5",
+      "url": "/api/audio/66b2bc05a7caefc56d70bcf5e0ee34ddb00907c1cf6a7a1ec44ffbff80abcbb5.wav"
+    },
+    {
+      "assetId": "speech-ab80ae49acf6207b06eb6a8e74237ec832c42b9ba1c9fe34b6361921c6aa4778",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 560,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "9eb15568814276301a6ee58aba53ee3309632c3fdd9e24751a173fa1e8b9d51c",
+      "url": "/api/audio/9eb15568814276301a6ee58aba53ee3309632c3fdd9e24751a173fa1e8b9d51c.wav"
+    },
+    {
+      "assetId": "speech-e95ee93e8b3cdf92bc7d3b3e48a2cd0112fb0a45892b88946d294c87d254f490",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 13670,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "ba2759d910657cf63875dc7d4ff6a03eba891db1432b819e2a0c012847eaa806",
+      "url": "/api/audio/ba2759d910657cf63875dc7d4ff6a03eba891db1432b819e2a0c012847eaa806.wav"
+    },
+    {
+      "assetId": "speech-ed1899e09cac469e43973ba24b8662c77aed5e36a411f7ac6439b4d42dc8c6ee",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "5868de20a9aff4e5ce0f17eaec1eef1ed190e75b846a21d2e58dbf1da1893a0b",
+      "url": "/api/audio/5868de20a9aff4e5ce0f17eaec1eef1ed190e75b846a21d2e58dbf1da1893a0b.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-0535b4d0cac5bc775e5f1fd239f80f04c90a63073199d7fd457b315839a79441",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-0d3c2fd50fda0c0f542bd51ba274e64a2b670d084f6d0e194136115a4ebf98da",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-43a06caa569757c5b212711d1050059b9e9d25893ae550ab2f87fd2feb6774d4",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-80dfbf0305dea29f5e9505f847ec13e5b50b3343e036ef9dc01515e2a0225696",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-8773f1b6b8debfaa55cbfe6f1fba1975b839a3bb9a2b8dfe89d6f72c2e531ca4",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-88b53a2fc662f421d8175f7be8b9aa25c73626d6e2a66dc0c6c62153647ff582",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-ab80ae49acf6207b06eb6a8e74237ec832c42b9ba1c9fe34b6361921c6aa4778",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-e95ee93e8b3cdf92bc7d3b3e48a2cd0112fb0a45892b88946d294c87d254f490",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-ed1899e09cac469e43973ba24b8662c77aed5e36a411f7ac6439b4d42dc8c6ee",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-e95ee93e8b3cdf92bc7d3b3e48a2cd0112fb0a45892b88946d294c87d254f490",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 1200,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 240,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 320,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 240,
+          "wordRange": {
+            "end": 8,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 320,
+          "wordRange": {
+            "end": 14,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 960,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 560,
+          "wordRange": null
+        },
+        {
+          "endMs": 960,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 560,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2970,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 1450,
+          "wordRange": null
+        },
+        {
+          "endMs": 1690,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1530,
+          "wordRange": null
+        },
+        {
+          "endMs": 1690,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1530,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2090,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 1690,
+          "wordRange": null
+        },
+        {
+          "endMs": 2090,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 1690,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2810,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4",
+          "startMs": 2250,
+          "wordRange": null
+        },
+        {
+          "endMs": 2410,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4",
+          "startMs": 2250,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 2810,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4",
+          "startMs": 2410,
+          "wordRange": {
+            "end": 8,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 5060,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 3220,
+          "wordRange": null
+        },
+        {
+          "endMs": 3700,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 3300,
+          "wordRange": null
+        },
+        {
+          "endMs": 3540,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 3300,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3700,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 3540,
+          "wordRange": {
+            "end": 11,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 4180,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3860,
+          "wordRange": null
+        },
+        {
+          "endMs": 4180,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3860,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4500,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 4180,
+          "wordRange": null
+        },
+        {
+          "endMs": 4500,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 4180,
+          "wordRange": {
+            "end": 6,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 4900,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 4500,
+          "wordRange": null
+        },
+        {
+          "endMs": 4900,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 4500,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7310,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 5310,
+          "wordRange": null
+        },
+        {
+          "endMs": 7150,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 5390,
+          "wordRange": null
+        },
+        {
+          "endMs": 5630,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 5390,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6510,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 6190,
+          "wordRange": {
+            "end": 4,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 7150,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 6910,
+          "wordRange": {
+            "end": 7,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 9000,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 7560,
+          "wordRange": null
+        },
+        {
+          "endMs": 8040,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 7640,
+          "wordRange": null
+        },
+        {
+          "endMs": 7800,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 7640,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7880,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 7800,
+          "wordRange": {
+            "end": 4,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 8040,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 7880,
+          "wordRange": {
+            "end": 6,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 8440,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 8200,
+          "wordRange": null
+        },
+        {
+          "endMs": 8440,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 8200,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8840,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-4",
+          "startMs": 8440,
+          "wordRange": null
+        },
+        {
+          "endMs": 8840,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-4",
+          "startMs": 8440,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11090,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 9250,
+          "wordRange": null
+        },
+        {
+          "endMs": 10610,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 9330,
+          "wordRange": null
+        },
+        {
+          "endMs": 9650,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 9330,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10210,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 10130,
+          "wordRange": {
+            "end": 7,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 10610,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 10370,
+          "wordRange": {
+            "end": 13,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 10850,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 10610,
+          "wordRange": null
+        },
+        {
+          "endMs": 10850,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 10610,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 12620,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 11340,
+          "wordRange": null
+        },
+        {
+          "endMs": 11660,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11500,
+          "wordRange": null
+        },
+        {
+          "endMs": 11660,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11500,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11900,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-3",
+          "startMs": 11660,
+          "wordRange": null
+        },
+        {
+          "endMs": 11900,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-3",
+          "startMs": 11660,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 12460,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-4",
+          "startMs": 11900,
+          "wordRange": null
+        },
+        {
+          "endMs": 11980,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-4",
+          "startMs": 11900,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 12460,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-4",
+          "startMs": 11980,
+          "wordRange": {
+            "end": 11,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 13670,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 12870,
+          "wordRange": null
+        },
+        {
+          "endMs": 13510,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 12950,
+          "wordRange": null
+        },
+        {
+          "endMs": 13510,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 12950,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-first-conversations",
+      "placeZh": "一次社区活动中的初次交谈",
+      "situationZh": "区分名字和姓氏，听懂逐字母拼写的请求。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-1",
+          "labelZh": "初次相识"
+        },
+        {
+          "avatarId": "avatar-lea-v1",
+          "characterId": "character-lea",
+          "displayName": "Léa",
+          "id": "speaker-2",
+          "labelZh": "初次相识"
+        }
+      ],
+      "titleZh": "拼写自己的名字",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Quel est votre "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "prénom",
+              "vocabularyId": "word-prenom"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "您的名字是什么？"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "grammarId": "grammar-mon-name",
+              "id": "segment-2-1",
+              "text": "Mon"
+            },
+            {
+              "id": "segment-2-2",
+              "text": " "
+            },
+            {
+              "id": "segment-2-3",
+              "text": "prénom",
+              "vocabularyId": "word-prenom"
+            },
+            {
+              "id": "segment-2-4",
+              "text": " est Léa."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "我的名字是 Léa。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "grammarId": "grammar-pouvez-vous-spell",
+              "id": "segment-3-1",
+              "text": "Pouvez-vous"
+            },
+            {
+              "id": "segment-3-2",
+              "text": " "
+            },
+            {
+              "id": "segment-3-3",
+              "text": "épeler",
+              "vocabularyId": "word-epeler"
+            },
+            {
+              "id": "segment-3-4",
+              "text": " votre "
+            },
+            {
+              "id": "segment-3-5",
+              "text": "prénom",
+              "vocabularyId": "word-prenom"
+            },
+            {
+              "id": "segment-3-6",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "您可以拼写一下您的名字吗？"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "L, É, A."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "L、带尖音符的 E、A。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Il y a "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "trois",
+              "vocabularyId": "word-trois"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " "
+            },
+            {
+              "id": "segment-5-4",
+              "text": "lettres",
+              "vocabularyId": "word-lettre"
+            },
+            {
+              "id": "segment-5-5",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "有三个字母吗？"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Oui. Et votre "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "nom",
+              "vocabularyId": "word-nom"
+            },
+            {
+              "id": "segment-6-3",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "是的。您的姓呢？"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "grammarId": "grammar-mon-name",
+              "id": "segment-7-1",
+              "text": "Mon"
+            },
+            {
+              "id": "segment-7-2",
+              "text": " "
+            },
+            {
+              "id": "segment-7-3",
+              "text": "nom",
+              "vocabularyId": "word-nom"
+            },
+            {
+              "id": "segment-7-4",
+              "text": " est Martin."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "我姓 Martin。"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Merci",
+              "vocabularyId": "word-merci"
+            },
+            {
+              "id": "segment-8-2",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "谢谢。"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "prénom 和 nom 都是阳性名词，因此本例用 mon。mon/ma/mes 与后面的名词配合，不由说话者的性别决定。\n\npouvez-vous 是 vous pouvez 的倒装问句，连字符连接动词和主语。后面的 épeler 保留动词原形。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "本课用 prénom 和 nom 区分名字、姓氏；不同表单的字段顺序可能不同，按实际字段填写。É 的符号可说 accent aigu。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-prenom",
+        "word-nom",
+        "word-epeler",
+        "word-lettre",
+        "word-trois",
+        "word-merci"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-mon-name",
+        "grammar-pouvez-vous-spell"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "Camille"
+        },
+        {
+          "id": "correct",
+          "text": "Martin"
+        },
+        {
+          "id": "distractor-b",
+          "text": "Léa"
+        }
+      ],
+      "promptZh": "对话里 Léa 的姓是什么？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "Léa 是 prénom；Martin 在本例是 nom。",
+      "id": "exercise-fill",
+      "promptZh": "填入表示“名字（区别于姓氏）”的词。",
+      "templateFr": "Mon ___ est Léa.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句可以在本课场景中使用的话。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "votre prénom ?"
+        },
+        {
+          "id": "token-2",
+          "text": "épeler"
+        },
+        {
+          "id": "token-1",
+          "text": "Pouvez-vous"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "如果暂时没有合适场景，可以在家用虚构信息练说，不需要真实购物或出行。",
+      "id": "habit-main",
+      "taskZh": "用法语字母名称练习拼写自己的名字，先核对字母的读法。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能区分 prénom 与 nom。",
+        "我能理解拼写名字的请求。",
+        "我能说明名字中的字母。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner instructed direct publication of courses and recordings without manual approval; actual fixed-model alignment validated; no human listening or independent expert review asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-greetings-spell-name",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "prénom 和 nom 都是阳性名词，因此本例用 mon。mon/ma/mes 与后面的名词配合，不由说话者的性别决定。",
+        "examples": [
+          {
+            "fr": "Mon prénom est Léa.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-0d3c2fd50fda0c0f542bd51ba274e64a2b670d084f6d0e194136115a4ebf98da",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1440,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "66d004bb6dddd89f419e48137bd303d8c5207b3ca7f84adb510130e2878378f3",
+                "url": "/api/audio/66d004bb6dddd89f419e48137bd303d8c5207b3ca7f84adb510130e2878378f3.wav"
+              },
+              "endMs": 1440,
+              "startMs": 0
+            },
+            "zh": "我的名字是 Léa。"
+          }
+        ],
+        "id": "grammar-mon-name",
+        "titleZh": "mon：我的名字或姓氏"
+      },
+      {
+        "bodyZh": "pouvez-vous 是 vous pouvez 的倒装问句，连字符连接动词和主语。后面的 épeler 保留动词原形。",
+        "examples": [
+          {
+            "fr": "Pouvez-vous épeler votre prénom ?",
+            "recording": {
+              "asset": {
+                "assetId": "speech-0535b4d0cac5bc775e5f1fd239f80f04c90a63073199d7fd457b315839a79441",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1840,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "f1bc032cb4aa30cacfc7d0603277f347c1c65305104ad9000bf197f44b2bfea9",
+                "url": "/api/audio/f1bc032cb4aa30cacfc7d0603277f347c1c65305104ad9000bf197f44b2bfea9.wav"
+              },
+              "endMs": 1840,
+              "startMs": 0
+            },
+            "zh": "您可以拼写一下您的名字吗？"
+          }
+        ],
+        "id": "grammar-pouvez-vous-spell",
+        "titleZh": "Pouvez-vous…?：提出请求"
+      }
+    ],
+    "vocabulary": [
+      {
+        "gender": "masculine",
+        "id": "word-prenom",
+        "lemma": "prénom",
+        "meaningZh": "名字（区别于姓氏）",
+        "noteZh": "Mon prénom 是“我的名字”。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-ab80ae49acf6207b06eb6a8e74237ec832c42b9ba1c9fe34b6361921c6aa4778",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 560,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "9eb15568814276301a6ee58aba53ee3309632c3fdd9e24751a173fa1e8b9d51c",
+            "url": "/api/audio/9eb15568814276301a6ee58aba53ee3309632c3fdd9e24751a173fa1e8b9d51c.wav"
+          },
+          "endMs": 560,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-nom",
+        "lemma": "nom",
+        "meaningZh": "姓；名称",
+        "noteZh": "这里与 prénom 对照，指姓氏。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-80dfbf0305dea29f5e9505f847ec13e5b50b3343e036ef9dc01515e2a0225696",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 560,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "e6fc36eafa52f4eff68b7a1cd68669aeaa5b80bac2378cff853ab3873b492843",
+            "url": "/api/audio/e6fc36eafa52f4eff68b7a1cd68669aeaa5b80bac2378cff853ab3873b492843.wav"
+          },
+          "endMs": 560,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-epeler",
+        "lemma": "épeler",
+        "meaningZh": "逐字母拼写",
+        "noteZh": "按字母顺序说出名字；É 的重音符号也需要说明。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-ed1899e09cac469e43973ba24b8662c77aed5e36a411f7ac6439b4d42dc8c6ee",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "5868de20a9aff4e5ce0f17eaec1eef1ed190e75b846a21d2e58dbf1da1893a0b",
+            "url": "/api/audio/5868de20a9aff4e5ce0f17eaec1eef1ed190e75b846a21d2e58dbf1da1893a0b.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-lettre",
+        "lemma": "lettre",
+        "meaningZh": "字母",
+        "noteZh": "本课指名字中的字母，复数为 lettres。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-43a06caa569757c5b212711d1050059b9e9d25893ae550ab2f87fd2feb6774d4",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "3dbb671f14ee36d0eba260aac1b7cd3966601b8f44e04eac1ba47c3e58c6a615",
+            "url": "/api/audio/3dbb671f14ee36d0eba260aac1b7cd3966601b8f44e04eac1ba47c3e58c6a615.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-trois",
+        "lemma": "trois",
+        "meaningZh": "三",
+        "noteZh": "本课数名字中的字母。",
+        "partOfSpeech": "numeral",
+        "recording": {
+          "asset": {
+            "assetId": "speech-8773f1b6b8debfaa55cbfe6f1fba1975b839a3bb9a2b8dfe89d6f72c2e531ca4",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 560,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "f7570a61f24446df74d286a860680116c9d2823b66473eeedcb2bb921d43acff",
+            "url": "/api/audio/f7570a61f24446df74d286a860680116c9d2823b66473eeedcb2bb921d43acff.wav"
+          },
+          "endMs": 560,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-merci",
+        "lemma": "merci",
+        "meaningZh": "谢谢",
+        "noteZh": "用于表达感谢。",
+        "partOfSpeech": "interjection",
+        "recording": {
+          "asset": {
+            "assetId": "speech-88b53a2fc662f421d8175f7be8b9aa25c73626d6e2a66dc0c6c62153647ff582",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "66b2bc05a7caefc56d70bcf5e0ee34ddb00907c1cf6a7a1ec44ffbff80abcbb5",
+            "url": "/api/audio/66b2bc05a7caefc56d70bcf5e0ee34ddb00907c1cf6a7a1ec44ffbff80abcbb5.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "Camille 和 Léa 在社区活动室初次交谈",
+      "assetId": "art-first-conversations",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "97f2f556d706d35ec0211f426b8c9f2c35956f164fa13a70a800964c80f8ced0",
+      "url": "/api/media/97f2f556d706d35ec0211f426b8c9f2c35956f164fa13a70a800964c80f8ced0.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "区分 prénom 与 nom",
+    "理解拼写名字的请求",
+    "说明名字中的字母"
+  ],
+  "reviewItemIds": [
+    "word-prenom",
+    "word-nom",
+    "word-epeler"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：Martin。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "prénom"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "Léa 是 prénom；Martin 在本例是 nom。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Pouvez-vous épeler votre prénom ? 区分名字和姓氏，听懂逐字母拼写的请求。",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "区分名字和姓氏，听懂逐字母拼写的请求。",
+  "title": {
+    "fr": "Pouvez-vous épeler votre prénom ?",
+    "zh": "拼写自己的名字"
+  },
+  "unitId": "a1-first-conversations"
+}

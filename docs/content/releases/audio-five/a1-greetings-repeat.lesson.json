@@ -1,0 +1,1273 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-first-conversations",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-0d232542e8b1f11d018e036988529251fb3865641f686e4fc80e03732d099146",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1120,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "1681bd2690faee213fe518e59b77c33657f527cffb2f6d8fbb8386ee65cb74af",
+      "url": "/api/audio/1681bd2690faee213fe518e59b77c33657f527cffb2f6d8fbb8386ee65cb74af.wav"
+    },
+    {
+      "assetId": "speech-28d0f28a0b18f8bd17dcefb04abbd89bff477072166c8a47d391bbc445f13bbb",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 960,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "0936cddca58f0c1b2d5217751674e86210768b96a5ef7e55a8a1eaed54781db7",
+      "url": "/api/audio/0936cddca58f0c1b2d5217751674e86210768b96a5ef7e55a8a1eaed54781db7.wav"
+    },
+    {
+      "assetId": "speech-4f30bb110d5fa2e1144b6c992d0ae410d59bbc85ff6ba173e2fe47f771f92653",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1040,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "7ccec3e10a5968257bb95accc49b0ab57e3d9bcd74cff2c9f343239e75a265dd",
+      "url": "/api/audio/7ccec3e10a5968257bb95accc49b0ab57e3d9bcd74cff2c9f343239e75a265dd.wav"
+    },
+    {
+      "assetId": "speech-74ee830325256e59fa582a3b6ce0275310b3a4ac506032f13d5551c90b8ed62e",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1520,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "ecb8f06ac5284bf45a30a8441e2a584a51890c707dd1ef1d9f01d2bea67414c3",
+      "url": "/api/audio/ecb8f06ac5284bf45a30a8441e2a584a51890c707dd1ef1d9f01d2bea67414c3.wav"
+    },
+    {
+      "assetId": "speech-782a48aa761bf3e326142817763e563412bffb037abba877d3ff34ca6f78688d",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 960,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "8c1b4ac6f822a51829dc9318da11cc62920a2d74514a50ce4c56229c21a3d59d",
+      "url": "/api/audio/8c1b4ac6f822a51829dc9318da11cc62920a2d74514a50ce4c56229c21a3d59d.wav"
+    },
+    {
+      "assetId": "speech-81f62d426ceeb436361c41f919a2962ac145452b763d5520d488989d3818b875",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "d6fa9b7e64d3d82de03faca52a1844218362aa6b2d51b93e7a24857e2b6229d8",
+      "url": "/api/audio/d6fa9b7e64d3d82de03faca52a1844218362aa6b2d51b93e7a24857e2b6229d8.wav"
+    },
+    {
+      "assetId": "speech-91e0c486b647998df6b0bad109f9876e00239d79071920f68f1ad05561ec6195",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 11830,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "071ec7789751a3ff87f439d2e29f4447c10fa42136462413a4f7c2f5c6b299e4",
+      "url": "/api/audio/071ec7789751a3ff87f439d2e29f4447c10fa42136462413a4f7c2f5c6b299e4.wav"
+    },
+    {
+      "assetId": "speech-bdd03cf58d2d2cf93f9c20962333fa701f659603823b9c86d1ecab64c9498923",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426",
+      "url": "/api/audio/6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426.wav"
+    },
+    {
+      "assetId": "speech-d56b6525a2feca2d98df81f11634e73849ba42cc22e6799b2d31589b8c9ae830",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "41a5ee4b80a4b88c7f704f70dc638d19e2fef9483ce9613cf0a5fd8627556a7b",
+      "url": "/api/audio/41a5ee4b80a4b88c7f704f70dc638d19e2fef9483ce9613cf0a5fd8627556a7b.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-0d232542e8b1f11d018e036988529251fb3865641f686e4fc80e03732d099146",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-28d0f28a0b18f8bd17dcefb04abbd89bff477072166c8a47d391bbc445f13bbb",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-4f30bb110d5fa2e1144b6c992d0ae410d59bbc85ff6ba173e2fe47f771f92653",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-74ee830325256e59fa582a3b6ce0275310b3a4ac506032f13d5551c90b8ed62e",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-782a48aa761bf3e326142817763e563412bffb037abba877d3ff34ca6f78688d",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-81f62d426ceeb436361c41f919a2962ac145452b763d5520d488989d3818b875",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-91e0c486b647998df6b0bad109f9876e00239d79071920f68f1ad05561ec6195",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-bdd03cf58d2d2cf93f9c20962333fa701f659603823b9c86d1ecab64c9498923",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-d56b6525a2feca2d98df81f11634e73849ba42cc22e6799b2d31589b8c9ae830",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-91e0c486b647998df6b0bad109f9876e00239d79071920f68f1ad05561ec6195",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 1360,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 400,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 400,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 480,
+          "wordRange": null
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 480,
+          "wordRange": {
+            "end": 4,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 560,
+          "wordRange": null
+        },
+        {
+          "endMs": 640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 560,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 960,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-5",
+          "startMs": 640,
+          "wordRange": null
+        },
+        {
+          "endMs": 960,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-5",
+          "startMs": 640,
+          "wordRange": {
+            "end": 9,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1200,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-6",
+          "startMs": 960,
+          "wordRange": null
+        },
+        {
+          "endMs": 1200,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-6",
+          "startMs": 960,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 2730,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 1610,
+          "wordRange": null
+        },
+        {
+          "endMs": 2570,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1690,
+          "wordRange": null
+        },
+        {
+          "endMs": 1850,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1690,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2170,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1850,
+          "wordRange": {
+            "end": 12,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 2570,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 2170,
+          "wordRange": {
+            "end": 16,
+            "start": 13
+          }
+        },
+        {
+          "endMs": 4500,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 2980,
+          "wordRange": null
+        },
+        {
+          "endMs": 3460,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 3060,
+          "wordRange": null
+        },
+        {
+          "endMs": 3140,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 3060,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3460,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 3140,
+          "wordRange": {
+            "end": 11,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 3860,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3460,
+          "wordRange": null
+        },
+        {
+          "endMs": 3860,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3460,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4260,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 3860,
+          "wordRange": null
+        },
+        {
+          "endMs": 4020,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 3860,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4100,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 4020,
+          "wordRange": {
+            "end": 9,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 4260,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 4100,
+          "wordRange": {
+            "end": 15,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 6590,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 4750,
+          "wordRange": null
+        },
+        {
+          "endMs": 5070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 4830,
+          "wordRange": null
+        },
+        {
+          "endMs": 5070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 4830,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6430,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 5550,
+          "wordRange": null
+        },
+        {
+          "endMs": 5710,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 5550,
+          "wordRange": {
+            "end": 4,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 6030,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 5710,
+          "wordRange": {
+            "end": 14,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 6430,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 6030,
+          "wordRange": {
+            "end": 18,
+            "start": 15
+          }
+        },
+        {
+          "endMs": 8280,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 6840,
+          "wordRange": null
+        },
+        {
+          "endMs": 7560,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 6920,
+          "wordRange": null
+        },
+        {
+          "endMs": 7080,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 6920,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7560,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 7080,
+          "wordRange": {
+            "end": 14,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 8120,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 7560,
+          "wordRange": null
+        },
+        {
+          "endMs": 7720,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 7560,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7880,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 7720,
+          "wordRange": {
+            "end": 9,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 8120,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 7880,
+          "wordRange": {
+            "end": 15,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 9250,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 8530,
+          "wordRange": null
+        },
+        {
+          "endMs": 9170,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 8610,
+          "wordRange": null
+        },
+        {
+          "endMs": 8930,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 8610,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9170,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 8930,
+          "wordRange": {
+            "end": 4,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 10780,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 9500,
+          "wordRange": null
+        },
+        {
+          "endMs": 9740,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 9580,
+          "wordRange": null
+        },
+        {
+          "endMs": 9740,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 9580,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10140,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-2",
+          "startMs": 9740,
+          "wordRange": null
+        },
+        {
+          "endMs": 10140,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-2",
+          "startMs": 9740,
+          "wordRange": {
+            "end": 9,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10620,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-3",
+          "startMs": 10300,
+          "wordRange": null
+        },
+        {
+          "endMs": 10620,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-3",
+          "startMs": 10300,
+          "wordRange": {
+            "end": 7,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 11830,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 11030,
+          "wordRange": null
+        },
+        {
+          "endMs": 11670,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 11110,
+          "wordRange": null
+        },
+        {
+          "endMs": 11270,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 11110,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11670,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 11270,
+          "wordRange": {
+            "end": 7,
+            "start": 3
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-first-conversations",
+      "placeZh": "一次社区活动中的初次交谈",
+      "situationZh": "没听懂时请求重复或放慢语速。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-1",
+          "labelZh": "初次相识"
+        },
+        {
+          "avatarId": "avatar-lea-v1",
+          "characterId": "character-lea",
+          "displayName": "Léa",
+          "id": "speaker-2",
+          "labelZh": "初次相识"
+        }
+      ],
+      "titleZh": "请对方再说一次",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Pardon",
+              "vocabularyId": "word-pardon"
+            },
+            {
+              "id": "segment-1-2",
+              "text": ", je "
+            },
+            {
+              "grammarId": "grammar-negation-comprendre",
+              "id": "segment-1-3",
+              "text": "ne"
+            },
+            {
+              "id": "segment-1-4",
+              "text": " "
+            },
+            {
+              "id": "segment-1-5",
+              "text": "comprends",
+              "vocabularyId": "word-comprendre"
+            },
+            {
+              "id": "segment-1-6",
+              "text": " pas."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "对不起，我没有听懂。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Je m’appelle Léa."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "我叫 Léa。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "grammarId": "grammar-pouvoir-repeat",
+              "id": "segment-3-1",
+              "text": "Vous pouvez"
+            },
+            {
+              "id": "segment-3-2",
+              "text": " "
+            },
+            {
+              "id": "segment-3-3",
+              "text": "répéter",
+              "vocabularyId": "word-repeter"
+            },
+            {
+              "id": "segment-3-4",
+              "text": ", "
+            },
+            {
+              "id": "segment-3-5",
+              "text": "s’il vous plaît",
+              "vocabularyId": "expr-sil-vous-plait"
+            },
+            {
+              "id": "segment-3-6",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "请您再说一遍，好吗？"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Oui",
+              "vocabularyId": "word-oui"
+            },
+            {
+              "id": "segment-4-2",
+              "text": ". Je m’appelle Léa."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "好的。我叫 Léa。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Plus lentement",
+              "vocabularyId": "expr-plus-lentement"
+            },
+            {
+              "id": "segment-5-2",
+              "text": ", "
+            },
+            {
+              "id": "segment-5-3",
+              "text": "s’il vous plaît",
+              "vocabularyId": "expr-sil-vous-plait"
+            },
+            {
+              "id": "segment-5-4",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "请慢一点。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Lé-a."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "Lé-a。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Je "
+            },
+            {
+              "id": "segment-7-2",
+              "text": "comprends",
+              "vocabularyId": "word-comprendre"
+            },
+            {
+              "id": "segment-7-3",
+              "text": ", merci."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "我听懂了，谢谢。"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "De rien."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "不客气。"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "Je ne comprends pas 表示“我没有听懂”。ne 和 pas 放在变位动词两侧；本课保留完整形式，日常口语可能省略 ne。\n\npouvez 是 pouvoir 与 vous 搭配的现在时形式。Vous pouvez répéter ? 在本课中用问句请求重复，répéter 保留原形。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "重复与放慢语速是可提出的请求；对方的回应和实际交流节奏会因场合而不同。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-pardon",
+        "word-repeter",
+        "expr-plus-lentement",
+        "word-comprendre",
+        "word-oui",
+        "expr-sil-vous-plait"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-negation-comprendre",
+        "grammar-pouvoir-repeat"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "说出地址"
+        },
+        {
+          "id": "correct",
+          "text": "说慢一点"
+        },
+        {
+          "id": "distractor-b",
+          "text": "结束交谈"
+        }
+      ],
+      "promptZh": "Plus lentement, s’il vous plaît 请求对方做什么？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "否定搭配是 ne…pas。",
+      "id": "exercise-fill",
+      "promptZh": "补完整“我没有听懂”。",
+      "templateFr": "Je ne comprends ___.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句可以在本课场景中使用的话。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "s’il vous plaît ?"
+        },
+        {
+          "id": "token-2",
+          "text": "répéter,"
+        },
+        {
+          "id": "token-1",
+          "text": "Vous pouvez"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "如果暂时没有合适场景，可以在家用虚构信息练说，不需要真实购物或出行。",
+      "id": "habit-main",
+      "taskZh": "下次听法语时，如果没听清，练说 Vous pouvez répéter, s’il vous plaît ?。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能表达没有听懂。",
+        "我能礼貌地请求重复。",
+        "我能请求对方说慢一点。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner instructed direct publication of courses and recordings without manual approval; actual fixed-model alignment validated; no human listening or independent expert review asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-greetings-repeat",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "Je ne comprends pas 表示“我没有听懂”。ne 和 pas 放在变位动词两侧；本课保留完整形式，日常口语可能省略 ne。",
+        "examples": [
+          {
+            "fr": "Je ne comprends pas.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-0d232542e8b1f11d018e036988529251fb3865641f686e4fc80e03732d099146",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1120,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "1681bd2690faee213fe518e59b77c33657f527cffb2f6d8fbb8386ee65cb74af",
+                "url": "/api/audio/1681bd2690faee213fe518e59b77c33657f527cffb2f6d8fbb8386ee65cb74af.wav"
+              },
+              "endMs": 1120,
+              "startMs": 0
+            },
+            "zh": "我没有听懂。"
+          }
+        ],
+        "id": "grammar-negation-comprendre",
+        "titleZh": "ne…pas：表示否定"
+      },
+      {
+        "bodyZh": "pouvez 是 pouvoir 与 vous 搭配的现在时形式。Vous pouvez répéter ? 在本课中用问句请求重复，répéter 保留原形。",
+        "examples": [
+          {
+            "fr": "Vous pouvez répéter, s’il vous plaît ?",
+            "recording": {
+              "asset": {
+                "assetId": "speech-74ee830325256e59fa582a3b6ce0275310b3a4ac506032f13d5551c90b8ed62e",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1520,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "ecb8f06ac5284bf45a30a8441e2a584a51890c707dd1ef1d9f01d2bea67414c3",
+                "url": "/api/audio/ecb8f06ac5284bf45a30a8441e2a584a51890c707dd1ef1d9f01d2bea67414c3.wav"
+              },
+              "endMs": 1520,
+              "startMs": 0
+            },
+            "zh": "请您再说一遍，好吗？"
+          }
+        ],
+        "id": "grammar-pouvoir-repeat",
+        "titleZh": "Vous pouvez + 动词原形"
+      }
+    ],
+    "vocabulary": [
+      {
+        "id": "word-pardon",
+        "lemma": "pardon",
+        "meaningZh": "对不起；请再说一次",
+        "noteZh": "没有听清时可先用 Pardon 引起对方注意。",
+        "partOfSpeech": "interjection",
+        "recording": {
+          "asset": {
+            "assetId": "speech-d56b6525a2feca2d98df81f11634e73849ba42cc22e6799b2d31589b8c9ae830",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "41a5ee4b80a4b88c7f704f70dc638d19e2fef9483ce9613cf0a5fd8627556a7b",
+            "url": "/api/audio/41a5ee4b80a4b88c7f704f70dc638d19e2fef9483ce9613cf0a5fd8627556a7b.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-repeter",
+        "lemma": "répéter",
+        "meaningZh": "重复",
+        "noteZh": "Vous pouvez répéter ? 请求对方再说一遍。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-782a48aa761bf3e326142817763e563412bffb037abba877d3ff34ca6f78688d",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 960,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "8c1b4ac6f822a51829dc9318da11cc62920a2d74514a50ce4c56229c21a3d59d",
+            "url": "/api/audio/8c1b4ac6f822a51829dc9318da11cc62920a2d74514a50ce4c56229c21a3d59d.wav"
+          },
+          "endMs": 960,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-plus-lentement",
+        "lemma": "plus lentement",
+        "meaningZh": "慢一点",
+        "noteZh": "在本课中请求对方放慢语速。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-4f30bb110d5fa2e1144b6c992d0ae410d59bbc85ff6ba173e2fe47f771f92653",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 1040,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "7ccec3e10a5968257bb95accc49b0ab57e3d9bcd74cff2c9f343239e75a265dd",
+            "url": "/api/audio/7ccec3e10a5968257bb95accc49b0ab57e3d9bcd74cff2c9f343239e75a265dd.wav"
+          },
+          "endMs": 1040,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-comprendre",
+        "lemma": "comprendre",
+        "meaningZh": "理解；听懂",
+        "noteZh": "Je comprends 是第一人称单数现在时；加 ne…pas 表示不理解。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-28d0f28a0b18f8bd17dcefb04abbd89bff477072166c8a47d391bbc445f13bbb",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 960,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "0936cddca58f0c1b2d5217751674e86210768b96a5ef7e55a8a1eaed54781db7",
+            "url": "/api/audio/0936cddca58f0c1b2d5217751674e86210768b96a5ef7e55a8a1eaed54781db7.wav"
+          },
+          "endMs": 960,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-oui",
+        "lemma": "oui",
+        "meaningZh": "是的",
+        "noteZh": "用于肯定回答。",
+        "partOfSpeech": "adverb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-81f62d426ceeb436361c41f919a2962ac145452b763d5520d488989d3818b875",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "d6fa9b7e64d3d82de03faca52a1844218362aa6b2d51b93e7a24857e2b6229d8",
+            "url": "/api/audio/d6fa9b7e64d3d82de03faca52a1844218362aa6b2d51b93e7a24857e2b6229d8.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-sil-vous-plait",
+        "lemma": "s’il vous plaît",
+        "meaningZh": "请",
+        "noteZh": "这里使用 vous，适用于不熟悉的人和服务场景。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-bdd03cf58d2d2cf93f9c20962333fa701f659603823b9c86d1ecab64c9498923",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426",
+            "url": "/api/audio/6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "Camille 和 Léa 在社区活动室初次交谈",
+      "assetId": "art-first-conversations",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "97f2f556d706d35ec0211f426b8c9f2c35956f164fa13a70a800964c80f8ced0",
+      "url": "/api/media/97f2f556d706d35ec0211f426b8c9f2c35956f164fa13a70a800964c80f8ced0.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "表达没有听懂",
+    "礼貌地请求重复",
+    "请求对方说慢一点"
+  ],
+  "reviewItemIds": [
+    "word-pardon",
+    "word-repeter",
+    "expr-plus-lentement"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：说慢一点。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "pas"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "否定搭配是 ne…pas。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Vous pouvez répéter, s’il vous plaît ? 没听懂时请求重复或放慢语速。",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "没听懂时请求重复或放慢语速。",
+  "title": {
+    "fr": "Vous pouvez répéter ?",
+    "zh": "请对方再说一次"
+  },
+  "unitId": "a1-first-conversations"
+}
