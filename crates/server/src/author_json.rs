@@ -80,9 +80,15 @@ impl Document {
     pub fn load(path: impl AsRef<Path>) -> Result<Self> {
         let path = path.as_ref();
         let bytes = read(path)?;
-        let value = parse(&bytes)?;
+        Self::from_bytes(path, &bytes)
+    }
+    pub(crate) fn from_bytes(path: &Path, bytes: &[u8]) -> Result<Self> {
+        if bytes.len() > LIMIT {
+            bail!("author JSON exceeds 2 MiB");
+        }
+        let value = parse(bytes)?;
         let mut index = SourceIndex {
-            bytes: &bytes,
+            bytes,
             position: 0,
             offsets: BTreeMap::new(),
         };
@@ -93,10 +99,18 @@ impl Document {
             value,
             path: path.to_owned(),
             offsets: index.offsets,
-            text: String::from_utf8(bytes).expect("validated JSON is UTF-8"),
+            text: String::from_utf8(bytes.to_vec()).expect("validated JSON is UTF-8"),
         })
     }
     pub fn diagnostic(&self, pointer: &str, message: &str) -> anyhow::Error {
+        let (line, column) = self.location(pointer);
+        anyhow::anyhow!(
+            "{}:{line}:{column}: {}: {message}",
+            self.path.display(),
+            if pointer.is_empty() { "/" } else { pointer }
+        )
+    }
+    fn location(&self, pointer: &str) -> (usize, usize) {
         let mut found = if pointer == "/" { "" } else { pointer };
         while !self.offsets.contains_key(found) {
             found = found.rsplit_once('/').map_or("", |(parent, _)| parent);
@@ -104,11 +118,7 @@ impl Document {
         let before = &self.text[..self.offsets[found]];
         let line = before.bytes().filter(|b| *b == b'\n').count() + 1;
         let column = before.rsplit('\n').next().unwrap_or("").chars().count() + 1;
-        anyhow::anyhow!(
-            "{}:{line}:{column}: {}: {message}",
-            self.path.display(),
-            if pointer.is_empty() { "/" } else { pointer }
-        )
+        (line, column)
     }
     pub fn semantic(&self, error: anyhow::Error) -> anyhow::Error {
         // Existing domain validators expose JSON pointers. Locate their first
@@ -122,6 +132,66 @@ impl Document {
             }
         }
         self.diagnostic("", &format!("{error:#}"))
+    }
+}
+
+/// Authenticated Web preflight returns positions only, never author values,
+/// private answers, filesystem paths or raw parser/provider/database errors.
+pub(crate) fn check_uploaded(
+    bytes: &[u8],
+    release: bool,
+) -> brioche_course_contract::AdminDocumentCheck {
+    use brioche_course_contract::{AdminDocumentCheck, AdminDocumentIssue};
+    let document = match Document::from_bytes(Path::new("uploaded.json"), bytes) {
+        Ok(document) => document,
+        Err(error) => {
+            let position = error
+                .chain()
+                .find_map(|cause| cause.downcast_ref::<serde_json::Error>());
+            return AdminDocumentCheck {
+                valid: false,
+                issue: Some(AdminDocumentIssue {
+                    pointer: "/".into(),
+                    line: position.map_or(1, |error| error.line().max(1)) as u32,
+                    column: position.map_or(1, |error| error.column().max(1)) as u32,
+                }),
+            };
+        }
+    };
+    let validation = if release {
+        from_value::<crate::content::ReleaseManifest>(document.value.clone(), "")
+            .and_then(|manifest| manifest.validate_author())
+    } else {
+        crate::validate_source_schema(document.value.clone())
+            .and_then(|()| crate::author_source::check_source(&document.value).map(|_| ()))
+    };
+    match validation {
+        Ok(()) => AdminDocumentCheck {
+            valid: true,
+            issue: None,
+        },
+        Err(error) => {
+            let pointer = error
+                .chain()
+                .find_map(|cause| {
+                    let message = cause.to_string();
+                    let (pointer, _) = message.split_once(": ")?;
+                    (pointer.starts_with('/')
+                        && pointer.len() <= 1024
+                        && !pointer.chars().any(char::is_control))
+                    .then(|| pointer.to_owned())
+                })
+                .unwrap_or_else(|| "/".into());
+            let (line, column) = document.location(&pointer);
+            AdminDocumentCheck {
+                valid: false,
+                issue: Some(AdminDocumentIssue {
+                    pointer,
+                    line: line as u32,
+                    column: column as u32,
+                }),
+            }
+        }
     }
 }
 
@@ -465,4 +535,53 @@ mod tests {
         );
         assert_eq!(index.offsets.len(), 100_000);
     }
+}
+#[test]
+fn uploaded_preflight_locates_fields_without_returning_private_values() {
+    let mut source = crate::development_source().unwrap();
+    let valid = serde_json::to_vec(&source).unwrap();
+    assert!(check_uploaded(&valid, false).valid);
+    source["serverOnly"]["grading"]["exercise-intention"]["correctOptionId"] =
+        serde_json::json!("private-answer-marker");
+    let text = serde_json::to_string_pretty(&source)
+        .unwrap()
+        .replace('\n', "\r\n");
+    let report = check_uploaded(text.as_bytes(), false);
+    let issue = report.issue.as_ref().unwrap();
+    assert!(!report.valid);
+    assert_eq!(
+        issue.pointer,
+        "/serverOnly/grading/exercise-intention/correctOptionId"
+    );
+    let offset = text.find("\"private-answer-marker\"").unwrap();
+    let before = &text[..offset];
+    assert_eq!(
+        issue.line as usize,
+        before.bytes().filter(|b| *b == b'\n').count() + 1
+    );
+    assert_eq!(
+        issue.column as usize,
+        before.rsplit('\n').next().unwrap().chars().count() + 1
+    );
+    let serialized = serde_json::to_string(&report).unwrap();
+    assert!(!serialized.contains("private-answer-marker"));
+    assert!(!serialized.contains("uploaded.json"));
+    for bytes in [
+        b"{\"secret\":1,\"secret\":2}".as_slice(),
+        b"{bad}",
+        &[b' '; LIMIT + 1],
+    ] {
+        let report = check_uploaded(bytes, false);
+        assert!(!report.valid);
+        assert_eq!(report.issue.unwrap().pointer, "/");
+    }
+    let release = include_bytes!("../../../docs/examples/catalog.release.json");
+    assert!(check_uploaded(release, true).valid);
+    let mut source: Value = serde_json::from_slice(release).unwrap();
+    source["levels"][0]["units"][0]["lessons"][0]["revision"] = serde_json::json!(0);
+    let report = check_uploaded(&serde_json::to_vec(&source).unwrap(), true);
+    assert_eq!(
+        report.issue.unwrap().pointer,
+        "/levels/0/units/0/lessons/0/revision"
+    );
 }

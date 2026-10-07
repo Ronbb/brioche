@@ -1,5 +1,15 @@
 # 实现与验收清单
 
+## 管理员导入前字段定位（2026-10-07）
+
+发现网页课源/目录导入只收到通用错误，本地已有精确位置。新增受operator/Origin/CSRF保护的只读documents/{lesson|release}/check，共享严格JSON、来源索引、作者结构、语义及私有判分检查；错误仅返回JSON Pointer、原文件行/Unicode列，不返回原始私有值、异常或服务器路径。语法/重复字段等无法定位具体指针时返回根路径及解析位置，超限返回根位置。解析最多2MiB/100000索引位置，沿用两项阻塞任务限额，owned permit在实际任务结束前保持。成功不登记素材/课源/目录或证明发布可行。
+
+网页导入和staging提交前先检查，失败保留选中文件、理由和弹窗，显示位置并停止正式请求；成功继续原有完整媒体、登记、授权与原子事务检查。Rust生成AdminDocumentCheck/Issue契约，不手工写响应类型。本地作者命令仍保留原判分错误上下文和位置；第一次完整回归发现上下文丢失，修复后25作者CLI测试全部通过。一次Windows链接器无明细退出后以单job重跑完整工作区成功，不据此声称修复了工具链。
+
+完整Rust工作区/Clippy、TS7、29SSR、SSR/client build通过；独立临时PostgreSQL管理员4项和author_runtime1项真实通过并清理容器，验证访客401、学习者403、管理员缺CSRF403、合法预检200、错误输入200/validfalse/no原值及既有内容事务。新增单位回归核对CRLF中文源私有判分引用的精确行列、语法/重复/超限/目录revision及不泄露值。22项实际SSR浏览器测试410.64秒全部通过，包含管理员网页检查失败后文件/理由保持且import写入次数未增加；浏览器使用受控HTTP API，不冒充生产管理员实测。
+
+HTTPS+TTS三覆盖实际构建并启动API/Web，实际容器镜像API`sha256:462385bdff6440a0a66b00a34bb7603491556857fdce2cb227b1a32cbb1274fc`、Web`sha256:4ca5e9310748ca1d946527d0947084285205fd60cbb994f494f630b770505b44`，两者healthy/0restart/noOOM；五服务和四HTTP检查healthy，无迁移或媒体/内容版本变化。两HTTPS入口带有效匿名CSRF检查真实401/private no-store。完整设备/辅助技术、网页运行时媒体错误定位和异盘/每日运维等仍未完成。
+
 ## 认证加密备份副本（2026-10-07）
 
 新增离线 `scripts/backup-seal.mjs`：生成私有随机二进制密钥，将数据库和全部登记媒体连同manifest流式AES-256-GCM加密；每对象随机nonce，AAD绑定随机备份UUID及序号，原摘要和长度再次核对。只写新目录，拒绝覆盖或源/输出/密钥路径嵌套；完整envelope最后发布。密文verify不写明文，open先认证并验证manifest路径，再验证每对象tag及原SHA，完整manifest最后发布，可接既有隔离restore。失败保留不完整输出并说明可能包含敏感明文，CLI不打印原文件、密钥或原始异常；Windows权限依赖私有目录NTFS ACL。格式及操作见[加密备份副本](13-encrypted-backups.md)。

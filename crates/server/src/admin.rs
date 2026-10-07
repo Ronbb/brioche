@@ -32,6 +32,10 @@ pub fn router(root: std::path::PathBuf) -> Router<Backend> {
         .merge(crate::lesson_audio_reviews::router())
         .route("/api/v1/operator/overview", get(overview))
         .route("/api/v1/operator/history", get(history))
+        .route(
+            "/api/v1/operator/documents/{kind}/check",
+            post(check_document).layer(axum::extract::DefaultBodyLimit::max(4 * 1024 * 1024)),
+        )
         .route("/api/v1/operator/accounts", get(accounts))
         .route("/api/v1/operator/accounts/token", post(account_token))
         .route(
@@ -552,6 +556,31 @@ async fn history(
         None
     };
     Ok(Json(AdminHistory { items, next }))
+}
+async fn check_document(
+    auth: AuthSession,
+    Path(kind): Path<String>,
+    axum::Extension(permits): axum::Extension<std::sync::Arc<tokio::sync::Semaphore>>,
+    Json(request): Json<AdminDocumentRequest>,
+) -> Result<Json<brioche_course_contract::AdminDocumentCheck>, AppError> {
+    require_operator(&auth)?;
+    reason(&request.reason)?;
+    let release = match kind.as_str() {
+        "lesson" => false,
+        "release" => true,
+        _ => return Err(AppError::InvalidInput),
+    };
+    let permit = permits
+        .clone()
+        .try_acquire_owned()
+        .map_err(|_| AppError::RateLimited)?;
+    let result = tokio::task::spawn_blocking(move || {
+        let _permit = permit; // Cancellation must not release admission while parsing continues.
+        crate::author_json::check_uploaded(request.document.as_bytes(), release)
+    })
+    .await
+    .map_err(|_| AppError::Unavailable)?;
+    Ok(Json(result))
 }
 async fn import_lesson(
     auth: AuthSession,

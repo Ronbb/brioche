@@ -1157,6 +1157,31 @@ const api = createServer((request, response) => {
     return;
   }
   if (
+    /^\/api\/v1\/operator\/documents\/(lesson|release)\/check$/.test(
+      request.url,
+    ) &&
+    request.method === "POST"
+  ) {
+    let body = "";
+    request.on("data", (chunk) => {
+      body += chunk;
+    });
+    request.on("end", () => {
+      const uploaded = JSON.parse(body);
+      response.end(
+        JSON.stringify(
+          uploaded.document.includes("preflight-invalid-marker")
+            ? {
+                valid: false,
+                issue: { pointer: "/title/fr", line: 4, column: 12 },
+              }
+            : { valid: true, issue: null },
+        ),
+      );
+    });
+    return;
+  }
+  if (
     [
       "/api/v1/operator/lessons/import",
       "/api/v1/operator/releases/stage",
@@ -2696,6 +2721,42 @@ test("operator enters admin from profile and approves using the centered dialog"
       await evaluate("document.querySelector('#admin-document').files.length"),
       0,
     );
+    await writeFile(
+      lessonUpload,
+      JSON.stringify({
+        ...source,
+        title: { ...source.title, fr: "preflight-invalid-marker" },
+      }),
+    );
+    await browser("upload", "#admin-document", lessonUpload);
+    await browser("fill", "#admin-reason", "检查失败不能导入");
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelector('.admin-dialog .primary')?.disabled === false",
+    );
+    await browser("focus", ".admin-dialog .primary");
+    await browser("press", "Enter");
+    await browser(
+      "wait",
+      "--text",
+      "文件需要修改：第 4 行，第 12 列，字段 /title/fr。",
+    );
+    assert.equal(
+      adminWrites.filter(
+        (item) => item.operation === "/api/v1/operator/lessons/import",
+      ).length,
+      1,
+    );
+    assert.equal(
+      await evaluate("document.querySelector('.admin-dialog').open"),
+      true,
+    );
+    assert.equal(
+      await evaluate("document.querySelector('#admin-reason').value"),
+      "检查失败不能导入",
+    );
+    await writeFile(lessonUpload, JSON.stringify(source));
     await browser("press", "Escape");
     await browser("click", "a[href='/admin/history']");
     await browser("wait", ".admin-history");

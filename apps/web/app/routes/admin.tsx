@@ -132,6 +132,25 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
     setPending(true);
     setError("");
     try {
+      if (["import", "stage"].includes(target.operation)) {
+        const checked = await adminWrite<
+          import("@brioche/contracts/AdminDocumentCheck").AdminDocumentCheck
+        >(
+          `documents/${target.operation === "import" ? "lesson" : "release"}/check`,
+          { document, reason },
+          controller.signal,
+        );
+        controller.signal.throwIfAborted();
+        if (!checked.valid) {
+          const issue = checked.issue;
+          setError(
+            issue
+              ? `文件需要修改：第 ${issue.line} 行，第 ${issue.column} 列，字段 ${issue.pointer}。`
+              : "文件检查未通过，请修改后重新提交。",
+          );
+          return;
+        }
+      }
       const lesson = target.lesson;
       if (target.operation === "import") {
         const result = await adminWrite<AdminImportResult>(

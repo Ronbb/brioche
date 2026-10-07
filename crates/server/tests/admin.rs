@@ -157,6 +157,45 @@ async fn voice_reference_delivery_is_bounded_revocable_private_and_audited() {
     learner
         .register(&backend, "reference-learner@example.test", false)
         .await;
+    let check_path = "/api/v1/operator/documents/lesson/check";
+    let check_request = json!({"document":serde_json::to_string(&brioche_server::development_source().unwrap()).unwrap(),"reason":"Read-only isolated preflight"});
+    assert_eq!(
+        visitor
+            .send("POST", check_path, Some(check_request.clone()), true)
+            .await
+            .0,
+        401
+    );
+    assert_eq!(
+        learner
+            .send("POST", check_path, Some(check_request.clone()), true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", check_path, Some(check_request.clone()), false)
+            .await
+            .0,
+        403
+    );
+    let (status, report) = operator
+        .send("POST", check_path, Some(check_request), true)
+        .await;
+    assert_eq!(status, 200);
+    assert_eq!(report, json!({"valid":true,"issue":null}));
+    let (status, report) = operator
+        .send(
+            "POST",
+            check_path,
+            Some(json!({"document":"{bad-private-marker}","reason":"Invalid isolated preflight"})),
+            true,
+        )
+        .await;
+    assert_eq!(status, 200);
+    assert_eq!(report["valid"], false);
+    assert!(!report.to_string().contains("private-marker"));
     // Five seconds of synthetic PCM solely for protocol validation, no real speaker/consent claim.
     let mut wav = vec![0u8; 160044];
     wav[..4].copy_from_slice(b"RIFF");

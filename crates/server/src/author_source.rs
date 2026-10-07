@@ -1,18 +1,30 @@
 //! Private author metadata is validated before projecting the public document.
 use anyhow::{Context, Result, ensure};
 use serde::Deserialize;
+const GRADING_CONTEXT: &str = "serverOnly.grading: invalid or inconsistent private grading rules";
 
 /// Offline author checks shared by individual lessons and local release packs.
 pub fn check_lesson(
     document: &crate::author_json::Document,
 ) -> Result<brioche_course_contract::PublicLesson> {
-    let source = &document.value;
-    crate::media::source_asset_refs(source).map_err(|error| document.semantic(error))?;
-    crate::recording::source_audio_refs(source).map_err(|error| document.semantic(error))?;
-    let lesson = crate::project_source(source.clone()).map_err(|error| document.semantic(error))?;
-    crate::grading::Grader::from_author_source(&lesson, source)
-        .map_err(|error| document.semantic(error))
-        .context("serverOnly.grading: invalid or inconsistent private grading rules")?;
+    check_source(&document.value).map_err(|error| {
+        let grading = error.to_string() == GRADING_CONTEXT;
+        let located = document.semantic(error);
+        if grading {
+            located.context(GRADING_CONTEXT)
+        } else {
+            located
+        }
+    })
+}
+
+pub(crate) fn check_source(
+    source: &serde_json::Value,
+) -> Result<brioche_course_contract::PublicLesson> {
+    crate::media::source_asset_refs(source)?;
+    crate::recording::source_audio_refs(source)?;
+    let lesson = crate::project_source(source.clone())?;
+    crate::grading::Grader::from_author_source(&lesson, source).context(GRADING_CONTEXT)?;
     Ok(lesson)
 }
 

@@ -75,6 +75,21 @@ pub struct AdminImportResult {
     pub revision: u32,
 }
 
+/// Read-only source preflight; does not certify registered media or publishing.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminDocumentCheck {
+    pub valid: bool,
+    pub issue: Option<AdminDocumentIssue>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminDocumentIssue {
+    pub pointer: String,
+    pub line: u32,
+    pub column: u32,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct AdminHistory {
