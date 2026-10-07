@@ -267,7 +267,15 @@ fn check_a2_readings(readings: &[(&str, &str)]) {
         let source = Document::load(root.join(format!("{id}.lesson.json")))
             .unwrap()
             .value;
-        assert_eq!(source["editorial"]["status"], "draft");
+        // These fixed sources were authorized for direct publication by the owner.
+        // Validate that provenance rather than requiring their former draft state.
+        let editorial = brioche_server::author_source::editorial(&source).unwrap();
+        assert!(matches!(
+            editorial.status,
+            brioche_server::author_source::EditorialStatus::Reviewed
+        ));
+        assert!(editorial.note.contains("直接发布"));
+        assert!(editorial.note.contains("不声称独立专家审校"));
         let body = &source["blocks"][1];
         assert_eq!(body["type"], mode);
         let entries = body[if mode == "article" {
