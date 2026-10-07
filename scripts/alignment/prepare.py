@@ -1,15 +1,7 @@
-"""Explicitly download the public fixed model; never read TTS keys or send audio."""
-import os
+"""Compatibility entry; implementation lives in the fixed Chef framework."""
 from pathlib import Path
-
-from align import MODEL, ROOT, verify_model
-
-
-if __name__ == "__main__":
-    os.environ["HF_HUB_DISABLE_IMPLICIT_TOKEN"] = "1"
-    from huggingface_hub import snapshot_download
-    target = ROOT / ".local/models/qwen3-forced-aligner-0.6b-hf" / MODEL["revision"]
-    snapshot_download(MODEL["repository"], revision=MODEL["revision"], local_dir=str(target),
-                      allow_patterns=list(MODEL["files"]), token=False, max_workers=2)
-    verify_model(target)
-    print("Fixed model snapshot verified. Inference can run offline.")
+import runpy
+import sys
+tool = Path(__file__).resolve().parents[2] / "framework/scripts/alignment/prepare.py"
+sys.path.insert(0, str(tool.parent))
+globals().update(runpy.run_path(str(tool), run_name="__main__" if __name__ == "__main__" else "chef_alignment"))

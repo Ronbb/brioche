@@ -83,10 +83,11 @@ jobs:
       - run: git diff --exit-code -- docs/generated
       - run: pnpm typecheck
       - run: pnpm test:web
-      - run: python3 -m unittest discover -s scripts/alignment -p test_align.py -v
+      - run: python3 -m unittest discover -s framework/scripts/alignment -p test_align.py -v
       - run: pnpm test:ops
         env:
           BRIOCHE_BACKUP_DOCKER_TEST: "1"
+      - run: node --test scripts/compat.test.mjs
       - run: pnpm build
       - run: pnpm test:ssr
       - run: pnpm exec agent-browser install --with-deps

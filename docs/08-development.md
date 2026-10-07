@@ -490,3 +490,5 @@ node framework/scripts/check-curriculum.mjs target/debug/brioche-server curricul
 ```
 
 Windows 二进制路径加 `.exe`。工具检查全部48个精确revision，源文件可分布在历史目录中；拒绝缺失版本或不同字节的同版本副本。它调用实际Rust作者校验，不读取生产数据库、不导入媒体、不自动发布。临时聚合源在退出时清理；私有答案不输出到日志。正式课程真源只在curriculum，不编辑产品的历史路径。
+
+通用运维/TTS/离线对齐工具真源现在属于Chef framework/scripts，产品scripts只保留兼容入口；现有node scripts/backup.mjs、backup-seal.mjs、health-check.mjs与qwen命令继续有效，import保持无副作用并保留原export。pnpm test:ops直接执行共享测试，产品转发验证运行node --test scripts/compat.test.mjs。共享离线对齐依赖安装文件在framework/scripts/alignment/requirements.windows-cpu.txt；Python测试从framework/scripts/alignment发现。调用根默认是当前产品工作区，跨目录调用需CHEF_WORKSPACE_ROOT显式指定；私有.local模型/媒体/预测不会写到框架源码目录。Docker编译只复制框架固定model/runtime/aliases，不再需要产品副本。抽取未配置定时备份/异盘保存、没有调用收费模型或改变媒体登记。

@@ -10,4 +10,5 @@ target
 **/target
 **/build
 **/.react-router
+**/__pycache__
 apps/web/framework

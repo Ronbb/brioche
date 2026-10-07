@@ -120,3 +120,5 @@
 共享 Web 补充：通用 React Router 页面、播放器、后台和全部通用 Web/SSR/浏览器测试真源已在 `framework/packages/web`；Brioche apps/web仅品牌/构建配置和品牌资源。产品148份公共契约副本也已删除，直接引用框架包。禁止在产品添加业务页面副本或重新实现播放器；Chef框架变更先验证推送再固定产品gitlink。独立身份/双产品数据与客户端草稿隔离及粤语v2仍待实施。
 
 课源分离补充：正式法语课程/历史发布/作者示例真源在固定 `curriculum` 子模块，原139份产品副本已逐一git对象哈希核对一致后移除。作者命令使用 `curriculum/docs/...`，课程仓库先验证提交再更新产品pin。Chef check-curriculum工具按release精确id/revision选择源，拒绝丢失或不同内容的同版本，实际调用Rust作者校验，不进行数据库/媒体导入或发布。产品docs/content及examples仅保留定位说明。不要恢复课源副本。
+
+共享工具补充：备份/加密/健康巡检/Qwen/离线对齐实现与通用回归真源已迁入framework/scripts。产品scripts只保留兼容入口和少量装配测试，不加入通用业务。pnpm test:ops直接运行框架回归；Python测试从framework/scripts/alignment发现。私有工作区根默认调用cwd，可CHEF_WORKSPACE_ROOT显式指定，保持本产品.local输出/模型隔离，不迁移私有缓存或秘密。对齐model/runtime/aliases与Rust验证共同引用框架固定文件，产品副本已移除。
