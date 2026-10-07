@@ -1,6 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { adminWrite, AdminWriteError } from "../app/lib/admin.client.ts";
+import {
+  adminArchive,
+  adminWrite,
+  AdminWriteError,
+} from "../app/lib/admin.client.ts";
 test("canceled admin writes cannot issue a token after late CSRF bootstrap", async () => {
   const original = globalThis.fetch;
   const controller = new AbortController();
@@ -29,6 +33,106 @@ test("canceled admin writes cannot issue a token after late CSRF bootstrap", asy
       name: "AbortError",
     });
     assert.equal(paths.length, 1);
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+
+test("archive downloads require a complete bounded TAR response", async () => {
+  const original = globalThis.fetch;
+  let response: Response;
+  const signal = new AbortController().signal;
+  try {
+    globalThis.fetch = async (input) =>
+      String(input).endsWith("/csrf")
+        ? new Response(JSON.stringify({ csrfToken: "controlled" }))
+        : response;
+    response = new Response("not an archive");
+    await assert.rejects(
+      adminArchive("speech-alignments/fixture/package", {}, signal),
+      /响应无效/,
+    );
+    response = new Response(new Uint8Array(), {
+      headers: { "content-type": "application/x-tar" },
+    });
+    await assert.rejects(
+      adminArchive("speech-alignments/fixture/package", {}, signal),
+      /为空/,
+    );
+    const bytes = new Uint8Array([1, 2, 3, 4]);
+    response = new Response(bytes, {
+      headers: { "content-type": "application/x-tar" },
+    });
+    const archive = await adminArchive(
+      "speech-alignments/fixture/package",
+      {},
+      signal,
+    );
+    assert.equal(archive.type, "application/x-tar");
+    assert.deepEqual(new Uint8Array(await archive.arrayBuffer()), bytes);
+    let cancelled = false;
+    response = new Response(
+      new ReadableStream({
+        pull(controller) {
+          controller.enqueue(new Uint8Array(1024 * 1024));
+        },
+        cancel() {
+          cancelled = true;
+        },
+      }),
+      { headers: { "content-type": "application/x-tar" } },
+    );
+    await assert.rejects(
+      adminArchive("speech-alignments/fixture/package", {}, signal),
+      /下载上限/,
+    );
+    assert.equal(cancelled, true);
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+
+test("archive cancellation rejects late bootstrap and incomplete bodies", async () => {
+  const original = globalThis.fetch;
+  try {
+    const bootstrapAbort = new AbortController();
+    let calls = 0;
+    globalThis.fetch = async () => {
+      calls++;
+      bootstrapAbort.abort();
+      return new Response(JSON.stringify({ csrfToken: "controlled" }));
+    };
+    await assert.rejects(
+      adminArchive(
+        "speech-alignments/fixture/package",
+        {},
+        bootstrapAbort.signal,
+      ),
+      { name: "AbortError" },
+    );
+    assert.equal(calls, 1);
+    const bodyAbort = new AbortController();
+    let cancelled = false;
+    globalThis.fetch = async (input) =>
+      String(input).endsWith("/csrf")
+        ? new Response(JSON.stringify({ csrfToken: "controlled" }))
+        : new Response(
+            new ReadableStream({
+              pull(controller) {
+                controller.enqueue(new Uint8Array([1]));
+                bodyAbort.abort();
+              },
+              cancel() {
+                cancelled = true;
+              },
+            }),
+            { headers: { "content-type": "application/x-tar" } },
+          );
+    await assert.rejects(
+      adminArchive("speech-alignments/fixture/package", {}, bodyAbort.signal),
+      { name: "AbortError" },
+    );
+    assert.equal(cancelled, true);
   } finally {
     globalThis.fetch = original;
   }

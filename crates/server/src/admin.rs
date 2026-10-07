@@ -28,6 +28,7 @@ pub fn router(root: std::path::PathBuf) -> Router<Backend> {
         .merge(crate::speech_clips::router())
         .merge(crate::speech_export::router())
         .merge(crate::speech_alignments::router())
+        .merge(crate::speech_package::router())
         .route("/api/v1/operator/overview", get(overview))
         .route("/api/v1/operator/history", get(history))
         .route("/api/v1/operator/accounts", get(accounts))

@@ -143,7 +143,11 @@ const api = createServer((request, response) => {
       request.on("end", () => {
         const payload = JSON.parse(body);
         adminWrites.push({ operation: request.url, ...payload });
-        if (request.url.endsWith("/review")) {
+        if (request.url.endsWith("/package")) {
+          response.setHeader("Content-Type", "application/x-tar");
+          response.end(Buffer.alloc(1024));
+          return;
+        } else if (request.url.endsWith("/review")) {
           alignmentResult.clips[0].accepted = payload.accepted;
           alignmentResult.clips[0].words = payload.words;
           if (alignmentLostReview) {
@@ -3176,6 +3180,34 @@ test("speech alignment imports and human corrections preserve exact requests aft
       await evaluate("window.__timelineAudio.at(-1).currentTime < 0.9"),
     );
     await evaluate("window.Audio = window.__originalAudio");
+    await act(
+      "textbox",
+      "使用授权依据",
+      "fill",
+      "LicenseRef-ControlledFixture",
+    );
+    await act("textbox", "创作或授权主体", "fill", "Synthetic test author");
+    await act("textbox", "组装说明", "fill", "Controlled assembly");
+    await act("button", "下载录音课包");
+    await browser(
+      "wait",
+      "--text",
+      "请核对新版本、停顿、来源授权及填写的信息。",
+    );
+    assert.equal(adminWrites.length, 4);
+    await act("checkbox", "我确认录音及角色声音可按以上授权使用。", "check");
+    await act("button", "下载录音课包");
+    await browser("wait", "--text", "录音课包已下载。");
+    assert.equal(adminWrites.length, 5);
+    assert.equal(
+      adminWrites[4].operation,
+      `/api/v1/operator/speech-alignments/${alignmentResult.id}/package`,
+    );
+    assert.equal(adminWrites[4].expectedReportHash, alignmentResult.reportHash);
+    assert.equal(adminWrites[4].lessonRevision, 2);
+    assert.equal(adminWrites[4].gapMs, 250);
+    assert.equal(adminWrites[4].rightsConfirmed, true);
+    assert.equal(adminWrites[4].reason, "Controlled assembly");
     for (const width of [320, 390, 678]) {
       await browser("set", "viewport", String(width), "844");
       assert.equal(

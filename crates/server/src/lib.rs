@@ -27,6 +27,7 @@ mod speech_alignments;
 mod speech_clips;
 mod speech_export;
 mod speech_media;
+mod speech_package;
 pub mod speech_plan;
 mod voice_auditions;
 mod voice_jobs;

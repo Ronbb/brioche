@@ -16,6 +16,7 @@ import { getIdentity, getPrivate } from "../lib/api.server";
 import { adminWrite, AdminWriteError } from "../lib/admin.client";
 import { useLearning } from "../components/learning";
 import { RecordingPlayer } from "../lib/recording-playback";
+import { SpeechPackage } from "../components/admin-speech-package";
 import type { Route } from "./+types/admin-speech-alignments";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -71,7 +72,8 @@ export default function Alignments({ loaderData }: Route.ComponentProps) {
     [error, setError] = useState("");
   const [index, setIndex] = useState(0),
     [reviewLocked, setReviewLocked] = useState(false);
-  const hasRequest = pending || frozen || reviewLocked;
+  const [packagePending, setPackagePending] = useState(false);
+  const hasRequest = pending || frozen || reviewLocked || packagePending;
   const blocker = useBlocker(hasRequest);
   useBeforeUnload((event) => {
     if (hasRequest) {
@@ -251,6 +253,13 @@ export default function Alignments({ loaderData }: Route.ComponentProps) {
               下个片段
             </button>
           </div>
+          <SpeechPackage
+            key={alignment.id}
+            alignment={alignment}
+            lessonRevision={plan.lessonRevision}
+            disabled={hasRequest}
+            onPending={setPackagePending}
+          />
         </>
       )}
       <h2>导入记录</h2>

@@ -287,6 +287,51 @@ async fn load(db: &impl ConnectionTrait, id: &str) -> Result<QueryResult, AppErr
         .await?
         .ok_or(AppError::NotFound)
 }
+pub(crate) async fn package_snapshot(
+    db: &impl ConnectionTrait,
+    id: &str,
+    expected_hash: &str,
+) -> Result<Value, AppError> {
+    let row = load(db, id).await?;
+    if field::<String>(&row, "report_hash")? != expected_hash {
+        return Err(AppError::Conflict);
+    }
+    let report: Report =
+        serde_json::from_value(field(&row, "report")?).map_err(|_| AppError::Unavailable)?;
+    let (plan, results) = sources(db, &report).await?;
+    let speech = crate::speech_export::snapshot(db, &report.plan_id).await?;
+    let mut clips = Vec::new();
+    for (clip, result) in report.clips.iter().zip(results) {
+        let review = one(db,
+            "SELECT accepted,words,actor_id,reason,request FROM speech_alignment_reviews WHERE alignment_id=$1 AND clip_id=$2",
+            vec![id.into(), clip.clip_id.clone().into()]).await?.ok_or(AppError::Conflict)?;
+        if !field::<bool>(&review, "accepted")? {
+            return Err(AppError::Conflict);
+        }
+        let words: Vec<AdminAlignmentWord> =
+            serde_json::from_value(field(&review, "words")?).map_err(|_| AppError::Unavailable)?;
+        validate_words(
+            &words,
+            &source_words(request_text(&plan, &clip.generation_key)?),
+            clip.duration_ms,
+            true,
+        )?;
+        let audio_review = speech["clips"]
+            .as_array()
+            .ok_or(AppError::Unavailable)?
+            .iter()
+            .find(|c| c["id"] == clip.clip_id)
+            .ok_or(AppError::Conflict)?;
+        clips.push(json!({"id":clip.clip_id,"generationKey":clip.generation_key,"result":result,"speechReview":audio_review["review"],
+            "words":words,"review":{"actorId":field::<i64>(&review,"actor_id")?,
+            "reason":field::<String>(&review,"reason")?,"request":field::<Value>(&review,"request")?}}));
+    }
+    Ok(
+        json!({"schemaVersion":"1.0","kind":"brioche-speech-package","alignmentId":id,
+        "reportHash":expected_hash,"predictionEngine":report.engine,"planId":report.plan_id,
+        "plan":plan,"clips":clips}),
+    )
+}
 async fn view(db: &impl ConnectionTrait, row: &QueryResult) -> Result<AdminAlignment, AppError> {
     let id: String = field(row, "id")?;
     let report: Report =

@@ -6,11 +6,12 @@ export class AdminWriteError extends Error {
     this.status = status;
   }
 }
-export async function adminWrite<T>(
+async function adminResponse(
   path: string,
   body: object | FormData,
   signal?: AbortSignal,
-): Promise<T> {
+  timeoutMs = 30000,
+): Promise<Response> {
   signal?.throwIfAborted();
   const bootstrap = await fetch("/api/v1/auth/csrf", {
     cache: "no-store",
@@ -30,8 +31,8 @@ export async function adminWrite<T>(
         : { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
     body: body instanceof FormData ? body : JSON.stringify(body),
     signal: signal
-      ? AbortSignal.any([signal, AbortSignal.timeout(30000)])
-      : AbortSignal.timeout(30000),
+      ? AbortSignal.any([signal, AbortSignal.timeout(timeoutMs)])
+      : AbortSignal.timeout(timeoutMs),
   });
   if (!response.ok) {
     const messages: Record<number, string> = {
@@ -48,5 +49,44 @@ export async function adminWrite<T>(
       response.status,
     );
   }
-  return response.json() as Promise<T>;
+  return response;
+}
+export async function adminWrite<T>(
+  path: string,
+  body: object | FormData,
+  signal?: AbortSignal,
+): Promise<T> {
+  return (await adminResponse(path, body, signal)).json() as Promise<T>;
+}
+export async function adminArchive(
+  path: string,
+  body: object,
+  signal: AbortSignal,
+): Promise<Blob> {
+  const response = await adminResponse(path, body, signal, 120000);
+  if (
+    response.headers.get("Content-Type")?.split(";")[0] !==
+      "application/x-tar" ||
+    !response.body
+  )
+    throw Error("录音课包响应无效，请重新核对。");
+  const reader = response.body.getReader();
+  const chunks: ArrayBuffer[] = [];
+  let length = 0;
+  try {
+    while (true) {
+      signal.throwIfAborted();
+      const { done, value } = await reader.read();
+      if (done) break;
+      length += value.byteLength;
+      if (length > 128 * 1024 * 1024) throw Error("录音课包超过下载上限。");
+      chunks.push(value.slice().buffer);
+    }
+    signal.throwIfAborted();
+    if (!length) throw Error("录音课包为空，请重新核对。");
+    return new Blob(chunks, { type: "application/x-tar" });
+  } finally {
+    await reader.cancel().catch(() => {});
+    reader.releaseLock();
+  }
 }

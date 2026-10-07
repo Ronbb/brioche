@@ -637,3 +637,17 @@ pub struct AdminAlignmentReview {
     pub words: Vec<AdminAlignmentWord>,
     pub reason: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminSpeechPackageRequest {
+    pub expected_report_hash: String,
+    pub lesson_revision: u32,
+    pub gap_ms: u32,
+    pub rights_confirmed: bool,
+    pub source: String,
+    pub license: String,
+    pub creator: String,
+    pub credit_zh: String,
+    pub reason: String,
+}

@@ -3863,6 +3863,245 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
             .0,
         409
     );
+    let package_path = format!("{read_alignment}/package");
+    let mut package_request = json!({"expectedReportHash":imported_alignment.1["reportHash"],
+        "lessonRevision":revision+1,"gapMs":250,"rightsConfirmed":true,
+        "source":"Synthetic protocol recording","license":"Synthetic fixture permission only",
+        "creator":"Isolated test","creditZh":"Synthetic fixture","reason":"Synthetic assembly test, not a real hearing"});
+    assert_eq!(
+        visitor
+            .send("POST", &package_path, Some(package_request.clone()), true)
+            .await
+            .0,
+        401
+    );
+    assert_eq!(
+        learner
+            .send("POST", &package_path, Some(package_request.clone()), true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", &package_path, Some(package_request.clone()), false)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", &package_path, Some(package_request.clone()), true)
+            .await
+            .0,
+        409
+    );
+    let mut invalid = package_request.clone();
+    invalid["rightsConfirmed"] = json!(false);
+    assert_eq!(
+        operator
+            .send("POST", &package_path, Some(invalid), true)
+            .await
+            .0,
+        400
+    );
+    for clip in report["clips"].as_array().unwrap().iter().skip(1) {
+        let request = json!({"expectedReportHash":imported_alignment.1["reportHash"],"heard":true,"timingsChecked":true,
+            "accepted":true,"words":clip["words"],"reason":"Synthetic full-package timing fixture"});
+        let endpoint = format!(
+            "{read_alignment}/clips/{}/review",
+            clip["clipId"].as_str().unwrap()
+        );
+        let result = operator.send("POST", &endpoint, Some(request), true).await;
+        assert_eq!(result.0, 200, "{:?}", result.1);
+    }
+    let calls_before_package = qwen.calls.lock().unwrap().len();
+    let mut package_bytes = None;
+    for _ in 0..2 {
+        let response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri(&package_path)
+                    .header("cookie", &operator.cookie)
+                    .header("origin", "http://localhost:5173")
+                    .header("x-csrf-token", &operator.csrf)
+                    .header("content-type", "application/json")
+                    .body(Body::from(serde_json::to_vec(&package_request).unwrap()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(response.status(), 200);
+        assert_eq!(response.headers()["content-type"], "application/x-tar");
+        assert_eq!(response.headers()["cache-control"], "private, no-store");
+        let bytes = response.into_body().collect().await.unwrap().to_bytes();
+        if let Some(previous) = &package_bytes {
+            assert_eq!(previous, &bytes);
+        } else {
+            package_bytes = Some(bytes);
+        }
+    }
+    assert_eq!(qwen.calls.lock().unwrap().len(), calls_before_package);
+    let mut package_members = std::collections::BTreeMap::new();
+    let mut archive = tar::Archive::new(std::io::Cursor::new(package_bytes.unwrap()));
+    let package_root = root.join("assembled-package");
+    std::fs::create_dir_all(&package_root).unwrap();
+    for entry in archive.entries().unwrap() {
+        use std::io::Read;
+        let mut entry = entry.unwrap();
+        assert!(entry.header().entry_type().is_file());
+        assert_eq!(entry.header().mode().unwrap(), 0o600);
+        let path = entry.path().unwrap().to_path_buf();
+        assert!(
+            path.components()
+                .all(|c| matches!(c, std::path::Component::Normal(_)))
+        );
+        let mut bytes = Vec::new();
+        entry.read_to_end(&mut bytes).unwrap();
+        let destination = package_root.join(&path);
+        std::fs::create_dir_all(destination.parent().unwrap()).unwrap();
+        std::fs::write(destination, &bytes).unwrap();
+        assert!(
+            package_members
+                .insert(path.to_str().unwrap().to_owned(), bytes)
+                .is_none()
+        );
+    }
+    let draft: Value = serde_json::from_slice(&package_members["lesson.json"]).unwrap();
+    assert_eq!(draft["revision"], revision + 1);
+    assert_eq!(draft["editorial"]["status"], "draft");
+    let draft_public = brioche_server::project_source(draft.clone()).unwrap();
+    draft_public.validate().unwrap();
+    assert!(draft_public.audio_tracks.len() >= 2);
+    assert!(
+        draft_public
+            .knowledge
+            .vocabulary
+            .iter()
+            .all(|v| v.recording.is_some())
+    );
+    assert!(
+        draft_public
+            .knowledge
+            .grammar
+            .iter()
+            .flat_map(|g| &g.examples)
+            .all(|e| e.recording.is_some())
+    );
+    let package_manifest: Value =
+        serde_json::from_slice(&package_members["manifest.json"]).unwrap();
+    for track in &draft_public.audio_tracks {
+        let asset = draft_public
+            .audio
+            .iter()
+            .find(|a| a.asset_id == track.asset_id)
+            .unwrap();
+        let bytes = &package_members[&format!("recordings/{}.wav", asset.sha256)];
+        assert_eq!(
+            brioche_server::audio::inspect(bytes, "audio/wav")
+                .unwrap()
+                .duration_ms,
+            asset.duration_ms
+        );
+        let entries: Vec<_> = track
+            .cues
+            .iter()
+            .filter(|c| c.segment_id.is_none())
+            .collect();
+        assert_eq!(entries[0].start_ms, 0);
+        for pair in entries.windows(2) {
+            assert_eq!(pair[1].start_ms - pair[0].end_ms, 250);
+        }
+        for entry in entries {
+            let target = package_manifest["plan"]["targets"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|t| t["blockId"] == track.block_id && t["entryId"] == entry.entry_id)
+                .unwrap();
+            let clip = package_manifest["clips"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|c| c["generationKey"] == target["generationKey"])
+                .unwrap();
+            for word in target["words"].as_array().unwrap() {
+                let reviewed = clip["words"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .find(|w| w["start"] == word["entryStart"] && w["end"] == word["entryEnd"])
+                    .unwrap();
+                let cue = track
+                    .cues
+                    .iter()
+                    .find(|c| {
+                        c.entry_id == entry.entry_id
+                            && c.segment_id.as_deref() == word["segmentId"].as_str()
+                            && c.word_range.as_ref().is_some_and(|r| {
+                                Some(u64::from(r.start)) == word["segmentStart"].as_u64()
+                                    && Some(u64::from(r.end)) == word["segmentEnd"].as_u64()
+                            })
+                    })
+                    .unwrap();
+                assert_eq!(
+                    u64::from(cue.start_ms),
+                    u64::from(entry.start_ms) + reviewed["startMs"].as_u64().unwrap()
+                );
+                assert_eq!(
+                    u64::from(cue.end_ms),
+                    u64::from(entry.start_ms) + reviewed["endMs"].as_u64().unwrap()
+                );
+            }
+        }
+    }
+    assert!(package_manifest["assembly"]["actorId"].as_i64().unwrap() > 0);
+    assert_eq!(package_manifest["assembly"]["publicationRequired"], true);
+    for clip in package_manifest["clips"].as_array().unwrap() {
+        assert!(clip["review"]["actorId"].as_i64().unwrap() > 0);
+        assert!(clip["speechReview"]["actorId"].as_i64().unwrap() > 0);
+        assert!(package_members.contains_key(clip["file"].as_str().unwrap()));
+        assert!(package_members.contains_key(clip["providerFile"].as_str().unwrap()));
+    }
+    let bundle: brioche_server::recording::AudioBundle =
+        serde_json::from_slice(&package_members["audio-bundle.json"]).unwrap();
+    brioche_server::recording::check_bundle(&bundle, &package_root).unwrap();
+    brioche_server::recording::import_bundle(
+        &db,
+        bundle,
+        &package_root,
+        &root,
+        "isolated-assembly-test",
+    )
+    .await
+    .unwrap();
+    let imported = brioche_server::author_import::import(
+        &db,
+        draft,
+        "isolated-assembly-test",
+        "Synthetic assembled draft",
+    )
+    .await
+    .unwrap();
+    assert_eq!(imported.revision, revision + 1);
+    for a in &draft_public.audio {
+        assert_eq!(visitor.send("GET", &a.url, None, false).await.0, 404);
+    }
+    let fixed=db.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,
+        "SELECT published,server_document->'editorial'->>'status' AS status FROM lesson_revisions WHERE lesson_id=$1 AND revision=$2",
+        vec![lesson_id.clone().into(),(imported.revision as i32).into()])).await.unwrap().unwrap();
+    assert!(!fixed.try_get::<bool>("", "published").unwrap());
+    assert_eq!(fixed.try_get::<String>("", "status").unwrap(), "draft");
+    assert_eq!(
+        operator
+            .send("POST", &package_path, Some(package_request.clone()), true)
+            .await
+            .0,
+        409
+    );
+    package_request["lessonRevision"] = json!(revision + 2);
     assert!(
         db.execute_unprepared("UPDATE speech_alignments SET reason='overwrite'")
             .await
@@ -3896,6 +4135,13 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
     );
     assert_eq!(qwen.calls.lock().unwrap().len(), calls_after_export);
     assert_eq!(operator.send("GET", &export_path, None, true).await.0, 503);
+    assert_eq!(
+        operator
+            .send("POST", &package_path, Some(package_request.clone()), true)
+            .await
+            .0,
+        503
+    );
     let mut broken_import = import_request.clone();
     broken_import["id"] = json!("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee3");
     assert_eq!(
@@ -3933,6 +4179,13 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
         404
     );
     assert_eq!(operator.send("GET", &export_path, None, true).await.0, 404);
+    assert_eq!(
+        operator
+            .send("POST", &package_path, Some(package_request), true)
+            .await
+            .0,
+        404
+    );
     assert_eq!(
         operator.send("GET", &read_alignment, None, true).await.0,
         404
