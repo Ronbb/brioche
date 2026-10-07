@@ -1,5 +1,12 @@
 # 实现与验收清单
 
+## 打包与课音频远端授权（2026-10-08）
+
+- Chef音频包计算及交付/写入前事务复核Operator，原子录音/draft课源/package审计与精确重试保留。
+- 课音频审核迁出本地身份，直接授权HTTP与CLI共享kernel并单独审计，AdminDirectPublication由Rust生成TS；无人工试听冒充。
+- 真实schema/最小角色完整模拟包和授权回归覆盖；产品无新增实现，生产pin不变。
+- 私有预览、布局感知迁移、完整多产品隔离/粤语与生产双产品装配仍待继续。
+
 ## 导出/对齐远端授权（2026-10-08）
 
 - Chef导出和对齐HTTP使用内容db/可信Operator；CLI仅构造本地proof并共用kernel。
