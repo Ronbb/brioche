@@ -246,3 +246,8 @@ API options/list/read 只读，POST preview 仅编译，POST save 追加不可�
 明确收到人工试听反馈后，可用 `voice-audition-review <id> <operator-email> <review.json>` 或 `speech-clip-review <id> <operator-email> <review.json>`。请求使用既有 `AdminAuditionReview` / `AdminSpeechClipReview` 契约，必须显式 heard、accepted、reason；声音候选还需 expectedVoiceRevision。命令解析已存在的 operator，以 `[local-cli]` 标明代录来源，与网页共用当前权限、固定版本及审核事务；不创建登录会话，不绕过人工反馈，不发布课程。候选重复审核返回冲突，应读取原记录；片段仅同一审核人和完整决定精确重试返回原回执。
 
 `speech-plan-export <plan-id> <operator-email> <new-private-output.tar>` 共用网页实际媒体、全部最新片段接受、打包前后权限/来源核对。输出拒绝覆盖，Unix 模式0600；失败可能留下空或不完整文件，不能当成功包。私有包仍含完整生成参数，不能入Git。导出不调用TTS；实际逐词预测继续使用本机对齐工具，heard反馈不等于 timingsChecked 或整课最终试听。
+
+
+2026-10-07 用户在三段试听后明确回复「听到了，OK」，已代录 Léa 候选及咖啡课程八句对白、九个知识片段的音质接受。生产新增 Léa 固定声音 v1 和17条片段接受记录，审核理由明确仅音质，不包括逐词或整课最终审核；没有再次调用TTS，没有登记或发布正式录音。此前候选「等待反馈」段落为当时记录，现以本段为当前状态。
+
+生产API已更新，本机入口的4项实际PostgreSQL管理员测试、53项server单元测试、fmt/Clippy通过，两HTTPS入口healthy。审核前后数据库与41媒体备份均verify。实际已接受咖啡片段导出并经本机校验、固定离线模型推理：17段中15段预测范围通过，2段有重叠（Avec du lait ? 与 Un thé, sans lait.），原预测保留，全部reviewRequired。这份报告尚未导入后台或人工校时，正式课程录音仍0，六课已发布版本保持不变。
