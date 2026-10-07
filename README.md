@@ -26,3 +26,5 @@
 共享学习/账号/后台/配音后端与数据库迁移已迁入固定 Chef 子模块；本产品 Rust 入口只负责启动装配。首次检出执行 `git submodule update --init --recursive`。通用 Web、独立身份服务及产品数据隔离仍在拆分，见 [多产品架构](docs/14-multi-product-architecture.md)。
 
 通用 React Router 页面、播放器和管理员界面已迁入 `framework/packages/web`，本产品 Web 保留品牌配置、构建和静态品牌资源，测试通过 Chef 执行。正式课源运行装配和独立身份/双产品数据隔离继续迁移。
+
+法语课源真源为固定的 `curriculum` 子模块（独立 brioche-courses 仓库）。课程、作者示例、历史目录不再在产品保存副本；作者命令使用 `curriculum/docs/...`，生产仍读取既有数据库中的不可变版本。

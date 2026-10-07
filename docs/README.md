@@ -19,15 +19,15 @@
 | [情绪语音生成设计](12-expressive-tts.md) | OpenAI/Qwen候选、角色声音与情绪脚本、离线生成和正式音频发布 |
 | [角色与声音档案](characters/README.md) | 管理员角色库、个性/音色/参考录音版本、一致配音与复刻边界 |
 | [独立HTTPS网关接入](../infra/https-gateway.md) | 当前生产的HTTPS覆盖文件、取消宿主HTTP映射与维护方式 |
-| [全部课程与录音发布记录](content/releases/README.md) | 已上线固定目录、原创素材登记与用户授权范围 |
+| [全部课程与录音发布记录](../curriculum/docs/content/releases/README.md) | 已上线固定目录、原创素材登记与用户授权范围 |
 | [决策记录](decisions/0001-foundation.md) | 关键选择的依据、代价及重新评估条件 |
-| [示例课程](examples/a1-bakery.lesson.json) | 用一堂面包店课程检验数据设计 |
-| [A2 课程草稿包](content/a2/README.md) | 六个单元二十四课草稿，两级联合目录与语言/素材审校边界 |
-| [A1 六个单元草稿包](content/a1/README.md) | 24 课作者源文件、固定顺序、结构检查与待审校/素材记录 |
-| [目录 release 示例](examples/catalog.release.json) | 显式名称、课程 revision 与教学顺序；引用未审校示例，不能直接发布 |
-| [素材与角色清单示例](examples/asset-bundle.json) | 图片哈希、尺寸、来源/授权与角色快照；保持 planned/未确认授权，不能直接导入 |
-| [早期示例课程 Schema](examples/lesson.schema.json) | v0.1 设计草案，保留作历史参考；当前契约使用下列 Rust 生成物 |
-| [生成的公共课程 Schema](../packages/contracts/src/generated/public-lesson.schema.json) | Rust 公共 DTO 的当前结构契约；不包含私有答案，也不替代语义及发布检查 |
+| [示例课程](../curriculum/docs/examples/a1-bakery.lesson.json) | 用一堂面包店课程检验数据设计 |
+| [A2 课程草稿包](../curriculum/docs/content/a2/README.md) | 六个单元二十四课草稿，两级联合目录与语言/素材审校边界 |
+| [A1 六个单元草稿包](../curriculum/docs/content/a1/README.md) | 24 课作者源文件、固定顺序、结构检查与待审校/素材记录 |
+| [目录 release 示例](../curriculum/docs/examples/catalog.release.json) | 显式名称、课程 revision 与教学顺序；引用未审校示例，不能直接发布 |
+| [素材与角色清单示例](../curriculum/docs/examples/asset-bundle.json) | 图片哈希、尺寸、来源/授权与角色快照；保持 planned/未确认授权，不能直接导入 |
+| [早期示例课程 Schema](../curriculum/docs/examples/lesson.schema.json) | v0.1 设计草案，保留作历史参考；当前契约使用下列 Rust 生成物 |
+| [生成的公共课程 Schema](../framework/packages/contracts/src/generated/public-lesson.schema.json) | Rust 公共 DTO 的当前结构契约；不包含私有答案，也不替代语义及发布检查 |
 | [生成的作者课程 Schema](generated/author-lesson.schema.json) | Rust 公共 DTO、私有判分、审校信息和素材引用组成的作者结构契约；不包含语义或发布审校证明 |
 | [界面概念稿](preview/index.html) | 可切换首页、阅读、练习、复习与个人设置的静态交互提案 |
 

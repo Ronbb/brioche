@@ -118,3 +118,5 @@
 后端抽取补充（2026-10-08）：共享服务端/迁移/回归测试真源已迁入 `framework` 的 Chef；Brioche `crates/server` 仅薄启动与 Schema 导出装配。不要在产品重建业务模块或迁移副本；通用测试用 Chef manifest 和 `chef-engine`。独立身份进程、通用 Web 和产品数据库隔离仍待实现，不能把此阶段当完整多语言支持。
 
 共享 Web 补充：通用 React Router 页面、播放器、后台和全部通用 Web/SSR/浏览器测试真源已在 `framework/packages/web`；Brioche apps/web仅品牌/构建配置和品牌资源。产品148份公共契约副本也已删除，直接引用框架包。禁止在产品添加业务页面副本或重新实现播放器；Chef框架变更先验证推送再固定产品gitlink。独立身份/双产品数据与客户端草稿隔离及粤语v2仍待实施。
+
+课源分离补充：正式法语课程/历史发布/作者示例真源在固定 `curriculum` 子模块，原139份产品副本已逐一git对象哈希核对一致后移除。作者命令使用 `curriculum/docs/...`，课程仓库先验证提交再更新产品pin。Chef check-curriculum工具按release精确id/revision选择源，拒绝丢失或不同内容的同版本，实际调用Rust作者校验，不进行数据库/媒体导入或发布。产品docs/content及examples仅保留定位说明。不要恢复课源副本。

@@ -70,7 +70,7 @@
 图片文件可先运行数据库无关的检查：
 
 ```sh
-cargo run -p brioche-server -- asset-check docs/content/a1/assets/first-conversations.svg image/svg+xml
+cargo run -p brioche-server -- asset-check curriculum/docs/content/a1/assets/first-conversations.svg image/svg+xml
 ```
 
 `asset-check <file> <MIME>` 支持 image/svg+xml、image/png、image/jpeg、image/webp，输出 JSON（sha256、byteLength、mimeType、width、height）。复用正式素材导入的格式解码与安全 SVG 白名单、32 MiB 文件和尺寸/内存限制，拒绝伪装 MIME；文件检查在 blocking worker 完成。它不登记文件或证明授权。首版新场景源文件与 planned 清单见 [课程素材记录](content/a1/README.md)。
@@ -134,9 +134,9 @@ pnpm dev:web
 作者可先运行无需数据库的检查命令：
 
 ```sh
-cargo run -p brioche-server -- check docs/examples/a1-bakery.lesson.json
-cargo run -p brioche-server -- check-release docs/examples/catalog.release.json
-cargo run -p brioche-server -- check-release docs/content/a2/catalog.full.release.json --sources docs/content/a1 docs/content/a2 docs/examples/a1-bakery.lesson.json
+cargo run -p brioche-server -- check curriculum/docs/examples/a1-bakery.lesson.json
+cargo run -p brioche-server -- check-release curriculum/docs/examples/catalog.release.json
+cargo run -p brioche-server -- check-release curriculum/docs/content/a2/catalog.full.release.json --sources curriculum/docs/content/a1 curriculum/docs/content/a2 curriculum/docs/examples/a1-bakery.lesson.json
 ```
 
 `check` 使用实际公共 DTO、课程引用/步骤校验及服务端私有判分校验，另检查素材引用 ID、revision 和重复引用；`check-release` 默认仅校验目录清单结构及 ID、revision、重复引用。可选 `--sources` 接受 1–20 个课源文件或目录，逐课复用 check 并核对清单中的 ID/revision/等级/单元。目录只查清单引用的 `<lessonId>.lesson.json`，不递归扫描；别名文件需明确传入，例如例课 `a1-bakery.lesson.json`。同一实际文件去重，不同文件提供同一课源时报歧义；显式提供但不在清单中的课源拒绝。目录候选须为解析后仍位于该目录内的文件。
@@ -145,13 +145,13 @@ cargo run -p brioche-server -- check-release docs/content/a2/catalog.full.releas
 
 `editorial` 是必需的严格作者信息：status 仅接受 draft/reviewed，note 必需且非空、最多 8000 UTF-8 字节，拒绝未知字段及控制字符（允许换行/制表符）。课程检查、导入、release-stage 共用该校验，发布仅接受 reviewed；该状态是作者声明，不构成人工审校真实性的自动证明。
 
-`pnpm contracts` 同时生成公共契约和 `docs/generated/author-lesson.schema.json`。作者 Schema 引用实际 Rust 公开 DTO、私有规则、审校类型和素材引用类型，单独保存在 docs，禁止导入 Web 契约包。它描述结构类型，语义限制（例如正 revision、引用关联、判分一致性、note 文本边界、发布授权）仍由 Rust 校验；check 使用 Serde 与语义校验，不运行另一套 JSON Schema 引擎。CI 校验生成文件无漂移；原 `docs/examples/lesson.schema.json` 保留为设计快照。
+`pnpm contracts` 同时生成公共契约和 `docs/generated/author-lesson.schema.json`。作者 Schema 引用实际 Rust 公开 DTO、私有规则、审校类型和素材引用类型，单独保存在 docs，禁止导入 Web 契约包。它描述结构类型，语义限制（例如正 revision、引用关联、判分一致性、note 文本边界、发布授权）仍由 Rust 校验；check 使用 Serde 与语义校验，不运行另一套 JSON Schema 引擎。CI 校验生成文件无漂移；原 `curriculum/docs/examples/lesson.schema.json` 保留为设计快照。
 
 导入时，在本机 PostgreSQL 中建立专用数据库并设置 `DATABASE_URL`。使用 CLI 执行迁移，服务启动不会自动同步表结构。
 
 ```sh
 cargo run -p brioche-server -- migrate
-cargo run -p brioche-server -- import docs/examples/a1-bakery.lesson.json
+cargo run -p brioche-server -- import curriculum/docs/examples/a1-bakery.lesson.json
 ```
 
 导入始终创建不可见 revision；旧的 `--publish` 参数被明确拒绝，改用目录 release 原子发布。本示例未审校，禁止为测试上线而直接改状态。相同 `(lesson_id, revision)` 重复导入失败，数据库触发器也拒绝改写或删除已有正文/私有答案；审校后重新导入需要新 revision。
@@ -174,7 +174,7 @@ cargo run -p brioche-server -- import docs/examples/a1-bakery.lesson.json
 
 ### 目录 release 命令
 
-`docs/examples/catalog.release.json` 展示显式等级/单元名称与课程 revision 的顺序。它引用未审校示例，正常 stage 会拒绝，不能作为正式发布包。生产模式没有 active release 时目录为空；迁移不自动把历史 published 记录当作审校并启用。
+`curriculum/docs/examples/catalog.release.json` 展示显式等级/单元名称与课程 revision 的顺序。它引用未审校示例，正常 stage 会拒绝，不能作为正式发布包。生产模式没有 active release 时目录为空；迁移不自动把历史 published 记录当作审校并启用。
 
 对已完成审校的正式内容，本地管理员 CLI 支持以下流程（`actor` 是操作者记录，不是自动验证过的账号身份）：
 
@@ -387,7 +387,7 @@ Compose 所有五个服务使用 Docker local 日志驱动，配置 max-size=10m
 表达库分页空态现区分当前页和全库；继续页无记录时可返回对应收藏/复习列表。复习卡暂停/恢复按钮用 `aria-disabled` 保留键盘焦点，点击处理显式拒绝 saving、uncertain、未 ready、最新读取失败或读取期间操作；共用 owned-write 的 busy/pending 防重复门禁保持。不是只改变视觉禁用状态。
 
 
-A2 第一单元四课作者草稿与 `docs/content/a2/catalog.pilot.release.json` 已加入，详见 [A2 草稿说明](content/a2/README.md)。联合目录保留 A1 固定 revision，新增 A2 等级/单元；curriculum 检查覆盖两级内容与知识一致。草稿不自动替换开发 fixture 或正式目录，没有将“结构通过”标为 reviewed。
+A2 第一单元四课作者草稿与 `curriculum/docs/content/a2/catalog.pilot.release.json` 已加入，详见 [A2 草稿说明](../curriculum/docs/content/a2/README.md)。联合目录保留 A1 固定 revision，新增 A2 等级/单元；curriculum 检查覆盖两级内容与知识一致。草稿不自动替换开发 fixture 或正式目录，没有将“结构通过”标为 reviewed。
 
 
 学习完成页焦点：在未完成→已确认完成、或已完成但未确认原提交→确认成功的客户端状态转换后，焦点移到“本课已完成”标题并滚到标题。直接加载已完成页面保留普通初次加载行为；动画帧在卸载或状态改变时取消。双标签 CAS/最新读取失败/恢复及完成幂等已补实际数据库浏览器证据，范围见验证记录。
@@ -482,3 +482,11 @@ Qwen后台音色创建：可选-f compose.tts.yaml仅给server加载.local/tts.e
 通用 React Router 页面、播放器、账号/管理员界面及回归测试现在位于 `framework/packages/web`。本产品 `apps/web` 只维护品牌配置 `product.ts`、构建配置和品牌静态资源；`react-router.config.ts` 直接引用固定 Chef appDirectory，不复制或包装业务页面。Vite 绑定 `@chef/product`，名称、首页文案、图标、颜色和字体变量来自产品配置。生成路由类型位于忽略的产品缓存目录，不提交生成类型或 node_modules。
 
 `pnpm test:web`、`test:ssr`、`test:browser`、`test:browser:ssr` 通过固定 Chef 测试适配器执行通用测试；公开类型也直接引用 Chef 契约包，产品148份契约副本已删除。首次检出仍需递归子模块初始化。独立身份服务、双产品数据/草稿范围及粤语契约适配仍在后续阶段，不把 Web 抽取当成两个产品已经上线。
+
+完整已发布目录的离线课程仓库验证（先 `cargo build --locked -p brioche-server`）：
+
+```sh
+node framework/scripts/check-curriculum.mjs target/debug/brioche-server curriculum/docs/content/releases/audio-forty-eight.release.json curriculum/docs/content curriculum/docs/examples
+```
+
+Windows 二进制路径加 `.exe`。工具检查全部48个精确revision，源文件可分布在历史目录中；拒绝缺失版本或不同字节的同版本副本。它调用实际Rust作者校验，不读取生产数据库、不导入媒体、不自动发布。临时聚合源在退出时清理；私有答案不输出到日志。正式课程真源只在curriculum，不编辑产品的历史路径。

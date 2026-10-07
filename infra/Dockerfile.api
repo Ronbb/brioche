@@ -6,7 +6,6 @@ COPY framework/Cargo.toml framework/Cargo.lock ./framework/
 COPY framework/crates ./framework/crates
 COPY framework/docs/examples ./framework/docs/examples
 COPY framework/scripts/alignment ./framework/scripts/alignment
-COPY docs/examples ./docs/examples
 COPY scripts/alignment/model.json ./scripts/alignment/model.json
 COPY scripts/alignment/runtime.json ./scripts/alignment/runtime.json
 COPY scripts/alignment/transcript-aliases.json ./scripts/alignment/transcript-aliases.json
