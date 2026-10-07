@@ -122,8 +122,12 @@ export function LessonAudioReview({
         整课试听
       </h2>
       <p>
-        {status.accepted ? "已通过最终试听" : "尚未通过最终试听"} · 第{" "}
-        {revision} 版
+        {status.directAuthorized
+          ? "已授权直接发布，未声明人工试听"
+          : status.accepted
+            ? "已通过最终试听"
+            : "尚未通过最终试听"}{" "}
+        · 第 {revision} 版
       </p>
       {status.reason && (
         <p className="admin-note">

@@ -25,6 +25,7 @@ mod m20261007_000023_course_speech_clips;
 mod m20261007_000024_speech_alignments;
 mod m20261007_000025_speech_packages;
 mod m20261007_000026_lesson_audio_reviews;
+mod m20261007_000027_direct_publication;
 pub struct Migrator;
 #[async_trait::async_trait]
 impl MigratorTrait for Migrator {
@@ -56,6 +57,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20261007_000024_speech_alignments::Migration),
             Box::new(m20261007_000025_speech_packages::Migration),
             Box::new(m20261007_000026_lesson_audio_reviews::Migration),
+            Box::new(m20261007_000027_direct_publication::Migration),
         ]
     }
 }

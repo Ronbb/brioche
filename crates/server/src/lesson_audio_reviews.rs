@@ -1,4 +1,4 @@
-//! Final listening declarations for immutable lessons; no declaration is inferred from playback.
+//! Separate owner publication authorization and optional human listening declarations.
 use crate::{
     AppError,
     identity::{AuthSession, Backend, require_operator},
@@ -43,7 +43,8 @@ async fn status(
 ) -> Result<AdminLessonAudioStatus, AppError> {
     let lesson_hash = hash(source).map_err(|_| AppError::Unavailable)?;
     let row = one(db,"SELECT version,lesson_hash,accepted,reason,actor_id FROM lesson_audio_reviews WHERE lesson_id=$1 AND revision=$2 ORDER BY version DESC LIMIT 1",vec![id.into(),(revision as i32).into()]).await?;
-    Ok(AdminLessonAudioStatus {
+    let direct = one(db,"SELECT actor_id,reason FROM lesson_direct_publications d WHERE lesson_id=$1 AND revision=$2 AND lesson_hash=$3 AND NOT EXISTS(SELECT 1 FROM lesson_audio_reviews r WHERE (r.lesson_id,r.revision)=(d.lesson_id,d.revision) AND r.version>d.review_version)",vec![id.into(),(revision as i32).into(),lesson_hash.clone().into()]).await?;
+    let mut result = AdminLessonAudioStatus {
         published: false,
         required: required(source),
         lesson_hash: lesson_hash.clone(),
@@ -60,6 +61,7 @@ async fn status(
             })
             .transpose()?
             .unwrap_or(false),
+        direct_authorized: false,
         reason: row
             .as_ref()
             .map(|r| field(r, "reason"))
@@ -69,7 +71,79 @@ async fn status(
             .as_ref()
             .map(|r| field::<i64>(r, "actor_id").map(|id| format!("user:{id}")))
             .transpose()?,
-    })
+    };
+    if let Some(direct) = direct {
+        result.accepted = true;
+        result.direct_authorized = true;
+        result.reason = field(&direct, "reason")?;
+        result.actor = Some(format!("user:{}", field::<i64>(&direct, "actor_id")?));
+    }
+    Ok(result)
+}
+
+/// Owner-authorized publication is a separate audit event, never a hearing declaration.
+#[derive(serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct DirectPublication {
+    pub expected_lesson_hash: String,
+    pub reason: String,
+    pub evidence: Value,
+}
+pub async fn authorize_local(
+    b: &Backend,
+    actor: i64,
+    id: &str,
+    revision: u32,
+    root: &std::path::Path,
+    mut request: DirectPublication,
+) -> Result<AdminLessonAudioStatus, AppError> {
+    crate::admin::revision(id, revision)?;
+    crate::admin::reason(&request.reason)?;
+    if !crate::voice_references::hex(&request.expected_lesson_hash, 64)
+        || !request.evidence.is_object()
+        || serde_json::to_vec(&request.evidence)
+            .map_err(|_| AppError::InvalidInput)?
+            .len()
+            > 65536
+    {
+        return Err(AppError::InvalidInput);
+    }
+    request.reason = format!("[owner-direct-publish] {}", request.reason);
+    crate::admin::reason(&request.reason)?;
+    let request_json = serde_json::to_value(&request).map_err(|_| AppError::InvalidInput)?;
+    let tx = b.db.begin().await.map_err(|_| AppError::Unavailable)?;
+    crate::voice_references::lock_operator(&tx, actor).await?;
+    exec(
+        &tx,
+        "SELECT singleton FROM content_state WHERE singleton FOR UPDATE",
+        vec![],
+    )
+    .await?;
+    let (document, published) = source(&tx, id, revision, true).await?;
+    if !required(&document) || hash(&document)? != request.expected_lesson_hash {
+        return Err(AppError::Conflict);
+    }
+    let existing = one(&tx,"SELECT actor_id,request FROM lesson_direct_publications WHERE lesson_id=$1 AND revision=$2",vec![id.into(),(revision as i32).into()]).await?;
+    if let Some(existing) = existing {
+        if field::<i64>(&existing, "actor_id")? != actor
+            || field::<Value>(&existing, "request")? != request_json
+        {
+            return Err(AppError::Conflict);
+        }
+    } else {
+        if published {
+            return Err(AppError::Conflict);
+        }
+        let lesson = crate::project_source(document).map_err(|_| AppError::Unavailable)?;
+        lesson.validate().map_err(|_| AppError::InvalidInput)?;
+        crate::recording::validate_lesson(&tx, &lesson, root).await?;
+        exec(&tx,"INSERT INTO lesson_direct_publications(lesson_id,revision,lesson_hash,actor_id,reason,request,review_version)VALUES($1,$2,$3,$4,$5,$6,(SELECT COALESCE(MAX(version),0) FROM lesson_audio_reviews WHERE lesson_id=$1 AND revision=$2))",vec![id.into(),(revision as i32).into(),request.expected_lesson_hash.into(),actor.into(),request.reason.into(),request_json.into()]).await?;
+    }
+    let (source, published) = source(&tx, id, revision, false).await?;
+    let mut result = status(&tx, id, revision, &source).await?;
+    result.published = published;
+    tx.commit().await.map_err(|_| AppError::Unavailable)?;
+    Ok(result)
 }
 async fn source(
     db: &impl ConnectionTrait,
@@ -166,6 +240,7 @@ async fn review(
     Ok(Json(AdminLessonAudioStatus {
         version: next as u32,
         accepted: request.accepted,
+        direct_authorized: false,
         reason: request.reason,
         actor: Some(format!("user:{actor}")),
         ..current

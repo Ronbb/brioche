@@ -501,6 +501,8 @@ async fn history(
             UNION ALL
             SELECT 'lessonAudio:'||lesson_id||':'||revision||':'||version,CASE WHEN accepted THEN 'lessonAudioAccepted' ELSE 'lessonAudioRejected' END,lesson_id||' v'||revision,'user:'||actor_id,reason,created_at FROM lesson_audio_reviews
             UNION ALL
+            SELECT 'directPublication:'||lesson_id||':'||revision,'lessonDirectPublication',lesson_id||' v'||revision,'user:'||actor_id,reason,created_at FROM lesson_direct_publications
+            UNION ALL
             SELECT 'speechPackage:'||id,'speechPackageImport',lesson_id||' v'||revision,'user:'||actor_id,reason,created_at FROM speech_package_imports
             UNION ALL
             SELECT 'speechClip:'||id, 'speechClip', id, 'user:'||actor_id, reason, created_at FROM course_speech_clips

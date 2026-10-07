@@ -701,6 +701,8 @@ pub struct AdminLessonAudioStatus {
     pub lesson_hash: String,
     pub version: u32,
     pub accepted: bool,
+    // Publication authorization is distinct from a human hearing declaration.
+    pub direct_authorized: bool,
     pub reason: String,
     pub actor: Option<String>,
 }

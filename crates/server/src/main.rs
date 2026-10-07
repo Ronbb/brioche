@@ -219,6 +219,44 @@ async fn main() -> Result<()> {
         )
     };
     match command.as_str() {
+        "lesson-direct-publication" => {
+            let args: Vec<String> = std::env::args().skip(2).collect();
+            if args.len() != 4 {
+                bail!(
+                    "usage: lesson-direct-publication <lesson-id> <revision> <operator-email> <authorization.json>"
+                );
+            }
+            let database = db.as_ref().unwrap();
+            let row = database
+                .query_one_raw(sea_orm::Statement::from_sql_and_values(
+                    sea_orm::DbBackend::Postgres,
+                    "SELECT id FROM users WHERE email=$1 AND role='operator'",
+                    vec![args[2].clone().into()],
+                ))
+                .await
+                .map_err(|_| anyhow::anyhow!("operator lookup failed"))?
+                .ok_or_else(|| anyhow::anyhow!("operator not found"))?;
+            let actor: i64 = row.try_get("", "id")?;
+            let revision: u32 = args[1].parse()?;
+            let document = brioche_server::author_json::Document::load(&args[3])?;
+            let backend = brioche_server::identity::Backend::new(database.clone()).await?;
+            let result = brioche_server::lesson_audio_reviews::authorize_local(
+                &backend,
+                actor,
+                &args[0],
+                revision,
+                &brioche_server::media::media_root(),
+                brioche_server::author_json::from_value(document.value, "")?,
+            )
+            .await
+            .map_err(|_| {
+                anyhow::anyhow!(
+                    "direct publication authorization not confirmed; inspect the fixed request"
+                )
+            })?;
+            println!("{}", serde_json::to_string(&result)?);
+            return Ok(());
+        }
         "voice-audition-review"
         | "speech-clip-review"
         | "speech-plan-export"

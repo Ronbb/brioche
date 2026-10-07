@@ -374,6 +374,120 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
         post(&app, &final_review, &invalid, &headers).await.status(),
         409
     );
+    // Direct authorization does not create or imply a human hearing declaration.
+    let actor_id = |email: &'static str| {
+        let db = db.clone();
+        async move {
+            db.query_one_raw(Statement::from_sql_and_values(
+                DbBackend::Postgres,
+                "SELECT id FROM users WHERE email=$1",
+                vec![email.into()],
+            ))
+            .await
+            .unwrap()
+            .unwrap()
+            .try_get::<i64>("", "id")
+            .unwrap()
+        }
+    };
+    let direct_actor = actor_id("audio-operator@example.test").await;
+    let direct_request = || brioche_server::lesson_audio_reviews::DirectPublication {
+        expected_lesson_hash: status["lessonHash"].as_str().unwrap().into(),
+        reason: "Synthetic owner authorization; no human listening asserted".into(),
+        evidence: json!({"kind":"synthetic-protocol-only"}),
+    };
+    assert!(
+        brioche_server::lesson_audio_reviews::authorize_local(
+            &backend,
+            actor_id("audio-learner@example.test").await,
+            &lesson.id,
+            lesson.revision,
+            &store,
+            direct_request()
+        )
+        .await
+        .is_err()
+    );
+    let mut wrong_hash = direct_request();
+    wrong_hash.expected_lesson_hash = "b".repeat(64);
+    assert!(
+        brioche_server::lesson_audio_reviews::authorize_local(
+            &backend,
+            direct_actor,
+            &lesson.id,
+            lesson.revision,
+            &store,
+            wrong_hash
+        )
+        .await
+        .is_err()
+    );
+    let media_path = store.join(url.rsplit('/').next().unwrap());
+    let original_media = std::fs::read(&media_path).unwrap();
+    std::fs::write(&media_path, b"corrupted protocol media").unwrap();
+    assert!(
+        brioche_server::lesson_audio_reviews::authorize_local(
+            &backend,
+            direct_actor,
+            &lesson.id,
+            lesson.revision,
+            &store,
+            direct_request()
+        )
+        .await
+        .is_err()
+    );
+    std::fs::write(&media_path, original_media).unwrap();
+    assert_eq!(count("lesson_direct_publications").await, 0);
+    for _ in 0..2 {
+        let authorized = brioche_server::lesson_audio_reviews::authorize_local(
+            &backend,
+            direct_actor,
+            &lesson.id,
+            lesson.revision,
+            &store,
+            direct_request(),
+        )
+        .await
+        .unwrap();
+        assert!(authorized.accepted);
+        assert!(authorized.direct_authorized);
+        assert_eq!(authorized.version, 0);
+        assert!(authorized.reason.starts_with("[owner-direct-publish] "));
+    }
+    assert_eq!(count("lesson_audio_reviews").await, 0);
+    assert_eq!(count("lesson_direct_publications").await, 1);
+    let mut different = direct_request();
+    different.reason = "Changed authorization cannot overwrite audit".into();
+    assert!(
+        brioche_server::lesson_audio_reviews::authorize_local(
+            &backend,
+            direct_actor,
+            &lesson.id,
+            lesson.revision,
+            &store,
+            different
+        )
+        .await
+        .is_err()
+    );
+    for sql in [
+        "UPDATE lesson_direct_publications SET reason='tampered'",
+        "DELETE FROM lesson_direct_publications",
+    ] {
+        assert!(db.execute_unprepared(sql).await.is_err());
+    }
+    let mut direct_manifest = manifest.clone();
+    direct_manifest.id = "direct-authorized-test-release".into();
+    brioche_server::content::stage(
+        &db,
+        &direct_manifest,
+        "protocol-test",
+        "Direct owner authorization without hearing assertion",
+        &store,
+    )
+    .await
+    .unwrap();
     for _ in 0..2 {
         let saved = post(&app, &final_review, &declaration, &headers).await;
         assert_eq!(saved.status(), 200);
@@ -401,6 +515,19 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
             .status(),
         200
     );
+    let revoked = brioche_server::lesson_audio_reviews::authorize_local(
+        &backend,
+        direct_actor,
+        &lesson.id,
+        lesson.revision,
+        &store,
+        direct_request(),
+    )
+    .await
+    .unwrap();
+    assert!(!revoked.accepted, "retry cannot override a newer rejection");
+    assert!(!revoked.direct_authorized);
+    assert_eq!(count("lesson_direct_publications").await, 1);
     assert!(
         brioche_server::content::stage(
             &db,
@@ -663,9 +790,10 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
             "stored recording bytes do not match registered revision"
         };
         assert!(error.contains(message), "{error}");
-        assert_eq!(count("content_releases").await, 0);
-        assert_eq!(count("release_entries").await, 0);
-        assert_eq!(count("content_audit").await, 0);
+        // Only the earlier direct-authorization staging exists; failed staging adds nothing.
+        assert_eq!(count("content_releases").await, 1);
+        assert_eq!(count("release_entries").await, 1);
+        assert_eq!(count("content_audit").await, 1);
     }
     brioche_server::content::stage(&db, &manifest, "protocol-test", "audio gate", &store)
         .await
