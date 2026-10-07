@@ -17,6 +17,7 @@ test(
     const sourceVolume = `${id}-source`;
     const restoredVolume = `${id}-restored`;
     const rejectedVolume = `${id}-rejected`;
+    const missingVolume = `${id}-missing`;
     const helper = `${id}-media`;
     const root = await mkdtemp(join(tmpdir(), "brioche-backup-docker-"));
     const image =
@@ -150,6 +151,27 @@ test(
         "backup_source",
         `CREATE TABLE voice_audition_events(status text,result jsonb); INSERT INTO voice_audition_events VALUES ('ready','{"sha256":"${auditionHash}","providerSha256":"${originalHash}"}'),('submitted',NULL),('ready','{"sha256":"${auditionHash}","providerSha256":"${originalHash}"}');`,
       );
+      const clip = Buffer.from("private course clip binary\u0000\u00fe");
+      const clipOriginal = Buffer.from(
+        "private course original AIGC binary\u0000\u00fe",
+      );
+      const clipHash = createHash("sha256").update(clip).digest("hex"),
+        clipOriginalHash = createHash("sha256")
+          .update(clipOriginal)
+          .digest("hex");
+      for (const [sha, buffer] of [
+        [clipHash, clip],
+        [clipOriginalHash, clipOriginal],
+      ])
+        await docker(
+          ["exec", "-i", helper, "tee", `/media/${sha}.wav`],
+          false,
+          buffer,
+        );
+      await sql(
+        "backup_source",
+        `CREATE TABLE course_speech_clip_events(status text,result jsonb); INSERT INTO course_speech_clip_events VALUES ('ready','{"sha256":"${clipHash}","providerSha256":"${clipOriginalHash}"}'),('submitted',NULL),('unknown',NULL),('ready','{"sha256":"${clipHash}","providerSha256":"${clipOriginalHash}"}'),('ready','{"sha256":"${auditionHash}","providerSha256":"${originalHash}"}');`,
+      );
       const snapshot = join(root, "snapshot");
       await cli([
         "backup",
@@ -171,8 +193,13 @@ test(
         manifest.dump.bytes > 1024 * 1024,
         "archive exceeds pipe buffer size",
       );
-      assert.equal(manifest.media.length, 3);
-      for (const sha of [auditionHash, originalHash])
+      assert.equal(manifest.media.length, 5);
+      for (const sha of [
+        auditionHash,
+        originalHash,
+        clipHash,
+        clipOriginalHash,
+      ])
         assert.ok(
           manifest.media.some((record) => record.name === `${sha}.wav`),
         );
@@ -194,6 +221,12 @@ test(
       assert.equal(
         (await sql("backup_source", signature)).stdout,
         (await sql("backup_restored", signature)).stdout,
+      );
+      const clipSignature =
+        "SELECT count(*),md5(string_agg(status||COALESCE(result::text,''),',' ORDER BY status,result::text)) FROM course_speech_clip_events";
+      assert.equal(
+        (await sql("backup_source", clipSignature)).stdout,
+        (await sql("backup_restored", clipSignature)).stdout,
       );
       const again = await cli(
         [
@@ -272,6 +305,40 @@ test(
         0,
       );
       assert.equal((await cli(["verify", "--input", snapshot])).code, 0);
+      // A self-consistent manifest may still omit a private clip used by the DB.
+      const missing = join(root, "missing");
+      await cp(snapshot, missing, { recursive: true });
+      await writeFile(
+        join(missing, "manifest.json"),
+        JSON.stringify({
+          ...manifest,
+          media: manifest.media.filter(
+            (r) => r.name !== `${clipOriginalHash}.wav`,
+          ),
+        }),
+      );
+      assert.equal((await cli(["verify", "--input", missing])).code, 0);
+      const omitted = await cli(
+        [
+          "restore",
+          "--database-container",
+          id,
+          "--database",
+          "backup_missing",
+          "--user",
+          "postgres",
+          "--media-volume",
+          missingVolume,
+          "--input",
+          missing,
+        ],
+        true,
+      );
+      assert.notEqual(omitted.code, 0);
+      assert.match(
+        omitted.stderr,
+        /omits media referenced by restored database/,
+      );
       // An intact checksum alone is not proof that an arbitrary file is a PG archive.
       const invalidArchive = Buffer.from("Not a PostgreSQL archive");
       await writeFile(join(corrupt, "database.dump"), invalidArchive);
@@ -318,7 +385,7 @@ test(
         await docker(["stop", "--time", "1", container], true);
         await docker(["rm", "--volumes", container], true);
       }
-      for (const volume of [sourceVolume, restoredVolume])
+      for (const volume of [sourceVolume, restoredVolume, missingVolume])
         await docker(["volume", "rm", volume], true);
       assert.ok(root.startsWith(join(tmpdir(), "brioche-backup-docker-")));
       await rm(root, { recursive: true });

@@ -142,6 +142,52 @@ async fn create(
     Json(request): Json<AdminSpeechClipRequest>,
 ) -> Result<Json<AdminSpeechClip>, AppError> {
     require_operator(&auth)?;
+    create_for_actor(
+        b,
+        owner(&auth)?,
+        service.map(|s| s.0),
+        root,
+        read_permits,
+        request,
+    )
+    .await
+}
+
+/// Trusted local generation from a persisted plan. Does not accept or publish audio.
+pub async fn submit_local(
+    b: Backend,
+    actor: i64,
+    service: Option<Service>,
+    root: PathBuf,
+    mut request: AdminSpeechClipRequest,
+) -> Result<AdminSpeechClip, AppError> {
+    request.reason = format!("[local-cli] {}", request.reason);
+    let id = request.id.clone();
+    let Json(mut result) = create_for_actor(
+        b.clone(),
+        actor,
+        service,
+        root,
+        Arc::new(tokio::sync::Semaphore::new(2)),
+        request,
+    )
+    .await?;
+    let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(245);
+    while result.status == "submitted" && tokio::time::Instant::now() < deadline {
+        tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+        result = item(&load(&b.db, &id).await?)?;
+    }
+    Ok(result)
+}
+
+async fn create_for_actor(
+    b: Backend,
+    actor: i64,
+    service: Option<Service>,
+    root: PathBuf,
+    read_permits: Arc<tokio::sync::Semaphore>,
+    request: AdminSpeechClipRequest,
+) -> Result<Json<AdminSpeechClip>, AppError> {
     crate::admin::reason(&request.reason)?;
     if !hex(&request.id, 32)
         || !hex(&request.plan_id, 32)
@@ -154,7 +200,6 @@ async fn create(
     {
         return Err(AppError::InvalidInput);
     }
-    let actor = owner(&auth)?;
     let payload = serde_json::to_value(&request).map_err(|_| AppError::InvalidInput)?;
     let tx = b.db.begin().await.map_err(|_| AppError::Unavailable)?;
     lock_operator(&tx, actor).await?;
@@ -214,7 +259,7 @@ async fn create(
         if !request.cost_confirmed {
             return Err(AppError::InvalidInput);
         }
-        let service = service.ok_or(AppError::Unavailable)?.0;
+        let service = service.ok_or(AppError::Unavailable)?;
         let permit = service
             .permits
             .clone()

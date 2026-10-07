@@ -96,3 +96,5 @@
 - 后台课程contentApproved与audioRequired/audioAccepted分别显示，approved是组合发布条件。录音未通过不丢失内容退回操作；无录音保持原内容审批。有录音但缺接受记录时提供固定试听入口，服务端继续重查，不依赖按钮隐藏。
 
 - 本机voice-audition-generate复用持久化试听与当前operator校验，理由标注local-cli；固定尝试ID精确重试不重发收费。245秒等待不是退款/回滚证明，submitted/unknown须查固定记录；不创建会话或自动审听通过。
+
+- 本机speech-plan-preview/save与speech-clip-generate复用网页固定版本、operator、幂等及收费事务，顺序生成，不自动接受审听。备份必须包含全部ready课程片段的原始/修复WAV，包含已退回或被后续版本替代的记录；恢复除核对哈希，还须核对恢复数据库引用的媒体完整性。仅manifest校验通过不证明没有漏项，见角色库说明。

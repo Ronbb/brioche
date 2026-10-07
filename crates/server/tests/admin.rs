@@ -3677,10 +3677,61 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
     );
     contender["expectedPreviousId"] = json!(first_id);
     contender["costConfirmed"] = json!(false);
+    // Trusted local entry uses the same cache verification and immutable request boundary.
+    assert!(matches!(
+        brioche_server::speech_clips::submit_local(
+            backend.clone(),
+            learner_actor,
+            None,
+            root.clone(),
+            serde_json::from_value(contender.clone()).unwrap()
+        )
+        .await,
+        Err(brioche_server::AppError::Forbidden)
+    ));
+    let local_reused = brioche_server::speech_clips::submit_local(
+        backend.clone(),
+        actor,
+        None,
+        root.clone(),
+        serde_json::from_value(contender.clone()).unwrap(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(local_reused.status, "ready");
+    assert_eq!(local_reused.accepted, None);
+    let local_retry = brioche_server::speech_clips::submit_local(
+        backend.clone(),
+        actor,
+        None,
+        root.clone(),
+        serde_json::from_value(contender.clone()).unwrap(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(
+        serde_json::to_value(&local_reused).unwrap(),
+        serde_json::to_value(local_retry).unwrap()
+    );
+    let mut local_changed = contender.clone();
+    local_changed["reason"] = json!("changed local attempt");
+    assert!(matches!(
+        brioche_server::speech_clips::submit_local(
+            backend.clone(),
+            actor,
+            None,
+            root.clone(),
+            serde_json::from_value(local_changed).unwrap()
+        )
+        .await,
+        Err(brioche_server::AppError::Conflict)
+    ));
+    contender["reason"] = json!("[local-cli] Synthetic paid course task");
     let reused = operator
         .send("POST", clips, Some(contender.clone()), true)
         .await;
     assert_eq!(reused.0, 200, "{:?}", reused.1);
+    assert_eq!(reused.1, serde_json::to_value(local_reused).unwrap());
     assert_eq!(reused.1["status"], "ready");
     assert_eq!(reused.1["reusedFrom"], first_id);
     assert_eq!(qwen.calls.lock().unwrap().len(), 1);
@@ -3721,19 +3772,24 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
     retry["expectedPreviousId"] = contender["id"].clone();
     qwen.unknown
         .store(true, std::sync::atomic::Ordering::SeqCst);
-    assert_eq!(
-        operator
-            .send("POST", clips, Some(retry.clone()), true)
-            .await
-            .0,
-        200
-    );
+    let local_unknown = brioche_server::speech_clips::submit_local(
+        backend.clone(),
+        actor,
+        Some(brioche_server::qwen::Service::new(qwen.clone(), "https://example.test").unwrap()),
+        root.clone(),
+        serde_json::from_value(retry.clone()).unwrap(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(local_unknown.status, "unknown");
+    retry["reason"] = json!("[local-cli] Synthetic paid course task");
     let unknown = settled(
         &mut operator,
         &format!("{clips}/ccccccccccccccccccccccccccccccc3"),
     )
     .await;
     assert_eq!(unknown["status"], "unknown");
+    assert_eq!(unknown, serde_json::to_value(local_unknown).unwrap());
     assert_eq!(
         operator
             .send("POST", clips, Some(retry.clone()), true)
@@ -3755,9 +3811,38 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
     new_retry["retryUnknownConfirmed"] = json!(true);
     qwen.unknown
         .store(false, std::sync::atomic::Ordering::SeqCst);
+    // Explicit new attempt after unknown may charge; completing it never accepts hearing.
+    new_retry["reason"] = json!("Synthetic paid course task");
+    let local_ready = brioche_server::speech_clips::submit_local(
+        backend.clone(),
+        actor,
+        Some(brioche_server::qwen::Service::new(qwen.clone(), "https://example.test").unwrap()),
+        root.clone(),
+        serde_json::from_value(new_retry.clone()).unwrap(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(local_ready.status, "ready");
+    assert_eq!(local_ready.accepted, None);
     assert_eq!(
-        operator.send("POST", clips, Some(new_retry), true).await.0,
-        200
+        serde_json::to_value(&local_ready).unwrap(),
+        serde_json::to_value(
+            brioche_server::speech_clips::submit_local(
+                backend.clone(),
+                actor,
+                None,
+                root.clone(),
+                serde_json::from_value(new_retry.clone()).unwrap()
+            )
+            .await
+            .unwrap()
+        )
+        .unwrap()
+    );
+    new_retry["reason"] = json!("[local-cli] Synthetic paid course task");
+    assert_eq!(
+        operator.send("POST", clips, Some(new_retry), true).await.1,
+        serde_json::to_value(local_ready).unwrap()
     );
     assert_eq!(
         settled(
