@@ -908,3 +908,11 @@ Docker入口补齐在产品17568ae另行提交推送；之前5a10b54尚含已删
 独立Linux Docker release构建终态0，镜像sha256:d00d4b8186e706498cc13260b3c5a84cf5930f50f931009f863e150246b14b16；实际启动于隔离任务网络、非root chef、0restart。真实HTTP /health、/ready、/api/v1/auth/csrf为200；内省无客户端凭据与有效客户端匿名均401/private,no-store；不存在的学习/后台404。容器和网络按com.chef.task=identity-service-20261008核对后stop/removal全部成功，隔离数据库也清除，没有读取生产.env、账号或私有声音。产品生产仍使用旧已验证5960df7 API/364b5c Web，不改HTTPS入口、DNS、端口、课程发布及媒体。
 
 账号-only响应不含settings/passwordHash，服务密钥仅digest且恒定时间比较，错误凭据/产品在数据库读取前拒绝（断开数据库unit实际通过）。底层仍复用旧users.settings解码和全局role；学习消费者、产品成员授权、学习设置与数据库角色隔离尚未完成。最新Chef完整CI37667231222和Brioche既有17568ae CI37663681970读取均in_progress，不能称其已成功。所有本机build/test/export/push/cleanup句柄已经终态；后续文档push需另确认。
+
+## 产品学习设置脱离账号表（2026-10-08）
+
+Chef 33b025365ffdf70ea9ab4ee23253eeb4a6fec13c已实际提交推送迁移28：旧users.settings及原version完整归入Brioche product_user_settings，复合键为product_id/user_id，每产品有独立设置版本；账号表移除学习设置，账号版本独立。Brioche旧组合profile接口仍保持v1载荷，settings修改只推进产品版本；复习时区、学习日历均改读产品设置。独立identity登录/邀请/账号/内省不再依赖或初始化学习设置。
+
+13项实际专用PostgreSQL回归全部通过，新增真实27→28迁移/回滚、Brioche原设置/版本和密码哈希保留、Hargow默认独立/交叉不影响、同产品并发CAS及账号版本不受设置修改影响。存在Hargow设置时回滚明确拒绝，测试验证数据仍保留；测试中显式删除合成Hargow数据只为完成可逆性检查，不能作为生产回滚方式。学习设置表临时改名时账号/内省仍200；独立账号流程未创建任何产品设置行。Rust常规工作区/fmt/Clippy/生成diff通过。全量PG通过后新增identity表不可用断言，定向测试和最终Clippy再次通过。专用Docker PostgreSQL在任务标签核对后清理。
+
+没有更新Brioche框架pin、没有迁移生产或重新发布课源。旧生产二进制仍读users.settings，必须与新API版本协调切换，禁止先执行drop列。Chef最新CI37668255797与前identity提交CI37667231222真实读取均仍in_progress。学习API私有内省消费者、产品角色/schema/最小权限、课程/目录/媒体及学习事实隔离、客户端范围与语言中立/Cantonese/Hargow入口仍未完成；目标保持进行中。

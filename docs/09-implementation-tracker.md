@@ -725,3 +725,11 @@ Chef 4feb66d2586e926f37aa9dad3f56b592629ee863 已提交并实际推送独立 che
 Rust 常规工作区、fmt/Clippy 全目标、生成契约 diff 和12项真实专用 PostgreSQL 集成测试实际通过；独立非 root Linux Docker 健康/就绪/CSRF 200、匿名/无凭据内省401、学习/后台404，测试资源已核对标签后清理。完整证据见docs07，配置及迁移限制见Chef docs/identity-service.md。生产没有切换版本、迁移数据或改变域名。Chef该提交远端CI37667231222实际仍in_progress，不称全绿。
 
 学习 API 内省消费者、产品settings/成员授权/schema/数据库角色分离未实现；Backend仍兼容旧users.settings，仅账号HTTP载荷分离。Brioche framework未更新到该迁移中提交。继续实施数据库及客户端产品隔离、语言中立契约、粤语真实课源与Hargow实际入口，不能以独立进程代替完整拆分验收。
+
+## 产品学习设置脱离账号表（2026-10-08）
+
+Chef 33b025365ffdf70ea9ab4ee23253eeb4a6fec13c已实际提交推送迁移28：旧users.settings及原version完整归入Brioche product_user_settings，复合键为product_id/user_id，每产品有独立设置版本；账号表移除学习设置，账号版本独立。Brioche旧组合profile接口仍保持v1载荷，settings修改只推进产品版本；复习时区、学习日历均改读产品设置。独立identity登录/邀请/账号/内省不再依赖或初始化学习设置。
+
+13项实际专用PostgreSQL回归全部通过，新增真实27→28迁移/回滚、Brioche原设置/版本和密码哈希保留、Hargow默认独立/交叉不影响、同产品并发CAS及账号版本不受设置修改影响。存在Hargow设置时回滚明确拒绝，测试验证数据仍保留；测试中显式删除合成Hargow数据只为完成可逆性检查，不能作为生产回滚方式。学习设置表临时改名时账号/内省仍200；独立账号流程未创建任何产品设置行。Rust常规工作区/fmt/Clippy/生成diff通过。全量PG通过后新增identity表不可用断言，定向测试和最终Clippy再次通过。专用Docker PostgreSQL在任务标签核对后清理。
+
+没有更新Brioche框架pin、没有迁移生产或重新发布课源。旧生产二进制仍读users.settings，必须与新API版本协调切换，禁止先执行drop列。Chef最新CI37668255797与前identity提交CI37667231222真实读取均仍in_progress。学习API私有内省消费者、产品角色/schema/最小权限、课程/目录/媒体及学习事实隔离、客户端范围与语言中立/Cantonese/Hargow入口仍未完成；目标保持进行中。
