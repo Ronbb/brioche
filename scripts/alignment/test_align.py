@@ -9,6 +9,7 @@ import unittest
 import wave
 
 import align
+from native import raw_predictions
 
 
 def fixture():
@@ -52,6 +53,28 @@ def archive(path, manifest, members, extra=None):
 
 
 class ExportTests(unittest.TestCase):
+    def test_native_predictions_keep_overlap_and_missing_slots_without_correction(self):
+        words = ["Bonjour", "Camille"]
+        raw = raw_predictions(words, [0, 8, 7, 10], 80)
+        self.assertEqual(raw[0]["endSeconds"], 0.64)
+        self.assertEqual(raw[1]["startSeconds"], 0.56)
+        source = [{"text": "Bonjour"}, {"text": "Camille"}]
+        self.assertEqual(align.predictions(source, raw, 1000)[0], [])
+        self.assertTrue(align.predictions(source, raw, 1000)[1])
+        incomplete = raw_predictions(words, [0, 8, 9], 80)
+        self.assertEqual(incomplete[1]["endSeconds"], "missing timestamp")
+        self.assertTrue(align.predictions(source, incomplete, 1000)[1])
+        extra = raw_predictions(["Bonjour"], [0, 8, 9, 10], 80)
+        self.assertEqual(extra[1]["text"], "unmatched timestamp")
+        self.assertEqual(align.predictions(source[:1], extra, 1000)[1], ["wordCountMismatch"])
+
+    def test_native_predictions_use_exact_quantum_and_reject_invalid_classes(self):
+        for classes in [[True, 5], [-1, 5], [0, 5000], [0, 1.5]]:
+            raw = raw_predictions(["Bonjour"], classes, 80)
+            self.assertTrue(align.predictions([{"text": "Bonjour"}], raw, 1000)[1])
+        with self.assertRaises(ValueError):
+            raw_predictions(["Bonjour"], [0, 5], 100)
+
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)

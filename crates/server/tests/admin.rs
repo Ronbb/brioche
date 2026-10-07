@@ -3667,7 +3667,9 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
     // Synthetic alignment predictions are compared with real fixed plan/clip identities.
     let model: Value =
         serde_json::from_str(include_str!("../../../scripts/alignment/model.json")).unwrap();
-    let engine = json!({"repository":model["repository"],"revision":model["revision"],"files":model["files"],"versions":{"qwen-asr":"0.0.6","torch":"2.10.0+cpu","transformers":"4.57.6","numpy":"2.5.3"},"device":"cpu","dtype":"float32","attention":"eager","transcript":"NFC source word units, apostrophes normalized; original scalar ranges retained"});
+    let runtime: Value =
+        serde_json::from_str(include_str!("../../../scripts/alignment/runtime.json")).unwrap();
+    let engine = json!({"repository":model["repository"],"revision":model["revision"],"files":model["files"],"versions":runtime,"device":"cpu","dtype":"float32","attention":"eager","transcript":"NFC source word units, apostrophes normalized; original scalar ranges retained; raw timestamp classes without interpolation"});
     let report_clips:Vec<_>=manifest["clips"].as_array().unwrap().iter().map(|clip| {
         let key=clip["generationKey"].as_str().unwrap();
         let words:Vec<_>=clip["words"].as_array().unwrap().iter().enumerate().map(|(i,w)|{
@@ -3736,6 +3738,26 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
             .0,
         409
     );
+    for engine_change in [
+        json!({"versions": {"qwen-asr":"0.0.6","torch":"2.10.0+cpu","transformers":"4.57.6","numpy":"2.5.3"}}),
+        json!({"revision":"c7cbfc2048c462b0d63a45797104fc9db3ad62b7"}),
+        json!({"transcript":"NFC source word units, apostrophes normalized; original scalar ranges retained"}),
+    ] {
+        let mut incompatible = report.clone();
+        for (key, value) in engine_change.as_object().unwrap() {
+            incompatible["engine"][key] = value.clone();
+        }
+        let mut request = import_request.clone();
+        request["id"] = json!("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee9");
+        request["reportJson"] = json!(serde_json::to_string(&incompatible).unwrap());
+        assert_eq!(
+            operator
+                .send("POST", alignment_path, Some(request), true)
+                .await
+                .0,
+            400
+        );
+    }
     let mut corrupt_report = report.clone();
     corrupt_report["sourceArchiveSha256"] = json!("f".repeat(64));
     let mut invalid_archive = import_request.clone();

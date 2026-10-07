@@ -79,6 +79,9 @@ fn report(value: Value) -> Result<Report, AppError> {
     let report: Report = serde_json::from_value(value).map_err(|_| AppError::InvalidInput)?;
     let model: Value = serde_json::from_str(include_str!("../../../scripts/alignment/model.json"))
         .map_err(|_| AppError::Unavailable)?;
+    let runtime: Value =
+        serde_json::from_str(include_str!("../../../scripts/alignment/runtime.json"))
+            .map_err(|_| AppError::Unavailable)?;
     if report.schema_version != "1.0"
         || report.kind != "brioche-alignment-predictions"
         || !report.review_required
@@ -91,13 +94,12 @@ fn report(value: Value) -> Result<Report, AppError> {
         || report.engine["repository"] != model["repository"]
         || report.engine["revision"] != model["revision"]
         || report.engine["files"] != model["files"]
-        || report.engine["versions"]
-            != json!({"qwen-asr":"0.0.6","torch":"2.10.0+cpu","transformers":"4.57.6","numpy":"2.5.3"})
+        || report.engine["versions"] != runtime
         || report.engine["device"] != "cpu"
         || report.engine["dtype"] != "float32"
         || report.engine["attention"] != "eager"
         || report.engine["transcript"]
-            != "NFC source word units, apostrophes normalized; original scalar ranges retained"
+            != "NFC source word units, apostrophes normalized; original scalar ranges retained; raw timestamp classes without interpolation"
     {
         return Err(AppError::InvalidInput);
     }

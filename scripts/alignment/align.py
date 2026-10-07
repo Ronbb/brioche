@@ -7,6 +7,7 @@ import io
 import json
 import math
 import os
+import platform
 from pathlib import Path
 import re
 import struct
@@ -17,6 +18,7 @@ import wave
 
 ROOT = Path(__file__).resolve().parents[2]
 MODEL = json.loads(Path(__file__).with_name("model.json").read_text(encoding="utf-8"))
+RUNTIME = json.loads(Path(__file__).with_name("runtime.json").read_text(encoding="utf-8"))
 MAX_ARCHIVE = 128 * 1024 * 1024
 MAX_MEDIA = 16 * 1024 * 1024
 MAX_JSON = 4 * 1024 * 1024
@@ -266,31 +268,23 @@ def verify_model(directory):
 
 def load_model(directory):
     verify_model(directory)
-    # Offline env also covers upstream AutoProcessor, which does not forward local_files_only.
+    # Offline flags also cover nested loaders; inference never retrieves remote files.
     os.environ["HF_HUB_OFFLINE"] = "1"
     os.environ["HF_HUB_DISABLE_IMPLICIT_TOKEN"] = "1"
     os.environ["TRANSFORMERS_OFFLINE"] = "1"
-    versions = {name: importlib.metadata.version(name) for name in ("qwen-asr", "torch", "transformers", "numpy")}
-    require(versions == {"qwen-asr": "0.0.6", "torch": "2.10.0+cpu", "transformers": "4.57.6", "numpy": "2.5.3"}, "unsupported alignment runtime; use pinned Windows CPU environment")
-    import torch
-    from qwen_asr import Qwen3ForcedAligner
-    torch.set_num_threads(4)
-    return Qwen3ForcedAligner.from_pretrained(str(directory), dtype=torch.float32, device_map="cpu",
-        attn_implementation="eager", local_files_only=True, trust_remote_code=False), versions
+    versions = {name: platform.python_version() if name == "python" else importlib.metadata.version(name) for name in RUNTIME}
+    require(versions == RUNTIME, "unsupported alignment runtime; use pinned Windows CPU environment")
+    from native import NativeAligner
+    return NativeAligner(directory), versions
 
 
 def align_export(manifest, members, archive_hash, model, versions):
-    import numpy as np
     results = []
     for index, clip in enumerate(manifest["clips"]):
         payload, duration = pcm(members[clip["file"]])
         tokens = [model_token(w["text"]) for w in clip["words"]]
         require(all(tokens), "empty model token")
-        result = model.align(audio=(np.frombuffer(payload, dtype="<i2").astype(np.float32) / 32768, 24000),
-                             text=" ".join(tokens), language="French")[0]
-        def stored_time(value):
-            return value if type(value) in (int, float) and math.isfinite(value) else str(value)
-        raw = [{"text": w.text, "startSeconds": stored_time(w.start_time), "endSeconds": stored_time(w.end_time)} for w in result]
+        raw = model.predict(payload, tokens)
         words, issues = predictions(clip["words"], raw, duration)
         targets = []
         for target in manifest["plan"]["targets"]:
@@ -306,7 +300,7 @@ def align_export(manifest, members, archive_hash, model, versions):
     return {"schemaVersion": "1.0", "kind": "brioche-alignment-predictions", "planId": manifest["planId"],
             "planHash": manifest["plan"]["planHash"], "sourceArchiveSha256": archive_hash,
             "engine": {**MODEL, "versions": versions, "device": "cpu", "dtype": "float32", "attention": "eager",
-                       "transcript": "NFC source word units, apostrophes normalized; original scalar ranges retained"},
+                       "transcript": "NFC source word units, apostrophes normalized; original scalar ranges retained; raw timestamp classes without interpolation"},
             "reviewRequired": True, "clips": results}
 
 
@@ -328,7 +322,7 @@ def main():
     parser.add_argument("export", type=Path)
     parser.add_argument("--check", action="store_true", help="validate without loading model")
     parser.add_argument("--output", type=Path)
-    parser.add_argument("--model", type=Path, default=ROOT / ".local/models/qwen3-forced-aligner-0.6b" / MODEL["revision"])
+    parser.add_argument("--model", type=Path, default=ROOT / ".local/models/qwen3-forced-aligner-0.6b-hf" / MODEL["revision"])
     args = parser.parse_args()
     try:
         manifest, members, archive_hash = read_export(args.export)

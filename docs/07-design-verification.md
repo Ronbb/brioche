@@ -823,3 +823,9 @@ A2语法辅助审阅（2026-10-06）：读取24课48条grammar说明/例句，�
 本批API/migrate实际inspect镜像一致：sha256:81beb61fa6aef7c080c3c74797bef4c59af72c1b7a0a392b7933c9afdf22c6f7。现有生产目录仍空，未导入或发布草稿。
 
 导入修复数据库复验（2026-10-06）：当前1e29f5d实际源码使用既有独立QA PostgreSQL容器，随机隔离schema运行author_runtime ignored集成1项通过。覆盖真实作者CLI合法登记/导入、失败定位、批次staging/激活/撤回及失败事务边界，证明新前置检查没有阻断合法登记描述替换流程；非当前应用数据库或正式课程验收。QA容器已停止，既有失败baseline保留，不尝试此前被拒的清理。补03作者前置/完整媒体检查职责说明。eb7fd8f CI37473650814/job112303321065实际仍组件浏览器进行中；1e29f5d CI37474160289/job112305087514实际workspace test进行中，fmt/clippy已成功。完整内容/录音、设备与生产门槛继续保留。
+
+2026-10-07 原生逐词对齐迁移验证：官方HF转换Qwen3-ForcedAligner-0.6B-hf固定revision及6个SHA-256文件通过；Transformers5.19、CPUtorch2.14.1+cpu、Accelerate1.15等58精确依赖，OSV查询0告警。移除旧qwen-asr包装与Web UI依赖，原生推理不调用上游时间插值；直接保留80ms量化分类及异常。Python3.14.2和独立3.12.12各15标准库用例、最终Rust20契约/51server及工作区常规/Clippy/fmt、真实隔离PG后台4项通过。初次复制模型清单保留旧mtime导致Cargo未重新嵌入内容，旧revision拒绝测试收到200；touch清单并重新编译后4项全过。专用PG容器及匿名卷已删除，Web无变更，未重跑浏览器或新增迁移。
+
+完整8段旧法语试听命令完成，7段范围检查通过，1段保留实际重叠（前词0.72秒结束、后词0.56秒开始），输出始终reviewRequired且退出码2。首次处理器参数出现弃用提示，改用processor_kwargs后完整复验，预测与首次完全一致，无弃用提示。私有测试包不等于真实生成/人工审听回执，未据此登记音频或发布课程。原hf-xet下载进程经同句柄确认live；官方HTTP206字节范围及4MiB读取速度实际验证后，明确改用私有有界分段下载，原进程定向终止并确认exit1、新下载核对6SHA后exit0，未因单纯观察timeout盲目重启。所有下载/推理/测试句柄现均终态。
+
+实际部署：数据库及5媒体backup/verify通过；server镜像重建，以HTTPS+TTS三个Compose文件up--wait，四长期服务healthy、migrateexit0，两HTTPS health/ready/Web/首页巡检healthy。实际API镜像dd0fa2496bde0944f4efaad7f2c388543e1c655be1ce11dc69001616dfc91bb2；Web保留e43ee1a472991e9551ae8ee7608a88866ef1623eabc7afa820da61c365ebc300。Traefik无宿主映射/30075零监听；生产只读24迁移/音频0/试听0/声音2/published6/generation1/计划0/片段0/对齐0/审核0保持。没有付费调用、账号变更、人工批准或新课发布；正式六课语音覆盖、录音包组装与新release及后台分页/运维/真实设备验收仍待完成，完整目标保持active。

@@ -413,3 +413,6 @@ pre-course-speech-clips-20261007数据库+5媒体backup/verify完成。API镜像
 同日安全核对：NPM audit0项，RustSec数据库1290条/417锁定依赖审计0项；OSV确认本机离线对齐Python依赖9项唯一GHSA。独立升级试验遇上游Transformers API不兼容，尚未切换当前工具或宣称修复；Python模型环境不进入Web/API镜像。参见scripts/alignment/README.md。完整目标保持active。
 
 知识录音部署收尾（2026-10-07）：实际重建server/web并用HTTPS+TTS三个Compose文件up--wait；四长期服务healthy、migrateexit0，两HTTPS入口health/ready/Web/首页巡检均healthy。迁移24/正式音频0/试听0/声音档案2/published6/generation1/计划0/片段0/对齐0/审核0保持，没有实际合成、人工审核或课程新发布。Traefik无宿主映射，30075零监听。部署前数据库+5媒体backup/verify完成；专用PG已删除，全部本轮运行句柄终态。开发服务、独立gateway和其他会话两份文档保留。完整目标继续，正式音频组装与六课覆盖、Python兼容安全修复及其他后台/运维/真实设备门槛尚未完成。
+
+2026-10-07 原生对齐依赖迁移：移除qwen-asr旧版本包装及其Web UI依赖，改用Transformers5.19原生模型，官方HF转换快照/6文件SHA与58项Windows CPU依赖固定。新环境OSV查询0告警，旧私有试验环境不作为默认。完整8段法语样本推理完成，1段真实重叠保留并返回2，不调用上游时间插值或伪造审核；最终参数修正后复验预测一致。Python3.14.2和独立3.12.12各15项标准库测试、最终Rust工作区常规/Clippy/fmt、隔离PG后台4项通过。后端新导入与脚本共享runtime清单，拒绝旧模型/版本/策略；旧存储报告读取与人工核对路径保持。Web无变更，未重跑浏览器或宣称正式音频/真实设备验收。正式六课生成、人工审听/词时、录音包组装/登记和新release及后台完整分页仍待完成。
+原生对齐迁移已实际Docker部署：数据库及5媒体备份verify，HTTPS+TTS up--wait、四长期healthy/migrateexit0、两个HTTPS巡检通过；生产24|0|0|2|6|1|0|0|0|0保持，Traefik无宿主映射/30075零监听。未实际生成/审听/登记/发布正式语音，开发服务与独立gateway保留。完整目标继续。

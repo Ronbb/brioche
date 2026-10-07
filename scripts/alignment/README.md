@@ -9,10 +9,9 @@
 以下命令在项目根目录执行，需要 `uv`。首次下载公共模型需要网络，下载不读取 Hugging Face 账户凭据或 TTS Key。Windows CPU 的全部依赖版本记录在 `requirements.windows-cpu.txt`，模型清单见 `model.json`。
 
 ```powershell
-uv venv --python 3.12.12 .local/alignment-venv
-uv pip install --python .local/alignment-venv/Scripts/python.exe --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
-uv pip install --python .local/alignment-venv/Scripts/python.exe -r scripts/alignment/requirements.windows-cpu.txt
-.local/alignment-venv/Scripts/python.exe scripts/alignment/prepare.py
+uv venv --python 3.12.12 .local/alignment-native-venv
+uv pip sync --python .local/alignment-native-venv/Scripts/python.exe --index https://download.pytorch.org/whl/cpu --index-strategy unsafe-best-match scripts/alignment/requirements.windows-cpu.txt
+.local/alignment-native-venv/Scripts/python.exe scripts/alignment/prepare.py
 ```
 
 ## 校验与对齐
@@ -21,7 +20,7 @@ uv pip install --python .local/alignment-venv/Scripts/python.exe -r scripts/alig
 
 ```powershell
 python scripts/alignment/align.py .local/private/speech-<plan-id>.tar --check
-.local/alignment-venv/Scripts/python.exe scripts/alignment/align.py .local/private/speech-<plan-id>.tar --output .local/private/alignment-<plan-id>-v1.json
+.local/alignment-native-venv/Scripts/python.exe scripts/alignment/align.py .local/private/speech-<plan-id>.tar --output .local/private/alignment-<plan-id>-v1.json
 python -m unittest discover -s scripts/alignment -p test_align.py -v
 ```
 
@@ -31,13 +30,17 @@ python -m unittest discover -s scripts/alignment -p test_align.py -v
 
 对齐输入按清单词单元组成：模型侧做 NFC 和法语撇号规范化，原始文本及 scalar 范围不改。保留模型返回的原始预测及运行版本；词数/文字不符、非有限数、零时长、重叠或越界会标记问题，异常片段不给出可用词时间。毫秒转换采用十进制向外取整，避免二进制浮点引入重叠，不修正模型本身的时间。
 
-课程 segment 若把一个词切成不同文本范围，无法与整词预测精确映射时标记 `segmentWordBoundaryMismatch`。工具不平均拆分声学区间。需要人工修改分段或经过实际音频核对的时间轴；修改课程须追加新版本，再重新生成固定计划。Qwen 库自身会处理部分预测异常，输出仍是模型预测，不能宣称音素边界或人工审听已确认。
+课程 segment 若把一个词切成不同文本范围，无法与整词预测精确映射时标记 `segmentWordBoundaryMismatch`。工具不平均拆分声学区间。需要人工修改分段或经过实际音频核对的时间轴；修改课程须追加新版本，再重新生成固定计划。原生 Transformers 推理直接读取80毫秒量化的分类结果，不调用会插值修正时间点的 `decode_forced_alignment`。缺失、多余或无效分类保留为异常，输出不能宣称音素边界或人工审听已确认。
 
 后台时间轴审查入口为固定计划的 `/admin/speech-alignments?planId=<id>`：导入这里生成的私有 JSON，逐片段试听、修改逐词毫秒范围并明确确认。服务端重建实际导出包核对 SHA-256、固定计划及最新已审听片段；其他包或测试清单不能冒充生产来源。异常预测保持原样保存，校正结果另记不可变人工决定。正式录音包组装、登记和新课程/release 发布仍是后续步骤；核对通过不直接修改已发布课程。
 
-来源：[官方 Qwen3-ASR / ForcedAligner](https://github.com/QwenLM/Qwen3-ASR)、[固定模型](https://huggingface.co/Qwen/Qwen3-ForcedAligner-0.6B/tree/c7cbfc2048c462b0d63a45797104fc9db3ad62b7)。模型许可证 Apache-2.0，模型文件不进入 Git。
+来源：[Transformers 原生 Qwen3-ASR / ForcedAligner](https://huggingface.co/docs/transformers/model_doc/qwen3_asr)、[官方转换的固定模型](https://huggingface.co/Qwen/Qwen3-ForcedAligner-0.6B-hf/tree/c07281df297b9905d24a508279258cccf987a064)。模型许可证 Apache-2.0，模型文件不进入 Git。
 
 
 `rust-plan.fixture.json` 是实际 Rust 编译器输出的测试向量，来自公开面包店示例与测试用 Léa 档案，不是生产声音选型或审听决定。用于防止 Python 对 JSONB 字段排序或请求哈希的处理与 Rust 漂移；更改编译器版本时重新生成并核对。CI 只运行标准库校验测试，不下载模型、不生成新音频。
 
-2026-10-07 依赖检查：当前锁定的本机 Python 对齐环境中，OSV 检出 accelerate、setuptools、torch、transformers 共9项唯一 GHSA 告警。该环境不在生产 Web/API 镜像内；固定 safetensors、离线模式和不启用远程代码不能代替修复依赖。qwen-asr 0.0.6 的上游元数据固定旧 Transformers/Accelerate；独立试验环境升级后遇到 check_model_inputs 装饰器 API 不兼容，尚未通过真实对齐验收，因此没有切换正式工具或更新依赖锁。继续修复兼容性后，应复验固定模型、真实录音和导入版本约束；不要把新环境安装成功当作安全修复完成。
+运行版本来自 `runtime.json`，本机工具和服务端新导入共用该清单。迁移改用 Transformers 5.19.0 的原生实现，移除固定旧版本的 qwen-asr 包及其 Web UI 依赖；独立环境使用58项精确版本。安装采用 sync 清除多余包，不能只在旧环境追加安装。模型和 Python 环境仍不进入生产镜像，旧私有报告与声音文件保持不变；新的导入要求当前固定模型/运行版本，已保存的旧报告仍可读取和人工核对。
+
+2026-10-07 依赖检查：旧环境检出9项唯一 GHSA；新的58项依赖 OSV 查询未发现告警。依赖检查不替代真实模型推理和后台导入验收，也不表示未来不会出现新告警。
+
+原生实现已对8段现有法语试听运行完整命令，实际模型权重、配置、分词器等6文件哈希均通过。7段预测通过范围检查，1段保留重叠（前词结束0.72秒、后词开始0.56秒），命令返回2，全部结果仍要求人工核对。修正处理器参数传递后复验结果完全一致且无弃用提示。该输入使用明确的测试清单，不是生产生成或人工审听回执；没有登记或发布正式音频。
