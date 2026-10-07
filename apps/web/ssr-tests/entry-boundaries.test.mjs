@@ -65,6 +65,21 @@ const server = createServer((request, response) => {
     response.statusCode = authenticated ? 200 : fixture ? 404 : 401;
     response.end(JSON.stringify(authenticated ? profile : {}));
   } else if (
+    request.url.startsWith("/api/v1/operator/overview") &&
+    authenticated &&
+    profile.role === "operator"
+  ) {
+    response.end(
+      JSON.stringify({
+        generation: "0",
+        activeRelease: null,
+        lessons: [],
+        releases: [],
+        lessonNext: null,
+        releaseNext: null,
+      }),
+    );
+  } else if (
     request.url.endsWith("/speech-options") &&
     authenticated &&
     profile.role === "operator"
@@ -1264,6 +1279,51 @@ test("speech alignments deny visitors and learners before private reads, and rej
       );
       assert.ok(!requests.some((r) => r.path.includes("/operator/")));
     }
+  } finally {
+    authenticated = false;
+    profile.role = "learner";
+  }
+});
+
+test("admin SSR authorizes search and allowlists both version cursors without writes", async () => {
+  requests.length = 0;
+  authenticated = false;
+  fixture = false;
+  const path =
+    "/admin?tab=releases&q=100%25_%27&lessonAfterId=a1-bakery&lessonAfterRevision=2&releaseAfterId=catalog-old&ignored=private";
+  try {
+    assert.equal((await request(path)).status, 401);
+    authenticated = true;
+    profile.role = "learner";
+    assert.equal((await request(path)).status, 403);
+    assert.equal(
+      requests.filter((r) => r.path.startsWith("/api/v1/operator/overview"))
+        .length,
+      0,
+    );
+    profile.role = "operator";
+    requests.length = 0;
+    const result = await request(path);
+    assert.equal(result.status, 200);
+    assert.match(result.headers.get("Cache-Control"), /private, no-store/);
+    assert.match(await result.text(), /没有匹配的发布目录/);
+    const calls = requests.filter((r) =>
+      r.path.startsWith("/api/v1/operator/overview"),
+    );
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].method, "GET");
+    const query = new URL(calls[0].path, "http://test").searchParams;
+    assert.deepEqual(
+      [...query.keys()].sort(),
+      [
+        "lessonAfterId",
+        "lessonAfterRevision",
+        "releaseAfterId",
+        "releaseQ",
+      ].sort(),
+    );
+    assert.equal(query.get("releaseQ"), "100%_'");
+    assert.equal(query.get("lessonAfterRevision"), "2");
   } finally {
     authenticated = false;
     profile.role = "learner";

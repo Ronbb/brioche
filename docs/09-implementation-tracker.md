@@ -425,3 +425,11 @@ pre-course-speech-clips-20261007数据库+5媒体backup/verify完成。API镜像
 
 
 生产验证（2026-10-07）：备份 `.local/private/backups/pre-package-import-20261007` 数据库与5媒体对象已验证；HTTPS+TTS三Compose构建及实际up--wait完成，迁移25 exit0、四长期服务healthy、两个HTTPS巡检通过。正式录音0/试听0/声音2/已发布课6/generation1/计划0/片段0/对齐0/审核0/课包回执0，未调用真实TTS或更改账号/角色/发布内容。新回执GET匿名401、导入POST匿名403，均no-store/private；Traefik无宿主端口、30075零监听，开发API ready200。隔离测试PG已删除，全部本批执行句柄终态；完整目标继续活动。
+
+
+2026-10-07 管理员课程与目录查询：`/admin` 新增搜索及每页20条游标分页，查询/当前栏目写入URL，刷新、返回和重读保持页面条件。课程按ID升序/同ID版本降序；中法标题、ID、等级与单元采用大小写不敏感的字面搜索，目录按ID升序搜索/分页。API `/api/v1/operator/overview` 接受独立课程复合游标/目录ID游标及各自查询，RepeatableRead保持当前目录generation与两列表同一读取快照；返回lessonNext/releaseNext而非截断200/100条。取21条判断下一页，无全表计数；查询最多200 UTF-8字节、控制字符及非法/半个复合游标拒绝，全部SQL参数绑定。空匹配与尚无内容区分，翻页后移至标题焦点。每个审批继续固定id/revision/reviewVersion，切换/撤回仍使用服务器generation并重查权限与事务发布条件，搜索不发布或修改课程。搜索结果是各次读取快照，新插入的历史版本可能出现在已翻过的页，回到首批重新查即可，不宣称跨请求永久快照。隔离PG真实28课程版本20→8跨ID/版本分页、25目录20→5课数、字面百分号/下划线/撇号、权限、游标与私有字段检查通过；SSR29/TS7/build通过，完整回归和生产结果另记。正式音频及完整目标仍待完成。
+
+
+本批收尾（2026-10-07）：工作区常规测试、Clippy/fmt、4项隔离PG管理员、28Web、29SSR、TS7/build/格式通过；最终两项实际Chromium93秒通过，含20→5课程翻页、搜索空态、分页审批、栏目切换及原课程/目录上传回归，320/390/678/1024px无溢出。语义定位在视口外未找到栏目链接/分页入口，改用实际渲染选择器并显式滚动后复验通过，没有脚本派发点击。首次临时PG错误挂载18版旧data路径导致容器exit1与连接超时；仅删除重建自有测试容器，正确tmpfs根路径后4项实际通过，现已清理。
+
+生产数据库与5媒体备份 `.local/private/backups/pre-admin-pagination-20261007` backup/verify通过；HTTPS+TTS三Compose实际build/up--wait、迁移exit0/四长期healthy/两个HTTPS健康通过。25迁移/正式录音0/试听0/声音2/已发布课程6/generation1/计划0/片段0/对齐0/审核0/课包回执0保持；匿名带搜索overview401且no-store/private。Traefik无宿主端口，30075零监听，原开发API ready200。无收费调用/真实用户修改/新课程发布，完整目标继续活动；首六课实际录音和人工审听、剩余设备与运维门槛待完成。

@@ -1,10 +1,11 @@
-import { Link, data, useRevalidator } from "react-router";
+import { Form, Link, data, useLocation, useRevalidator } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import type { AdminImportResult } from "@brioche/contracts/AdminImportResult";
 import type { AdminOverview } from "@brioche/contracts/AdminOverview";
 import type { AdminLesson } from "@brioche/contracts/AdminLesson";
 import { getIdentity, getPrivate } from "../lib/api.server";
 import { adminWrite } from "../lib/admin.client";
+import { usePageCursorFocus } from "../components/page-cursor-focus";
 import type { Route } from "./+types/admin";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -12,12 +13,24 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!user) throw new Response("请先登录。", { status: 401 });
   if (user.role !== "operator")
     throw new Response("仅管理员可以进入。", { status: 403 });
-  return data(
-    await getPrivate<AdminOverview>(request, "/api/v1/operator/overview"),
-    {
-      headers: { "Cache-Control": "private, no-store", Vary: "Cookie" },
-    },
+  const input = new URL(request.url).searchParams;
+  const tab = input.get("tab") === "releases" ? "releases" : "lessons";
+  const query = new URLSearchParams();
+  for (const key of [
+    "lessonAfterId",
+    "lessonAfterRevision",
+    "releaseAfterId",
+  ]) {
+    const value = input.get(key);
+    if (value !== null) query.set(key, value);
+  }
+  const q = input.get("q") ?? "";
+  if (q) query.set(tab === "lessons" ? "lessonQ" : "releaseQ", q);
+  const result = await getPrivate<AdminOverview>(
+    request,
+    `/api/v1/operator/overview${query.size ? `?${query}` : ""}`,
   );
+  return data({ ...result, tab, q }, { headers: headers() });
 }
 export function headers() {
   return { "Cache-Control": "private, no-store", Vary: "Cookie" };
@@ -25,7 +38,25 @@ export function headers() {
 
 export default function Admin({ loaderData: overview }: Route.ComponentProps) {
   const refresh = useRevalidator();
-  const [tab, setTab] = useState<"lessons" | "releases">("lessons");
+  const tab = overview.tab;
+  const location = useLocation();
+  const heading = usePageCursorFocus(location.search);
+  const next = new URLSearchParams({ tab });
+  const first = new URLSearchParams({ tab });
+  if (overview.q) {
+    next.set("q", overview.q);
+    first.set("q", overview.q);
+  }
+  const cursor = tab === "lessons" ? overview.lessonNext : overview.releaseNext;
+  if (tab === "lessons" && overview.lessonNext) {
+    next.set("lessonAfterId", overview.lessonNext.id);
+    next.set("lessonAfterRevision", String(overview.lessonNext.revision));
+  } else if (tab === "releases" && overview.releaseNext)
+    next.set("releaseAfterId", overview.releaseNext);
+  const paged =
+    tab === "lessons"
+      ? location.search.includes("lessonAfterId=")
+      : location.search.includes("releaseAfterId=");
   const [target, setTarget] = useState<{
     lesson?: AdminLesson;
     release?: string;
@@ -181,7 +212,9 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
       <div className="admin-heading">
         <div>
           <p className="eyebrow">BRIOCHE STUDIO</p>
-          <h1>管理员后台</h1>
+          <h1 ref={heading} tabIndex={-1}>
+            管理员后台
+          </h1>
         </div>
         <Link className="text-button" to="/profile">
           个人页
@@ -216,20 +249,40 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
       <Link className="text-button" to="/admin/voice-auditions">
         角色声音试听
       </Link>
-      <div className="reader-mode" role="group" aria-label="管理内容">
-        <button
-          aria-pressed={tab === "lessons"}
-          onClick={() => setTab("lessons")}
+      <nav className="reader-mode" aria-label="管理内容">
+        <Link
+          to="/admin"
+          className={tab === "lessons" ? "active" : undefined}
+          aria-current={tab === "lessons" ? "page" : undefined}
         >
           课程审批
-        </button>
-        <button
-          aria-pressed={tab === "releases"}
-          onClick={() => setTab("releases")}
+        </Link>
+        <Link
+          to="/admin?tab=releases"
+          className={tab === "releases" ? "active" : undefined}
+          aria-current={tab === "releases" ? "page" : undefined}
         >
           发布目录
+        </Link>
+      </nav>
+      <Form method="get" className="admin-toolbar" key={`${tab}:${overview.q}`}>
+        <input type="hidden" name="tab" value={tab} />
+        <label>
+          {tab === "lessons" ? "搜索课程" : "搜索目录"}
+          <input
+            type="search"
+            name="q"
+            maxLength={200}
+            defaultValue={overview.q}
+            placeholder={
+              tab === "lessons" ? "编号、中法标题、等级或单元" : "目录编号"
+            }
+          />
+        </label>
+        <button className="secondary" type="submit">
+          搜索
         </button>
-      </div>
+      </Form>
       <div className="admin-toolbar">
         <button
           className="admin-tool"
@@ -260,7 +313,11 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
         <div className="admin-list">
           {!overview.lessons.length && (
             <div className="admin-empty">
-              <h2>还没有导入的课程</h2>
+              <h2>
+                {overview.q || paged
+                  ? "没有匹配的课程版本"
+                  : "还没有导入的课程"}
+              </h2>
               <p>课程导入后会出现在这里，批准和发布分别管理。</p>
             </div>
           )}
@@ -333,7 +390,9 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
         <div className="admin-list">
           {!overview.releases.length && (
             <div className="admin-empty">
-              <h2>还没有发布目录</h2>
+              <h2>
+                {overview.q || paged ? "没有匹配的发布目录" : "还没有发布目录"}
+              </h2>
               <p>通过 staging 检查的目录会显示在这里。</p>
             </div>
           )}
@@ -368,6 +427,21 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
           ))}
         </div>
       )}
+      <nav
+        className="admin-toolbar admin-pagination"
+        aria-label={tab === "lessons" ? "课程分页" : "目录分页"}
+      >
+        {(paged || overview.q) && (
+          <Link className="text-button" to={`/admin?${first}`}>
+            回到首批
+          </Link>
+        )}
+        {cursor && (
+          <Link className="text-button" to={`/admin?${next}`}>
+            后续记录
+          </Link>
+        )}
+      </nav>
       <dialog
         ref={dialog}
         className="choice-dialog admin-dialog"

@@ -10,8 +10,8 @@ use axum::{
     routing::{get, post},
 };
 use brioche_course_contract::{
-    AdminActivateRequest, AdminDocumentRequest, AdminImportResult, AdminLesson, AdminOverview,
-    AdminRelease, AdminReviewRequest, AdminWithdrawRequest,
+    AdminActivateRequest, AdminDocumentRequest, AdminImportResult, AdminLesson, AdminLessonCursor,
+    AdminOverview, AdminRelease, AdminReviewRequest, AdminWithdrawRequest,
 };
 use sea_orm::{ConnectionTrait, DbBackend, IsolationLevel, Statement, TransactionTrait};
 use serde_json::Value;
@@ -639,11 +639,44 @@ pub(crate) async fn approved<C: ConnectionTrait>(
         )),
     }
 }
+#[derive(serde::Deserialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct OverviewQuery {
+    lesson_after_id: Option<String>,
+    lesson_after_revision: Option<u32>,
+    release_after_id: Option<String>,
+    lesson_q: Option<String>,
+    release_q: Option<String>,
+}
+impl OverviewQuery {
+    fn validate(&self) -> Result<(), AppError> {
+        match (&self.lesson_after_id, self.lesson_after_revision) {
+            (None, None) => {}
+            (Some(id), Some(rev)) => revision(id, rev)?,
+            _ => return Err(AppError::InvalidInput),
+        }
+        if self
+            .release_after_id
+            .as_ref()
+            .is_some_and(|id| !brioche_course_contract::valid_content_id(id))
+        {
+            return Err(AppError::InvalidInput);
+        }
+        for q in [&self.lesson_q, &self.release_q].into_iter().flatten() {
+            if q.len() > 200 || q.chars().any(char::is_control) {
+                return Err(AppError::InvalidInput);
+            }
+        }
+        Ok(())
+    }
+}
 async fn overview(
     auth: AuthSession,
     State(backend): State<Backend>,
+    Query(query): Query<OverviewQuery>,
 ) -> Result<Json<AdminOverview>, AppError> {
     require_operator(&auth)?;
+    query.validate()?;
     let tx = backend
         .db
         .begin_with_config(Some(IsolationLevel::RepeatableRead), None)
@@ -656,10 +689,12 @@ async fn overview(
     )
     .await?
     .ok_or(AppError::Unavailable)?;
-    let rows=tx.query_all_raw(Statement::from_string(DbBackend::Postgres,
-        "SELECT r.lesson_id,r.revision,r.public_document,r.published,r.server_document->'editorial' AS editorial,v.version,v.approved,v.reason,EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(r.lesson_id,r.revision)) AS withdrawn FROM lesson_revisions r LEFT JOIN LATERAL (SELECT version,approved,reason FROM editorial_reviews WHERE (lesson_id,revision)=(r.lesson_id,r.revision) ORDER BY version DESC LIMIT 1) v ON true ORDER BY r.lesson_id,r.revision DESC LIMIT 200")).await.map_err(|_|AppError::Unavailable)?;
+    let rows=tx.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,
+        "SELECT r.lesson_id,r.revision,r.public_document,r.published,r.server_document->'editorial' AS editorial,v.version,v.approved,v.reason,EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(r.lesson_id,r.revision)) AS withdrawn FROM lesson_revisions r LEFT JOIN LATERAL (SELECT version,approved,reason FROM editorial_reviews WHERE (lesson_id,revision)=(r.lesson_id,r.revision) ORDER BY version DESC LIMIT 1) v ON true WHERE (r.lesson_id>$1 OR (r.lesson_id=$1 AND r.revision<$2)) AND ($3='' OR strpos(lower(r.lesson_id),lower($3))>0 OR strpos(lower(r.public_document->'title'->>'zh'),lower($3))>0 OR strpos(lower(r.public_document->'title'->>'fr'),lower($3))>0 OR strpos(lower(r.public_document->>'levelId'),lower($3))>0 OR strpos(lower(r.public_document->>'unitId'),lower($3))>0) ORDER BY r.lesson_id,r.revision DESC LIMIT 21",
+        vec![query.lesson_after_id.unwrap_or_default().into(),(query.lesson_after_revision.unwrap_or(0) as i32).into(),query.lesson_q.unwrap_or_default().trim().to_owned().into()])).await.map_err(|_|AppError::Unavailable)?;
+    let lesson_more = rows.len() > 20;
     let mut lessons = Vec::new();
-    for row in rows {
+    for row in rows.into_iter().take(20) {
         let public: Value = field(&row, "public_document")?;
         let editorial: Value = field(&row, "editorial")?;
         lessons.push(AdminLesson {
@@ -686,9 +721,19 @@ async fn overview(
                 .unwrap_or_else(|| editorial["note"].as_str().unwrap_or("").into()),
         });
     }
-    let rows=tx.query_all_raw(Statement::from_string(DbBackend::Postgres,"SELECT r.id,count(e.lesson_id) AS lesson_count FROM content_releases r LEFT JOIN release_entries e ON e.release_id=r.id GROUP BY r.id,r.created_at ORDER BY r.created_at DESC,r.id LIMIT 100")).await.map_err(|_|AppError::Unavailable)?;
+    let lesson_next = if lesson_more {
+        lessons.last().map(|lesson| AdminLessonCursor {
+            id: lesson.id.clone(),
+            revision: lesson.revision,
+        })
+    } else {
+        None
+    };
+    let rows=tx.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT r.id,count(e.lesson_id) AS lesson_count FROM content_releases r LEFT JOIN release_entries e ON e.release_id=r.id WHERE r.id>$1 AND ($2='' OR strpos(lower(r.id),lower($2))>0) GROUP BY r.id ORDER BY r.id LIMIT 21", vec![query.release_after_id.unwrap_or_default().into(),query.release_q.unwrap_or_default().trim().to_owned().into()])).await.map_err(|_|AppError::Unavailable)?;
+    let release_more = rows.len() > 20;
     let releases = rows
         .iter()
+        .take(20)
         .map(|row| {
             Ok(AdminRelease {
                 id: field(row, "id")?,
@@ -697,11 +742,18 @@ async fn overview(
             })
         })
         .collect::<Result<Vec<_>, AppError>>()?;
+    let release_next = if release_more {
+        releases.last().map(|r| r.id.clone())
+    } else {
+        None
+    };
     let result = AdminOverview {
         generation: field::<i64>(&state, "generation")?.to_string(),
         active_release: field(&state, "active_release")?,
         lessons,
         releases,
+        lesson_next,
+        release_next,
     };
     tx.commit().await.map_err(|_| AppError::Unavailable)?;
     Ok(Json(result))

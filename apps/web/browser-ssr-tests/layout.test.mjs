@@ -97,6 +97,8 @@ const characterAvatar = await readFile(
   new URL("../public/assets/avatars/camille.svg", import.meta.url),
 );
 let adminApproved = false;
+let adminPaged = false;
+let overviewReads = [];
 let adminWrites = [];
 let voiceAuditions = [],
   auditionSynthCalls = 0,
@@ -864,11 +866,48 @@ const api = createServer((request, response) => {
     });
     return;
   }
-  if (request.url === "/api/v1/operator/overview") {
+  if (request.url.startsWith("/api/v1/operator/overview")) {
+    const query = new URL(request.url, "http://test").searchParams;
+    overviewReads.push(request.url);
+    if (adminPaged) {
+      const id = "pagination-course";
+      const q = query.get("lessonQ") ?? "";
+      const page = query.has("lessonAfterId");
+      const match = !q || q === "Pagination";
+      response.end(
+        JSON.stringify({
+          generation: "0",
+          activeRelease: null,
+          lessons: match
+            ? Array.from({ length: page ? 5 : 20 }, (_, n) => ({
+                id,
+                revision: (page ? 5 : 25) - n,
+                title: "Pagination synthetic course",
+                level: "a1",
+                unit: lesson.unitId,
+                published: false,
+                withdrawn: false,
+                approved: false,
+                reviewVersion: 0,
+                reviewNote: "隔离分页测试",
+              }))
+            : [],
+          releases:
+            query.get("releaseQ") === "no-match"
+              ? []
+              : [{ id: "pagination-release", lessonCount: 25 }],
+          lessonNext: match && !page ? { id, revision: 6 } : null,
+          releaseNext: null,
+        }),
+      );
+      return;
+    }
     response.end(
       JSON.stringify({
         generation: "0",
         activeRelease: null,
+        lessonNext: null,
+        releaseNext: null,
         releases: [],
         lessons: [
           {
@@ -2135,6 +2174,122 @@ test("operator versions a character voice profile through the real mobile page",
   }
 });
 
+test("operator searches and paginates fixed course versions using the real admin page", async () => {
+  accounts = true;
+  operatorAccount = true;
+  adminPaged = true;
+  overviewReads = [];
+  adminWrites = [];
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("set", "viewport", "390", "844");
+    await browser("open", origin + "/admin");
+    await browser("wait", ".admin-card");
+    assert.equal(
+      await evaluate("document.querySelectorAll('.admin-card').length"),
+      20,
+    );
+    await browser("fill", "input[name=q]", "Pagination");
+    await browser("focus", "input[name=q]");
+    await browser("press", "Enter");
+    await browser("wait", "--fn", "location.search.includes('q=Pagination')");
+    await browser(
+      "wait",
+      "--fn",
+      "document.activeElement===document.querySelector('h1')",
+    );
+    const pageState = await evaluate(
+      "({links:[...document.querySelectorAll('.admin-pagination a')].map(a=>({text:a.textContent,href:a.getAttribute('href')})),cards:document.querySelectorAll('.admin-card').length,search:location.search})",
+    );
+    assert.ok(
+      pageState.links.some((a) => a.text === "后续记录"),
+      JSON.stringify({ pageState, overviewReads }),
+    );
+    await browser("scrollintoview", ".admin-pagination a:last-child");
+    await browser("click", ".admin-pagination a:last-child");
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelectorAll('.admin-card').length===5",
+    );
+    assert.equal(
+      await evaluate("document.querySelector('h1')===document.activeElement"),
+      true,
+    );
+    assert.match(await evaluate("location.search"), /lessonAfterRevision=6/);
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.admin-card .profile-level').textContent.includes('v5')",
+      ),
+      true,
+    );
+    await browser("scrollintoview", ".admin-card:first-child button");
+    await browser("click", ".admin-card:first-child button");
+    await browser("wait", ".admin-dialog[open]");
+    await browser("fill", "#admin-reason", "分页后的固定版本审批");
+    await browser("focus", ".admin-dialog .primary");
+    await browser("press", "Enter");
+    await browser(
+      "wait",
+      "--fn",
+      "!document.querySelector('.admin-dialog[open]')",
+    );
+    assert.deepEqual(adminWrites, [
+      { version: 0, approved: true, reason: "分页后的固定版本审批" },
+    ]);
+    assert.equal(
+      await evaluate("document.querySelectorAll('.admin-card').length"),
+      5,
+    );
+    await browser("scrollintoview", ".admin-pagination a");
+    await browser("click", ".admin-pagination a");
+    await browser(
+      "wait",
+      "--fn",
+      "document.querySelectorAll('.admin-card').length===20",
+    );
+    await browser("fill", "input[name=q]", "no-match");
+    await browser("focus", "input[name=q]");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "没有匹配的课程版本");
+    await browser(
+      "scrollintoview",
+      ".reader-mode a[href='/admin?tab=releases']",
+    );
+    await browser("click", ".reader-mode a[href='/admin?tab=releases']");
+    await browser("wait", "--text", "pagination-release");
+    assert.equal(
+      await evaluate("document.querySelector('input[name=q]').value"),
+      "",
+    );
+    await browser("fill", "input[name=q]", "no-match");
+    await browser("focus", "input[name=q]");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "没有匹配的发布目录");
+    assert.ok(
+      overviewReads.some(
+        (url) =>
+          url.includes("lessonQ=Pagination") &&
+          url.includes("lessonAfterRevision=6"),
+      ),
+    );
+    assert.ok(overviewReads.some((url) => url.includes("releaseQ=no-match")));
+    for (const width of [320, 390, 678, 1024]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+        true,
+      );
+    }
+    assert.deepEqual(serverErrors, []);
+  } finally {
+    adminPaged = false;
+    accounts = false;
+    operatorAccount = false;
+  }
+});
+
 test("operator enters admin from profile and approves using the centered dialog", async () => {
   accounts = true;
   operatorAccount = true;
@@ -2152,6 +2307,7 @@ test("operator enters admin from profile and approves using the centered dialog"
     assert.equal(gap, 32);
     await browser("click", ".setting-link[href='/admin']");
     await browser("wait", ".admin-card");
+    await browser("scrollintoview", ".admin-card button");
     await browser(
       "find",
       "role",
@@ -2191,14 +2347,10 @@ test("operator enters admin from profile and approves using the centered dialog"
       false,
     );
     await browser(
-      "find",
-      "role",
-      "button",
-      "click",
-      "--name",
-      "发布目录",
-      "--exact",
+      "scrollintoview",
+      ".reader-mode a[href='/admin?tab=releases']",
     );
+    await browser("click", ".reader-mode a[href='/admin?tab=releases']");
     await browser("wait", "--text", "还没有发布目录");
     await browser(
       "find",
@@ -2221,15 +2373,8 @@ test("operator enters admin from profile and approves using the centered dialog"
     await browser("press", "Enter");
     await browser("wait", "--text", "发布目录已通过检查，可以预览或切换。");
     assert.equal(adminWrites[1].operation, "/api/v1/operator/releases/stage");
-    await browser(
-      "find",
-      "role",
-      "button",
-      "click",
-      "--name",
-      "课程审批",
-      "--exact",
-    );
+    await browser("scrollintoview", ".reader-mode a[href='/admin']");
+    await browser("click", ".reader-mode a[href='/admin']");
     await browser(
       "find",
       "role",

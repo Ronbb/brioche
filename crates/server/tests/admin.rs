@@ -2643,6 +2643,145 @@ async fn approvals_permissions_concurrency_and_publication() {
     assert!(!history_text.contains("serverOnly"));
     assert!(!history_text.contains("password"));
     assert!(!history_text.contains("csrfToken"));
+    // Fixed-version keyset pagination crosses both revision and ID boundaries.
+    for (id, revisions) in [
+        (lesson.id.as_str(), (101..=125).collect::<Vec<_>>()),
+        ("zz-pagination", vec![1, 2, 3]),
+    ] {
+        for rev in revisions {
+            let mut document = source.clone();
+            document["id"] = json!(id);
+            document["revision"] = json!(rev);
+            document["title"]["zh"] = json!(if rev == 101 {
+                "Pagination 100%_'"
+            } else {
+                "Pagination synthetic course"
+            });
+            let public = brioche_server::project_source(document.clone()).unwrap();
+            db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,
+                "INSERT INTO lesson_revisions(lesson_id,revision,published,public_document,server_document) VALUES($1,$2,false,$3,$4)",
+                vec![id.into(),rev.into(),serde_json::to_value(public).unwrap().into(),document.into()])).await.unwrap();
+        }
+    }
+    for n in 1..=25 {
+        let id = format!("pagination-{n:03}");
+        let mut document = serde_json::to_value(&manifest).unwrap();
+        document["id"] = json!(id);
+        db.execute_raw(Statement::from_sql_and_values(
+            DbBackend::Postgres,
+            "INSERT INTO content_releases(id,manifest,content_hash) VALUES($1,$2,$3)",
+            vec![id.clone().into(), document.into(), "a".repeat(64).into()],
+        ))
+        .await
+        .unwrap();
+        db.execute_raw(Statement::from_sql_and_values(
+            DbBackend::Postgres,
+            "INSERT INTO release_entries(release_id,lesson_id,revision,position) VALUES($1,$2,1,0)",
+            vec![id.into(), lesson.id.clone().into()],
+        ))
+        .await
+        .unwrap();
+    }
+    for query in [
+        "lessonAfterId=a",
+        "lessonAfterRevision=1",
+        "lessonAfterId=../bad&lessonAfterRevision=1",
+        "lessonAfterId=a&lessonAfterRevision=0",
+        "releaseAfterId=../bad",
+        "lessonQ=%0A",
+        "unknown=true",
+    ] {
+        assert_eq!(
+            operator
+                .send(
+                    "GET",
+                    &format!("/api/v1/operator/overview?{query}"),
+                    None,
+                    true
+                )
+                .await
+                .0,
+            400
+        );
+    }
+    assert_eq!(
+        operator
+            .send(
+                "GET",
+                &format!("/api/v1/operator/overview?lessonQ={}", "x".repeat(201)),
+                None,
+                true
+            )
+            .await
+            .0,
+        400
+    );
+    let first = operator
+        .send(
+            "GET",
+            "/api/v1/operator/overview?lessonQ=pagination&releaseQ=PAGINATION",
+            None,
+            true,
+        )
+        .await;
+    assert_eq!(first.0, 200);
+    assert_eq!(first.1["lessons"].as_array().unwrap().len(), 20);
+    assert_eq!(first.1["releases"].as_array().unwrap().len(), 20);
+    assert_eq!(first.1["lessonNext"]["revision"], 106);
+    assert_eq!(first.1["releaseNext"], "pagination-020");
+    let second = operator.send("GET", &format!("/api/v1/operator/overview?lessonQ=pagination&releaseQ=PAGINATION&lessonAfterId={}&lessonAfterRevision=106&releaseAfterId=pagination-020",lesson.id),None,true).await;
+    assert_eq!(second.0, 200);
+    assert_eq!(second.1["lessons"].as_array().unwrap().len(), 8);
+    assert_eq!(second.1["releases"].as_array().unwrap().len(), 5);
+    assert!(second.1["lessonNext"].is_null() && second.1["releaseNext"].is_null());
+    let mut seen = std::collections::BTreeSet::new();
+    for item in first.1["lessons"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .chain(second.1["lessons"].as_array().unwrap())
+    {
+        assert!(seen.insert((
+            item["id"].as_str().unwrap(),
+            item["revision"].as_u64().unwrap()
+        )));
+        assert!(!item["published"].as_bool().unwrap());
+    }
+    assert_eq!(seen.len(), 28);
+    assert!(
+        first.1["releases"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|r| r["lessonCount"] == 1)
+    );
+    let literal = operator
+        .send(
+            "GET",
+            "/api/v1/operator/overview?lessonQ=100%25_%27",
+            None,
+            true,
+        )
+        .await;
+    assert_eq!(literal.0, 200);
+    assert_eq!(literal.1["lessons"].as_array().unwrap().len(), 1);
+    assert_eq!(literal.1["lessons"][0]["revision"], 101);
+    let no_match = operator
+        .send(
+            "GET",
+            "/api/v1/operator/overview?lessonQ=no-match&releaseQ=no-match",
+            None,
+            true,
+        )
+        .await;
+    assert!(
+        no_match.1["lessons"].as_array().unwrap().is_empty()
+            && no_match.1["releases"].as_array().unwrap().is_empty()
+    );
+    assert_eq!(no_match.1["generation"], "2");
+    for key in ["serverOnly", "correctOptionId", "accepted", "password"] {
+        assert!(!second.1.to_string().contains(key));
+    }
     // Tie timestamps exercise the secondary key and boundaries across tables.
     db.execute_unprepared("INSERT INTO content_audit(action,actor,reason,generation,created_at) SELECT 'stage','pagination-test','pagination-'||n,2,'2026-10-08T00:00:00Z'::timestamptz FROM generate_series(1,25) n").await.unwrap();
     let first = operator

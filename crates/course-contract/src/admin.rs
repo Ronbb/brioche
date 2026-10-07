@@ -9,6 +9,14 @@ pub struct AdminOverview {
     pub active_release: Option<String>,
     pub lessons: Vec<AdminLesson>,
     pub releases: Vec<AdminRelease>,
+    pub lesson_next: Option<AdminLessonCursor>,
+    pub release_next: Option<String>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminLessonCursor {
+    pub id: String,
+    pub revision: u32,
 }
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
