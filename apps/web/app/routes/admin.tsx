@@ -1,5 +1,6 @@
+import { useCommittedDialog } from "../components/committed-dialog";
 import { Form, Link, data, useLocation, useRevalidator } from "react-router";
-import { useEffect, useRef, useState } from "react";
+import { useId, useEffect, useRef, useState } from "react";
 import type { AdminImportResult } from "@brioche/contracts/AdminImportResult";
 import type { AdminOverview } from "@brioche/contracts/AdminOverview";
 import type { AdminLesson } from "@brioche/contracts/AdminLesson";
@@ -37,6 +38,7 @@ export function headers() {
 }
 
 export default function Admin({ loaderData: overview }: Route.ComponentProps) {
+  const dialogTitleId = useId();
   const refresh = useRevalidator();
   const tab = overview.tab;
   const location = useLocation();
@@ -82,6 +84,7 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
   );
   const busy = useRef(false);
   const dialog = useRef<HTMLDialogElement>(null);
+  const openDialog = useCommittedDialog(dialog);
   function open(next: NonNullable<typeof target>) {
     setTarget(next);
     setReason("");
@@ -91,7 +94,7 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
     setReadingFile(false);
     fileSequence.current += 1;
     setFileSession((session) => session + 1);
-    dialog.current?.showModal();
+    openDialog();
   }
   async function readFile(file?: File) {
     const sequence = ++fileSequence.current;
@@ -485,6 +488,7 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
         )}
       </nav>
       <dialog
+        aria-labelledby={dialogTitleId}
         ref={dialog}
         className="choice-dialog admin-dialog"
         onClose={() => {
@@ -497,7 +501,7 @@ export default function Admin({ loaderData: overview }: Route.ComponentProps) {
           if (busy.current) event.preventDefault();
         }}
       >
-        <h2>{target && labels[target.operation]}</h2>
+        <h2 id={dialogTitleId}>{target && labels[target.operation]}</h2>
         <p>{target?.lesson?.title ?? target?.release}</p>
         {target?.operation === "import" && (
           <p>

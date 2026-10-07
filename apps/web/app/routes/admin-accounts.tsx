@@ -1,5 +1,6 @@
+import { useCommittedDialog } from "../components/committed-dialog";
 import { Form, Link, data, useLocation, useRevalidator } from "react-router";
-import { useEffect, useRef, useState } from "react";
+import { useId, useEffect, useRef, useState } from "react";
 import type { AdminAccounts } from "@brioche/contracts/AdminAccounts";
 import type { AdminTokenResult } from "@brioche/contracts/AdminTokenResult";
 import type { AdminAccount } from "@brioche/contracts/AdminAccount";
@@ -33,11 +34,13 @@ export function headers() {
 export default function Accounts({
   loaderData: accounts,
 }: Route.ComponentProps) {
+  const dialogTitleId = useId();
   const location = useLocation();
   const revalidator = useRevalidator();
   const query = new URLSearchParams(location.search);
   const heading = usePageCursorFocus(location.search);
   const dialog = useRef<HTMLDialogElement>(null);
+  const openDialog = useCommittedDialog(dialog);
   const busy = useRef(false);
   const write = useRef<AbortController | null>(null);
   useEffect(() => () => write.current?.abort(), []);
@@ -59,7 +62,7 @@ export default function Accounts({
     setError("");
     setLink("");
     setExpires(0);
-    dialog.current?.showModal();
+    openDialog();
   }
   async function submit() {
     if (busy.current || link || !email.trim() || !reason.trim()) return;
@@ -172,7 +175,7 @@ export default function Accounts({
                 setError("");
                 setLink("");
                 setNotice("");
-                dialog.current?.showModal();
+                openDialog();
               }}
             >
               {account.role === "operator" ? "改为学习者" : "设为管理员"}
@@ -200,6 +203,7 @@ export default function Accounts({
         </Link>
       )}
       <dialog
+        aria-labelledby={dialogTitleId}
         ref={dialog}
         className="choice-dialog admin-dialog"
         onCancel={(event) => {
@@ -213,7 +217,7 @@ export default function Accounts({
           setTarget(null);
         }}
       >
-        <h2>
+        <h2 id={dialogTitleId}>
           {kind === "role"
             ? "修改账号权限"
             : kind === "invite"

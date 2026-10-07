@@ -1,3 +1,4 @@
+import { useCommittedDialog } from "../components/committed-dialog";
 import {
   Link,
   data,
@@ -5,7 +6,7 @@ import {
   useRevalidator,
   useNavigate,
 } from "react-router";
-import { useEffect, useRef, useState } from "react";
+import { useId, useEffect, useRef, useState } from "react";
 import type { AdminCharacterVoice } from "@brioche/contracts/AdminCharacterVoice";
 import type { AdminReferenceGrant } from "@brioche/contracts/AdminReferenceGrant";
 import type { AdminReferenceGrants } from "@brioche/contracts/AdminReferenceGrants";
@@ -55,6 +56,7 @@ export function headers() {
   return { "Cache-Control": "private, no-store", Vary: "Cookie" };
 }
 export default function ReferenceGrants({ loaderData }: Route.ComponentProps) {
+  const dialogTitleId = useId();
   const navigate = useNavigate();
   const [costConfirmed, setCostConfirmed] = useState(false);
   const location = useLocation(),
@@ -72,6 +74,7 @@ export default function ReferenceGrants({ loaderData }: Route.ComponentProps) {
   const busy = useRef(false),
     write = useRef<AbortController | null>(null),
     dialog = useRef<HTMLDialogElement>(null);
+  const openDialog = useCommittedDialog(dialog);
   useEffect(() => () => write.current?.abort(), []);
   const selected = loaderData.selected;
   const selectionKey = selected
@@ -333,7 +336,7 @@ export default function ReferenceGrants({ loaderData }: Route.ComponentProps) {
                   setTarget(item);
                   setRevokeReason("");
                   setError("");
-                  dialog.current?.showModal();
+                  openDialog();
                 }}
               >
                 撤销交付凭据
@@ -351,6 +354,7 @@ export default function ReferenceGrants({ loaderData }: Route.ComponentProps) {
         </Link>
       )}
       <dialog
+        aria-labelledby={dialogTitleId}
         ref={dialog}
         className="admin-dialog"
         onCancel={(e) => {
@@ -361,7 +365,7 @@ export default function ReferenceGrants({ loaderData }: Route.ComponentProps) {
           setError("");
         }}
       >
-        <h2>撤销参考录音交付</h2>
+        <h2 id={dialogTitleId}>撤销参考录音交付</h2>
         <p>{target?.assetId}</p>
         <p>已经读取的音频无法收回；后续请求将被拒绝。</p>
         <form onSubmit={revoke}>

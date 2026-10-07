@@ -1,5 +1,6 @@
+import { useCommittedDialog } from "../components/committed-dialog";
 import { Link, data, useLocation, useRevalidator } from "react-router";
-import { useEffect, useRef, useState } from "react";
+import { useId, useEffect, useRef, useState } from "react";
 import type { AdminSessions } from "@brioche/contracts/AdminSessions";
 import type { AdminSession } from "@brioche/contracts/AdminSession";
 import type { AdminRevokeSessionResult } from "@brioche/contracts/AdminRevokeSessionResult";
@@ -36,11 +37,13 @@ export function headers() {
 export default function Sessions({
   loaderData: sessions,
 }: Route.ComponentProps) {
+  const dialogTitleId = useId();
   const location = useLocation();
   const revalidator = useRevalidator();
   const heading = usePageCursorFocus(location.search);
   const learning = useLearning();
   const dialog = useRef<HTMLDialogElement>(null);
+  const openDialog = useCommittedDialog(dialog);
   const write = useRef<AbortController | null>(null);
   const busy = useRef(false);
   useEffect(() => () => write.current?.abort(), []);
@@ -54,7 +57,7 @@ export default function Sessions({
     setReason("");
     setError("");
     setNotice("");
-    dialog.current?.showModal();
+    openDialog();
   }
   async function submit() {
     if (busy.current || !target || !reason.trim()) return;
@@ -145,6 +148,7 @@ export default function Sessions({
         </Link>
       )}
       <dialog
+        aria-labelledby={dialogTitleId}
         ref={dialog}
         className="choice-dialog admin-dialog"
         onCancel={(event) => {
@@ -156,7 +160,7 @@ export default function Sessions({
           setError("");
         }}
       >
-        <h2>撤销登录会话</h2>
+        <h2 id={dialogTitleId}>撤销登录会话</h2>
         <p>
           {target?.current
             ? "这是当前浏览器的会话，撤销后你会退出登录。"

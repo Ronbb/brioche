@@ -1433,6 +1433,7 @@ test("operator uploads an actual MP3 with rights and a fixed revision", async ()
     assert.ok(ref, JSON.stringify(snapshot));
     await browser("click", "@" + ref);
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal();
     for (const width of [320, 390]) {
       await browser("set", "viewport", String(width), "844");
       assert.equal(
@@ -1518,6 +1519,7 @@ test("operator uploads an actual SVG and supplies provenance in the mobile dialo
     assert.ok(ref, JSON.stringify(snapshot));
     await browser("click", "@" + ref);
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal();
     for (const width of [320, 390]) {
       await browser("set", "viewport", String(width), "844");
       assert.equal(
@@ -1583,6 +1585,7 @@ test("operator revokes a pending invitation using the mobile admin page", async 
     await browser("wait", ".admin-card");
     await browser("click", ".admin-card button");
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal();
     await browser("fill", "#token-reason", "隔离邀请撤销测试");
     await browser("press", "Tab");
     await browser("press", "Enter");
@@ -1653,6 +1656,7 @@ test("operator authorizes and revokes ephemeral reference delivery on the mobile
     await browser("scrollintoview", ".admin-list button");
     await browser("click", ".admin-list button");
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal();
     await browser("fill", "input[name=revokeReason]", "隔离撤销测试");
     await browser("press", "Tab");
     await browser("press", "Enter");
@@ -1730,6 +1734,7 @@ test("operator creates and reconciles a voice enrollment without exposing the re
     await browser("scrollintoview", ".admin-list button");
     await browser("click", ".admin-list button");
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal();
     await browser("fill", "input[name=voiceCheckReason]", "isolated query");
     await browser("press", "Tab");
     await browser("press", "Enter");
@@ -1742,6 +1747,7 @@ test("operator creates and reconciles a voice enrollment without exposing the re
     await browser("scrollintoview", ".admin-list button");
     await browser("click", ".admin-list button");
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal();
     await browser(
       "fill",
       "input[name=recoveryVoice]",
@@ -2166,6 +2172,7 @@ test("operator versions a character voice profile through the real mobile page",
     assert.ok(voiceRef);
     await browser("click", "@" + voiceRef);
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal();
     await browser("check", ".admin-dialog[open] label input[type=checkbox]");
     await browser("wait", ".reference-recording-option");
     for (const width of [320, 390]) {
@@ -2337,6 +2344,7 @@ test("operator confirms final lesson listening with explicit declaration and exa
     await browser("scrollintoview", ".brand");
     await browser("click", ".brand");
     await browser("wait", ".lesson-audio-review dialog[open]");
+    await assertNamedModal("审核结果尚未确认");
     await browser("press", "Escape");
     await browser(
       "wait",
@@ -2428,6 +2436,7 @@ test("operator distinguishes content approval from final listening without losin
         await browser("scrollintoview", ".admin-card button");
         await browser("click", ".admin-card button");
         await browser("wait", ".admin-dialog[open]");
+        await assertNamedModal();
         await browser(
           "fill",
           "#admin-reason",
@@ -2542,6 +2551,7 @@ test("operator searches and paginates fixed course versions using the real admin
     await browser("scrollintoview", ".admin-card:first-child button");
     await browser("click", ".admin-card:first-child button");
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal();
     await browser("fill", "#admin-reason", "分页后的固定版本审批");
     await browser("focus", ".admin-dialog .primary");
     await browser("press", "Enter");
@@ -2633,6 +2643,15 @@ test("operator enters admin from profile and approves using the centered dialog"
       "--exact",
     );
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal("批准课程");
+    await browser("press", "Escape");
+    assert.equal(
+      await evaluate("document.activeElement.textContent.trim()"),
+      "批准课程",
+    );
+    await browser("press", "Enter");
+    await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal("批准课程");
     const geometry = await evaluate(
       `(() => { const r=document.querySelector('.admin-dialog').getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:innerWidth,height:innerHeight}; })()`,
     );
@@ -2677,6 +2696,7 @@ test("operator enters admin from profile and approves using the centered dialog"
       "--exact",
     );
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal();
     await browser("upload", "#admin-document", releaseUpload);
     await browser("fill", "#admin-reason", "界面目录导入测试");
     await browser(
@@ -2700,6 +2720,7 @@ test("operator enters admin from profile and approves using the centered dialog"
       "--exact",
     );
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal();
     await browser("upload", "#admin-document", lessonUpload);
     await browser("fill", "#admin-reason", "界面课程导入测试");
     await browser(
@@ -2722,6 +2743,7 @@ test("operator enters admin from profile and approves using the centered dialog"
       "--exact",
     );
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal();
     assert.equal(
       await evaluate("document.querySelector('#admin-document').files.length"),
       0,
@@ -2807,6 +2829,7 @@ test("operator enters admin from profile and approves using the centered dialog"
       "--exact",
     );
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal();
     await browser("fill", "#account-email", "invited@example.test");
     await browser("fill", "#account-reason", "隔离邀请界面测试");
     await browser("focus", ".admin-dialog .primary");
@@ -2851,6 +2874,7 @@ test("operator enters admin from profile and approves using the centered dialog"
       "--exact",
     );
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal();
     assert.equal(
       await evaluate("document.querySelector('#account-link')===null"),
       true,
@@ -2870,6 +2894,7 @@ test("operator enters admin from profile and approves using the centered dialog"
       "--exact",
     );
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal();
     await browser("fill", "#account-reason", "隔离权限界面测试");
     await browser(
       "find",
@@ -2916,6 +2941,7 @@ test("operator enters admin from profile and approves using the centered dialog"
       "--exact",
     );
     await browser("wait", ".admin-dialog[open]");
+    await assertNamedModal();
     await browser("fill", "#session-reason", "隔离会话撤销测试");
     await browser(
       "find",
@@ -2966,6 +2992,33 @@ async function browser(...args) {
   return result.data;
 }
 const evaluate = async (code) => (await browser("eval", code)).result;
+async function assertNamedModal(expected) {
+  const modal = await evaluate(`(() => {
+    const d=[...document.querySelectorAll('dialog:modal')].at(-1);
+    if(!d)return null;
+    const ids=(d.getAttribute('aria-labelledby')??'').split(/\\s+/).filter(Boolean);
+    const labels=ids.map(id=>document.getElementById(id));
+    return {name:labels.map(el=>el?.textContent.trim()??'').join(' ').trim(),
+      title:d.querySelector('h2')?.textContent.trim(),
+      labelsValid:labels.length>0&&labels.every(el=>el&&d.contains(el)),
+      focused:d.contains(document.activeElement)};
+  })()`);
+  assert.ok(modal, "expected an open native modal");
+  assert.equal(
+    modal.labelsValid,
+    true,
+    "modal must reference its own visible title",
+  );
+  assert.equal(modal.name, expected ?? modal.title);
+  assert.ok(modal.name.length > 0);
+  assert.equal(modal.focused, true, "modal contains keyboard focus");
+  const snapshot = await browser("snapshot");
+  assert.ok(
+    typeof snapshot.snapshot === "string" &&
+      snapshot.snapshot.includes(`dialog "${modal.name}"`),
+    "native accessibility tree exposes the dialog title",
+  );
+}
 before(async () => {
   await writeFile(lessonUpload, JSON.stringify(source));
   await writeFile(
@@ -3509,6 +3562,7 @@ test("course clip batch stops on lost receipt and retries only the same immutabl
     await act("button", "生成未完成片段（2）", "focus");
     await browser("press", "Enter");
     await browser("wait", "--text", "确认生成");
+    await assertNamedModal("确认生成");
     await act("textbox", "操作理由", "fill", "Controlled generation");
     await act("checkbox", "我确认本次合成可能收费", "check");
     await act("button", "确认");

@@ -1,5 +1,6 @@
+import { useCommittedDialog } from "../components/committed-dialog";
 import { data, Link, useRevalidator } from "react-router";
-import { useEffect, useRef, useState } from "react";
+import { useId, useEffect, useRef, useState } from "react";
 import type { AdminSpeechPlan } from "@brioche/contracts/AdminSpeechPlan";
 import type { AdminSpeechClip } from "@brioche/contracts/AdminSpeechClip";
 import type { AdminSpeechClips } from "@brioche/contracts/AdminSpeechClips";
@@ -65,10 +66,12 @@ function delay(signal: AbortSignal) {
 export default function SpeechClips({
   loaderData: { plan, clips },
 }: Route.ComponentProps) {
+  const dialogTitleId = useId();
   const refresh = useRevalidator(),
     { toast, stop } = useLearning();
   const dialog = useRef<HTMLDialogElement>(null),
     player = useRef<RecordingPlayer | null>(null);
+  const openDialog = useCommittedDialog(dialog);
   const controller = useRef<AbortController | null>(null),
     busy = useRef(false);
   const attempt = useRef<AdminSpeechClipRequest | null>(null),
@@ -149,7 +152,7 @@ export default function SpeechClips({
     setAccepted(true);
     setError("");
     setFrozen(false);
-    dialog.current?.showModal();
+    openDialog();
   }
   function close() {
     if (busy.current) return;
@@ -404,6 +407,7 @@ export default function SpeechClips({
         })}
       </div>
       <dialog
+        aria-labelledby={dialogTitleId}
         ref={dialog}
         className="admin-dialog"
         onCancel={(e) => {
@@ -412,7 +416,9 @@ export default function SpeechClips({
         }}
       >
         <form onSubmit={submit}>
-          <h2>{mode?.kind === "review" ? "记录审听" : "确认生成"}</h2>
+          <h2 id={dialogTitleId}>
+            {mode?.kind === "review" ? "记录审听" : "确认生成"}
+          </h2>
           {mode?.kind === "generate" && (
             <p>
               最多提交 {mode.keys.length}{" "}

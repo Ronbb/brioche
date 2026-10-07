@@ -1,5 +1,6 @@
+import { useCommittedDialog } from "../components/committed-dialog";
 import { Link, data, useLocation, useRevalidator } from "react-router";
-import { useEffect, useRef, useState } from "react";
+import { useId, useEffect, useRef, useState } from "react";
 import type { AdminVoiceJob } from "@brioche/contracts/AdminVoiceJob";
 import type { AdminVoiceJobs } from "@brioche/contracts/AdminVoiceJobs";
 import type { VoiceJobStatus } from "@brioche/contracts/VoiceJobStatus";
@@ -46,6 +47,7 @@ const labels: Record<VoiceJobStatus, string> = {
   checkFailed: "查询未确认，可再次核对",
 };
 export default function VoiceJobs({ loaderData }: Route.ComponentProps) {
+  const dialogTitleId = useId();
   const location = useLocation(),
     heading = usePageCursorFocus(location.search),
     refresh = useRevalidator();
@@ -58,6 +60,7 @@ export default function VoiceJobs({ loaderData }: Route.ComponentProps) {
   const dialog = useRef<HTMLDialogElement>(null),
     busy = useRef(false),
     write = useRef<AbortController | null>(null);
+  const openDialog = useCommittedDialog(dialog);
   useEffect(() => () => write.current?.abort(), []);
   const items = loaderData.selected
     ? [
@@ -189,7 +192,7 @@ export default function VoiceJobs({ loaderData }: Route.ComponentProps) {
                     setVoice("");
                     setReason("");
                     setError("");
-                    dialog.current?.showModal();
+                    openDialog();
                   }}
                 >
                   {item.voiceId ? "核对提供方状态" : "找回已有音色"}
@@ -207,6 +210,7 @@ export default function VoiceJobs({ loaderData }: Route.ComponentProps) {
         </Link>
       )}
       <dialog
+        aria-labelledby={dialogTitleId}
         className="admin-dialog"
         ref={dialog}
         onCancel={(e) => {
@@ -217,7 +221,7 @@ export default function VoiceJobs({ loaderData }: Route.ComponentProps) {
           setError("");
         }}
       >
-        <h2>核对已有音色</h2>
+        <h2 id={dialogTitleId}>核对已有音色</h2>
         <p>这次只查询提供方，不重新创建音色。</p>
         <form className="reference-delivery-form" onSubmit={check}>
           {target && !target.voiceId && (

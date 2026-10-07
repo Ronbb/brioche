@@ -1,5 +1,6 @@
+import { useCommittedDialog } from "../components/committed-dialog";
 import { Link, data, useLocation, useRevalidator } from "react-router";
-import { useEffect, useRef, useState } from "react";
+import { useId, useEffect, useRef, useState } from "react";
 import type { AdminCharacterVoice } from "@brioche/contracts/AdminCharacterVoice";
 import type { CharacterVoiceProfile } from "@brioche/contracts/CharacterVoiceProfile";
 import { QWEN_FRENCH_SYSTEM_VOICES } from "@brioche/contracts/tts-voices";
@@ -98,6 +99,7 @@ const defaultProfile: CharacterVoiceProfile = {
   referenceAudio: null,
 };
 export default function Auditions({ loaderData }: Route.ComponentProps) {
+  const dialogTitleId = useId();
   const location = useLocation(),
     heading = usePageCursorFocus(location.search),
     refresh = useRevalidator();
@@ -106,6 +108,7 @@ export default function Auditions({ loaderData }: Route.ComponentProps) {
     busy = useRef(false),
     write = useRef<AbortController | null>(null),
     attempt = useRef<AdminAuditionRequest | null>(null);
+  const openDialog = useCommittedDialog(dialog);
   const [mode, setMode] = useState<"create" | AdminAudition | null>(null),
     [text, setText] = useState(
       "Bonjour ! Je voudrais une baguette, s’il vous plaît. C’est combien ? Merci, au revoir !",
@@ -191,7 +194,7 @@ export default function Auditions({ loaderData }: Route.ComponentProps) {
     setError("");
     setAttempted(false);
     attempt.current = null;
-    dialog.current?.showModal();
+    openDialog();
   }
   function listen(item: AdminAudition) {
     if (item.id === active && player.current?.isActive) {
@@ -467,6 +470,7 @@ export default function Auditions({ loaderData }: Route.ComponentProps) {
         </Link>
       )}
       <dialog
+        aria-labelledby={dialogTitleId}
         className="admin-dialog"
         ref={dialog}
         onCancel={(e) => {
@@ -479,7 +483,9 @@ export default function Auditions({ loaderData }: Route.ComponentProps) {
           attempt.current = null;
         }}
       >
-        <h2>{mode === "create" ? "生成角色试听" : "确认试听结果"}</h2>
+        <h2 id={dialogTitleId}>
+          {mode === "create" ? "生成角色试听" : "确认试听结果"}
+        </h2>
         <form className="reference-delivery-form" onSubmit={submit}>
           {mode === "create" ? (
             <>

@@ -1,5 +1,6 @@
+import { useCommittedDialog } from "../components/committed-dialog";
 import { Link, data, useRevalidator } from "react-router";
-import { useEffect, useRef, useState } from "react";
+import { useId, useEffect, useRef, useState } from "react";
 import type { AdminCharacterVoices } from "@brioche/contracts/AdminCharacterVoices";
 import type { AdminCharacterVoice } from "@brioche/contracts/AdminCharacterVoice";
 import type { CharacterVoiceProfile } from "@brioche/contracts/CharacterVoiceProfile";
@@ -79,6 +80,7 @@ function exportProfile(item: AdminCharacterVoice | AdminCharacterVoice[]) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 export default function Characters({ loaderData }: Route.ComponentProps) {
+  const dialogTitleId = useId();
   const [target, setTarget] = useState<AdminCharacterVoice | null>(null);
   const [profile, setProfile] = useState<CharacterVoiceProfile>(defaults(""));
   const [reason, setReason] = useState("");
@@ -86,6 +88,7 @@ export default function Characters({ loaderData }: Route.ComponentProps) {
   const [notice, setNotice] = useState("");
   const [pending, setPending] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
+  const openDialog = useCommittedDialog(dialog);
   const busy = useRef(false);
   const write = useRef<AbortController | null>(null);
   const refresh = useRevalidator();
@@ -97,7 +100,7 @@ export default function Characters({ loaderData }: Route.ComponentProps) {
     );
     setReason("");
     setError("");
-    dialog.current?.showModal();
+    openDialog();
   }
   function field<K extends keyof CharacterVoiceProfile>(
     key: K,
@@ -295,6 +298,7 @@ export default function Characters({ loaderData }: Route.ComponentProps) {
         </Link>
       )}
       <dialog
+        aria-labelledby={dialogTitleId}
         ref={dialog}
         className="admin-dialog"
         onCancel={(e) => {
@@ -307,7 +311,7 @@ export default function Characters({ loaderData }: Route.ComponentProps) {
         }}
       >
         <form onSubmit={save}>
-          <h2>{target?.character.displayName} · 声音档案</h2>
+          <h2 id={dialogTitleId}>{target?.character.displayName} · 声音档案</h2>
           <label>
             个性特点
             <textarea

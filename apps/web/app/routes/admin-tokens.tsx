@@ -1,5 +1,6 @@
+import { useCommittedDialog } from "../components/committed-dialog";
 import { Link, data, useLocation, useRevalidator } from "react-router";
-import { useEffect, useRef, useState } from "react";
+import { useId, useEffect, useRef, useState } from "react";
 import type { AdminPendingTokens } from "@brioche/contracts/AdminPendingTokens";
 import type { AdminPendingToken } from "@brioche/contracts/AdminPendingToken";
 import { getIdentity, getPrivate } from "../lib/api.server";
@@ -29,6 +30,7 @@ export function headers() {
   return { "Cache-Control": "private, no-store", Vary: "Cookie" };
 }
 export default function Tokens({ loaderData: tokens }: Route.ComponentProps) {
+  const dialogTitleId = useId();
   const location = useLocation();
   const heading = usePageCursorFocus(location.search);
   const refresh = useRevalidator();
@@ -38,6 +40,7 @@ export default function Tokens({ loaderData: tokens }: Route.ComponentProps) {
   const [notice, setNotice] = useState("");
   const [pending, setPending] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
+  const openDialog = useCommittedDialog(dialog);
   const busy = useRef(false);
   const write = useRef<AbortController | null>(null);
   useEffect(() => () => write.current?.abort(), []);
@@ -45,7 +48,7 @@ export default function Tokens({ loaderData: tokens }: Route.ComponentProps) {
     setTarget(item);
     setReason("");
     setError("");
-    dialog.current?.showModal();
+    openDialog();
   }
   async function submit() {
     if (busy.current || !target || !reason.trim()) return;
@@ -147,6 +150,7 @@ export default function Tokens({ loaderData: tokens }: Route.ComponentProps) {
         </Link>
       )}
       <dialog
+        aria-labelledby={dialogTitleId}
         ref={dialog}
         className="admin-dialog"
         onCancel={(e) => {
@@ -158,7 +162,7 @@ export default function Tokens({ loaderData: tokens }: Route.ComponentProps) {
           setError("");
         }}
       >
-        <h2>撤销链接</h2>
+        <h2 id={dialogTitleId}>撤销链接</h2>
         <p>{target?.email}</p>
         <p>撤销后，原链接将无法使用。已有账号和已登录的会话继续保留。</p>
         <form

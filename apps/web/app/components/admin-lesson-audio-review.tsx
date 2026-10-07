@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useId, useEffect, useRef, useState } from "react";
 import { useBeforeUnload, useBlocker } from "react-router";
 import type { AdminLessonAudioReview } from "@brioche/contracts/AdminLessonAudioReview";
 import type { AdminLessonAudioStatus } from "@brioche/contracts/AdminLessonAudioStatus";
@@ -13,6 +13,7 @@ export function LessonAudioReview({
   revision: number;
   initial: AdminLessonAudioStatus;
 }) {
+  const dialogTitleId = useId();
   const [status, setStatus] = useState(initial),
     [reason, setReason] = useState("");
   const [heard, setHeard] = useState(false),
@@ -187,6 +188,7 @@ export function LessonAudioReview({
       {error && <p role="alert">{error}</p>}
       {notice && <p role="status">{notice}</p>}
       <dialog
+        aria-labelledby={dialogTitleId}
         ref={leave}
         className="choice-dialog"
         onCancel={(event) => {
@@ -194,7 +196,7 @@ export function LessonAudioReview({
           stay();
         }}
       >
-        <h2>审核结果尚未确认</h2>
+        <h2 id={dialogTitleId}>审核结果尚未确认</h2>
         <p>
           离开会清除本页的重试参数。返回后请先核对审核记录；取消请求不会回滚服务器已保存的决定。
         </p>
