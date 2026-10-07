@@ -9,6 +9,7 @@
     "typecheck": "react-router typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@chef/web": "workspace:*",
     "@brioche/contracts": "workspace:*",
     "@react-router/node": "8.4.0",
     "@react-router/serve": "8.4.0",

@@ -116,3 +116,5 @@
 - speech-alignment-import共用网页导入与实际媒体/来源包哈希核对，只保留预测和异常，不能写人工时间审核。相同actor/固定ID/完整请求重试返回原回执，理由标注local-cli，不生成账号会话。批量课程生成保持固定尝试，顺序调用，unknown停止；不能在收费任务仍运行时重建生产server打断它。
 
 后端抽取补充（2026-10-08）：共享服务端/迁移/回归测试真源已迁入 `framework` 的 Chef；Brioche `crates/server` 仅薄启动与 Schema 导出装配。不要在产品重建业务模块或迁移副本；通用测试用 Chef manifest 和 `chef-engine`。独立身份进程、通用 Web 和产品数据库隔离仍待实现，不能把此阶段当完整多语言支持。
+
+共享 Web 补充：通用 React Router 页面、播放器、后台和全部通用 Web/SSR/浏览器测试真源已在 `framework/packages/web`；Brioche apps/web仅品牌/构建配置和品牌资源。产品148份公共契约副本也已删除，直接引用框架包。禁止在产品添加业务页面副本或重新实现播放器；Chef框架变更先验证推送再固定产品gitlink。独立身份/双产品数据与客户端草稿隔离及粤语v2仍待实施。

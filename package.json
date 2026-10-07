@@ -7,13 +7,13 @@
     "dev:api": "node scripts/dev-api.mjs",
     "build": "pnpm --filter @brioche/web build",
     "typecheck": "pnpm --filter @brioche/web typecheck",
-    "test:web": "node --experimental-strip-types --test apps/web/tests/*.test.ts",
-    "test:ssr": "node --test apps/web/ssr-tests/*.test.mjs",
-    "test:browser": "node --test apps/web/browser-tests/*.test.mjs",
-    "test:browser:ssr": "node --test apps/web/browser-ssr-tests/*.test.mjs",
+    "test:web": "node framework/scripts/web-tests.mjs unit",
+    "test:ssr": "node framework/scripts/web-tests.mjs ssr",
+    "test:browser": "node framework/scripts/web-tests.mjs browser",
+    "test:browser:ssr": "node framework/scripts/web-tests.mjs browser-ssr",
     "test:ops": "node --test scripts/tests/*.test.mjs",
     "health:check": "node scripts/health-check.mjs",
-    "contracts": "cargo run --manifest-path framework/Cargo.toml --locked -p brioche-course-contract --example export -- --output packages/contracts/src/generated && cargo run -p brioche-server --locked --example export_author_schema"
+    "contracts": "cargo run --manifest-path framework/Cargo.toml --locked -p brioche-course-contract --example export -- --output framework/packages/contracts/src/generated && cargo run -p brioche-server --locked --example export_author_schema"
   },
   "devDependencies": {
     "agent-browser": "0.27.0",

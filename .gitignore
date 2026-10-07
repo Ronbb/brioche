@@ -16,6 +16,7 @@ playwright-report/
 test-results/
 *.tsbuildinfo
 .react-router/
+apps/web/framework/
 
 # 本机运行数据与备份
 .local/

@@ -59,7 +59,7 @@
 
 ## 本机开发
 
-共享契约已迁入 [Chef](https://github.com/Ronbb/chef)，通过 `framework` Git submodule 固定提交引用。首次检出或切换版本后先执行 `git submodule update --init --recursive`；不要在生产使用 `--remote` 跟随框架主分支。Rust 服务直接依赖 `framework/crates/course-contract`，本产品的 `packages/contracts/src/generated` 是由该固定版本生成的构建快照，使用 `pnpm contracts` 更新，不再在 Brioche 修改契约 Rust 源。Chef 暂保留 v1 法语字段与包名；语言中立契约和独立身份服务还未完成。
+共享契约已迁入 [Chef](https://github.com/Ronbb/chef)，通过 `framework` Git submodule 固定提交引用。首次检出或切换版本后先执行 `git submodule update --init --recursive`；不要在生产使用 `--remote` 跟随框架主分支。Rust 服务直接依赖 `framework/crates/course-contract`，本产品直接使用 `framework/packages/contracts/src/generated`，本地契约副本已删除，使用 `pnpm contracts` 验证固定框架的生成结果，不再在 Brioche 修改契约 Rust 源。Chef 暂保留 v1 法语字段与包名；语言中立契约和独立身份服务还未完成。
 
 首页仅在课程的 reviewItemIds 对应有效词汇时显示可展开表达卡片；没有表达时仍保留账号复习与续学入口。卡片切换取消上一段高度动画，并从当前视觉高度开始；离页清理动画和待执行帧，减少动态效果设置下直接展开。课程搜索保留原输入节点和键盘焦点，等待中重复提交被拦截；结果返回时保留等待期间新输入的草稿，查看全部课程则同步清空输入。
 
@@ -266,7 +266,7 @@ SSR 入口回归运行 `pnpm build` 后再运行 `pnpm test:ssr`（CI 已接入�
 
 公开阅读按正文块 ID 切换，支持同课多个 dialogue/article；同类型有多段时用 block.titleZh 区分，单段仍显示对话/短文。每个正文的译文展开状态独立，切换停止旧播放并关闭知识解释。标题列表在窄屏内部横向滚动，不增加系统滚动条占位；箭头/Home/End 切换并将选中标题滚入可见区域。账号学习继续按步骤遍历全部正文和练习。
 
-关键组件的 Chromium 自动化回归运行 `pnpm test:browser`；首次需要 `pnpm exec agent-browser install`，Linux CI 先执行 `pnpm exec agent-browser install --with-deps`。agent-browser 固定为 0.27.0 并随 pnpm lockfile 保存，安装脚本只对该依赖显式允许。测试文件在 `apps/web/browser-tests`，合成课程按公共 DTO 类型检查，真实 StartLearning/Lesson/LearningProvider 和 React Router 用独立 Vite 临时端口装配。每次生成独立浏览器会话，结束关闭会话与临时服务；没有数据库、账号、私有答案或生产 API。覆盖键盘焦点/重复提交/登录回跳、课程替换后的迟到响应与同课重试幂等、多正文选择/译文/播放停止和 320/390/900px 标题容器范围。声音列表与 SpeechSynthesis 是受控适配器，不能将其计为真实法语声音或 iPhone/屏幕阅读器验收。
+关键组件的 Chromium 自动化回归运行 `pnpm test:browser`；首次需要 `pnpm exec agent-browser install`，Linux CI 先执行 `pnpm exec agent-browser install --with-deps`。agent-browser 固定为 0.27.0 并随 pnpm lockfile 保存，安装脚本只对该依赖显式允许。测试文件在 `framework/packages/web/browser-tests`，合成课程按公共 DTO 类型检查，真实 StartLearning/Lesson/LearningProvider 和 React Router 用独立 Vite 临时端口装配。每次生成独立浏览器会话，结束关闭会话与临时服务；没有数据库、账号、私有答案或生产 API。覆盖键盘焦点/重复提交/登录回跳、课程替换后的迟到响应与同课重试幂等、多正文选择/译文/播放停止和 320/390/900px 标题容器范围。声音列表与 SpeechSynthesis 是受控适配器，不能将其计为真实法语声音或 iPhone/屏幕阅读器验收。
 
 pnpm 11 使用 `pnpm-workspace.yaml` 的 `allowBuilds`，旧 `onlyBuiltDependencies` 已移除；当前显式允许锁定的 `agent-browser@0.27.0`、Tailwind oxide 与 esbuild，不关闭严格安装脚本检查。参考 [pnpm 11 迁移说明](https://pnpm.io/blog/releases/11.0)。浏览器用例结束会核对并清空未捕获页面异常，避免只检查 UI 状态而漏掉脚本错误；语音回归另覆盖旧 utterance 的迟到 start/error/end 不影响新播放、当前 interrupted 后停止并可重试。在精简 Linux 验收容器使用安装器时须具备 sudo；浏览器系统依赖仅用于测试环境，不加入生产运行镜像。
 
@@ -476,3 +476,9 @@ Qwen后台音色创建：可选-f compose.tts.yaml仅给server加载.local/tts.e
 ## Chef 后端装配
 
 共享后端和显式迁移的真源在 `framework/crates/server` / `framework/crates/migration`，产品 `crates/server/src/main.rs` 只调用框架入口。先执行 `git submodule update --init --recursive`，随后原 `pnpm dev:api` 与 Docker 命令保持可用。通用测试执行 `cargo test --manifest-path framework/Cargo.toml --workspace --locked`；数据库回归须设置独立 `TEST_DATABASE_URL` 后对 `chef-engine` 执行 ignored 测试，禁止指向生产。旧 `brioche-server` 命令名只为产品启动兼容。独立身份运行服务与双产品数据迁移仍在后续阶段。
+
+## Chef 共享界面与产品品牌装配
+
+通用 React Router 页面、播放器、账号/管理员界面及回归测试现在位于 `framework/packages/web`。本产品 `apps/web` 只维护品牌配置 `product.ts`、构建配置和品牌静态资源；`react-router.config.ts` 直接引用固定 Chef appDirectory，不复制或包装业务页面。Vite 绑定 `@chef/product`，名称、首页文案、图标、颜色和字体变量来自产品配置。生成路由类型位于忽略的产品缓存目录，不提交生成类型或 node_modules。
+
+`pnpm test:web`、`test:ssr`、`test:browser`、`test:browser:ssr` 通过固定 Chef 测试适配器执行通用测试；公开类型也直接引用 Chef 契约包，产品148份契约副本已删除。首次检出仍需递归子模块初始化。独立身份服务、双产品数据/草稿范围及粤语契约适配仍在后续阶段，不把 Web 抽取当成两个产品已经上线。

@@ -1,11 +1,12 @@
 {
   "include": [
-    "app/**/*",
-    "browser-tests/**/*.ts",
-    "browser-tests/**/*.tsx",
+    "../../framework/packages/web/app/**/*",
+    "product.ts",
     ".react-router/types/**/*",
     "vite.config.ts",
-    "react-router.config.ts"
+    "react-router.config.ts",
+    "framework/packages/web/app/**/*",
+    "../../framework/packages/web/browser-tests/**/*"
   ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2023"],
@@ -14,7 +15,12 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
-    "rootDirs": [".", "./.react-router/types"],
+    "rootDirs": [
+      ".",
+      "./.react-router/types",
+      "../../framework/packages/web",
+      "./framework/packages/web"
+    ],
     "strict": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
