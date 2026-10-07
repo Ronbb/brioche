@@ -1,6 +1,8 @@
 import { Form, Link, data } from "react-router";
 import { useLayoutEffect, useRef } from "react";
 import type { PublicLesson } from "@brioche/contracts/PublicLesson";
+import type { AdminLessonAudioStatus } from "@brioche/contracts/AdminLessonAudioStatus";
+import { LessonAudioReview } from "../components/admin-lesson-audio-review";
 import type { PreviewRelease } from "@brioche/contracts/PreviewRelease";
 import { getIdentity, getPrivate } from "../lib/api.server";
 import { ReadingBlock } from "../components/reading-block";
@@ -51,8 +53,14 @@ export async function loader({ request }: Route.LoaderArgs) {
       `/api/v1/operator/lessons/${id}/revisions/${revision}`,
     );
   }
+  const audioReview = lesson?.audio?.length
+    ? await getPrivate<AdminLessonAudioStatus>(
+        request,
+        `/api/v1/operator/lessons/${id}/revisions/${revision}/audio-review`,
+      )
+    : null;
   return data(
-    { lesson, id, revision, release, releaseId },
+    { lesson, id, revision, release, releaseId, audioReview },
     { headers: { "Cache-Control": "private, no-store", Vary: "Cookie" } },
   );
 }
@@ -61,7 +69,7 @@ export function headers() {
 }
 
 export default function AuthorPreview({
-  loaderData: { lesson, id, revision, release, releaseId },
+  loaderData: { lesson, id, revision, release, releaseId, audioReview },
 }: Route.ComponentProps) {
   const releaseInput = useRef<HTMLInputElement>(null);
   const lessonInput = useRef<HTMLInputElement>(null);
@@ -215,6 +223,14 @@ export default function AuthorPreview({
             </section>
           ))}
         </div>
+      )}
+      {lesson && audioReview && (
+        <LessonAudioReview
+          key={`${id}:${revision}`}
+          id={id}
+          revision={Number(revision)}
+          initial={audioReview}
+        />
       )}
     </section>
   );

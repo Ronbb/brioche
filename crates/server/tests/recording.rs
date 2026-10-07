@@ -30,6 +30,28 @@ async fn response(
         .await
         .unwrap()
 }
+async fn post(
+    app: &Router,
+    path: &str,
+    body: &Value,
+    headers: &[(&str, &str)],
+) -> axum::response::Response {
+    let mut request = Request::builder()
+        .uri(path)
+        .method("POST")
+        .header("content-type", "application/json");
+    for (name, value) in headers {
+        request = request.header(*name, *value);
+    }
+    app.clone()
+        .oneshot(
+            request
+                .body(Body::from(serde_json::to_vec(body).unwrap()))
+                .unwrap(),
+        )
+        .await
+        .unwrap()
+}
 async fn account(
     app: &Router,
     backend: &brioche_server::identity::Backend,
@@ -281,6 +303,109 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
     assert_eq!(response(&app, &private_url, "GET", &[]).await.status(), 401);
     let learner = account(&app, &backend, "audio-learner@example.test", false).await;
     let operator = account(&app, &backend, "audio-operator@example.test", true).await;
+    let final_review = format!("{preview}/audio-review");
+    assert_eq!(
+        response(&app, &final_review, "GET", &[]).await.status(),
+        401
+    );
+    assert_eq!(
+        response(&app, &final_review, "GET", &[("cookie", &learner)])
+            .await
+            .status(),
+        403
+    );
+    let status = response(&app, &final_review, "GET", &[("cookie", &operator)]).await;
+    assert_eq!(status.headers()["cache-control"], "private, no-store");
+    let status: Value =
+        serde_json::from_slice(&status.into_body().collect().await.unwrap().to_bytes()).unwrap();
+    assert_eq!(status["required"], true);
+    assert_eq!(status["accepted"], false);
+    assert_eq!(status["version"], 0);
+    assert!(
+        brioche_server::content::stage(
+            &db,
+            &manifest,
+            "protocol-test",
+            "requires final listening",
+            &store
+        )
+        .await
+        .is_err()
+    );
+    let csrf = response(&app, "/api/v1/auth/csrf", "GET", &[("cookie", &operator)]).await;
+    let csrf: Value =
+        serde_json::from_slice(&csrf.into_body().collect().await.unwrap().to_bytes()).unwrap();
+    let csrf = csrf["csrfToken"].as_str().unwrap();
+    let headers = [
+        ("cookie", operator.as_str()),
+        ("x-csrf-token", csrf),
+        ("origin", "http://localhost:5173"),
+    ];
+    let declaration = json!({"expectedLessonHash":status["lessonHash"],"version":0,"accepted":true,"heard":true,"reason":"Synthetic protocol declaration, not real French listening"});
+    assert_eq!(post(&app, &format!("{preview}/review"), &json!({"version":0,"approved":true,"reason":"Synthetic editorial approval before listening"}), &headers).await.status(), 400);
+    assert_eq!(
+        post(&app, &final_review, &declaration, &[("cookie", &operator)])
+            .await
+            .status(),
+        403
+    );
+    let mut invalid = declaration.clone();
+    invalid["heard"] = json!(false);
+    assert_eq!(
+        post(&app, &final_review, &invalid, &headers).await.status(),
+        400
+    );
+    invalid = declaration.clone();
+    invalid["expectedLessonHash"] = json!("b".repeat(64));
+    assert_eq!(
+        post(&app, &final_review, &invalid, &headers).await.status(),
+        409
+    );
+    for _ in 0..2 {
+        let saved = post(&app, &final_review, &declaration, &headers).await;
+        assert_eq!(saved.status(), 200);
+    }
+    let mut rejected = declaration.clone();
+    rejected["version"] = json!(1);
+    rejected["accepted"] = json!(false);
+    rejected["heard"] = json!(false);
+    rejected["reason"] = json!("Synthetic correction request");
+    assert_eq!(
+        post(&app, &final_review, &rejected, &headers)
+            .await
+            .status(),
+        200
+    );
+    assert!(
+        brioche_server::content::stage(
+            &db,
+            &manifest,
+            "protocol-test",
+            "rejected recording",
+            &store
+        )
+        .await
+        .is_err()
+    );
+    let mut accepted = declaration.clone();
+    accepted["version"] = json!(2);
+    assert_eq!(
+        post(&app, &final_review, &accepted, &headers)
+            .await
+            .status(),
+        200
+    );
+    assert!(
+        db.execute_unprepared("UPDATE lesson_audio_reviews SET heard=false")
+            .await
+            .is_err()
+    );
+    assert!(
+        db.execute_unprepared("DELETE FROM lesson_audio_reviews")
+            .await
+            .is_err()
+    );
+    assert!(db.execute_unprepared("DO $$ BEGIN IF EXISTS(SELECT 1 FROM lesson_audio_reviews) THEN RAISE EXCEPTION 'lesson audio audit must be retained'; END IF; END $$; DROP TABLE lesson_audio_reviews;").await.is_err());
     let registry = "/api/v1/operator/recordings";
     let recording_file = "/api/v1/operator/recordings/audio-protocol/1/file";
     for path in [registry, recording_file] {
@@ -415,6 +540,12 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
     .await
     .unwrap();
     assert_eq!(
+        post(&app, &final_review, &accepted, &headers)
+            .await
+            .status(),
+        403
+    );
+    assert_eq!(
         response(&app, &private_url, "GET", &[("cookie", &operator)])
             .await
             .status(),
@@ -471,6 +602,21 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
         } else {
             std::fs::write(&stored_audio, b"corrupt protocol fixture").unwrap();
         }
+        let mut new_decision = declaration.clone();
+        new_decision["version"] = json!(3);
+        assert_eq!(
+            post(&app, &final_review, &new_decision, &headers)
+                .await
+                .status(),
+            400
+        );
+        assert_eq!(
+            post(&app, &final_review, &accepted, &headers)
+                .await
+                .status(),
+            200,
+            "existing receipt is acknowledged without inventing a new decision"
+        );
         let error = brioche_server::content::stage_author(
             &db,
             &manifest,
@@ -504,6 +650,36 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
         404,
         "staging remains private"
     );
+    let mut rejected = accepted.clone();
+    rejected["version"] = json!(3);
+    rejected["accepted"] = json!(false);
+    rejected["heard"] = json!(false);
+    rejected["reason"] = json!("Synthetic rejection after staging");
+    assert_eq!(
+        post(&app, &final_review, &rejected, &headers)
+            .await
+            .status(),
+        200
+    );
+    assert!(
+        brioche_server::content::activate(
+            &db,
+            &manifest.id,
+            0,
+            "protocol-test",
+            "must recheck final listening",
+            &store
+        )
+        .await
+        .is_err()
+    );
+    accepted["version"] = json!(4);
+    assert_eq!(
+        post(&app, &final_review, &accepted, &headers)
+            .await
+            .status(),
+        200
+    );
     let generation = brioche_server::content::activate(
         &db,
         &manifest.id,
@@ -514,6 +690,21 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
     )
     .await
     .unwrap();
+    assert_eq!(
+        post(&app, &final_review, &accepted, &headers)
+            .await
+            .status(),
+        200,
+        "committed retry survives publication"
+    );
+    accepted["version"] = json!(5);
+    assert_eq!(
+        post(&app, &final_review, &accepted, &headers)
+            .await
+            .status(),
+        409,
+        "published listening records are fixed"
+    );
     let csrf_response = response(&app, "/api/v1/auth/csrf", "GET", &[("cookie", &learner)]).await;
     let csrf_body: Value = serde_json::from_slice(
         &csrf_response
@@ -700,7 +891,10 @@ async fn registration_is_immutable_atomic_and_hydrates_exact_revisions() {
             .status(),
         403
     );
-    brioche_migration::Migrator::down(&db, None).await.unwrap();
+    assert!(
+        brioche_migration::Migrator::down(&db, None).await.is_err(),
+        "audited listening decisions prevent destructive rollback"
+    );
     db.close().await.unwrap();
     admin
         .execute_unprepared(&format!("DROP SCHEMA {schema} CASCADE"))

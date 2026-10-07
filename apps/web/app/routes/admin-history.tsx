@@ -38,6 +38,8 @@ const labels: Record<string, string> = {
   alignmentImport: "导入逐词预测",
   alignmentAccepted: "通过时间轴核对",
   alignmentRejected: "退回时间轴",
+  lessonAudioAccepted: "通过整课试听",
+  lessonAudioRejected: "退回整课录音",
   speechPackageImport: "导入录音课包草稿",
   speechPlan: "保存课程配音计划",
   assetImport: "登记素材与角色",

@@ -680,3 +680,24 @@ pub struct AdminSpeechPackageResults {
     pub items: Vec<AdminSpeechPackageResult>,
     pub next: Option<String>,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminLessonAudioReview {
+    pub expected_lesson_hash: String,
+    pub version: u32,
+    pub accepted: bool,
+    pub heard: bool,
+    pub reason: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminLessonAudioStatus {
+    pub published: bool,
+    pub required: bool,
+    pub lesson_hash: String,
+    pub version: u32,
+    pub accepted: bool,
+    pub reason: String,
+    pub actor: Option<String>,
+}

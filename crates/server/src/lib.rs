@@ -14,6 +14,7 @@ pub mod entity;
 pub mod grading;
 pub mod identity;
 pub mod learning;
+mod lesson_audio_reviews;
 pub mod library;
 pub mod media;
 pub mod observability;

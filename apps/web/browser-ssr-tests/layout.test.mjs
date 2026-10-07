@@ -96,6 +96,18 @@ let characterVoice = { ...voiceSeed.items[0], voiceRevision: 0, profile: null };
 const characterAvatar = await readFile(
   new URL("../public/assets/avatars/camille.svg", import.meta.url),
 );
+let finalListening = false;
+let finalLostReply = false;
+let finalDecision = null;
+let finalStatus = {
+  required: true,
+  published: false,
+  lessonHash: "a".repeat(64),
+  version: 0,
+  accepted: false,
+  reason: "",
+  actor: null,
+};
 let adminApproved = false;
 let adminPaged = false;
 let overviewReads = [];
@@ -864,6 +876,61 @@ const api = createServer((request, response) => {
       pendingTokenRevoked = true;
       response.end("true");
     });
+    return;
+  }
+  if (
+    finalListening &&
+    request.url ===
+      `/api/v1/operator/lessons/${lesson.id}/revisions/1/audio-review`
+  ) {
+    if (request.method === "GET") {
+      response.end(JSON.stringify(finalStatus));
+      return;
+    }
+    let body = "";
+    request.on("data", (chunk) => (body += chunk));
+    request.on("end", () => {
+      const decision = JSON.parse(body);
+      adminWrites.push(decision);
+      if (!finalDecision) {
+        finalDecision = decision;
+        finalStatus = {
+          ...finalStatus,
+          version: 1,
+          accepted: decision.accepted,
+          reason: decision.reason,
+          actor: "user:101",
+        };
+      }
+      if (finalLostReply) {
+        finalLostReply = false;
+        response.writeHead(503).end("{}");
+        return;
+      }
+      response.end(JSON.stringify(finalStatus));
+    });
+    return;
+  }
+  if (
+    finalListening &&
+    request.url === `/api/v1/operator/lessons/${lesson.id}/revisions/1`
+  ) {
+    response.end(
+      JSON.stringify({
+        ...lesson,
+        audio: [
+          {
+            assetId: "audio-protocol",
+            revision: 1,
+            sha256: "a".repeat(64),
+            mimeType: "audio/mpeg",
+            durationMs: 1000,
+            creditZh: "合成协议fixture",
+            url: "/api/v1/operator/recordings/audio-protocol/1/file",
+          },
+        ],
+      }),
+    );
     return;
   }
   if (request.url.startsWith("/api/v1/operator/overview")) {
@@ -2169,6 +2236,108 @@ test("operator versions a character voice profile through the real mobile page",
       true,
     );
   } finally {
+    accounts = false;
+    operatorAccount = false;
+  }
+});
+
+test("operator confirms final lesson listening with explicit declaration and exact lost-reply retry", async () => {
+  accounts = true;
+  operatorAccount = true;
+  finalListening = true;
+  finalLostReply = true;
+  finalDecision = null;
+  adminWrites = [];
+  finalStatus = {
+    required: true,
+    published: false,
+    lessonHash: "a".repeat(64),
+    version: 0,
+    accepted: false,
+    reason: "",
+    actor: null,
+  };
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("set", "viewport", "390", "844");
+    await browser(
+      "open",
+      origin + `/author-preview?lessonId=${lesson.id}&revision=1`,
+    );
+    await browser("wait", ".lesson-audio-review");
+    const check = ".lesson-audio-review input[type=checkbox]",
+      reason = ".lesson-audio-review textarea";
+    assert.equal(
+      await evaluate(`document.querySelector('${check}').checked`),
+      false,
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.lesson-audio-review .primary').disabled",
+      ),
+      true,
+    );
+    await browser("fill", reason, "仅为界面协议确认，非真实法语审听");
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.lesson-audio-review .primary').disabled",
+      ),
+      true,
+    );
+    await browser("check", check);
+    await browser("scrollintoview", ".lesson-audio-review .primary");
+    await browser("focus", ".lesson-audio-review .primary");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "操作未确认，请刷新核对状态后重试。");
+    assert.equal(
+      await evaluate(
+        `document.querySelector('${reason}').matches(':disabled')`,
+      ),
+      true,
+    );
+    await browser("scrollintoview", ".brand");
+    await browser("click", ".brand");
+    await browser("wait", ".lesson-audio-review dialog[open]");
+    await browser("press", "Escape");
+    await browser(
+      "wait",
+      "--fn",
+      "!document.querySelector('.lesson-audio-review dialog').open",
+    );
+    assert.equal(
+      adminWrites.length,
+      1,
+      "staying after a blocked navigation must not issue a decision",
+    );
+    await browser("scrollintoview", ".lesson-audio-review .primary");
+    await browser("focus", ".lesson-audio-review .primary");
+    await browser("press", "Enter");
+    await browser("wait", "--text", "整课试听已通过，可以回到后台审批课程。");
+    assert.equal(adminWrites.length, 2);
+    assert.deepEqual(adminWrites[0], adminWrites[1]);
+    assert.equal(adminWrites[0].heard, true);
+    assert.equal(adminWrites[0].version, 0);
+    assert.equal(
+      await evaluate(`document.querySelector('${check}').checked`),
+      false,
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelector('.lesson-audio-review p').textContent.includes('已通过最终试听')",
+      ),
+      true,
+    );
+    for (const width of [320, 390, 678, 1024]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+        true,
+      );
+    }
+    assert.deepEqual(serverErrors, []);
+  } finally {
+    finalListening = false;
     accounts = false;
     operatorAccount = false;
   }

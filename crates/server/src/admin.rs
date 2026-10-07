@@ -29,6 +29,7 @@ pub fn router(root: std::path::PathBuf) -> Router<Backend> {
         .merge(crate::speech_export::router())
         .merge(crate::speech_alignments::router())
         .merge(crate::speech_package::router())
+        .merge(crate::lesson_audio_reviews::router())
         .route("/api/v1/operator/overview", get(overview))
         .route("/api/v1/operator/history", get(history))
         .route("/api/v1/operator/accounts", get(accounts))
@@ -498,6 +499,8 @@ async fn history(
             UNION ALL
             SELECT 'alignmentReview:'||alignment_id||':'||clip_id,CASE WHEN accepted THEN 'alignmentAccepted' ELSE 'alignmentRejected' END,alignment_id||':'||clip_id,'user:'||actor_id,reason,created_at FROM speech_alignment_reviews
             UNION ALL
+            SELECT 'lessonAudio:'||lesson_id||':'||revision||':'||version,CASE WHEN accepted THEN 'lessonAudioAccepted' ELSE 'lessonAudioRejected' END,lesson_id||' v'||revision,'user:'||actor_id,reason,created_at FROM lesson_audio_reviews
+            UNION ALL
             SELECT 'speechPackage:'||id,'speechPackageImport',lesson_id||' v'||revision,'user:'||actor_id,reason,created_at FROM speech_package_imports
             UNION ALL
             SELECT 'speechClip:'||id, 'speechClip', id, 'user:'||actor_id, reason, created_at FROM course_speech_clips
@@ -607,7 +610,7 @@ pub(crate) fn reason(value: &str) -> Result<(), AppError> {
     }
     Ok(())
 }
-fn revision(id: &str, rev: u32) -> Result<(), AppError> {
+pub(crate) fn revision(id: &str, rev: u32) -> Result<(), AppError> {
     if !brioche_course_contract::valid_content_id(id)
         || !brioche_course_contract::valid_content_revision(rev)
     {
@@ -629,7 +632,7 @@ pub(crate) async fn approved<C: ConnectionTrait>(
     source: &Value,
 ) -> Result<bool, AppError> {
     let latest = one(db,"SELECT approved FROM editorial_reviews WHERE lesson_id=$1 AND revision=$2 ORDER BY version DESC LIMIT 1",vec![id.into(),(rev as i32).into()]).await?;
-    match latest {
+    let editorial_approved = match latest {
         Some(row) => field(&row, "approved"),
         None => Ok(matches!(
             crate::author_source::editorial(source)
@@ -637,7 +640,8 @@ pub(crate) async fn approved<C: ConnectionTrait>(
                 .status,
             crate::author_source::EditorialStatus::Reviewed
         )),
-    }
+    }?;
+    Ok(editorial_approved && crate::lesson_audio_reviews::accepted(db, id, rev, source).await?)
 }
 #[derive(serde::Deserialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -690,7 +694,7 @@ async fn overview(
     .await?
     .ok_or(AppError::Unavailable)?;
     let rows=tx.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,
-        "SELECT r.lesson_id,r.revision,r.public_document,r.published,r.server_document->'editorial' AS editorial,v.version,v.approved,v.reason,EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(r.lesson_id,r.revision)) AS withdrawn FROM lesson_revisions r LEFT JOIN LATERAL (SELECT version,approved,reason FROM editorial_reviews WHERE (lesson_id,revision)=(r.lesson_id,r.revision) ORDER BY version DESC LIMIT 1) v ON true WHERE (r.lesson_id>$1 OR (r.lesson_id=$1 AND r.revision<$2)) AND ($3='' OR strpos(lower(r.lesson_id),lower($3))>0 OR strpos(lower(r.public_document->'title'->>'zh'),lower($3))>0 OR strpos(lower(r.public_document->'title'->>'fr'),lower($3))>0 OR strpos(lower(r.public_document->>'levelId'),lower($3))>0 OR strpos(lower(r.public_document->>'unitId'),lower($3))>0) ORDER BY r.lesson_id,r.revision DESC LIMIT 21",
+        "SELECT r.lesson_id,r.revision,r.public_document,r.published,r.server_document AS source,r.server_document->'editorial' AS editorial,v.version,v.approved,v.reason,EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(r.lesson_id,r.revision)) AS withdrawn FROM lesson_revisions r LEFT JOIN LATERAL (SELECT version,approved,reason FROM editorial_reviews WHERE (lesson_id,revision)=(r.lesson_id,r.revision) ORDER BY version DESC LIMIT 1) v ON true WHERE (r.lesson_id>$1 OR (r.lesson_id=$1 AND r.revision<$2)) AND ($3='' OR strpos(lower(r.lesson_id),lower($3))>0 OR strpos(lower(r.public_document->'title'->>'zh'),lower($3))>0 OR strpos(lower(r.public_document->'title'->>'fr'),lower($3))>0 OR strpos(lower(r.public_document->>'levelId'),lower($3))>0 OR strpos(lower(r.public_document->>'unitId'),lower($3))>0) ORDER BY r.lesson_id,r.revision DESC LIMIT 21",
         vec![query.lesson_after_id.unwrap_or_default().into(),(query.lesson_after_revision.unwrap_or(0) as i32).into(),query.lesson_q.unwrap_or_default().trim().to_owned().into()])).await.map_err(|_|AppError::Unavailable)?;
     let lesson_more = rows.len() > 20;
     let mut lessons = Vec::new();
@@ -715,7 +719,14 @@ async fn overview(
             published: field(&row, "published")?,
             withdrawn: field(&row, "withdrawn")?,
             approved: field::<Option<bool>>(&row, "approved")?
-                .unwrap_or(editorial["status"] == "reviewed"),
+                .unwrap_or(editorial["status"] == "reviewed")
+                && crate::lesson_audio_reviews::accepted(
+                    &tx,
+                    &field::<String>(&row, "lesson_id")?,
+                    field::<i32>(&row, "revision")? as u32,
+                    &field::<Value>(&row, "source")?,
+                )
+                .await?,
             review_version: field::<Option<i32>>(&row, "version")?.unwrap_or(0) as u32,
             review_note: field::<Option<String>>(&row, "reason")?
                 .unwrap_or_else(|| editorial["note"].as_str().unwrap_or("").into()),
@@ -773,6 +784,7 @@ async fn review(
         .begin()
         .await
         .map_err(|_| AppError::Unavailable)?;
+    crate::voice_references::lock_operator(&tx, actor).await?;
     one(
         &tx,
         "SELECT generation FROM content_state WHERE singleton FOR UPDATE",
@@ -780,7 +792,7 @@ async fn review(
     )
     .await?
     .ok_or(AppError::Unavailable)?;
-    let row=one(&tx,"SELECT published,EXISTS(SELECT 1 FROM content_withdrawals WHERE lesson_id=$1 AND revision=$2) AS withdrawn FROM lesson_revisions WHERE lesson_id=$1 AND revision=$2 FOR UPDATE",vec![id.clone().into(),(rev as i32).into()]).await?.ok_or(AppError::NotFound)?;
+    let row=one(&tx,"SELECT published,server_document,EXISTS(SELECT 1 FROM content_withdrawals WHERE lesson_id=$1 AND revision=$2) AS withdrawn FROM lesson_revisions WHERE lesson_id=$1 AND revision=$2 FOR UPDATE",vec![id.clone().into(),(rev as i32).into()]).await?.ok_or(AppError::NotFound)?;
     if field::<bool>(&row, "withdrawn")? {
         return Err(AppError::Gone);
     }
@@ -811,6 +823,17 @@ async fn review(
             }
         }
         return Err(AppError::Conflict);
+    }
+    if request.approved
+        && !crate::lesson_audio_reviews::accepted(
+            &tx,
+            &id,
+            rev,
+            &field::<Value>(&row, "server_document")?,
+        )
+        .await?
+    {
+        return Err(AppError::InvalidInput);
     }
     let next = i32::try_from(current)
         .ok()

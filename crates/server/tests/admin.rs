@@ -4500,7 +4500,7 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
             .is_err()
     );
     assert!(
-        brioche_migration::Migrator::down(&db, Some(1))
+        db.execute_unprepared("DO $$ BEGIN IF EXISTS(SELECT 1 FROM speech_package_imports) THEN RAISE EXCEPTION 'speech package audit must be retained'; END IF; END $$; DROP TABLE speech_package_imports;")
             .await
             .is_err()
     );

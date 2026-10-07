@@ -816,7 +816,7 @@ function AuthorHarness() {
     <LearningProvider user={user}>
       <main>
         <AuthorPreview
-          loaderData={loaderData}
+          loaderData={{ ...loaderData, audioReview: null }}
           params={{}}
           matches={[
             {
@@ -830,7 +830,7 @@ function AuthorHarness() {
               id: "routes/author-preview",
               params: {},
               pathname: "/author-preview",
-              loaderData,
+              loaderData: { ...loaderData, audioReview: null },
               handle: undefined,
             },
           ]}

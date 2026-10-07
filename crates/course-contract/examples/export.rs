@@ -25,6 +25,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     PublicLesson::export_all(&config)?;
     Catalog::export_all(&config)?;
     brioche_course_contract::AdminOverview::export_all(&config)?;
+    brioche_course_contract::AdminLessonAudioReview::export_all(&config)?;
+    brioche_course_contract::AdminLessonAudioStatus::export_all(&config)?;
     brioche_course_contract::AdminLessonCursor::export_all(&config)?;
     brioche_course_contract::AdminReviewRequest::export_all(&config)?;
     brioche_course_contract::AdminActivateRequest::export_all(&config)?;
