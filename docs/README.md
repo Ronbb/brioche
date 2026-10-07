@@ -13,6 +13,7 @@
 | [设计验证记录](07-design-verification.md) | 实际工程/数据库/浏览器检查的证据、失败与修复、仍待验收的边界 |
 | [工程开发说明](08-development.md) | 当前已实现范围、实际启动与检查命令、Docker Compose |
 | [实现与验收清单](09-implementation-tracker.md) | 完整功能目标的状态、缺口与验收证据 |
+| [加密备份副本](13-encrypted-backups.md) | 离线加密、密文校验、解密与密钥保存；不替代异盘部署和恢复演练 |
 | [管理员后台开发目标](10-admin-development.md) | 后台管理范围、首六课用户批准与发布边界 |
 | [情绪语音生成设计](12-expressive-tts.md) | OpenAI/Qwen候选、角色声音与情绪脚本、离线生成和正式音频发布 |
 | [角色与声音档案](characters/README.md) | 管理员角色库、个性/音色/参考录音版本、一致配音与复刻边界 |

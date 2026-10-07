@@ -207,6 +207,24 @@ function fileRecord(value, dump = false) {
     "Invalid backup object name",
   );
 }
+export function validateBackupManifest(manifest) {
+  requireCondition(
+    manifest?.format === "brioche-backup-v1" &&
+      Number.isInteger(manifest.postgresMajor) &&
+      manifest.postgresMajor >= 18 &&
+      Array.isArray(manifest.media) &&
+      manifest.media.length <= 100000,
+    "Unsupported backup manifest",
+  );
+  fileRecord(manifest.dump, true);
+  const seen = new Set();
+  for (const record of manifest.media) {
+    fileRecord(record);
+    requireCondition(!seen.has(record.name), "Duplicate media object");
+    seen.add(record.name);
+  }
+  return manifest;
+}
 export async function verifyBackup(directory) {
   const rootInfo = await lstat(directory);
   const mediaInfo = await lstat(join(directory, "media"));
@@ -224,21 +242,7 @@ export async function verifyBackup(directory) {
     "Invalid backup manifest",
   );
   const manifest = JSON.parse(await readFile(file, "utf8"));
-  requireCondition(
-    manifest.format === "brioche-backup-v1" &&
-      Number.isInteger(manifest.postgresMajor) &&
-      manifest.postgresMajor >= 18 &&
-      Array.isArray(manifest.media) &&
-      manifest.media.length <= 100000,
-    "Unsupported backup manifest",
-  );
-  fileRecord(manifest.dump, true);
-  const seen = new Set();
-  for (const record of manifest.media) {
-    fileRecord(record);
-    requireCondition(!seen.has(record.name), "Duplicate media object");
-    seen.add(record.name);
-  }
+  validateBackupManifest(manifest);
   for (const [record, subdirectory, limit] of [
     [manifest.dump, "", MAX_DUMP],
     ...manifest.media.map((record) => [record, "media", MAX_MEDIA]),
