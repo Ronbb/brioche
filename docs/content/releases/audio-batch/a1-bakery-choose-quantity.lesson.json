@@ -1,0 +1,1270 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-bakery-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-0cd3270b0043a294aedaeb977581acc6d24d9c766d5713d33c116af66ad4142c",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f",
+      "url": "/api/audio/8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f.wav"
+    },
+    {
+      "assetId": "speech-3bf71221a4a63ebda18ea86a2f30501ec67b8db4e4c540d851088adfc43a71dd",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1760,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "ff6c62f926bf319234277c6a29dcb597c0aeaa8c161f262a1e721f2d88bf8c5a",
+      "url": "/api/audio/ff6c62f926bf319234277c6a29dcb597c0aeaa8c161f262a1e721f2d88bf8c5a.wav"
+    },
+    {
+      "assetId": "speech-5a6a387df33e3fcacd6682ee0554e02646e989ebe38f213d5b22c9351c8b1f24",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 560,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "6c15612dd1483edf2989ac3c19d8b32dde3af86befcf547a629d027d7726b333",
+      "url": "/api/audio/6c15612dd1483edf2989ac3c19d8b32dde3af86befcf547a629d027d7726b333.wav"
+    },
+    {
+      "assetId": "speech-60386d0b0efe4a56fd397c5b46c466cc37d096e8ec128df96315654088d16cc9",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "b5784fb1733b19bd81d0a1a73e187bc82a4b3fb4574b72f0e085a91ba6a1d82c",
+      "url": "/api/audio/b5784fb1733b19bd81d0a1a73e187bc82a4b3fb4574b72f0e085a91ba6a1d82c.wav"
+    },
+    {
+      "assetId": "speech-830e52db8e01b05d3507046cf0c84ea6801fd3d9bbc03d5fefc2accb7c1adcb8",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 11030,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "4a3015868ce7fc94d94ba50c371485f3174c090dbd2d580c3f31f20a51869527",
+      "url": "/api/audio/4a3015868ce7fc94d94ba50c371485f3174c090dbd2d580c3f31f20a51869527.wav"
+    },
+    {
+      "assetId": "speech-88b53a2fc662f421d8175f7be8b9aa25c73626d6e2a66dc0c6c62153647ff582",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "66b2bc05a7caefc56d70bcf5e0ee34ddb00907c1cf6a7a1ec44ffbff80abcbb5",
+      "url": "/api/audio/66b2bc05a7caefc56d70bcf5e0ee34ddb00907c1cf6a7a1ec44ffbff80abcbb5.wav"
+    },
+    {
+      "assetId": "speech-b1ac6d6a8bd2fe6058a29f8109c3488432059f3ab61c092deef5f64ba09ec46d",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 560,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "d1e746597cf2eb15e32d9c650152bddfef97d3314f6b59940072f48f03c0ae14",
+      "url": "/api/audio/d1e746597cf2eb15e32d9c650152bddfef97d3314f6b59940072f48f03c0ae14.wav"
+    },
+    {
+      "assetId": "speech-bdd03cf58d2d2cf93f9c20962333fa701f659603823b9c86d1ecab64c9498923",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426",
+      "url": "/api/audio/6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426.wav"
+    },
+    {
+      "assetId": "speech-fa079f5219b8f8d1f1232f73ca20d10e1f22605fa8b03535b0b04718e113e603",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1040,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "7d3037d1dbf166a92a5527c1269a59e6af6ac99f9b262055a468dc209a6f0b82",
+      "url": "/api/audio/7d3037d1dbf166a92a5527c1269a59e6af6ac99f9b262055a468dc209a6f0b82.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-0cd3270b0043a294aedaeb977581acc6d24d9c766d5713d33c116af66ad4142c",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-3bf71221a4a63ebda18ea86a2f30501ec67b8db4e4c540d851088adfc43a71dd",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-5a6a387df33e3fcacd6682ee0554e02646e989ebe38f213d5b22c9351c8b1f24",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-60386d0b0efe4a56fd397c5b46c466cc37d096e8ec128df96315654088d16cc9",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-830e52db8e01b05d3507046cf0c84ea6801fd3d9bbc03d5fefc2accb7c1adcb8",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-88b53a2fc662f421d8175f7be8b9aa25c73626d6e2a66dc0c6c62153647ff582",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-b1ac6d6a8bd2fe6058a29f8109c3488432059f3ab61c092deef5f64ba09ec46d",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-bdd03cf58d2d2cf93f9c20962333fa701f659603823b9c86d1ecab64c9498923",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-fa079f5219b8f8d1f1232f73ca20d10e1f22605fa8b03535b0b04718e113e603",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-830e52db8e01b05d3507046cf0c84ea6801fd3d9bbc03d5fefc2accb7c1adcb8",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 720,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2730,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 970,
+          "wordRange": null
+        },
+        {
+          "endMs": 1610,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1050,
+          "wordRange": null
+        },
+        {
+          "endMs": 1210,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1050,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1610,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1210,
+          "wordRange": {
+            "end": 11,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 1930,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 1610,
+          "wordRange": null
+        },
+        {
+          "endMs": 1930,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 1610,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2490,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 1930,
+          "wordRange": null
+        },
+        {
+          "endMs": 2490,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 1930,
+          "wordRange": {
+            "end": 10,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3860,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 2980,
+          "wordRange": null
+        },
+        {
+          "endMs": 3220,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 3060,
+          "wordRange": null
+        },
+        {
+          "endMs": 3220,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 3060,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3780,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3220,
+          "wordRange": null
+        },
+        {
+          "endMs": 3780,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3220,
+          "wordRange": {
+            "end": 10,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6030,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 4110,
+          "wordRange": null
+        },
+        {
+          "endMs": 5070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 4190,
+          "wordRange": null
+        },
+        {
+          "endMs": 4590,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 4190,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4910,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 4750,
+          "wordRange": {
+            "end": 7,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 5070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 4910,
+          "wordRange": {
+            "end": 10,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 5310,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 5070,
+          "wordRange": null
+        },
+        {
+          "endMs": 5310,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 5070,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 5870,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 5310,
+          "wordRange": null
+        },
+        {
+          "endMs": 5470,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 5310,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 5630,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 5470,
+          "wordRange": {
+            "end": 9,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 5870,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 5630,
+          "wordRange": {
+            "end": 15,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 7800,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 6280,
+          "wordRange": null
+        },
+        {
+          "endMs": 6520,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 6360,
+          "wordRange": null
+        },
+        {
+          "endMs": 6520,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 6360,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6840,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 6520,
+          "wordRange": null
+        },
+        {
+          "endMs": 6840,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 6520,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7000,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 6920,
+          "wordRange": null
+        },
+        {
+          "endMs": 7000,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 6920,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 7160,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-4",
+          "startMs": 7000,
+          "wordRange": null
+        },
+        {
+          "endMs": 7160,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-4",
+          "startMs": 7000,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7560,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-6",
+          "startMs": 7160,
+          "wordRange": null
+        },
+        {
+          "endMs": 7560,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-6",
+          "startMs": 7160,
+          "wordRange": {
+            "end": 10,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8690,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 8050,
+          "wordRange": null
+        },
+        {
+          "endMs": 8530,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 8130,
+          "wordRange": null
+        },
+        {
+          "endMs": 8290,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 8130,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8530,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 8290,
+          "wordRange": {
+            "end": 10,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 9900,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 8940,
+          "wordRange": null
+        },
+        {
+          "endMs": 9260,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 9020,
+          "wordRange": null
+        },
+        {
+          "endMs": 9260,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 9020,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9740,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-2",
+          "startMs": 9260,
+          "wordRange": null
+        },
+        {
+          "endMs": 9740,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-2",
+          "startMs": 9260,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11030,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 10150,
+          "wordRange": null
+        },
+        {
+          "endMs": 10870,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 10230,
+          "wordRange": null
+        },
+        {
+          "endMs": 10310,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 10230,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10870,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 10310,
+          "wordRange": {
+            "end": 9,
+            "start": 3
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-bakery-morning",
+      "placeZh": "一家社区面包店",
+      "situationZh": "用一和二说明面包数量，确认订单。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-luc-v1",
+          "characterId": "character-luc",
+          "displayName": "Luc",
+          "id": "speaker-1",
+          "labelZh": "店员"
+        },
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-2",
+          "labelZh": "顾客"
+        }
+      ],
+      "titleZh": "说清想要几个",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Bonjour !"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "您好！"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Je voudrais",
+              "vocabularyId": "expr-je-voudrais"
+            },
+            {
+              "id": "segment-2-2",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-bakery-quantity",
+              "id": "segment-2-3",
+              "text": "deux",
+              "vocabularyId": "word-deux"
+            },
+            {
+              "id": "segment-2-4",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-croissant-plural",
+              "id": "segment-2-5",
+              "text": "croissants",
+              "vocabularyId": "word-croissant"
+            },
+            {
+              "id": "segment-2-6",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "我想要两个可颂。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "grammarId": "grammar-bakery-quantity",
+              "id": "segment-3-1",
+              "text": "Deux",
+              "vocabularyId": "word-deux"
+            },
+            {
+              "id": "segment-3-2",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-croissant-plural",
+              "id": "segment-3-3",
+              "text": "croissants",
+              "vocabularyId": "word-croissant"
+            },
+            {
+              "id": "segment-3-4",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "两个可颂吗？"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Oui, et un "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "pain",
+              "vocabularyId": "word-pain"
+            },
+            {
+              "id": "segment-4-3",
+              "text": ", "
+            },
+            {
+              "id": "segment-4-4",
+              "text": "s’il vous plaît",
+              "vocabularyId": "expr-sil-vous-plait"
+            },
+            {
+              "id": "segment-4-5",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "是的，再要一个面包，谢谢。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Un "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "pain",
+              "vocabularyId": "word-pain"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " et "
+            },
+            {
+              "grammarId": "grammar-bakery-quantity",
+              "id": "segment-5-4",
+              "text": "deux",
+              "vocabularyId": "word-deux"
+            },
+            {
+              "id": "segment-5-5",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-croissant-plural",
+              "id": "segment-5-6",
+              "text": "croissants",
+              "vocabularyId": "word-croissant"
+            },
+            {
+              "id": "segment-5-7",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "一个面包和两个可颂。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "C’est tout ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "就这些吗？"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Oui, "
+            },
+            {
+              "id": "segment-7-2",
+              "text": "merci",
+              "vocabularyId": "word-merci"
+            },
+            {
+              "id": "segment-7-3",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "是的，谢谢。"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Au revoir !"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "再见！"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "deux croissants 表示两个可颂。数字在名词前，表示数量；一个面包在本例说 un pain。\n\n本例 croissant 的复数写作 croissants。词尾 s 通常不发音；不能仅靠这个词尾听出数量，需要结合 deux。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "un pain 指一个面包，具体种类需结合柜台或菜单；课程不预设每个人的早餐习惯。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-croissant",
+        "word-pain",
+        "word-deux",
+        "expr-je-voudrais",
+        "expr-sil-vous-plait",
+        "word-merci"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-bakery-quantity",
+        "grammar-croissant-plural"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "一个"
+        },
+        {
+          "id": "correct",
+          "text": "两个"
+        },
+        {
+          "id": "distractor-b",
+          "text": "三个"
+        }
+      ],
+      "promptZh": "这份订单里有几个可颂？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "数字 deux 后本例使用复数 croissants。",
+      "id": "exercise-fill",
+      "promptZh": "填入 croissant 的书面复数形式。",
+      "templateFr": "Je voudrais deux ___.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句可以在本课场景中使用的话。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "s’il vous plaît."
+        },
+        {
+          "id": "token-2",
+          "text": "deux croissants,"
+        },
+        {
+          "id": "token-1",
+          "text": "Je voudrais"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "如果暂时没有合适场景，可以在家用虚构信息练说，不需要真实购物或出行。",
+      "id": "habit-main",
+      "taskZh": "给自己的下一份早餐列两样选择，用 un 和 deux 练说数量。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能说出想买的商品。",
+        "我能用数量说明几个。",
+        "我能确认订单结束。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-luc-v1",
+      "characterId": "character-luc",
+      "displayName": "Luc",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner instructed direct publication of courses and recordings without manual approval; actual fixed-model alignment validated; no human listening or independent expert review asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-bakery-choose-quantity",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "deux croissants 表示两个可颂。数字在名词前，表示数量；一个面包在本例说 un pain。",
+        "examples": [
+          {
+            "fr": "Deux croissants.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-fa079f5219b8f8d1f1232f73ca20d10e1f22605fa8b03535b0b04718e113e603",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1040,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "7d3037d1dbf166a92a5527c1269a59e6af6ac99f9b262055a468dc209a6f0b82",
+                "url": "/api/audio/7d3037d1dbf166a92a5527c1269a59e6af6ac99f9b262055a468dc209a6f0b82.wav"
+              },
+              "endMs": 1040,
+              "startMs": 0
+            },
+            "zh": "两个可颂。"
+          }
+        ],
+        "id": "grammar-bakery-quantity",
+        "titleZh": "数字 + 名词：说明数量"
+      },
+      {
+        "bodyZh": "本例 croissant 的复数写作 croissants。词尾 s 通常不发音；不能仅靠这个词尾听出数量，需要结合 deux。",
+        "examples": [
+          {
+            "fr": "Je voudrais deux croissants.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-3bf71221a4a63ebda18ea86a2f30501ec67b8db4e4c540d851088adfc43a71dd",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1760,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "ff6c62f926bf319234277c6a29dcb597c0aeaa8c161f262a1e721f2d88bf8c5a",
+                "url": "/api/audio/ff6c62f926bf319234277c6a29dcb597c0aeaa8c161f262a1e721f2d88bf8c5a.wav"
+              },
+              "endMs": 1760,
+              "startMs": 0
+            },
+            "zh": "我想要两个可颂。"
+          }
+        ],
+        "id": "grammar-croissant-plural",
+        "titleZh": "croissants：书面复数"
+      }
+    ],
+    "vocabulary": [
+      {
+        "gender": "masculine",
+        "id": "word-croissant",
+        "lemma": "croissant",
+        "meaningZh": "可颂",
+        "noteZh": "复数 croissants；本课用 deux croissants 点两个。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-60386d0b0efe4a56fd397c5b46c466cc37d096e8ec128df96315654088d16cc9",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "b5784fb1733b19bd81d0a1a73e187bc82a4b3fb4574b72f0e085a91ba6a1d82c",
+            "url": "/api/audio/b5784fb1733b19bd81d0a1a73e187bc82a4b3fb4574b72f0e085a91ba6a1d82c.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-pain",
+        "lemma": "pain",
+        "meaningZh": "面包",
+        "noteZh": "un pain 在本课指一个面包；具体品种需结合店内商品。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-b1ac6d6a8bd2fe6058a29f8109c3488432059f3ab61c092deef5f64ba09ec46d",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 560,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "d1e746597cf2eb15e32d9c650152bddfef97d3314f6b59940072f48f03c0ae14",
+            "url": "/api/audio/d1e746597cf2eb15e32d9c650152bddfef97d3314f6b59940072f48f03c0ae14.wav"
+          },
+          "endMs": 560,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-deux",
+        "lemma": "deux",
+        "meaningZh": "二；两个",
+        "noteZh": "接名词时表示数量二。",
+        "partOfSpeech": "numeral",
+        "recording": {
+          "asset": {
+            "assetId": "speech-5a6a387df33e3fcacd6682ee0554e02646e989ebe38f213d5b22c9351c8b1f24",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 560,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "6c15612dd1483edf2989ac3c19d8b32dde3af86befcf547a629d027d7726b333",
+            "url": "/api/audio/6c15612dd1483edf2989ac3c19d8b32dde3af86befcf547a629d027d7726b333.wav"
+          },
+          "endMs": 560,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-je-voudrais",
+        "lemma": "je voudrais",
+        "meaningZh": "我想要……",
+        "noteZh": "礼貌地提出请求。本课先作为常用语块学习。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-0cd3270b0043a294aedaeb977581acc6d24d9c766d5713d33c116af66ad4142c",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f",
+            "url": "/api/audio/8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-sil-vous-plait",
+        "lemma": "s’il vous plaît",
+        "meaningZh": "请",
+        "noteZh": "这里使用 vous，适用于不熟悉的人和服务场景。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-bdd03cf58d2d2cf93f9c20962333fa701f659603823b9c86d1ecab64c9498923",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426",
+            "url": "/api/audio/6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-merci",
+        "lemma": "merci",
+        "meaningZh": "谢谢",
+        "noteZh": "用于表达感谢。",
+        "partOfSpeech": "interjection",
+        "recording": {
+          "asset": {
+            "assetId": "speech-88b53a2fc662f421d8175f7be8b9aa25c73626d6e2a66dc0c6c62153647ff582",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "66b2bc05a7caefc56d70bcf5e0ee34ddb00907c1cf6a7a1ec44ffbff80abcbb5",
+            "url": "/api/audio/66b2bc05a7caefc56d70bcf5e0ee34ddb00907c1cf6a7a1ec44ffbff80abcbb5.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "社区面包店的清晨",
+      "assetId": "art-bakery-morning",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "2154bad9ebb6f592e210e24eacc5dd97cf0be05d5f8b33fedd313e1e58ba5412",
+      "url": "/api/media/2154bad9ebb6f592e210e24eacc5dd97cf0be05d5f8b33fedd313e1e58ba5412.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Luc 的头像",
+      "assetId": "avatar-luc-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b",
+      "url": "/api/media/75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "说出想买的商品",
+    "用数量说明几个",
+    "确认订单结束"
+  ],
+  "reviewItemIds": [
+    "word-croissant",
+    "word-pain",
+    "word-deux"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：两个。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "croissants"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "数字 deux 后本例使用复数 croissants。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Je voudrais deux croissants, s’il vous plaît. 用一和二说明面包数量，确认订单。",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "用一和二说明面包数量，确认订单。",
+  "title": {
+    "fr": "Deux croissants et un pain",
+    "zh": "说清想要几个"
+  },
+  "unitId": "a1-breakfast-bakery"
+}

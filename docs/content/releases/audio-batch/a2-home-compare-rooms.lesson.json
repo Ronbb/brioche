@@ -1,0 +1,3166 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-home-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-31ba93aa77f649e5e7735d54891705a4ab9b2a1dae05e4da2d8b99f0c2bb970e",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 2400,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "4da1d380a71888b8a1d6efb5824527963d7932b50bbd6a31a455dd77e7c882d2",
+      "url": "/api/audio/4da1d380a71888b8a1d6efb5824527963d7932b50bbd6a31a455dd77e7c882d2.wav"
+    },
+    {
+      "assetId": "speech-34bb845750a9f4ee04d80df6f807b0507bd3ab5407cafe1251dddf7c43cce959",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "3d0d0c470638ef465144204a03af36114ab93818fd725ccba9dbb307c68525cb",
+      "url": "/api/audio/3d0d0c470638ef465144204a03af36114ab93818fd725ccba9dbb307c68525cb.wav"
+    },
+    {
+      "assetId": "speech-3546dece0a3ac17377509df0249938b9686445aa4b39c7bb0cc59ed04830e476",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "5255da5508d24686f31e2998ab376d43d0d2ab8ae7c6b756518d62224b683f23",
+      "url": "/api/audio/5255da5508d24686f31e2998ab376d43d0d2ab8ae7c6b756518d62224b683f23.wav"
+    },
+    {
+      "assetId": "speech-4fe58f5c4c595e989db2347b27baee5fcbacaa827206265bffdaddc4722cd53d",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "88f772fdc732f89e75cca112ff56cd40780f91c917c94decdb262600fe8fe8b0",
+      "url": "/api/audio/88f772fdc732f89e75cca112ff56cd40780f91c917c94decdb262600fe8fe8b0.wav"
+    },
+    {
+      "assetId": "speech-6466bf29ed078c9d1714e6ef3b2be67b3183f37a098cba5b38d445145786be90",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 63910,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "5771222a0e6906e51ebe69cf30ff94c33800fdad0e5e5ea80d9ef2920b3a30dd",
+      "url": "/api/audio/5771222a0e6906e51ebe69cf30ff94c33800fdad0e5e5ea80d9ef2920b3a30dd.wav"
+    },
+    {
+      "assetId": "speech-728e5b19d320e6c31633ccd9060d876f36fb7c77f5f3940bd7047925493a3011",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "69d21bff5201d8c1bd2e486dbee0ecb3d490190f8f060fcdeaf1c927de32a66a",
+      "url": "/api/audio/69d21bff5201d8c1bd2e486dbee0ecb3d490190f8f060fcdeaf1c927de32a66a.wav"
+    },
+    {
+      "assetId": "speech-9fb2d3e41b3131996ec977667bbb5944d38d70567ef15428ab12683c3e394e3a",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 2560,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "6af75777f6556971c81e308567a3b9cb6a5a1f8242211df06cca4c0f8b1529a0",
+      "url": "/api/audio/6af75777f6556971c81e308567a3b9cb6a5a1f8242211df06cca4c0f8b1529a0.wav"
+    },
+    {
+      "assetId": "speech-cf3013568c65f5e737c255305b1c15a657e648302915cbd2a843e6ce8e16f11a",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "aa4ab054571f9d17c6f08d8664fa2bd082014d0837a45303f25bd18fe8b7f379",
+      "url": "/api/audio/aa4ab054571f9d17c6f08d8664fa2bd082014d0837a45303f25bd18fe8b7f379.wav"
+    },
+    {
+      "assetId": "speech-d8e082f9ce6a7114ff6f9aaa58185cc687d0c900d9ff494fcef85b7ba6f3062b",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "4e98533cbf3933a036d55a91c95b6e70d444f5bb531412c2be366b2d66099339",
+      "url": "/api/audio/4e98533cbf3933a036d55a91c95b6e70d444f5bb531412c2be366b2d66099339.wav"
+    },
+    {
+      "assetId": "speech-e0927191957baa83e8c38cba95c140b0bf0b4790b6d7230e9f7e67036079c7ed",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "2bf911e2c2bc4ec9d99c5bb5c66a810d2d0f100779a2cb3b5440e56c073e37f5",
+      "url": "/api/audio/2bf911e2c2bc4ec9d99c5bb5c66a810d2d0f100779a2cb3b5440e56c073e37f5.wav"
+    },
+    {
+      "assetId": "speech-e69bddb7a3e2b944df3f2ce16a8b762f0d52896d722be875dd857197efac8c10",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "c904b9a948e58361b4788779aaaa004366b14613a90814e142dff7fcaa89a7eb",
+      "url": "/api/audio/c904b9a948e58361b4788779aaaa004366b14613a90814e142dff7fcaa89a7eb.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-31ba93aa77f649e5e7735d54891705a4ab9b2a1dae05e4da2d8b99f0c2bb970e",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-34bb845750a9f4ee04d80df6f807b0507bd3ab5407cafe1251dddf7c43cce959",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-3546dece0a3ac17377509df0249938b9686445aa4b39c7bb0cc59ed04830e476",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-4fe58f5c4c595e989db2347b27baee5fcbacaa827206265bffdaddc4722cd53d",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-6466bf29ed078c9d1714e6ef3b2be67b3183f37a098cba5b38d445145786be90",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-728e5b19d320e6c31633ccd9060d876f36fb7c77f5f3940bd7047925493a3011",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-9fb2d3e41b3131996ec977667bbb5944d38d70567ef15428ab12683c3e394e3a",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-cf3013568c65f5e737c255305b1c15a657e648302915cbd2a843e6ce8e16f11a",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-d8e082f9ce6a7114ff6f9aaa58185cc687d0c900d9ff494fcef85b7ba6f3062b",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-e0927191957baa83e8c38cba95c140b0bf0b4790b6d7230e9f7e67036079c7ed",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-e69bddb7a3e2b944df3f2ce16a8b762f0d52896d722be875dd857197efac8c10",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-6466bf29ed078c9d1714e6ef3b2be67b3183f37a098cba5b38d445145786be90",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 8160,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 3980,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 140,
+          "wordRange": null
+        },
+        {
+          "endMs": 380,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 140,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 540,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 380,
+          "wordRange": {
+            "end": 10,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 940,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 540,
+          "wordRange": {
+            "end": 17,
+            "start": 11
+          }
+        },
+        {
+          "endMs": 1260,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 940,
+          "wordRange": {
+            "end": 22,
+            "start": 18
+          }
+        },
+        {
+          "endMs": 1740,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 1260,
+          "wordRange": {
+            "end": 35,
+            "start": 23
+          }
+        },
+        {
+          "endMs": 1900,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 1740,
+          "wordRange": {
+            "end": 38,
+            "start": 36
+          }
+        },
+        {
+          "endMs": 2220,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 1900,
+          "wordRange": {
+            "end": 44,
+            "start": 39
+          }
+        },
+        {
+          "endMs": 3260,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 3020,
+          "wordRange": {
+            "end": 48,
+            "start": 46
+          }
+        },
+        {
+          "endMs": 3740,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 3260,
+          "wordRange": {
+            "end": 56,
+            "start": 49
+          }
+        },
+        {
+          "endMs": 3820,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 3740,
+          "wordRange": {
+            "end": 60,
+            "start": 57
+          }
+        },
+        {
+          "endMs": 3980,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 3820,
+          "wordRange": {
+            "end": 65,
+            "start": 61
+          }
+        },
+        {
+          "endMs": 4140,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 3980,
+          "wordRange": null
+        },
+        {
+          "endMs": 4140,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 3980,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7900,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 4140,
+          "wordRange": null
+        },
+        {
+          "endMs": 4300,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 4140,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 4380,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 4300,
+          "wordRange": {
+            "end": 7,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 4780,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 4380,
+          "wordRange": {
+            "end": 14,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 5500,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 5260,
+          "wordRange": {
+            "end": 20,
+            "start": 16
+          }
+        },
+        {
+          "endMs": 5580,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 5500,
+          "wordRange": {
+            "end": 23,
+            "start": 21
+          }
+        },
+        {
+          "endMs": 5900,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 5580,
+          "wordRange": {
+            "end": 29,
+            "start": 24
+          }
+        },
+        {
+          "endMs": 6060,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 5900,
+          "wordRange": {
+            "end": 32,
+            "start": 30
+          }
+        },
+        {
+          "endMs": 6220,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 6060,
+          "wordRange": {
+            "end": 37,
+            "start": 33
+          }
+        },
+        {
+          "endMs": 6460,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 6220,
+          "wordRange": {
+            "end": 45,
+            "start": 38
+          }
+        },
+        {
+          "endMs": 6780,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 6460,
+          "wordRange": {
+            "end": 52,
+            "start": 46
+          }
+        },
+        {
+          "endMs": 6940,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 6780,
+          "wordRange": {
+            "end": 56,
+            "start": 53
+          }
+        },
+        {
+          "endMs": 7260,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 6940,
+          "wordRange": {
+            "end": 62,
+            "start": 57
+          }
+        },
+        {
+          "endMs": 7340,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 7260,
+          "wordRange": {
+            "end": 65,
+            "start": 63
+          }
+        },
+        {
+          "endMs": 7420,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 7340,
+          "wordRange": {
+            "end": 68,
+            "start": 66
+          }
+        },
+        {
+          "endMs": 7900,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 7420,
+          "wordRange": {
+            "end": 75,
+            "start": 69
+          }
+        },
+        {
+          "endMs": 16010,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 8410,
+          "wordRange": null
+        },
+        {
+          "endMs": 9510,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 8470,
+          "wordRange": null
+        },
+        {
+          "endMs": 8710,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 8470,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9190,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 9110,
+          "wordRange": {
+            "end": 7,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 9350,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 9190,
+          "wordRange": {
+            "end": 10,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 9430,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 9350,
+          "wordRange": {
+            "end": 12,
+            "start": 11
+          }
+        },
+        {
+          "endMs": 9510,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 9430,
+          "wordRange": {
+            "end": 15,
+            "start": 13
+          }
+        },
+        {
+          "endMs": 10070,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 9510,
+          "wordRange": null
+        },
+        {
+          "endMs": 10070,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 9510,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11110,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 10870,
+          "wordRange": null
+        },
+        {
+          "endMs": 11030,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 10870,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 11110,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 11030,
+          "wordRange": {
+            "end": 9,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 11670,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4",
+          "startMs": 11110,
+          "wordRange": null
+        },
+        {
+          "endMs": 11670,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4",
+          "startMs": 11110,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 15830,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 11670,
+          "wordRange": null
+        },
+        {
+          "endMs": 11750,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 11670,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 11910,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 11750,
+          "wordRange": {
+            "end": 7,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 12150,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 11910,
+          "wordRange": {
+            "end": 12,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 12390,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 12150,
+          "wordRange": {
+            "end": 18,
+            "start": 13
+          }
+        },
+        {
+          "endMs": 12550,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 12390,
+          "wordRange": {
+            "end": 24,
+            "start": 19
+          }
+        },
+        {
+          "endMs": 12710,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 12550,
+          "wordRange": {
+            "end": 28,
+            "start": 25
+          }
+        },
+        {
+          "endMs": 13030,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 12710,
+          "wordRange": {
+            "end": 33,
+            "start": 29
+          }
+        },
+        {
+          "endMs": 13670,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 13510,
+          "wordRange": {
+            "end": 40,
+            "start": 35
+          }
+        },
+        {
+          "endMs": 13750,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 13670,
+          "wordRange": {
+            "end": 44,
+            "start": 41
+          }
+        },
+        {
+          "endMs": 13830,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 13750,
+          "wordRange": {
+            "end": 47,
+            "start": 45
+          }
+        },
+        {
+          "endMs": 14310,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 13830,
+          "wordRange": {
+            "end": 54,
+            "start": 48
+          }
+        },
+        {
+          "endMs": 14630,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 14310,
+          "wordRange": {
+            "end": 60,
+            "start": 55
+          }
+        },
+        {
+          "endMs": 14950,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 14710,
+          "wordRange": {
+            "end": 64,
+            "start": 61
+          }
+        },
+        {
+          "endMs": 15190,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 14950,
+          "wordRange": {
+            "end": 69,
+            "start": 65
+          }
+        },
+        {
+          "endMs": 15590,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 15190,
+          "wordRange": {
+            "end": 79,
+            "start": 70
+          }
+        },
+        {
+          "endMs": 15830,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 15590,
+          "wordRange": {
+            "end": 85,
+            "start": 80
+          }
+        },
+        {
+          "endMs": 23860,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 16260,
+          "wordRange": null
+        },
+        {
+          "endMs": 17940,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 16420,
+          "wordRange": null
+        },
+        {
+          "endMs": 16580,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 16420,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 17060,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 16580,
+          "wordRange": {
+            "end": 9,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 17380,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 17300,
+          "wordRange": {
+            "end": 13,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 17700,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 17380,
+          "wordRange": {
+            "end": 18,
+            "start": 14
+          }
+        },
+        {
+          "endMs": 17940,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 17780,
+          "wordRange": {
+            "end": 24,
+            "start": 19
+          }
+        },
+        {
+          "endMs": 18340,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 17940,
+          "wordRange": null
+        },
+        {
+          "endMs": 18340,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 17940,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 21620,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 18340,
+          "wordRange": null
+        },
+        {
+          "endMs": 18500,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 18340,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 18580,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 18500,
+          "wordRange": {
+            "end": 7,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 19060,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 18580,
+          "wordRange": {
+            "end": 15,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 19540,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 19380,
+          "wordRange": {
+            "end": 19,
+            "start": 17
+          }
+        },
+        {
+          "endMs": 19620,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 19540,
+          "wordRange": {
+            "end": 23,
+            "start": 20
+          }
+        },
+        {
+          "endMs": 19780,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 19620,
+          "wordRange": {
+            "end": 28,
+            "start": 24
+          }
+        },
+        {
+          "endMs": 20260,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 19780,
+          "wordRange": {
+            "end": 34,
+            "start": 29
+          }
+        },
+        {
+          "endMs": 20740,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 20580,
+          "wordRange": {
+            "end": 40,
+            "start": 36
+          }
+        },
+        {
+          "endMs": 20900,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 20740,
+          "wordRange": {
+            "end": 43,
+            "start": 41
+          }
+        },
+        {
+          "endMs": 21220,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 20900,
+          "wordRange": {
+            "end": 51,
+            "start": 44
+          }
+        },
+        {
+          "endMs": 21300,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 21220,
+          "wordRange": {
+            "end": 55,
+            "start": 52
+          }
+        },
+        {
+          "endMs": 21620,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 21380,
+          "wordRange": {
+            "end": 61,
+            "start": 56
+          }
+        },
+        {
+          "endMs": 22180,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 21620,
+          "wordRange": null
+        },
+        {
+          "endMs": 22180,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 21620,
+          "wordRange": {
+            "end": 9,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 23620,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 22180,
+          "wordRange": null
+        },
+        {
+          "endMs": 22340,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 22180,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 22580,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 22340,
+          "wordRange": {
+            "end": 10,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 22660,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 22580,
+          "wordRange": {
+            "end": 13,
+            "start": 11
+          }
+        },
+        {
+          "endMs": 22980,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 22660,
+          "wordRange": {
+            "end": 21,
+            "start": 14
+          }
+        },
+        {
+          "endMs": 23620,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 23060,
+          "wordRange": {
+            "end": 33,
+            "start": 22
+          }
+        },
+        {
+          "endMs": 31710,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 24110,
+          "wordRange": null
+        },
+        {
+          "endMs": 30750,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 24190,
+          "wordRange": null
+        },
+        {
+          "endMs": 24270,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 24190,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 24590,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 24270,
+          "wordRange": {
+            "end": 9,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 24830,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 24590,
+          "wordRange": {
+            "end": 15,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 25070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 24830,
+          "wordRange": {
+            "end": 18,
+            "start": 16
+          }
+        },
+        {
+          "endMs": 25390,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 25070,
+          "wordRange": {
+            "end": 25,
+            "start": 19
+          }
+        },
+        {
+          "endMs": 25550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 25390,
+          "wordRange": {
+            "end": 30,
+            "start": 26
+          }
+        },
+        {
+          "endMs": 26030,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 25550,
+          "wordRange": {
+            "end": 36,
+            "start": 31
+          }
+        },
+        {
+          "endMs": 26830,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 26670,
+          "wordRange": {
+            "end": 40,
+            "start": 38
+          }
+        },
+        {
+          "endMs": 26990,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 26830,
+          "wordRange": {
+            "end": 46,
+            "start": 41
+          }
+        },
+        {
+          "endMs": 27310,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 26990,
+          "wordRange": {
+            "end": 50,
+            "start": 47
+          }
+        },
+        {
+          "endMs": 27390,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 27310,
+          "wordRange": {
+            "end": 54,
+            "start": 51
+          }
+        },
+        {
+          "endMs": 27790,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 27390,
+          "wordRange": {
+            "end": 59,
+            "start": 55
+          }
+        },
+        {
+          "endMs": 28510,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 28190,
+          "wordRange": {
+            "end": 67,
+            "start": 61
+          }
+        },
+        {
+          "endMs": 28670,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 28510,
+          "wordRange": {
+            "end": 71,
+            "start": 68
+          }
+        },
+        {
+          "endMs": 28750,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 28670,
+          "wordRange": {
+            "end": 74,
+            "start": 72
+          }
+        },
+        {
+          "endMs": 29310,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 28750,
+          "wordRange": {
+            "end": 82,
+            "start": 75
+          }
+        },
+        {
+          "endMs": 29550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 29390,
+          "wordRange": {
+            "end": 86,
+            "start": 83
+          }
+        },
+        {
+          "endMs": 29710,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 29550,
+          "wordRange": {
+            "end": 91,
+            "start": 87
+          }
+        },
+        {
+          "endMs": 29950,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 29710,
+          "wordRange": {
+            "end": 97,
+            "start": 92
+          }
+        },
+        {
+          "endMs": 30190,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 29950,
+          "wordRange": {
+            "end": 101,
+            "start": 98
+          }
+        },
+        {
+          "endMs": 30350,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 30190,
+          "wordRange": {
+            "end": 106,
+            "start": 102
+          }
+        },
+        {
+          "endMs": 30670,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 30350,
+          "wordRange": {
+            "end": 115,
+            "start": 107
+          }
+        },
+        {
+          "endMs": 30750,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 30670,
+          "wordRange": {
+            "end": 118,
+            "start": 116
+          }
+        },
+        {
+          "endMs": 31070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 30750,
+          "wordRange": null
+        },
+        {
+          "endMs": 31070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 30750,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 31550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 31070,
+          "wordRange": null
+        },
+        {
+          "endMs": 31150,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 31070,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 31550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 31150,
+          "wordRange": {
+            "end": 9,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 38200,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 31960,
+          "wordRange": null
+        },
+        {
+          "endMs": 32600,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 32040,
+          "wordRange": null
+        },
+        {
+          "endMs": 32200,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 32040,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 32440,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 32200,
+          "wordRange": {
+            "end": 10,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 32600,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 32520,
+          "wordRange": {
+            "end": 14,
+            "start": 11
+          }
+        },
+        {
+          "endMs": 32840,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 32600,
+          "wordRange": null
+        },
+        {
+          "endMs": 32840,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 32600,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 37960,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 32840,
+          "wordRange": null
+        },
+        {
+          "endMs": 32920,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 32840,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 33080,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 32920,
+          "wordRange": {
+            "end": 7,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 33480,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 33080,
+          "wordRange": {
+            "end": 14,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 33880,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 33800,
+          "wordRange": {
+            "end": 18,
+            "start": 16
+          }
+        },
+        {
+          "endMs": 34120,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 33880,
+          "wordRange": {
+            "end": 23,
+            "start": 19
+          }
+        },
+        {
+          "endMs": 34280,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 34120,
+          "wordRange": {
+            "end": 25,
+            "start": 24
+          }
+        },
+        {
+          "endMs": 34440,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 34280,
+          "wordRange": {
+            "end": 31,
+            "start": 26
+          }
+        },
+        {
+          "endMs": 34520,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 34440,
+          "wordRange": {
+            "end": 33,
+            "start": 32
+          }
+        },
+        {
+          "endMs": 34840,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 34520,
+          "wordRange": {
+            "end": 38,
+            "start": 34
+          }
+        },
+        {
+          "endMs": 35000,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 34840,
+          "wordRange": {
+            "end": 41,
+            "start": 39
+          }
+        },
+        {
+          "endMs": 35240,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 35000,
+          "wordRange": {
+            "end": 45,
+            "start": 42
+          }
+        },
+        {
+          "endMs": 35640,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 35240,
+          "wordRange": {
+            "end": 53,
+            "start": 46
+          }
+        },
+        {
+          "endMs": 35960,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 35880,
+          "wordRange": {
+            "end": 57,
+            "start": 55
+          }
+        },
+        {
+          "endMs": 36280,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 35960,
+          "wordRange": {
+            "end": 62,
+            "start": 58
+          }
+        },
+        {
+          "endMs": 36360,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 36280,
+          "wordRange": {
+            "end": 65,
+            "start": 63
+          }
+        },
+        {
+          "endMs": 36600,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 36360,
+          "wordRange": {
+            "end": 72,
+            "start": 66
+          }
+        },
+        {
+          "endMs": 36920,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 36600,
+          "wordRange": {
+            "end": 77,
+            "start": 73
+          }
+        },
+        {
+          "endMs": 37000,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 36920,
+          "wordRange": {
+            "end": 80,
+            "start": 78
+          }
+        },
+        {
+          "endMs": 37240,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 37000,
+          "wordRange": {
+            "end": 86,
+            "start": 81
+          }
+        },
+        {
+          "endMs": 37400,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 37240,
+          "wordRange": {
+            "end": 92,
+            "start": 87
+          }
+        },
+        {
+          "endMs": 37480,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 37400,
+          "wordRange": {
+            "end": 95,
+            "start": 93
+          }
+        },
+        {
+          "endMs": 37960,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 37480,
+          "wordRange": {
+            "end": 103,
+            "start": 96
+          }
+        },
+        {
+          "endMs": 45650,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 38450,
+          "wordRange": null
+        },
+        {
+          "endMs": 39170,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 38450,
+          "wordRange": null
+        },
+        {
+          "endMs": 38530,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 38450,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 38930,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 38530,
+          "wordRange": {
+            "end": 9,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 39010,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 38930,
+          "wordRange": {
+            "end": 13,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 39170,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 39010,
+          "wordRange": {
+            "end": 18,
+            "start": 14
+          }
+        },
+        {
+          "endMs": 39330,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 39170,
+          "wordRange": null
+        },
+        {
+          "endMs": 39330,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 39170,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 45490,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 39330,
+          "wordRange": null
+        },
+        {
+          "endMs": 39490,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 39330,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 39570,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 39490,
+          "wordRange": {
+            "end": 7,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 39970,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 39570,
+          "wordRange": {
+            "end": 14,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 40690,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 40610,
+          "wordRange": {
+            "end": 20,
+            "start": 16
+          }
+        },
+        {
+          "endMs": 40850,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 40770,
+          "wordRange": {
+            "end": 23,
+            "start": 21
+          }
+        },
+        {
+          "endMs": 40930,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 40850,
+          "wordRange": {
+            "end": 25,
+            "start": 24
+          }
+        },
+        {
+          "endMs": 41010,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 40930,
+          "wordRange": {
+            "end": 27,
+            "start": 26
+          }
+        },
+        {
+          "endMs": 41170,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 41010,
+          "wordRange": {
+            "end": 30,
+            "start": 28
+          }
+        },
+        {
+          "endMs": 41410,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 41170,
+          "wordRange": {
+            "end": 36,
+            "start": 31
+          }
+        },
+        {
+          "endMs": 41490,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 41410,
+          "wordRange": {
+            "end": 39,
+            "start": 37
+          }
+        },
+        {
+          "endMs": 41730,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 41490,
+          "wordRange": {
+            "end": 43,
+            "start": 40
+          }
+        },
+        {
+          "endMs": 41810,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 41730,
+          "wordRange": {
+            "end": 45,
+            "start": 44
+          }
+        },
+        {
+          "endMs": 42210,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 41810,
+          "wordRange": {
+            "end": 50,
+            "start": 46
+          }
+        },
+        {
+          "endMs": 43170,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 43010,
+          "wordRange": {
+            "end": 56,
+            "start": 52
+          }
+        },
+        {
+          "endMs": 43410,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 43170,
+          "wordRange": {
+            "end": 63,
+            "start": 57
+          }
+        },
+        {
+          "endMs": 43810,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 43410,
+          "wordRange": {
+            "end": 72,
+            "start": 64
+          }
+        },
+        {
+          "endMs": 43970,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 43810,
+          "wordRange": {
+            "end": 75,
+            "start": 73
+          }
+        },
+        {
+          "endMs": 44450,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 43970,
+          "wordRange": {
+            "end": 82,
+            "start": 76
+          }
+        },
+        {
+          "endMs": 44770,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 44610,
+          "wordRange": {
+            "end": 88,
+            "start": 83
+          }
+        },
+        {
+          "endMs": 44850,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 44770,
+          "wordRange": {
+            "end": 91,
+            "start": 89
+          }
+        },
+        {
+          "endMs": 45490,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 44850,
+          "wordRange": {
+            "end": 99,
+            "start": 92
+          }
+        },
+        {
+          "endMs": 54300,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 45900,
+          "wordRange": null
+        },
+        {
+          "endMs": 54060,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 45900,
+          "wordRange": null
+        },
+        {
+          "endMs": 46060,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 45900,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 46460,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 46060,
+          "wordRange": {
+            "end": 10,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 46700,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 46460,
+          "wordRange": {
+            "end": 16,
+            "start": 11
+          }
+        },
+        {
+          "endMs": 47020,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 46700,
+          "wordRange": {
+            "end": 22,
+            "start": 17
+          }
+        },
+        {
+          "endMs": 47180,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 47100,
+          "wordRange": {
+            "end": 25,
+            "start": 23
+          }
+        },
+        {
+          "endMs": 47500,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 47180,
+          "wordRange": {
+            "end": 31,
+            "start": 26
+          }
+        },
+        {
+          "endMs": 47580,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 47500,
+          "wordRange": {
+            "end": 35,
+            "start": 32
+          }
+        },
+        {
+          "endMs": 47900,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 47580,
+          "wordRange": {
+            "end": 43,
+            "start": 36
+          }
+        },
+        {
+          "endMs": 48460,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 47900,
+          "wordRange": {
+            "end": 54,
+            "start": 44
+          }
+        },
+        {
+          "endMs": 49180,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 48940,
+          "wordRange": {
+            "end": 58,
+            "start": 56
+          }
+        },
+        {
+          "endMs": 49580,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 49180,
+          "wordRange": {
+            "end": 65,
+            "start": 59
+          }
+        },
+        {
+          "endMs": 49740,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 49580,
+          "wordRange": {
+            "end": 68,
+            "start": 66
+          }
+        },
+        {
+          "endMs": 50140,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 49740,
+          "wordRange": {
+            "end": 74,
+            "start": 69
+          }
+        },
+        {
+          "endMs": 50700,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 50460,
+          "wordRange": {
+            "end": 80,
+            "start": 76
+          }
+        },
+        {
+          "endMs": 50780,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 50700,
+          "wordRange": {
+            "end": 83,
+            "start": 81
+          }
+        },
+        {
+          "endMs": 50860,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 50780,
+          "wordRange": {
+            "end": 89,
+            "start": 84
+          }
+        },
+        {
+          "endMs": 51180,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 50860,
+          "wordRange": {
+            "end": 93,
+            "start": 90
+          }
+        },
+        {
+          "endMs": 51900,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 51180,
+          "wordRange": {
+            "end": 107,
+            "start": 94
+          }
+        },
+        {
+          "endMs": 52300,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 52140,
+          "wordRange": {
+            "end": 111,
+            "start": 109
+          }
+        },
+        {
+          "endMs": 52460,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 52300,
+          "wordRange": {
+            "end": 116,
+            "start": 112
+          }
+        },
+        {
+          "endMs": 52700,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 52460,
+          "wordRange": {
+            "end": 122,
+            "start": 117
+          }
+        },
+        {
+          "endMs": 52860,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 52700,
+          "wordRange": {
+            "end": 126,
+            "start": 123
+          }
+        },
+        {
+          "endMs": 53340,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 52860,
+          "wordRange": {
+            "end": 136,
+            "start": 127
+          }
+        },
+        {
+          "endMs": 53420,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 53340,
+          "wordRange": {
+            "end": 139,
+            "start": 137
+          }
+        },
+        {
+          "endMs": 53740,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 53420,
+          "wordRange": {
+            "end": 146,
+            "start": 140
+          }
+        },
+        {
+          "endMs": 54060,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 53740,
+          "wordRange": {
+            "end": 155,
+            "start": 147
+          }
+        },
+        {
+          "endMs": 63910,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 54550,
+          "wordRange": null
+        },
+        {
+          "endMs": 63750,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 54550,
+          "wordRange": null
+        },
+        {
+          "endMs": 54710,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 54550,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 55030,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 54710,
+          "wordRange": {
+            "end": 10,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 56070,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 55830,
+          "wordRange": {
+            "end": 16,
+            "start": 12
+          }
+        },
+        {
+          "endMs": 56390,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 56070,
+          "wordRange": {
+            "end": 24,
+            "start": 17
+          }
+        },
+        {
+          "endMs": 56950,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 56390,
+          "wordRange": {
+            "end": 33,
+            "start": 25
+          }
+        },
+        {
+          "endMs": 57110,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 56950,
+          "wordRange": {
+            "end": 37,
+            "start": 34
+          }
+        },
+        {
+          "endMs": 57750,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 57110,
+          "wordRange": {
+            "end": 50,
+            "start": 38
+          }
+        },
+        {
+          "endMs": 57830,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 57750,
+          "wordRange": {
+            "end": 53,
+            "start": 51
+          }
+        },
+        {
+          "endMs": 58150,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 57830,
+          "wordRange": {
+            "end": 59,
+            "start": 54
+          }
+        },
+        {
+          "endMs": 58230,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 58150,
+          "wordRange": {
+            "end": 63,
+            "start": 60
+          }
+        },
+        {
+          "endMs": 58710,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 58230,
+          "wordRange": {
+            "end": 73,
+            "start": 64
+          }
+        },
+        {
+          "endMs": 59030,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 58710,
+          "wordRange": {
+            "end": 80,
+            "start": 74
+          }
+        },
+        {
+          "endMs": 59590,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 59430,
+          "wordRange": {
+            "end": 84,
+            "start": 82
+          }
+        },
+        {
+          "endMs": 59750,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 59590,
+          "wordRange": {
+            "end": 89,
+            "start": 85
+          }
+        },
+        {
+          "endMs": 59990,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 59750,
+          "wordRange": {
+            "end": 95,
+            "start": 90
+          }
+        },
+        {
+          "endMs": 60470,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 59990,
+          "wordRange": {
+            "end": 104,
+            "start": 96
+          }
+        },
+        {
+          "endMs": 60790,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 60630,
+          "wordRange": {
+            "end": 107,
+            "start": 105
+          }
+        },
+        {
+          "endMs": 60950,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 60790,
+          "wordRange": {
+            "end": 111,
+            "start": 108
+          }
+        },
+        {
+          "endMs": 61030,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 60950,
+          "wordRange": {
+            "end": 115,
+            "start": 112
+          }
+        },
+        {
+          "endMs": 61510,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 61030,
+          "wordRange": {
+            "end": 123,
+            "start": 116
+          }
+        },
+        {
+          "endMs": 61670,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 61510,
+          "wordRange": {
+            "end": 128,
+            "start": 124
+          }
+        },
+        {
+          "endMs": 61750,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 61670,
+          "wordRange": {
+            "end": 131,
+            "start": 129
+          }
+        },
+        {
+          "endMs": 62150,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 61750,
+          "wordRange": {
+            "end": 136,
+            "start": 132
+          }
+        },
+        {
+          "endMs": 62710,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 62310,
+          "wordRange": {
+            "end": 142,
+            "start": 137
+          }
+        },
+        {
+          "endMs": 62790,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 62710,
+          "wordRange": {
+            "end": 145,
+            "start": 143
+          }
+        },
+        {
+          "endMs": 63190,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 62790,
+          "wordRange": {
+            "end": 153,
+            "start": 146
+          }
+        },
+        {
+          "endMs": 63270,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 63190,
+          "wordRange": {
+            "end": 157,
+            "start": 154
+          }
+        },
+        {
+          "endMs": 63750,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 63270,
+          "wordRange": {
+            "end": 166,
+            "start": 158
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-home-morning",
+      "placeZh": "参观两套虚构公寓之后",
+      "situationZh": "比较面积、光线、位置和租金，区分更高、更低和相同的程度。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-1",
+          "labelZh": "看房者 Camille"
+        },
+        {
+          "avatarId": "avatar-luc-v1",
+          "characterId": "character-luc",
+          "displayName": "Luc",
+          "id": "speaker-2",
+          "labelZh": "同行的朋友 Luc"
+        }
+      ],
+      "titleZh": "比较住处",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Nous avons visité deux appartements ce matin. Le premier est plus "
+            },
+            {
+              "grammarId": "grammar-a2-adjective-comparison",
+              "id": "segment-1-2",
+              "text": "grand",
+              "vocabularyId": "word-grand"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " que le second, avec un salon où nous pouvons mettre une table et un canapé."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "今天上午我们看了两套公寓。第一套比第二套大，客厅可以放桌子和沙发。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Oui, et il a un "
+            },
+            {
+              "id": "segment-2-2",
+              "text": "balcon",
+              "vocabularyId": "word-balcon"
+            },
+            {
+              "id": "segment-2-3",
+              "text": ". Mais le "
+            },
+            {
+              "id": "segment-2-4",
+              "text": "loyer",
+              "vocabularyId": "word-loyer"
+            },
+            {
+              "id": "segment-2-5",
+              "text": " est de sept cents euros par mois, alors que le second coûte six cent cinquante euros."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "是的，而且有阳台。但它每月租金七百欧元，第二套是六百五十欧元。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Le second est donc moins "
+            },
+            {
+              "id": "segment-3-2",
+              "text": "cher",
+              "vocabularyId": "word-cher"
+            },
+            {
+              "id": "segment-3-3",
+              "text": " que le premier. Il est plus petit, mais sa chambre est aussi "
+            },
+            {
+              "grammarId": "grammar-a2-aussi-adjective-que",
+              "id": "segment-3-4",
+              "text": "lumineuse",
+              "vocabularyId": "word-lumineux"
+            },
+            {
+              "id": "segment-3-5",
+              "text": " que celle du premier appartement."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "所以第二套比第一套便宜。它较小，但卧室和第一套的一样明亮。"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Je trouve aussi le second plus calme. Il donne sur une cour, tandis que le premier est près d’une rue avec beaucoup de "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "bruit",
+              "vocabularyId": "word-bruit"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " le matin."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "我也觉得第二套更安静。它朝向院子，而第一套靠近一条早晨很吵的街。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Le premier est "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "proche",
+              "vocabularyId": "word-proche"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " de mon bureau. Je peux y aller à pied en dix minutes, et cela me laisse plus de temps avant le travail."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "第一套离我的办公室近。我可以十分钟走到，这样上班前能多一些时间。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Le second est plus "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "loin",
+              "vocabularyId": "word-loin"
+            },
+            {
+              "id": "segment-6-3",
+              "text": " de ton bureau, mais il y a un arrêt de bus à côté. Nous devons vérifier le trajet avant de choisir."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "第二套离你的办公室更远，但旁边有公交站。决定之前，我们需要核对路程。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Je préfère payer moins et avoir une chambre tranquille. Le balcon me plaît, mais il n’est pas indispensable. Je vais noter les avantages de chaque logement."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "我更愿意少付一些钱，有一间安静的卧室。我喜欢阳台，但它不是必需的。我会记下每套住处的优点。"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Bonne idée. Nous pouvons comparer les informations et poser nos questions demain. Il faut aussi demander ce qui est compris dans le prix avant de prendre une décision."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "好主意。我们可以比较信息，明天提出问题。决定前，还需要问清价格包含什么。"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "plus grand que 和 moins cher que 比较两个对象。aussi lumineuse que 只说明卧室光线相同，不表示所有特点相同。chambre 阴性，采用 lumineuse；appartement 阳性，采用 grand、cher。celle du premier 代替第一套公寓的卧室，y 指办公室。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "租金、面积、光线、位置与公交为练习设定，不是市场报价或租房建议；每套真实住房的费用与条件需另行核对。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-grand",
+        "word-lumineux",
+        "word-cher",
+        "word-proche",
+        "word-loin",
+        "word-loyer",
+        "word-balcon",
+        "word-bruit"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-a2-adjective-comparison",
+        "grammar-a2-aussi-adjective-que"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "第一套，七百欧元"
+        },
+        {
+          "id": "correct",
+          "text": "第二套，六百五十欧元"
+        },
+        {
+          "id": "distractor-b",
+          "text": "两套相同"
+        }
+      ],
+      "promptZh": "哪套公寓的月租更低？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "“明亮的”配阴性单数 chambre，要用 lumineuse。",
+      "id": "exercise-fill",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Cette chambre est aussi ___ que l’autre.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "que le premier."
+        },
+        {
+          "id": "token-1",
+          "text": "Le second appartement"
+        },
+        {
+          "id": "token-2",
+          "text": "est moins cher"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。",
+      "id": "habit-main",
+      "taskZh": "描述两套虚构住处，用一个比较级和一个 aussi…que 句子。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能比较两套住房的特点。",
+        "我能使用 plus 和 moins 加形容词。",
+        "我能用 aussi…que 表示程度相同。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-luc-v1",
+      "characterId": "character-luc",
+      "displayName": "Luc",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner instructed direct publication of courses and recordings without manual approval; actual fixed-model alignment validated; no human listening or independent expert review asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 16,
+  "id": "a2-home-compare-rooms",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "比较两者可用 plus + 形容词 + que（更……）或 moins + 形容词 + que（较不……）。形容词仍与被描述名词配合；bon 等有特殊比较形式，不能一律套用 plus。",
+        "examples": [
+          {
+            "fr": "Le second appartement est moins cher que le premier.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-9fb2d3e41b3131996ec977667bbb5944d38d70567ef15428ab12683c3e394e3a",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 2560,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "6af75777f6556971c81e308567a3b9cb6a5a1f8242211df06cca4c0f8b1529a0",
+                "url": "/api/audio/6af75777f6556971c81e308567a3b9cb6a5a1f8242211df06cca4c0f8b1529a0.wav"
+              },
+              "endMs": 2560,
+              "startMs": 0
+            },
+            "zh": "第二套公寓比第一套便宜。"
+          }
+        ],
+        "id": "grammar-a2-adjective-comparison",
+        "titleZh": "plus / moins + 形容词 + que"
+      },
+      {
+        "bodyZh": "aussi + 形容词 + que 表示两者在某一性质上程度相同。本课 chambre 为阴性单数，所以用 lumineuse；这里 aussi 是比较结构的一部分，与“也”的用法区分。",
+        "examples": [
+          {
+            "fr": "Cette chambre est aussi lumineuse que l’autre.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-31ba93aa77f649e5e7735d54891705a4ab9b2a1dae05e4da2d8b99f0c2bb970e",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 2400,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "4da1d380a71888b8a1d6efb5824527963d7932b50bbd6a31a455dd77e7c882d2",
+                "url": "/api/audio/4da1d380a71888b8a1d6efb5824527963d7932b50bbd6a31a455dd77e7c882d2.wav"
+              },
+              "endMs": 2400,
+              "startMs": 0
+            },
+            "zh": "这间卧室和另一间一样明亮。"
+          }
+        ],
+        "id": "grammar-a2-aussi-adjective-que",
+        "titleZh": "aussi + 形容词 + que：程度相同"
+      }
+    ],
+    "vocabulary": [
+      {
+        "id": "word-grand",
+        "lemma": "grand",
+        "meaningZh": "大的",
+        "noteZh": "un appartement grand；阴性单数 grande。",
+        "partOfSpeech": "adjective",
+        "recording": {
+          "asset": {
+            "assetId": "speech-728e5b19d320e6c31633ccd9060d876f36fb7c77f5f3940bd7047925493a3011",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "69d21bff5201d8c1bd2e486dbee0ecb3d490190f8f060fcdeaf1c927de32a66a",
+            "url": "/api/audio/69d21bff5201d8c1bd2e486dbee0ecb3d490190f8f060fcdeaf1c927de32a66a.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-lumineux",
+        "lemma": "lumineux",
+        "meaningZh": "明亮的",
+        "noteZh": "阳性 lumineux，阴性 lumineuse。",
+        "partOfSpeech": "adjective",
+        "recording": {
+          "asset": {
+            "assetId": "speech-e0927191957baa83e8c38cba95c140b0bf0b4790b6d7230e9f7e67036079c7ed",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "2bf911e2c2bc4ec9d99c5bb5c66a810d2d0f100779a2cb3b5440e56c073e37f5",
+            "url": "/api/audio/2bf911e2c2bc4ec9d99c5bb5c66a810d2d0f100779a2cb3b5440e56c073e37f5.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-cher",
+        "lemma": "cher",
+        "meaningZh": "昂贵的",
+        "noteZh": "阳性 cher，阴性 chère；本课比较住房价格。",
+        "partOfSpeech": "adjective",
+        "recording": {
+          "asset": {
+            "assetId": "speech-cf3013568c65f5e737c255305b1c15a657e648302915cbd2a843e6ce8e16f11a",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "aa4ab054571f9d17c6f08d8664fa2bd082014d0837a45303f25bd18fe8b7f379",
+            "url": "/api/audio/aa4ab054571f9d17c6f08d8664fa2bd082014d0837a45303f25bd18fe8b7f379.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-proche",
+        "lemma": "proche",
+        "meaningZh": "近的",
+        "noteZh": "proche de + 地点；阴阳性单数形式相同。",
+        "partOfSpeech": "adjective",
+        "recording": {
+          "asset": {
+            "assetId": "speech-4fe58f5c4c595e989db2347b27baee5fcbacaa827206265bffdaddc4722cd53d",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "88f772fdc732f89e75cca112ff56cd40780f91c917c94decdb262600fe8fe8b0",
+            "url": "/api/audio/88f772fdc732f89e75cca112ff56cd40780f91c917c94decdb262600fe8fe8b0.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-loin",
+        "lemma": "loin",
+        "meaningZh": "远",
+        "noteZh": "loin de + 地点；这里是位置副词。",
+        "partOfSpeech": "adverb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-34bb845750a9f4ee04d80df6f807b0507bd3ab5407cafe1251dddf7c43cce959",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "3d0d0c470638ef465144204a03af36114ab93818fd725ccba9dbb307c68525cb",
+            "url": "/api/audio/3d0d0c470638ef465144204a03af36114ab93818fd725ccba9dbb307c68525cb.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-loyer",
+        "lemma": "loyer",
+        "meaningZh": "租金",
+        "noteZh": "搭配冠词学习 loyer。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-3546dece0a3ac17377509df0249938b9686445aa4b39c7bb0cc59ed04830e476",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "5255da5508d24686f31e2998ab376d43d0d2ab8ae7c6b756518d62224b683f23",
+            "url": "/api/audio/5255da5508d24686f31e2998ab376d43d0d2ab8ae7c6b756518d62224b683f23.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-balcon",
+        "lemma": "balcon",
+        "meaningZh": "阳台",
+        "noteZh": "搭配冠词学习 balcon。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-d8e082f9ce6a7114ff6f9aaa58185cc687d0c900d9ff494fcef85b7ba6f3062b",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "4e98533cbf3933a036d55a91c95b6e70d444f5bb531412c2be366b2d66099339",
+            "url": "/api/audio/4e98533cbf3933a036d55a91c95b6e70d444f5bb531412c2be366b2d66099339.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-bruit",
+        "lemma": "bruit",
+        "meaningZh": "噪声；声音",
+        "noteZh": "faire du bruit 表示发出噪声。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-e69bddb7a3e2b944df3f2ce16a8b762f0d52896d722be875dd857197efac8c10",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "c904b9a948e58361b4788779aaaa004366b14613a90814e142dff7fcaa89a7eb",
+            "url": "/api/audio/c904b9a948e58361b4788779aaaa004366b14613a90814e142dff7fcaa89a7eb.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a2",
+  "media": [
+    {
+      "altZh": "晨光照进虚构公寓，书桌上有书和杯子，旁边是扶手椅与绿植",
+      "assetId": "art-home-morning",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "aa1458e135b40b1df9c1f47aff2c4fd7f1a19ffc40a14af98467b93e1a2df652",
+      "url": "/api/media/aa1458e135b40b1df9c1f47aff2c4fd7f1a19ffc40a14af98467b93e1a2df652.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Luc 的头像",
+      "assetId": "avatar-luc-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b",
+      "url": "/api/media/75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "比较两套住房的特点",
+    "使用 plus 和 moins 加形容词",
+    "用 aussi…que 表示程度相同"
+  ],
+  "reviewItemIds": [
+    "word-loyer",
+    "word-lumineux",
+    "word-cher"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：第二套，六百五十欧元。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "lumineuse"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "“明亮的”配阴性单数 chambre，要用 lumineuse。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Le second appartement est moins cher que le premier.",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "比较面积、光线、位置和租金，区分更高、更低和相同的程度。",
+  "title": {
+    "fr": "Deux appartements à comparer",
+    "zh": "比较住处"
+  },
+  "unitId": "a2-shared-living"
+}

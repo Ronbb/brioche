@@ -1,0 +1,1399 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-park-meeting",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-37ae59ae212c7a565d58bac353afdd7fb326e2a81d9a936ca755d8bdd762598e",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1760,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "62d2d47cd13ba752708561d1f02b6f030462a3afab0c9b841d1be3c4c265f278",
+      "url": "/api/audio/62d2d47cd13ba752708561d1f02b6f030462a3afab0c9b841d1be3c4c265f278.wav"
+    },
+    {
+      "assetId": "speech-3d894b5b06cecdd6488a201806594961c8dc3ccd1b60051cffef1edef2c6c698",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "811060c79a20bc7c04e47ff88f9a9641a688c18e7e702edd61b05c3ce05170be",
+      "url": "/api/audio/811060c79a20bc7c04e47ff88f9a9641a688c18e7e702edd61b05c3ce05170be.wav"
+    },
+    {
+      "assetId": "speech-4d8c76dbb7b01f9e9f0c1d60267684882bf610c508c1025650da9fb1d7f421ee",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "5e6f0a42d3fad69998842fd6231b1de52bc5981e1b83f3fda3d0773be436b08d",
+      "url": "/api/audio/5e6f0a42d3fad69998842fd6231b1de52bc5981e1b83f3fda3d0773be436b08d.wav"
+    },
+    {
+      "assetId": "speech-6581bcb2eed3f0dd064a89b534d50a26521e6956167697cbd18070e0f7f183c8",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "5f004bde529bea3c58f3c92df3839d5b0639aa0036425fee0f5f3a1c5c807e93",
+      "url": "/api/audio/5f004bde529bea3c58f3c92df3839d5b0639aa0036425fee0f5f3a1c5c807e93.wav"
+    },
+    {
+      "assetId": "speech-6b7c422740d01d1ebb94187c34ffc6734a20017215d2c73ccf1411762f778ebe",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "b498dec53e4eeba97969b0d140873924a4f6509f72fbd6cc13cad61931dca005",
+      "url": "/api/audio/b498dec53e4eeba97969b0d140873924a4f6509f72fbd6cc13cad61931dca005.wav"
+    },
+    {
+      "assetId": "speech-8159d0def15b499549a516d5d5d2f1df032aaff663c96ef67a39d214442277be",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "6f7d74b8c1f9569beb64681e65069cc00ab56cd09a72840481b61ffd30b24524",
+      "url": "/api/audio/6f7d74b8c1f9569beb64681e65069cc00ab56cd09a72840481b61ffd30b24524.wav"
+    },
+    {
+      "assetId": "speech-8b15988f6bcba4b1e1671c33de0b4b70c63f8ebd6bf39823832ad99fb9bc1ef4",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1920,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "08decfc96223c7efadae538512823649aa0cd4c1289c4709f6e4755bb596d246",
+      "url": "/api/audio/08decfc96223c7efadae538512823649aa0cd4c1289c4709f6e4755bb596d246.wav"
+    },
+    {
+      "assetId": "speech-c64c4738240365cd13811958920acce71edb46dc62330c0796d7342f52dae1d0",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "3f0659d78769942f8118dbe2c8f7d588769140c00ce3a3d326c4b6882a51fe77",
+      "url": "/api/audio/3f0659d78769942f8118dbe2c8f7d588769140c00ce3a3d326c4b6882a51fe77.wav"
+    },
+    {
+      "assetId": "speech-ce7e88979ea070171fec7b3cda4fb310808d4bc94640a124e16cb101f6d2d22f",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "78076cb4e3306cdaec260d835799af1e0a588c3287f3bea1416dfd1f4a222bd4",
+      "url": "/api/audio/78076cb4e3306cdaec260d835799af1e0a588c3287f3bea1416dfd1f4a222bd4.wav"
+    },
+    {
+      "assetId": "speech-f2a267396e1962b301f74ade60631a3338794b31f03164232ca10e48c240e627",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "c7a25b0edcfbec00b21a71972a6e6b2aaa818e5dc99ffe4606e35b0b068a7cf4",
+      "url": "/api/audio/c7a25b0edcfbec00b21a71972a6e6b2aaa818e5dc99ffe4606e35b0b068a7cf4.wav"
+    },
+    {
+      "assetId": "speech-f7d8284903b0db799750ec361e529df8755e9032e1875a97bbca9a07d2327a07",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 14790,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "fa441486f1dd458b358545995710071a6194c2553e4869191287b3a87853e467",
+      "url": "/api/audio/fa441486f1dd458b358545995710071a6194c2553e4869191287b3a87853e467.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-37ae59ae212c7a565d58bac353afdd7fb326e2a81d9a936ca755d8bdd762598e",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-3d894b5b06cecdd6488a201806594961c8dc3ccd1b60051cffef1edef2c6c698",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-4d8c76dbb7b01f9e9f0c1d60267684882bf610c508c1025650da9fb1d7f421ee",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-6581bcb2eed3f0dd064a89b534d50a26521e6956167697cbd18070e0f7f183c8",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-6b7c422740d01d1ebb94187c34ffc6734a20017215d2c73ccf1411762f778ebe",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-8159d0def15b499549a516d5d5d2f1df032aaff663c96ef67a39d214442277be",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-8b15988f6bcba4b1e1671c33de0b4b70c63f8ebd6bf39823832ad99fb9bc1ef4",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-c64c4738240365cd13811958920acce71edb46dc62330c0796d7342f52dae1d0",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-ce7e88979ea070171fec7b3cda4fb310808d4bc94640a124e16cb101f6d2d22f",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-f2a267396e1962b301f74ade60631a3338794b31f03164232ca10e48c240e627",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-f7d8284903b0db799750ec361e529df8755e9032e1875a97bbca9a07d2327a07",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-f7d8284903b0db799750ec361e529df8755e9032e1875a97bbca9a07d2327a07",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 1280,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 320,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 240,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 320,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 240,
+          "wordRange": {
+            "end": 5,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 320,
+          "wordRange": null
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 320,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1040,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 560,
+          "wordRange": null
+        },
+        {
+          "endMs": 1040,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 560,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2490,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 1530,
+          "wordRange": null
+        },
+        {
+          "endMs": 2330,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1610,
+          "wordRange": null
+        },
+        {
+          "endMs": 1690,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1610,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2330,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1850,
+          "wordRange": {
+            "end": 13,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 4660,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 2740,
+          "wordRange": null
+        },
+        {
+          "endMs": 2980,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 2820,
+          "wordRange": null
+        },
+        {
+          "endMs": 2980,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 2820,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3060,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 2980,
+          "wordRange": null
+        },
+        {
+          "endMs": 3060,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 2980,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3460,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 3060,
+          "wordRange": null
+        },
+        {
+          "endMs": 3460,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 3060,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3540,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 3460,
+          "wordRange": null
+        },
+        {
+          "endMs": 3540,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 3460,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 3860,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-6",
+          "startMs": 3540,
+          "wordRange": null
+        },
+        {
+          "endMs": 3860,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-6",
+          "startMs": 3540,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4500,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-8",
+          "startMs": 3860,
+          "wordRange": null
+        },
+        {
+          "endMs": 4500,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-8",
+          "startMs": 3860,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7550,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 4910,
+          "wordRange": null
+        },
+        {
+          "endMs": 6030,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 4990,
+          "wordRange": null
+        },
+        {
+          "endMs": 5150,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 4990,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 5790,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 5550,
+          "wordRange": {
+            "end": 10,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 6030,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 5790,
+          "wordRange": {
+            "end": 15,
+            "start": 11
+          }
+        },
+        {
+          "endMs": 7310,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 6830,
+          "wordRange": null
+        },
+        {
+          "endMs": 6990,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 6830,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7150,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 6990,
+          "wordRange": {
+            "end": 8,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 7310,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 7150,
+          "wordRange": {
+            "end": 14,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 8840,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 7800,
+          "wordRange": null
+        },
+        {
+          "endMs": 7960,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 7880,
+          "wordRange": null
+        },
+        {
+          "endMs": 7960,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 7880,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8360,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 8040,
+          "wordRange": null
+        },
+        {
+          "endMs": 8360,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 8040,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8760,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 8360,
+          "wordRange": null
+        },
+        {
+          "endMs": 8760,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 8360,
+          "wordRange": {
+            "end": 7,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 11090,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 9090,
+          "wordRange": null
+        },
+        {
+          "endMs": 10930,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 9090,
+          "wordRange": null
+        },
+        {
+          "endMs": 9650,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 9090,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9970,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 9890,
+          "wordRange": {
+            "end": 12,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 10290,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 9970,
+          "wordRange": {
+            "end": 17,
+            "start": 13
+          }
+        },
+        {
+          "endMs": 10450,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 10290,
+          "wordRange": {
+            "end": 22,
+            "start": 18
+          }
+        },
+        {
+          "endMs": 10530,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 10450,
+          "wordRange": {
+            "end": 25,
+            "start": 23
+          }
+        },
+        {
+          "endMs": 10930,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 10530,
+          "wordRange": {
+            "end": 30,
+            "start": 26
+          }
+        },
+        {
+          "endMs": 12940,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 11340,
+          "wordRange": null
+        },
+        {
+          "endMs": 12780,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11420,
+          "wordRange": null
+        },
+        {
+          "endMs": 11820,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11420,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 12220,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11980,
+          "wordRange": {
+            "end": 11,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 12300,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 12220,
+          "wordRange": {
+            "end": 14,
+            "start": 12
+          }
+        },
+        {
+          "endMs": 12780,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 12300,
+          "wordRange": {
+            "end": 19,
+            "start": 15
+          }
+        },
+        {
+          "endMs": 14790,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 13190,
+          "wordRange": null
+        },
+        {
+          "endMs": 14150,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 13270,
+          "wordRange": null
+        },
+        {
+          "endMs": 13750,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 13270,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 14150,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 14070,
+          "wordRange": {
+            "end": 10,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 14630,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-2",
+          "startMs": 14150,
+          "wordRange": null
+        },
+        {
+          "endMs": 14630,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-2",
+          "startMs": 14150,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-park-meeting",
+      "placeZh": "Camille 与 Léa 商量公园旁的咖啡见面",
+      "situationZh": "询问朋友是否有空，再确定活动、时刻与见面地点。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-1",
+          "labelZh": "朋友"
+        },
+        {
+          "avatarId": "avatar-lea-v1",
+          "characterId": "character-lea",
+          "displayName": "Léa",
+          "id": "speaker-2",
+          "labelZh": "朋友"
+        }
+      ],
+      "titleZh": "邀请朋友喝咖啡",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Tu es "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "libre",
+              "vocabularyId": "word-libre"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " "
+            },
+            {
+              "id": "segment-1-4",
+              "text": "samedi",
+              "vocabularyId": "word-samedi"
+            },
+            {
+              "id": "segment-1-5",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "你星期六有空吗？"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Oui, pourquoi ?"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "有，怎么了？"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "On "
+            },
+            {
+              "grammarId": "grammar-pouvoir-invite",
+              "id": "segment-3-2",
+              "text": "peut",
+              "vocabularyId": "word-pouvoir"
+            },
+            {
+              "id": "segment-3-3",
+              "text": " "
+            },
+            {
+              "id": "segment-3-4",
+              "text": "prendre",
+              "vocabularyId": "word-prendre"
+            },
+            {
+              "id": "segment-3-5",
+              "text": " un "
+            },
+            {
+              "id": "segment-3-6",
+              "text": "café",
+              "vocabularyId": "word-cafe"
+            },
+            {
+              "id": "segment-3-7",
+              "text": " "
+            },
+            {
+              "id": "segment-3-8",
+              "text": "ensemble",
+              "vocabularyId": "word-ensemble"
+            },
+            {
+              "id": "segment-3-9",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "我们可以一起喝杯咖啡吗？"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Oui, bonne idée. "
+            },
+            {
+              "grammarId": "grammar-invite-time-question",
+              "id": "segment-4-2",
+              "text": "À quelle heure",
+              "vocabularyId": "expr-a-quelle-heure"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "可以，好主意。几点？"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "À "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "quinze",
+              "vocabularyId": "word-quinze"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " heures."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "下午三点。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "D’accord. Au café près du parc ?"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "好的。在公园旁的咖啡馆吗？"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Oui, devant le café."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "对，在咖啡馆前面。"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Parfait, à "
+            },
+            {
+              "id": "segment-8-2",
+              "text": "samedi",
+              "vocabularyId": "word-samedi"
+            },
+            {
+              "id": "segment-8-3",
+              "text": " !"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "太好了，星期六见！"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "这里的 on 表示“我们”，仍与 peut 搭配，后面的 prendre 用原形。À quelle heure ? 询问时刻。un café 在第三句是饮品；au café 和 devant le café 中 café 是地点“咖啡馆”。本课确认星期六下午三点在咖啡馆前见面。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "邀约方式、咖啡馆和见面时间是虚构情境，见面地点需要双方确认；没有要求学习者真实邀约或披露日程。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-libre",
+        "word-pouvoir",
+        "word-prendre",
+        "word-ensemble",
+        "word-samedi",
+        "word-cafe",
+        "expr-a-quelle-heure",
+        "word-quinze"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-pouvoir-invite",
+        "grammar-invite-time-question"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "下午两点半"
+        },
+        {
+          "id": "correct",
+          "text": "下午三点"
+        },
+        {
+          "id": "distractor-b",
+          "text": "上午九点"
+        }
+      ],
+      "promptZh": "两人约在几点见面？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "on 搭配 pouvoir 的第三人称单数现在时 peut。",
+      "id": "exercise-fill",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "On ___ prendre un café ensemble ?",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "ensemble ?"
+        },
+        {
+          "id": "token-1",
+          "text": "On peut"
+        },
+        {
+          "id": "token-2",
+          "text": "prendre un café"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。",
+      "id": "habit-main",
+      "taskZh": "替两位虚构朋友写一个 On peut…? 邀约，并给出时间。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能询问对方是否有空。",
+        "我能用 on peut 提出邀约。",
+        "我能确认见面的时刻。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner instructed direct publication of courses and recordings without manual approval; actual fixed-model alignment validated; no human listening or independent expert review asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-social-invite-coffee",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "本课 je peux、tu peux、on peut 后接动词原形。口语中 on 可表示“我们”，但动词仍用第三人称单数 peut。On peut prendre un café ? 用来提议一起喝咖啡。",
+        "examples": [
+          {
+            "fr": "On peut prendre un café ensemble ?",
+            "recording": {
+              "asset": {
+                "assetId": "speech-8b15988f6bcba4b1e1671c33de0b4b70c63f8ebd6bf39823832ad99fb9bc1ef4",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1920,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "08decfc96223c7efadae538512823649aa0cd4c1289c4709f6e4755bb596d246",
+                "url": "/api/audio/08decfc96223c7efadae538512823649aa0cd4c1289c4709f6e4755bb596d246.wav"
+              },
+              "endMs": 1920,
+              "startMs": 0
+            },
+            "zh": "我们可以一起喝杯咖啡吗？"
+          }
+        ],
+        "id": "grammar-pouvoir-invite",
+        "titleZh": "pouvoir + 动词原形：提出安排"
+      },
+      {
+        "bodyZh": "À quelle heure ? 询问某件事在几点。答复用 à + 时刻；quinze heures 是十五点，即下午三点。本课不省略地点确认。",
+        "examples": [
+          {
+            "fr": "À quelle heure ? À quinze heures.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-37ae59ae212c7a565d58bac353afdd7fb326e2a81d9a936ca755d8bdd762598e",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1760,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "62d2d47cd13ba752708561d1f02b6f030462a3afab0c9b841d1be3c4c265f278",
+                "url": "/api/audio/62d2d47cd13ba752708561d1f02b6f030462a3afab0c9b841d1be3c4c265f278.wav"
+              },
+              "endMs": 1760,
+              "startMs": 0
+            },
+            "zh": "几点？下午三点。"
+          }
+        ],
+        "id": "grammar-invite-time-question",
+        "titleZh": "À quelle heure ?：询问时刻"
+      }
+    ],
+    "vocabulary": [
+      {
+        "id": "word-libre",
+        "lemma": "libre",
+        "meaningZh": "有空的",
+        "noteZh": "Tu es libre…? 在约见中询问对方是否有空。",
+        "partOfSpeech": "adjective",
+        "recording": {
+          "asset": {
+            "assetId": "speech-f2a267396e1962b301f74ade60631a3338794b31f03164232ca10e48c240e627",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "c7a25b0edcfbec00b21a71972a6e6b2aaa818e5dc99ffe4606e35b0b068a7cf4",
+            "url": "/api/audio/c7a25b0edcfbec00b21a71972a6e6b2aaa818e5dc99ffe4606e35b0b068a7cf4.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-pouvoir",
+        "lemma": "pouvoir",
+        "meaningZh": "能；可以",
+        "noteZh": "本单元学习 je peux、tu peux、on peut；后接动词原形。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-3d894b5b06cecdd6488a201806594961c8dc3ccd1b60051cffef1edef2c6c698",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "811060c79a20bc7c04e47ff88f9a9641a688c18e7e702edd61b05c3ce05170be",
+            "url": "/api/audio/811060c79a20bc7c04e47ff88f9a9641a688c18e7e702edd61b05c3ce05170be.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-prendre",
+        "lemma": "prendre",
+        "meaningZh": "拿；乘；用餐或饮用",
+        "noteZh": "本课 prendre un café 表示喝杯咖啡；prendre le métro 表示乘地铁。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-8159d0def15b499549a516d5d5d2f1df032aaff663c96ef67a39d214442277be",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "6f7d74b8c1f9569beb64681e65069cc00ab56cd09a72840481b61ffd30b24524",
+            "url": "/api/audio/6f7d74b8c1f9569beb64681e65069cc00ab56cd09a72840481b61ffd30b24524.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-ensemble",
+        "lemma": "ensemble",
+        "meaningZh": "一起",
+        "noteZh": "本课用于朋友一起活动的安排。",
+        "partOfSpeech": "adverb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-ce7e88979ea070171fec7b3cda4fb310808d4bc94640a124e16cb101f6d2d22f",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "78076cb4e3306cdaec260d835799af1e0a588c3287f3bea1416dfd1f4a222bd4",
+            "url": "/api/audio/78076cb4e3306cdaec260d835799af1e0a588c3287f3bea1416dfd1f4a222bd4.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-samedi",
+        "lemma": "samedi",
+        "meaningZh": "星期六",
+        "noteZh": "星期名称作名词时为阳性；描述每周习惯可在前面加 le。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-c64c4738240365cd13811958920acce71edb46dc62330c0796d7342f52dae1d0",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "3f0659d78769942f8118dbe2c8f7d588769140c00ce3a3d326c4b6882a51fe77",
+            "url": "/api/audio/3f0659d78769942f8118dbe2c8f7d588769140c00ce3a3d326c4b6882a51fe77.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-cafe",
+        "lemma": "café",
+        "meaningZh": "咖啡",
+        "noteZh": "本课指饮品；un café 可以表示一杯咖啡。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-4d8c76dbb7b01f9e9f0c1d60267684882bf610c508c1025650da9fb1d7f421ee",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "5e6f0a42d3fad69998842fd6231b1de52bc5981e1b83f3fda3d0773be436b08d",
+            "url": "/api/audio/5e6f0a42d3fad69998842fd6231b1de52bc5981e1b83f3fda3d0773be436b08d.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-a-quelle-heure",
+        "lemma": "à quelle heure",
+        "meaningZh": "几点？",
+        "noteZh": "询问事情发生的时刻。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-6b7c422740d01d1ebb94187c34ffc6734a20017215d2c73ccf1411762f778ebe",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "b498dec53e4eeba97969b0d140873924a4f6509f72fbd6cc13cad61931dca005",
+            "url": "/api/audio/b498dec53e4eeba97969b0d140873924a4f6509f72fbd6cc13cad61931dca005.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-quinze",
+        "lemma": "quinze",
+        "meaningZh": "十五",
+        "noteZh": "quinze heures 表示十五点，即下午三点。",
+        "partOfSpeech": "numeral",
+        "recording": {
+          "asset": {
+            "assetId": "speech-6581bcb2eed3f0dd064a89b534d50a26521e6956167697cbd18070e0f7f183c8",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "5f004bde529bea3c58f3c92df3839d5b0639aa0036425fee0f5f3a1c5c807e93",
+            "url": "/api/audio/5f004bde529bea3c58f3c92df3839d5b0639aa0036425fee0f5f3a1c5c807e93.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "虚构公园中的长椅、入口路牌与三位朋友，暖阳照着树木和小路",
+      "assetId": "art-park-meeting",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "8a13f40f43ae625232c469c455a5318e65b91ec060337d788dda8882bb91d98d",
+      "url": "/api/media/8a13f40f43ae625232c469c455a5318e65b91ec060337d788dda8882bb91d98d.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "询问对方是否有空",
+    "用 on peut 提出邀约",
+    "确认见面的时刻"
+  ],
+  "reviewItemIds": [
+    "word-libre",
+    "word-pouvoir",
+    "expr-a-quelle-heure"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：下午三点。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "peut"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "on 搭配 pouvoir 的第三人称单数现在时 peut。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "On peut prendre un café ensemble ?",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "询问朋友是否有空，再确定活动、时刻与见面地点。",
+  "title": {
+    "fr": "On peut prendre un café ?",
+    "zh": "邀请朋友喝咖啡"
+  },
+  "unitId": "a1-social-meetings"
+}

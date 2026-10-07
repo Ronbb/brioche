@@ -1,0 +1,1448 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-city-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-0cd3270b0043a294aedaeb977581acc6d24d9c766d5713d33c116af66ad4142c",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f",
+      "url": "/api/audio/8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f.wav"
+    },
+    {
+      "assetId": "speech-1417f4474e798875679c22b72082df0302a312a787fe555cde6fc850f7929b05",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 2400,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "b4d4f31f6ae6997dd07c40e61ecf4ab06857b9f3862447afab81c1937b9a7887",
+      "url": "/api/audio/b4d4f31f6ae6997dd07c40e61ecf4ab06857b9f3862447afab81c1937b9a7887.wav"
+    },
+    {
+      "assetId": "speech-5a6a387df33e3fcacd6682ee0554e02646e989ebe38f213d5b22c9351c8b1f24",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 560,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "6c15612dd1483edf2989ac3c19d8b32dde3af86befcf547a629d027d7726b333",
+      "url": "/api/audio/6c15612dd1483edf2989ac3c19d8b32dde3af86befcf547a629d027d7726b333.wav"
+    },
+    {
+      "assetId": "speech-605dbf52888434d2eb424975b4ecc2c2e18647748b42560e2b7504407f3e7b4d",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "b87a507ac0460160ce73e4e4e72267a9361f1cc00a916df8c61da1356df5d538",
+      "url": "/api/audio/b87a507ac0460160ce73e4e4e72267a9361f1cc00a916df8c61da1356df5d538.wav"
+    },
+    {
+      "assetId": "speech-7826455964c46160d841e97fc7d39371e39d12ef1d02ea47c0e0c294ab73ef58",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1520,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "7ec4efb7b1792af17e94e5bf417be705059337b2c72a2b842be7c4c6b7e10bcd",
+      "url": "/api/audio/7ec4efb7b1792af17e94e5bf417be705059337b2c72a2b842be7c4c6b7e10bcd.wav"
+    },
+    {
+      "assetId": "speech-99e752df2869be49c9f842686e475387c66ccb663471c051e6e30bc086a75df6",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "c4d4ca44660c506236c88bb373061c5f630617a49d5100b3697c8348ef159597",
+      "url": "/api/audio/c4d4ca44660c506236c88bb373061c5f630617a49d5100b3697c8348ef159597.wav"
+    },
+    {
+      "assetId": "speech-9f1fc225ef2f472b6cc2cc8c789577ff1dc254bce1e33499bd26c98c86196556",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "818a51b9f781a88521ed0abea777f0245dadd4df2d6b29dcc4f70d9c771dcca0",
+      "url": "/api/audio/818a51b9f781a88521ed0abea777f0245dadd4df2d6b29dcc4f70d9c771dcca0.wav"
+    },
+    {
+      "assetId": "speech-c37b78ab05dde33bb5d7c11e320caf317b08334b43b0574c58d3b01bf89e306b",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 560,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "63d6bd935e3fab5f458ebcea1d2c4ed5b242ba3a04f3d5a3c4f9cc01e5c858ee",
+      "url": "/api/audio/63d6bd935e3fab5f458ebcea1d2c4ed5b242ba3a04f3d5a3c4f9cc01e5c858ee.wav"
+    },
+    {
+      "assetId": "speech-d1d4db7600ed7cf9c79bfe7f4bc88f85d66df88607f9f3ed8c36dad8f46d9ac2",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "5de9d2589d32eda5c25a0380b20c97513c1f05f5a074c5ebe8e163dafd0bdd72",
+      "url": "/api/audio/5de9d2589d32eda5c25a0380b20c97513c1f05f5a074c5ebe8e163dafd0bdd72.wav"
+    },
+    {
+      "assetId": "speech-fde928d3c3b1482c51c9d2ef65f782a77c429bae6982f1efc9ad2720b5b7671b",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 15350,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "694252ab95142c8c75354592e51e314be0e44a5981b35dfc3dd1984f87f355a6",
+      "url": "/api/audio/694252ab95142c8c75354592e51e314be0e44a5981b35dfc3dd1984f87f355a6.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-0cd3270b0043a294aedaeb977581acc6d24d9c766d5713d33c116af66ad4142c",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-1417f4474e798875679c22b72082df0302a312a787fe555cde6fc850f7929b05",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-5a6a387df33e3fcacd6682ee0554e02646e989ebe38f213d5b22c9351c8b1f24",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-605dbf52888434d2eb424975b4ecc2c2e18647748b42560e2b7504407f3e7b4d",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-7826455964c46160d841e97fc7d39371e39d12ef1d02ea47c0e0c294ab73ef58",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-99e752df2869be49c9f842686e475387c66ccb663471c051e6e30bc086a75df6",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-9f1fc225ef2f472b6cc2cc8c789577ff1dc254bce1e33499bd26c98c86196556",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-c37b78ab05dde33bb5d7c11e320caf317b08334b43b0574c58d3b01bf89e306b",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-d1d4db7600ed7cf9c79bfe7f4bc88f85d66df88607f9f3ed8c36dad8f46d9ac2",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-fde928d3c3b1482c51c9d2ef65f782a77c429bae6982f1efc9ad2720b5b7671b",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-fde928d3c3b1482c51c9d2ef65f782a77c429bae6982f1efc9ad2720b5b7671b",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 3200,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1680,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 1040,
+          "wordRange": null
+        },
+        {
+          "endMs": 1200,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 1040,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1680,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 1200,
+          "wordRange": {
+            "end": 11,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 1920,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 1680,
+          "wordRange": null
+        },
+        {
+          "endMs": 1920,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 1680,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2400,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-6",
+          "startMs": 1920,
+          "wordRange": null
+        },
+        {
+          "endMs": 2400,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-6",
+          "startMs": 1920,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3040,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-7",
+          "startMs": 2400,
+          "wordRange": null
+        },
+        {
+          "endMs": 2560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-7",
+          "startMs": 2400,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 2720,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-7",
+          "startMs": 2560,
+          "wordRange": {
+            "end": 11,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 3040,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-7",
+          "startMs": 2720,
+          "wordRange": {
+            "end": 17,
+            "start": 12
+          }
+        },
+        {
+          "endMs": 5130,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 3450,
+          "wordRange": null
+        },
+        {
+          "endMs": 3770,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 3530,
+          "wordRange": null
+        },
+        {
+          "endMs": 3770,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 3530,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4250,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 3770,
+          "wordRange": null
+        },
+        {
+          "endMs": 4250,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 3770,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4410,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 4250,
+          "wordRange": null
+        },
+        {
+          "endMs": 4410,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 4250,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4570,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-6",
+          "startMs": 4410,
+          "wordRange": null
+        },
+        {
+          "endMs": 4570,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-6",
+          "startMs": 4410,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 4970,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-7",
+          "startMs": 4570,
+          "wordRange": null
+        },
+        {
+          "endMs": 4970,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-7",
+          "startMs": 4570,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6740,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 5380,
+          "wordRange": null
+        },
+        {
+          "endMs": 5780,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 5460,
+          "wordRange": null
+        },
+        {
+          "endMs": 5780,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 5460,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6100,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 5940,
+          "wordRange": null
+        },
+        {
+          "endMs": 6100,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 5940,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6180,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 6100,
+          "wordRange": null
+        },
+        {
+          "endMs": 6180,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 6100,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 6660,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 6180,
+          "wordRange": null
+        },
+        {
+          "endMs": 6660,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 6180,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9070,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 6990,
+          "wordRange": null
+        },
+        {
+          "endMs": 7470,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 7070,
+          "wordRange": null
+        },
+        {
+          "endMs": 7470,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 7070,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8670,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 7870,
+          "wordRange": null
+        },
+        {
+          "endMs": 8110,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 7870,
+          "wordRange": {
+            "end": 4,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 8270,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 8110,
+          "wordRange": {
+            "end": 9,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 8670,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 8270,
+          "wordRange": {
+            "end": 16,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 8910,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 8670,
+          "wordRange": null
+        },
+        {
+          "endMs": 8910,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 8670,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11560,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 9320,
+          "wordRange": null
+        },
+        {
+          "endMs": 9560,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 9400,
+          "wordRange": null
+        },
+        {
+          "endMs": 9560,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 9400,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9800,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 9560,
+          "wordRange": null
+        },
+        {
+          "endMs": 9800,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 9560,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10200,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-4",
+          "startMs": 9800,
+          "wordRange": null
+        },
+        {
+          "endMs": 10200,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-4",
+          "startMs": 9800,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11000,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-5",
+          "startMs": 10280,
+          "wordRange": null
+        },
+        {
+          "endMs": 10600,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-5",
+          "startMs": 10280,
+          "wordRange": {
+            "end": 8,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 11000,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-5",
+          "startMs": 10680,
+          "wordRange": {
+            "end": 15,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 11320,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-6",
+          "startMs": 11000,
+          "wordRange": null
+        },
+        {
+          "endMs": 11320,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-6",
+          "startMs": 11000,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 12370,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 11810,
+          "wordRange": null
+        },
+        {
+          "endMs": 12210,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 11890,
+          "wordRange": null
+        },
+        {
+          "endMs": 12210,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 11890,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 14300,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 12620,
+          "wordRange": null
+        },
+        {
+          "endMs": 14140,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 12700,
+          "wordRange": null
+        },
+        {
+          "endMs": 13260,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 12700,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 13660,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 13580,
+          "wordRange": {
+            "end": 9,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 14140,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 13660,
+          "wordRange": {
+            "end": 16,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 15350,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 14550,
+          "wordRange": null
+        },
+        {
+          "endMs": 15190,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 14630,
+          "wordRange": null
+        },
+        {
+          "endMs": 14710,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 14630,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 15190,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 14710,
+          "wordRange": {
+            "end": 9,
+            "start": 3
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-city-morning",
+      "placeZh": "一座虚构城市的街道与车站",
+      "situationZh": "说清车票数量和用途，确认示例总价。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-1",
+          "labelZh": "出行者"
+        },
+        {
+          "avatarId": "avatar-lea-v1",
+          "characterId": "character-lea",
+          "displayName": "Léa",
+          "id": "speaker-2",
+          "labelZh": "售票员"
+        }
+      ],
+      "titleZh": "买两张车票",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Bonjour. "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "Je voudrais",
+              "vocabularyId": "expr-je-voudrais"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " "
+            },
+            {
+              "id": "segment-1-4",
+              "text": "deux",
+              "vocabularyId": "word-deux"
+            },
+            {
+              "id": "segment-1-5",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-ticket-plural",
+              "id": "segment-1-6",
+              "text": "tickets",
+              "vocabularyId": "word-ticket"
+            },
+            {
+              "id": "segment-1-7",
+              "text": ", s’il vous plaît."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "您好。我想要两张票，谢谢。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Deux",
+              "vocabularyId": "word-deux"
+            },
+            {
+              "id": "segment-2-2",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-ticket-plural",
+              "id": "segment-2-3",
+              "text": "tickets",
+              "vocabularyId": "word-ticket"
+            },
+            {
+              "id": "segment-2-4",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-ticket-pour",
+              "id": "segment-2-5",
+              "text": "pour",
+              "vocabularyId": "word-pour"
+            },
+            {
+              "id": "segment-2-6",
+              "text": " le "
+            },
+            {
+              "id": "segment-2-7",
+              "text": "métro",
+              "vocabularyId": "word-metro"
+            },
+            {
+              "id": "segment-2-8",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "两张地铁票吗？"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Oui, "
+            },
+            {
+              "grammarId": "grammar-ticket-pour",
+              "id": "segment-3-2",
+              "text": "pour",
+              "vocabularyId": "word-pour"
+            },
+            {
+              "id": "segment-3-3",
+              "text": " le "
+            },
+            {
+              "id": "segment-3-4",
+              "text": "métro",
+              "vocabularyId": "word-metro"
+            },
+            {
+              "id": "segment-3-5",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "是的，地铁票。"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Voilà",
+              "vocabularyId": "word-voila"
+            },
+            {
+              "id": "segment-4-2",
+              "text": ". Ça fait quatre "
+            },
+            {
+              "id": "segment-4-3",
+              "text": "euros",
+              "vocabularyId": "word-euro"
+            },
+            {
+              "id": "segment-4-4",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "给您。总共四欧元。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Les "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "deux",
+              "vocabularyId": "word-deux"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-ticket-plural",
+              "id": "segment-5-4",
+              "text": "tickets",
+              "vocabularyId": "word-ticket"
+            },
+            {
+              "id": "segment-5-5",
+              "text": " coûtent quatre "
+            },
+            {
+              "id": "segment-5-6",
+              "text": "euros",
+              "vocabularyId": "word-euro"
+            },
+            {
+              "id": "segment-5-7",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "两张票一共四欧元吗？"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Oui."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "是的。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Merci. Au revoir."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "谢谢。再见。"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Au revoir !"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "再见！"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "deux tickets 表示两张票。书面 ticket 加 s 为复数；票的载体和使用方式需按实际运营规则确认。\n\npour le métro 在本课说明票用于地铁。pour 在其他上下文也可以表示目的地或目的。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-6"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "课程城市、票价与售票方式为虚构。真实交通系统可能使用电子票或交通卡，票种与乘车限制应查看运营者说明。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-ticket",
+        "word-deux",
+        "expr-je-voudrais",
+        "word-pour",
+        "word-metro",
+        "word-voila",
+        "word-euro"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-ticket-plural",
+        "grammar-ticket-pour"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "两欧元"
+        },
+        {
+          "id": "correct",
+          "text": "四欧元"
+        },
+        {
+          "id": "distractor-b",
+          "text": "八欧元"
+        }
+      ],
+      "promptZh": "两张票在这个虚构场景中的总价是多少？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "deux tickets 表示两张票。",
+      "id": "exercise-fill",
+      "promptZh": "填入 ticket 的书面复数形式。",
+      "templateFr": "Je voudrais deux ___ pour le métro.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句可以在本课场景中使用的话。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "pour le métro."
+        },
+        {
+          "id": "token-2",
+          "text": "deux tickets"
+        },
+        {
+          "id": "token-1",
+          "text": "Je voudrais"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "如果暂时没有合适场景，可以在家用虚构信息练说，不需要真实购物或出行。",
+      "id": "habit-main",
+      "taskZh": "计划一次想象中的双人出行，用 deux tickets pour… 说明车票需求。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能提出买票请求。",
+        "我能说明票的用途。",
+        "我能确认两张票的总价。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner instructed direct publication of courses and recordings without manual approval; actual fixed-model alignment validated; no human listening or independent expert review asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-city-buy-tickets",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "deux tickets 表示两张票。书面 ticket 加 s 为复数；票的载体和使用方式需按实际运营规则确认。",
+        "examples": [
+          {
+            "fr": "Deux tickets pour le métro.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-7826455964c46160d841e97fc7d39371e39d12ef1d02ea47c0e0c294ab73ef58",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1520,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "7ec4efb7b1792af17e94e5bf417be705059337b2c72a2b842be7c4c6b7e10bcd",
+                "url": "/api/audio/7ec4efb7b1792af17e94e5bf417be705059337b2c72a2b842be7c4c6b7e10bcd.wav"
+              },
+              "endMs": 1520,
+              "startMs": 0
+            },
+            "zh": "两张地铁票。"
+          }
+        ],
+        "id": "grammar-ticket-plural",
+        "titleZh": "tickets：两张票"
+      },
+      {
+        "bodyZh": "pour le métro 在本课说明票用于地铁。pour 在其他上下文也可以表示目的地或目的。",
+        "examples": [
+          {
+            "fr": "Je voudrais deux tickets pour le métro.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-1417f4474e798875679c22b72082df0302a312a787fe555cde6fc850f7929b05",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 2400,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "b4d4f31f6ae6997dd07c40e61ecf4ab06857b9f3862447afab81c1937b9a7887",
+                "url": "/api/audio/b4d4f31f6ae6997dd07c40e61ecf4ab06857b9f3862447afab81c1937b9a7887.wav"
+              },
+              "endMs": 2400,
+              "startMs": 0
+            },
+            "zh": "我想要两张地铁票。"
+          }
+        ],
+        "id": "grammar-ticket-pour",
+        "titleZh": "pour：说明用途"
+      }
+    ],
+    "vocabulary": [
+      {
+        "gender": "masculine",
+        "id": "word-ticket",
+        "lemma": "ticket",
+        "meaningZh": "票；票据",
+        "noteZh": "本课用于车票；票的载体和使用规则取决于运营者。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-c37b78ab05dde33bb5d7c11e320caf317b08334b43b0574c58d3b01bf89e306b",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 560,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "63d6bd935e3fab5f458ebcea1d2c4ed5b242ba3a04f3d5a3c4f9cc01e5c858ee",
+            "url": "/api/audio/63d6bd935e3fab5f458ebcea1d2c4ed5b242ba3a04f3d5a3c4f9cc01e5c858ee.wav"
+          },
+          "endMs": 560,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-deux",
+        "lemma": "deux",
+        "meaningZh": "二；两个",
+        "noteZh": "接名词时表示数量二。",
+        "partOfSpeech": "numeral",
+        "recording": {
+          "asset": {
+            "assetId": "speech-5a6a387df33e3fcacd6682ee0554e02646e989ebe38f213d5b22c9351c8b1f24",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 560,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "6c15612dd1483edf2989ac3c19d8b32dde3af86befcf547a629d027d7726b333",
+            "url": "/api/audio/6c15612dd1483edf2989ac3c19d8b32dde3af86befcf547a629d027d7726b333.wav"
+          },
+          "endMs": 560,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-je-voudrais",
+        "lemma": "je voudrais",
+        "meaningZh": "我想要……",
+        "noteZh": "礼貌地提出请求。本课先作为常用语块学习。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-0cd3270b0043a294aedaeb977581acc6d24d9c766d5713d33c116af66ad4142c",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f",
+            "url": "/api/audio/8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-pour",
+        "lemma": "pour",
+        "meaningZh": "为；用于；前往",
+        "noteZh": "本组课程中用于说明车票用途或列车目的地。",
+        "partOfSpeech": "preposition",
+        "recording": {
+          "asset": {
+            "assetId": "speech-d1d4db7600ed7cf9c79bfe7f4bc88f85d66df88607f9f3ed8c36dad8f46d9ac2",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "5de9d2589d32eda5c25a0380b20c97513c1f05f5a074c5ebe8e163dafd0bdd72",
+            "url": "/api/audio/5de9d2589d32eda5c25a0380b20c97513c1f05f5a074c5ebe8e163dafd0bdd72.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-metro",
+        "lemma": "métro",
+        "meaningZh": "地铁",
+        "noteZh": "le métro；本课线路和城市为虚构。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-99e752df2869be49c9f842686e475387c66ccb663471c051e6e30bc086a75df6",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "c4d4ca44660c506236c88bb373061c5f630617a49d5100b3697c8348ef159597",
+            "url": "/api/audio/c4d4ca44660c506236c88bb373061c5f630617a49d5100b3697c8348ef159597.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-voila",
+        "lemma": "voilà",
+        "meaningZh": "给您；就是这里",
+        "noteZh": "在交付商品或票据时，Voilà 可以表示“给您”。",
+        "partOfSpeech": "interjection",
+        "recording": {
+          "asset": {
+            "assetId": "speech-9f1fc225ef2f472b6cc2cc8c789577ff1dc254bce1e33499bd26c98c86196556",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "818a51b9f781a88521ed0abea777f0245dadd4df2d6b29dcc4f70d9c771dcca0",
+            "url": "/api/audio/818a51b9f781a88521ed0abea777f0245dadd4df2d6b29dcc4f70d9c771dcca0.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-euro",
+        "lemma": "euro",
+        "meaningZh": "欧元",
+        "noteZh": "复数 euros；课程价格均为虚构教学设定。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-605dbf52888434d2eb424975b4ecc2c2e18647748b42560e2b7504407f3e7b4d",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "b87a507ac0460160ce73e4e4e72267a9361f1cc00a916df8c61da1356df5d538",
+            "url": "/api/audio/b87a507ac0460160ce73e4e4e72267a9361f1cc00a916df8c61da1356df5d538.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "Camille 在虚构城市的车站入口查看路线卡",
+      "assetId": "art-city-morning",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "bd40f4d53c9e86e695f7edbd64156aa57279bae083fab43c805ae27af88f909b",
+      "url": "/api/media/bd40f4d53c9e86e695f7edbd64156aa57279bae083fab43c805ae27af88f909b.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "提出买票请求",
+    "说明票的用途",
+    "确认两张票的总价"
+  ],
+  "reviewItemIds": [
+    "word-ticket",
+    "word-deux",
+    "expr-je-voudrais"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：四欧元。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "tickets"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "deux tickets 表示两张票。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Je voudrais deux tickets pour le métro. 说清车票数量和用途，确认示例总价。",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "说清车票数量和用途，确认示例总价。",
+  "title": {
+    "fr": "Deux tickets pour le métro",
+    "zh": "买两张车票"
+  },
+  "unitId": "a1-city-travel"
+}

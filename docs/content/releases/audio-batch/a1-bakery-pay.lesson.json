@@ -1,0 +1,1389 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-bakery-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-3c29807a0ba3fd6ad0780e1a7c63dc4327087594ee215d14bfb9f95957ed2c2e",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1520,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "8bca0e13095c3c9db6cd413cc2391fd6ee9c2f80ba2237e42990e0db14e7d2ba",
+      "url": "/api/audio/8bca0e13095c3c9db6cd413cc2391fd6ee9c2f80ba2237e42990e0db14e7d2ba.wav"
+    },
+    {
+      "assetId": "speech-488aaf8624fe4d0def0f0ce0cea9c0b12ff25e3dff790903dd13b3eda28e8219",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1040,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "bdd18ce4b768cf8fd3ce4af38eb1effadd947ee3c39bc1b99fef3dcd7f7448bf",
+      "url": "/api/audio/bdd18ce4b768cf8fd3ce4af38eb1effadd947ee3c39bc1b99fef3dcd7f7448bf.wav"
+    },
+    {
+      "assetId": "speech-605dbf52888434d2eb424975b4ecc2c2e18647748b42560e2b7504407f3e7b4d",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "b87a507ac0460160ce73e4e4e72267a9361f1cc00a916df8c61da1356df5d538",
+      "url": "/api/audio/b87a507ac0460160ce73e4e4e72267a9361f1cc00a916df8c61da1356df5d538.wav"
+    },
+    {
+      "assetId": "speech-7dd7641e123dfed59f0f7282b079952413e025399ffeee6d1cd34dc36358a119",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 960,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "254ab9f7677e8734e17bc70cf963ac2dc9f3662eccc7f5dcd5a48bf83de637ee",
+      "url": "/api/audio/254ab9f7677e8734e17bc70cf963ac2dc9f3662eccc7f5dcd5a48bf83de637ee.wav"
+    },
+    {
+      "assetId": "speech-88b53a2fc662f421d8175f7be8b9aa25c73626d6e2a66dc0c6c62153647ff582",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "66b2bc05a7caefc56d70bcf5e0ee34ddb00907c1cf6a7a1ec44ffbff80abcbb5",
+      "url": "/api/audio/66b2bc05a7caefc56d70bcf5e0ee34ddb00907c1cf6a7a1ec44ffbff80abcbb5.wav"
+    },
+    {
+      "assetId": "speech-8d162983fc6e01fc0034a54c01e058a3ea06afedfad90023395765372460ae42",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "693e2f0f789fdc1e16409f47061cf5036956f81691788276eda73cf8fd0bb13b",
+      "url": "/api/audio/693e2f0f789fdc1e16409f47061cf5036956f81691788276eda73cf8fd0bb13b.wav"
+    },
+    {
+      "assetId": "speech-9e985cbd251a699e1ef1e9ad3da07ecd16fae69ea389de36e4d27447ce45026d",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "3c96728806b474594c05c8461092d9b28d0172c0bd996e25eae4c3c6f0a4736a",
+      "url": "/api/audio/3c96728806b474594c05c8461092d9b28d0172c0bd996e25eae4c3c6f0a4736a.wav"
+    },
+    {
+      "assetId": "speech-9f1fc225ef2f472b6cc2cc8c789577ff1dc254bce1e33499bd26c98c86196556",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "818a51b9f781a88521ed0abea777f0245dadd4df2d6b29dcc4f70d9c771dcca0",
+      "url": "/api/audio/818a51b9f781a88521ed0abea777f0245dadd4df2d6b29dcc4f70d9c771dcca0.wav"
+    },
+    {
+      "assetId": "speech-a7d3a5a51f136c492bc41d43ca17bf3a8f9cfdc76b5feaa8284e84c18bc321dd",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "2d3161db29633dfa863a3469bd97b09fef3171b5221c260e0e9ae8c89a348922",
+      "url": "/api/audio/2d3161db29633dfa863a3469bd97b09fef3171b5221c260e0e9ae8c89a348922.wav"
+    },
+    {
+      "assetId": "speech-b4104fa8ca46cfc44711f506ceca39a5315795c85da6254ec99314b28f60b3d7",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 13830,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "a0ba00c9c2f91ff5187a3920f078e2b222100003ce8fe86399a5e62efca7a949",
+      "url": "/api/audio/a0ba00c9c2f91ff5187a3920f078e2b222100003ce8fe86399a5e62efca7a949.wav"
+    },
+    {
+      "assetId": "speech-dac8d47660d151ae887bc5d8011e29ef98dfc742b5308c17e1557af49ea56d85",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "39e7ca2f9acf0f4ec809c3fdbf89c01b4ce7e30a80c4a116fcf0e4ff9edb9e57",
+      "url": "/api/audio/39e7ca2f9acf0f4ec809c3fdbf89c01b4ce7e30a80c4a116fcf0e4ff9edb9e57.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-3c29807a0ba3fd6ad0780e1a7c63dc4327087594ee215d14bfb9f95957ed2c2e",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-488aaf8624fe4d0def0f0ce0cea9c0b12ff25e3dff790903dd13b3eda28e8219",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-605dbf52888434d2eb424975b4ecc2c2e18647748b42560e2b7504407f3e7b4d",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-7dd7641e123dfed59f0f7282b079952413e025399ffeee6d1cd34dc36358a119",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-88b53a2fc662f421d8175f7be8b9aa25c73626d6e2a66dc0c6c62153647ff582",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-8d162983fc6e01fc0034a54c01e058a3ea06afedfad90023395765372460ae42",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-9e985cbd251a699e1ef1e9ad3da07ecd16fae69ea389de36e4d27447ce45026d",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-9f1fc225ef2f472b6cc2cc8c789577ff1dc254bce1e33499bd26c98c86196556",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-a7d3a5a51f136c492bc41d43ca17bf3a8f9cfdc76b5feaa8284e84c18bc321dd",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-b4104fa8ca46cfc44711f506ceca39a5315795c85da6254ec99314b28f60b3d7",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-dac8d47660d151ae887bc5d8011e29ef98dfc742b5308c17e1557af49ea56d85",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-b4104fa8ca46cfc44711f506ceca39a5315795c85da6254ec99314b28f60b3d7",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 1440,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 720,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 720,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1280,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 720,
+          "wordRange": null
+        },
+        {
+          "endMs": 880,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 720,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1280,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 880,
+          "wordRange": {
+            "end": 13,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 3050,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 1690,
+          "wordRange": null
+        },
+        {
+          "endMs": 2010,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1770,
+          "wordRange": null
+        },
+        {
+          "endMs": 2010,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1770,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2250,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 2010,
+          "wordRange": null
+        },
+        {
+          "endMs": 2250,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 2010,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2890,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 2250,
+          "wordRange": null
+        },
+        {
+          "endMs": 2490,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 2250,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 2570,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 2490,
+          "wordRange": {
+            "end": 11,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 2890,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 2570,
+          "wordRange": {
+            "end": 17,
+            "start": 12
+          }
+        },
+        {
+          "endMs": 4820,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 3300,
+          "wordRange": null
+        },
+        {
+          "endMs": 3700,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 3380,
+          "wordRange": null
+        },
+        {
+          "endMs": 3540,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 3380,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3700,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 3540,
+          "wordRange": {
+            "end": 7,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 4020,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3700,
+          "wordRange": null
+        },
+        {
+          "endMs": 4020,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 3700,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4740,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 4020,
+          "wordRange": null
+        },
+        {
+          "endMs": 4260,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 4020,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4740,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 4260,
+          "wordRange": {
+            "end": 9,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 8350,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 5070,
+          "wordRange": null
+        },
+        {
+          "endMs": 6990,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 5150,
+          "wordRange": null
+        },
+        {
+          "endMs": 5470,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 5150,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6350,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 6110,
+          "wordRange": {
+            "end": 9,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 6670,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 6350,
+          "wordRange": {
+            "end": 16,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 6990,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 6670,
+          "wordRange": {
+            "end": 22,
+            "start": 17
+          }
+        },
+        {
+          "endMs": 7310,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 6990,
+          "wordRange": null
+        },
+        {
+          "endMs": 7310,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 6990,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8110,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 7310,
+          "wordRange": null
+        },
+        {
+          "endMs": 7390,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 7310,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8110,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 7390,
+          "wordRange": {
+            "end": 10,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 9640,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 8600,
+          "wordRange": null
+        },
+        {
+          "endMs": 9160,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 8680,
+          "wordRange": null
+        },
+        {
+          "endMs": 8840,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 8680,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9160,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 8840,
+          "wordRange": {
+            "end": 9,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 9560,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 9160,
+          "wordRange": null
+        },
+        {
+          "endMs": 9560,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 9160,
+          "wordRange": {
+            "end": 7,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 11170,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 9890,
+          "wordRange": null
+        },
+        {
+          "endMs": 10370,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 9970,
+          "wordRange": null
+        },
+        {
+          "endMs": 10370,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 9970,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11010,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 10370,
+          "wordRange": null
+        },
+        {
+          "endMs": 10610,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 10370,
+          "wordRange": {
+            "end": 6,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 11010,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 10610,
+          "wordRange": {
+            "end": 13,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 12700,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 11420,
+          "wordRange": null
+        },
+        {
+          "endMs": 11900,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11500,
+          "wordRange": null
+        },
+        {
+          "endMs": 11900,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11500,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 12380,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-3",
+          "startMs": 12060,
+          "wordRange": null
+        },
+        {
+          "endMs": 12220,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-3",
+          "startMs": 12060,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 12380,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-3",
+          "startMs": 12220,
+          "wordRange": {
+            "end": 9,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 13830,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 12950,
+          "wordRange": null
+        },
+        {
+          "endMs": 13670,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 13030,
+          "wordRange": null
+        },
+        {
+          "endMs": 13110,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 13030,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 13670,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 13110,
+          "wordRange": {
+            "end": 9,
+            "start": 3
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-bakery-morning",
+      "placeZh": "一家社区面包店",
+      "situationZh": "听懂示例价格，询问是否可以刷卡付款。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-1",
+          "labelZh": "顾客"
+        },
+        {
+          "avatarId": "avatar-luc-v1",
+          "characterId": "character-luc",
+          "displayName": "Luc",
+          "id": "speaker-2",
+          "labelZh": "店员"
+        }
+      ],
+      "titleZh": "询价与付款",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Bonjour. "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "C’est combien",
+              "vocabularyId": "expr-cest-combien"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "您好。多少钱？"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Quatre "
+            },
+            {
+              "grammarId": "grammar-price-euros",
+              "id": "segment-2-2",
+              "text": "euros",
+              "vocabularyId": "word-euro"
+            },
+            {
+              "id": "segment-2-3",
+              "text": ", s’il vous plaît."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "四欧元，谢谢。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "grammarId": "grammar-pouvoir-pay",
+              "id": "segment-3-1",
+              "text": "Je peux"
+            },
+            {
+              "id": "segment-3-2",
+              "text": " "
+            },
+            {
+              "id": "segment-3-3",
+              "text": "payer",
+              "vocabularyId": "word-payer"
+            },
+            {
+              "id": "segment-3-4",
+              "text": " "
+            },
+            {
+              "id": "segment-3-5",
+              "text": "par carte",
+              "vocabularyId": "expr-par-carte"
+            },
+            {
+              "id": "segment-3-6",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "我可以用银行卡付款吗？"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Oui. Vous pouvez aussi "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "payer",
+              "vocabularyId": "word-payer"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " "
+            },
+            {
+              "id": "segment-4-4",
+              "text": "en espèces",
+              "vocabularyId": "expr-en-especes"
+            },
+            {
+              "id": "segment-4-5",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "可以。您也可以用现金付款。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Par carte",
+              "vocabularyId": "expr-par-carte"
+            },
+            {
+              "id": "segment-5-2",
+              "text": ", alors."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "那就用银行卡。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Voilà",
+              "vocabularyId": "word-voila"
+            },
+            {
+              "id": "segment-6-2",
+              "text": " votre ticket."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "这是您的小票。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Merci",
+              "vocabularyId": "word-merci"
+            },
+            {
+              "id": "segment-7-2",
+              "text": ", "
+            },
+            {
+              "id": "segment-7-3",
+              "text": "au revoir",
+              "vocabularyId": "expr-au-revoir"
+            },
+            {
+              "id": "segment-7-4",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "谢谢，再见。"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Au revoir",
+              "vocabularyId": "expr-au-revoir"
+            },
+            {
+              "id": "segment-8-2",
+              "text": " !"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "再见！"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "peux 是 pouvoir 的第一人称单数现在时。Je peux payer…? 在本课询问某种付款方式是否可行，payer 保留原形。\n\n本课 quatre euros 是四欧元，euro 在这里写成复数 euros。用数字表示金额时，低于二用单数，例如 1,20 euro；二及以上用复数，例如 2 euros。本课价格只用于练习。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "四欧元是虚构价格；是否接受现金、银行卡及具体限制应以实际商家为准。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-euro",
+        "expr-par-carte",
+        "expr-en-especes",
+        "word-payer",
+        "word-voila",
+        "word-merci",
+        "expr-cest-combien",
+        "expr-au-revoir"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-pouvoir-pay",
+        "grammar-price-euros"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "现金"
+        },
+        {
+          "id": "correct",
+          "text": "银行卡"
+        },
+        {
+          "id": "distractor-b",
+          "text": "对话没有说明"
+        }
+      ],
+      "promptZh": "顾客最终选择哪种付款方式？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "peux 后接原形 payer。",
+      "id": "exercise-fill",
+      "promptZh": "填入表示“付款”的动词原形。",
+      "templateFr": "Je peux ___ par carte ?",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句可以在本课场景中使用的话。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "par carte ?"
+        },
+        {
+          "id": "token-2",
+          "text": "payer"
+        },
+        {
+          "id": "token-1",
+          "text": "Je peux"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "如果暂时没有合适场景，可以在家用虚构信息练说，不需要真实购物或出行。",
+      "id": "habit-main",
+      "taskZh": "想象买早餐结账，用 Je peux payer par carte ? 练习询问。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能询问总价。",
+        "我能辨认现金和银行卡支付。",
+        "我能询问能否使用一种付款方式。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-luc-v1",
+      "characterId": "character-luc",
+      "displayName": "Luc",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner instructed direct publication of courses and recordings without manual approval; actual fixed-model alignment validated; no human listening or independent expert review asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-bakery-pay",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "peux 是 pouvoir 的第一人称单数现在时。Je peux payer…? 在本课询问某种付款方式是否可行，payer 保留原形。",
+        "examples": [
+          {
+            "fr": "Je peux payer par carte ?",
+            "recording": {
+              "asset": {
+                "assetId": "speech-3c29807a0ba3fd6ad0780e1a7c63dc4327087594ee215d14bfb9f95957ed2c2e",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1520,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "8bca0e13095c3c9db6cd413cc2391fd6ee9c2f80ba2237e42990e0db14e7d2ba",
+                "url": "/api/audio/8bca0e13095c3c9db6cd413cc2391fd6ee9c2f80ba2237e42990e0db14e7d2ba.wav"
+              },
+              "endMs": 1520,
+              "startMs": 0
+            },
+            "zh": "我可以用银行卡付款吗？"
+          }
+        ],
+        "id": "grammar-pouvoir-pay",
+        "titleZh": "Je peux + 动词原形"
+      },
+      {
+        "bodyZh": "本课 quatre euros 是四欧元，euro 在这里写成复数 euros。用数字表示金额时，低于二用单数，例如 1,20 euro；二及以上用复数，例如 2 euros。本课价格只用于练习。",
+        "examples": [
+          {
+            "fr": "Quatre euros.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-a7d3a5a51f136c492bc41d43ca17bf3a8f9cfdc76b5feaa8284e84c18bc321dd",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 880,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "2d3161db29633dfa863a3469bd97b09fef3171b5221c260e0e9ae8c89a348922",
+                "url": "/api/audio/2d3161db29633dfa863a3469bd97b09fef3171b5221c260e0e9ae8c89a348922.wav"
+              },
+              "endMs": 880,
+              "startMs": 0
+            },
+            "zh": "四欧元。"
+          }
+        ],
+        "id": "grammar-price-euros",
+        "titleZh": "euros：金额中的复数"
+      }
+    ],
+    "vocabulary": [
+      {
+        "gender": "masculine",
+        "id": "word-euro",
+        "lemma": "euro",
+        "meaningZh": "欧元",
+        "noteZh": "复数 euros；课程价格均为虚构教学设定。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-605dbf52888434d2eb424975b4ecc2c2e18647748b42560e2b7504407f3e7b4d",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "b87a507ac0460160ce73e4e4e72267a9361f1cc00a916df8c61da1356df5d538",
+            "url": "/api/audio/b87a507ac0460160ce73e4e4e72267a9361f1cc00a916df8c61da1356df5d538.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-par-carte",
+        "lemma": "par carte",
+        "meaningZh": "用银行卡",
+        "noteZh": "payer par carte 表示刷卡或用银行卡支付。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-7dd7641e123dfed59f0f7282b079952413e025399ffeee6d1cd34dc36358a119",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 960,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "254ab9f7677e8734e17bc70cf963ac2dc9f3662eccc7f5dcd5a48bf83de637ee",
+            "url": "/api/audio/254ab9f7677e8734e17bc70cf963ac2dc9f3662eccc7f5dcd5a48bf83de637ee.wav"
+          },
+          "endMs": 960,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-en-especes",
+        "lemma": "en espèces",
+        "meaningZh": "用现金",
+        "noteZh": "payer en espèces 表示现金付款。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-488aaf8624fe4d0def0f0ce0cea9c0b12ff25e3dff790903dd13b3eda28e8219",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 1040,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "bdd18ce4b768cf8fd3ce4af38eb1effadd947ee3c39bc1b99fef3dcd7f7448bf",
+            "url": "/api/audio/bdd18ce4b768cf8fd3ce4af38eb1effadd947ee3c39bc1b99fef3dcd7f7448bf.wav"
+          },
+          "endMs": 1040,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-payer",
+        "lemma": "payer",
+        "meaningZh": "付款",
+        "noteZh": "Je peux payer…? 询问能否用某种方式付款。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-9e985cbd251a699e1ef1e9ad3da07ecd16fae69ea389de36e4d27447ce45026d",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "3c96728806b474594c05c8461092d9b28d0172c0bd996e25eae4c3c6f0a4736a",
+            "url": "/api/audio/3c96728806b474594c05c8461092d9b28d0172c0bd996e25eae4c3c6f0a4736a.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-voila",
+        "lemma": "voilà",
+        "meaningZh": "给您；就是这里",
+        "noteZh": "在交付商品或票据时，Voilà 可以表示“给您”。",
+        "partOfSpeech": "interjection",
+        "recording": {
+          "asset": {
+            "assetId": "speech-9f1fc225ef2f472b6cc2cc8c789577ff1dc254bce1e33499bd26c98c86196556",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "818a51b9f781a88521ed0abea777f0245dadd4df2d6b29dcc4f70d9c771dcca0",
+            "url": "/api/audio/818a51b9f781a88521ed0abea777f0245dadd4df2d6b29dcc4f70d9c771dcca0.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-merci",
+        "lemma": "merci",
+        "meaningZh": "谢谢",
+        "noteZh": "用于表达感谢。",
+        "partOfSpeech": "interjection",
+        "recording": {
+          "asset": {
+            "assetId": "speech-88b53a2fc662f421d8175f7be8b9aa25c73626d6e2a66dc0c6c62153647ff582",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "66b2bc05a7caefc56d70bcf5e0ee34ddb00907c1cf6a7a1ec44ffbff80abcbb5",
+            "url": "/api/audio/66b2bc05a7caefc56d70bcf5e0ee34ddb00907c1cf6a7a1ec44ffbff80abcbb5.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-cest-combien",
+        "lemma": "c’est combien",
+        "meaningZh": "多少钱？",
+        "noteZh": "询价的常用口语。本例的价格只是教学情景设定。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-8d162983fc6e01fc0034a54c01e058a3ea06afedfad90023395765372460ae42",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "693e2f0f789fdc1e16409f47061cf5036956f81691788276eda73cf8fd0bb13b",
+            "url": "/api/audio/693e2f0f789fdc1e16409f47061cf5036956f81691788276eda73cf8fd0bb13b.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-au-revoir",
+        "lemma": "au revoir",
+        "meaningZh": "再见",
+        "noteZh": "结束交谈、离开时使用。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-dac8d47660d151ae887bc5d8011e29ef98dfc742b5308c17e1557af49ea56d85",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "39e7ca2f9acf0f4ec809c3fdbf89c01b4ce7e30a80c4a116fcf0e4ff9edb9e57",
+            "url": "/api/audio/39e7ca2f9acf0f4ec809c3fdbf89c01b4ce7e30a80c4a116fcf0e4ff9edb9e57.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "社区面包店的清晨",
+      "assetId": "art-bakery-morning",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "2154bad9ebb6f592e210e24eacc5dd97cf0be05d5f8b33fedd313e1e58ba5412",
+      "url": "/api/media/2154bad9ebb6f592e210e24eacc5dd97cf0be05d5f8b33fedd313e1e58ba5412.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Luc 的头像",
+      "assetId": "avatar-luc-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b",
+      "url": "/api/media/75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "询问总价",
+    "辨认现金和银行卡支付",
+    "询问能否使用一种付款方式"
+  ],
+  "reviewItemIds": [
+    "word-euro",
+    "expr-par-carte",
+    "expr-en-especes"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：银行卡。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "payer"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "peux 后接原形 payer。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Je peux payer par carte ? 听懂示例价格，询问是否可以刷卡付款。",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "听懂示例价格，询问是否可以刷卡付款。",
+  "title": {
+    "fr": "Je peux payer par carte ?",
+    "zh": "询价与付款"
+  },
+  "unitId": "a1-breakfast-bakery"
+}

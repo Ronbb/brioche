@@ -1,0 +1,1531 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-park-meeting",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-03dc5a7a126dff320b5e076fd7c3b869ac4b7542c1c782b5a068bf948e489c1e",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "30cdf7404e0da8c816df6879f998a33f38352e9e0f36e6d200497f8c26224bf6",
+      "url": "/api/audio/30cdf7404e0da8c816df6879f998a33f38352e9e0f36e6d200497f8c26224bf6.wav"
+    },
+    {
+      "assetId": "speech-1f657be25e66024a1f0327661fc828f37caad8b2d240f4c4520150689d8dc37f",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "27df44533f1e81cfaba3ece02772d6cb1cc9d793780dee074d64c3c47259db02",
+      "url": "/api/audio/27df44533f1e81cfaba3ece02772d6cb1cc9d793780dee074d64c3c47259db02.wav"
+    },
+    {
+      "assetId": "speech-20afcb663233301c6c6dc52800362ad38c6b87507431d8f343878ace674bbd17",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1280,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "c2c3e4669c49b758b2837c4bddaecc9839870a174639603cf1deed75932c6d88",
+      "url": "/api/audio/c2c3e4669c49b758b2837c4bddaecc9839870a174639603cf1deed75932c6d88.wav"
+    },
+    {
+      "assetId": "speech-2ac1e219662905c722d9853a4e1c43b87a688989282fbb2759b36c734d5f271d",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1600,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "0f23b3ec2e81e92b9e08c979121c97dcc685620d1d53d0a60d6b2c7492073f91",
+      "url": "/api/audio/0f23b3ec2e81e92b9e08c979121c97dcc685620d1d53d0a60d6b2c7492073f91.wav"
+    },
+    {
+      "assetId": "speech-3974d95ecbd56190a86d05421b47101efb5de55747bba299ae51010baf31c4c0",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 17670,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "c5ac88742b42225ab422b01940d97f65bed5bdc0dcbcd16be80dcbceaf5ef08c",
+      "url": "/api/audio/c5ac88742b42225ab422b01940d97f65bed5bdc0dcbcd16be80dcbceaf5ef08c.wav"
+    },
+    {
+      "assetId": "speech-5500471c554a8d0938f534bd187c591802d0219ba2965b7b08e60c9fe7b6d055",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "924f7dc8d09f91df73d7c42f6f5d77e57caee253a9582fbd84e5e8a8b94c4e65",
+      "url": "/api/audio/924f7dc8d09f91df73d7c42f6f5d77e57caee253a9582fbd84e5e8a8b94c4e65.wav"
+    },
+    {
+      "assetId": "speech-6f274b3d2ea2d09f6cdc9b211d8bfe1f55fd49ab36a8620c8a9008630f27e179",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "889e8dc81e1576f0dd30b5f50664b36d40f8f1f7f4c18854866b9ea7a6961c61",
+      "url": "/api/audio/889e8dc81e1576f0dd30b5f50664b36d40f8f1f7f4c18854866b9ea7a6961c61.wav"
+    },
+    {
+      "assetId": "speech-8c62bd636a9cb4b6c03153ad495612785e81a4bf99d02f596a57cca85af451c5",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1440,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "f85cd32cf2941c6c099512d25caad8ebe769e6e96f00fb9bcbb7ab291b104f15",
+      "url": "/api/audio/f85cd32cf2941c6c099512d25caad8ebe769e6e96f00fb9bcbb7ab291b104f15.wav"
+    },
+    {
+      "assetId": "speech-a621c846d30c2b74800fa9b34d898f25ed0f6a5025bd3324e26fbe626a39854b",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "cb94ac1a3bd9ee484af72b523fc26c5b5699ac53a02e2d0c258e23c8a4787181",
+      "url": "/api/audio/cb94ac1a3bd9ee484af72b523fc26c5b5699ac53a02e2d0c258e23c8a4787181.wav"
+    },
+    {
+      "assetId": "speech-ce7e88979ea070171fec7b3cda4fb310808d4bc94640a124e16cb101f6d2d22f",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "78076cb4e3306cdaec260d835799af1e0a588c3287f3bea1416dfd1f4a222bd4",
+      "url": "/api/audio/78076cb4e3306cdaec260d835799af1e0a588c3287f3bea1416dfd1f4a222bd4.wav"
+    },
+    {
+      "assetId": "speech-d996aba876a48cf4d60b1f538c40aa078e827fda515129729c6c3c4ef58e2fb4",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "10e841e89de164d8ae0ab8062e10d8523e496c9aed35586ee1b088aa9c6b2185",
+      "url": "/api/audio/10e841e89de164d8ae0ab8062e10d8523e496c9aed35586ee1b088aa9c6b2185.wav"
+    },
+    {
+      "assetId": "speech-e06f2823c0e81e71ecfc104bcafd86c7a19109ef7b350a77e13d79649ca90704",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "ca3c0ff968bddfe02d24f013e07159d0572eea75a4b6d48920c8893e3c66f877",
+      "url": "/api/audio/ca3c0ff968bddfe02d24f013e07159d0572eea75a4b6d48920c8893e3c66f877.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-03dc5a7a126dff320b5e076fd7c3b869ac4b7542c1c782b5a068bf948e489c1e",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-1f657be25e66024a1f0327661fc828f37caad8b2d240f4c4520150689d8dc37f",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-20afcb663233301c6c6dc52800362ad38c6b87507431d8f343878ace674bbd17",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-2ac1e219662905c722d9853a4e1c43b87a688989282fbb2759b36c734d5f271d",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-3974d95ecbd56190a86d05421b47101efb5de55747bba299ae51010baf31c4c0",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-5500471c554a8d0938f534bd187c591802d0219ba2965b7b08e60c9fe7b6d055",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-6f274b3d2ea2d09f6cdc9b211d8bfe1f55fd49ab36a8620c8a9008630f27e179",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-8c62bd636a9cb4b6c03153ad495612785e81a4bf99d02f596a57cca85af451c5",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-a621c846d30c2b74800fa9b34d898f25ed0f6a5025bd3324e26fbe626a39854b",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-ce7e88979ea070171fec7b3cda4fb310808d4bc94640a124e16cb101f6d2d22f",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-d996aba876a48cf4d60b1f538c40aa078e827fda515129729c6c3c4ef58e2fb4",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-e06f2823c0e81e71ecfc104bcafd86c7a19109ef7b350a77e13d79649ca90704",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-3974d95ecbd56190a86d05421b47101efb5de55747bba299ae51010baf31c4c0",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 2400,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 880,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 480,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 880,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 480,
+          "wordRange": {
+            "end": 12,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 1440,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 1120,
+          "wordRange": null
+        },
+        {
+          "endMs": 1440,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 1120,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1600,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 1440,
+          "wordRange": null
+        },
+        {
+          "endMs": 1600,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 1440,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1840,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-6",
+          "startMs": 1600,
+          "wordRange": null
+        },
+        {
+          "endMs": 1840,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-6",
+          "startMs": 1600,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2320,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-7",
+          "startMs": 1840,
+          "wordRange": null
+        },
+        {
+          "endMs": 2320,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-7",
+          "startMs": 1840,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 3690,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 2650,
+          "wordRange": null
+        },
+        {
+          "endMs": 3610,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 2730,
+          "wordRange": null
+        },
+        {
+          "endMs": 3130,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 2730,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3610,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 3130,
+          "wordRange": {
+            "end": 12,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 6260,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 3940,
+          "wordRange": null
+        },
+        {
+          "endMs": 4900,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 4020,
+          "wordRange": null
+        },
+        {
+          "endMs": 4900,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 4020,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6100,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 5380,
+          "wordRange": null
+        },
+        {
+          "endMs": 6100,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 5380,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7630,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 6510,
+          "wordRange": null
+        },
+        {
+          "endMs": 7390,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 6590,
+          "wordRange": null
+        },
+        {
+          "endMs": 6750,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 6590,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6990,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 6750,
+          "wordRange": {
+            "end": 10,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 7070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 6990,
+          "wordRange": {
+            "end": 12,
+            "start": 11
+          }
+        },
+        {
+          "endMs": 7390,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 7070,
+          "wordRange": {
+            "end": 17,
+            "start": 13
+          }
+        },
+        {
+          "endMs": 9960,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 7880,
+          "wordRange": null
+        },
+        {
+          "endMs": 8360,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 8040,
+          "wordRange": null
+        },
+        {
+          "endMs": 8360,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 8040,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9240,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 8840,
+          "wordRange": null
+        },
+        {
+          "endMs": 9240,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 8840,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9720,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 9240,
+          "wordRange": null
+        },
+        {
+          "endMs": 9320,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 9240,
+          "wordRange": {
+            "end": 2,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 9720,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 9320,
+          "wordRange": {
+            "end": 7,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 11330,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 10210,
+          "wordRange": null
+        },
+        {
+          "endMs": 10450,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 10290,
+          "wordRange": null
+        },
+        {
+          "endMs": 10450,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 10290,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10610,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 10450,
+          "wordRange": null
+        },
+        {
+          "endMs": 10610,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 10450,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10690,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 10610,
+          "wordRange": null
+        },
+        {
+          "endMs": 10690,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 10610,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 11090,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 10690,
+          "wordRange": null
+        },
+        {
+          "endMs": 11090,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 10690,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 14860,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 11580,
+          "wordRange": null
+        },
+        {
+          "endMs": 12140,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11660,
+          "wordRange": null
+        },
+        {
+          "endMs": 12140,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11660,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 13260,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-2",
+          "startMs": 12780,
+          "wordRange": null
+        },
+        {
+          "endMs": 13260,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-2",
+          "startMs": 12780,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 13420,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-3",
+          "startMs": 13260,
+          "wordRange": null
+        },
+        {
+          "endMs": 13420,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-3",
+          "startMs": 13260,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 13980,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-4",
+          "startMs": 13420,
+          "wordRange": null
+        },
+        {
+          "endMs": 13980,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-4",
+          "startMs": 13420,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 14140,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-5",
+          "startMs": 13980,
+          "wordRange": null
+        },
+        {
+          "endMs": 14060,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-5",
+          "startMs": 13980,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 14140,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-5",
+          "startMs": 14060,
+          "wordRange": {
+            "end": 6,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 14700,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-6",
+          "startMs": 14140,
+          "wordRange": null
+        },
+        {
+          "endMs": 14700,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-6",
+          "startMs": 14140,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 17670,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 15110,
+          "wordRange": null
+        },
+        {
+          "endMs": 16950,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 15190,
+          "wordRange": null
+        },
+        {
+          "endMs": 15750,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 15190,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 16070,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 15830,
+          "wordRange": {
+            "end": 9,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 16310,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 16070,
+          "wordRange": {
+            "end": 14,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 16470,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 16310,
+          "wordRange": {
+            "end": 20,
+            "start": 15
+          }
+        },
+        {
+          "endMs": 16550,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 16470,
+          "wordRange": {
+            "end": 23,
+            "start": 21
+          }
+        },
+        {
+          "endMs": 16950,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 16550,
+          "wordRange": {
+            "end": 30,
+            "start": 24
+          }
+        },
+        {
+          "endMs": 17430,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-2",
+          "startMs": 16950,
+          "wordRange": null
+        },
+        {
+          "endMs": 17430,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-2",
+          "startMs": 16950,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-park-meeting",
+      "placeZh": "三位朋友在虚构公园中初次碰面",
+      "situationZh": "介绍朋友的名字、居住城市和喜好。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-1",
+          "labelZh": "朋友"
+        },
+        {
+          "avatarId": "avatar-lea-v1",
+          "characterId": "character-lea",
+          "displayName": "Léa",
+          "id": "speaker-2",
+          "labelZh": "朋友"
+        },
+        {
+          "avatarId": "avatar-luc-v1",
+          "characterId": "character-luc",
+          "displayName": "Luc",
+          "id": "speaker-3",
+          "labelZh": "朋友"
+        }
+      ],
+      "titleZh": "介绍一位朋友",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Bonjour, Léa ! "
+            },
+            {
+              "grammarId": "grammar-voici-person",
+              "id": "segment-1-2",
+              "text": "Voici",
+              "vocabularyId": "word-voici"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-mon-ami",
+              "id": "segment-1-4",
+              "text": "mon"
+            },
+            {
+              "id": "segment-1-5",
+              "text": " "
+            },
+            {
+              "id": "segment-1-6",
+              "text": "ami",
+              "vocabularyId": "word-ami"
+            },
+            {
+              "id": "segment-1-7",
+              "text": " Luc."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "你好，Léa！这是我的朋友 Luc。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Bonjour, Luc."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "你好，Luc。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Bonjour. "
+            },
+            {
+              "id": "segment-3-2",
+              "text": "Enchanté",
+              "vocabularyId": "expr-enchante"
+            },
+            {
+              "id": "segment-3-3",
+              "text": " !"
+            }
+          ],
+          "speakerId": "speaker-3",
+          "translationZh": "你好。很高兴认识你！"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Tu habites à Lyon ?"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "你住在里昂吗？"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Oui, "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "j’habite",
+              "vocabularyId": "expr-jhabite"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " à Lyon."
+            }
+          ],
+          "speakerId": "speaker-3",
+          "translationZh": "是的，我住在里昂。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Tu "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "aimes",
+              "vocabularyId": "word-aimer"
+            },
+            {
+              "id": "segment-6-3",
+              "text": " le "
+            },
+            {
+              "id": "segment-6-4",
+              "text": "cinéma",
+              "vocabularyId": "word-cinema"
+            },
+            {
+              "id": "segment-6-5",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "你喜欢电影吗？"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Oui, "
+            },
+            {
+              "id": "segment-7-2",
+              "text": "j’aime",
+              "vocabularyId": "word-aimer"
+            },
+            {
+              "id": "segment-7-3",
+              "text": " le "
+            },
+            {
+              "id": "segment-7-4",
+              "text": "cinéma",
+              "vocabularyId": "word-cinema"
+            },
+            {
+              "id": "segment-7-5",
+              "text": " et la "
+            },
+            {
+              "id": "segment-7-6",
+              "text": "musique",
+              "vocabularyId": "word-musique"
+            },
+            {
+              "id": "segment-7-7",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-3",
+          "translationZh": "是的，我喜欢电影和音乐。"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Alors, on peut aller au cinéma "
+            },
+            {
+              "id": "segment-8-2",
+              "text": "ensemble",
+              "vocabularyId": "word-ensemble"
+            },
+            {
+              "id": "segment-8-3",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "那我们可以一起去看电影。"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "Voici mon ami Luc 介绍朋友。mon 与后面的 ami 配合，不表示说话人必须是男性。Luc 说 enchanté；本课朋友之间使用 tu，这是角色关系设定。最后一句中的 on peut… 是“我们可以……”的提议，下一课继续练习。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "名字、朋友关系和城市都是本课角色设定；初次认识时如何称呼对方取决于具体关系，不能把本课的 tu 当作所有场景的规则。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-voici",
+        "word-ami",
+        "word-cinema",
+        "word-musique",
+        "word-ensemble",
+        "expr-enchante",
+        "word-aimer",
+        "expr-jhabite"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-voici-person",
+        "grammar-mon-ami"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "巴黎"
+        },
+        {
+          "id": "correct",
+          "text": "里昂"
+        },
+        {
+          "id": "distractor-b",
+          "text": "对话没有提到"
+        }
+      ],
+      "promptZh": "Luc 住在哪座城市？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "ami 在本课是阳性名词，用 mon。",
+      "id": "exercise-fill",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Voici ___ ami Luc.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "Luc."
+        },
+        {
+          "id": "token-1",
+          "text": "Voici"
+        },
+        {
+          "id": "token-2",
+          "text": "mon ami"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。",
+      "id": "habit-main",
+      "taskZh": "用 Voici… 介绍一位虚构朋友，可以只使用虚构名字。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能把朋友介绍给另一人。",
+        "我能理解 mon ami 的搭配。",
+        "我能从对话找出城市与喜好。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-luc-v1",
+      "characterId": "character-luc",
+      "displayName": "Luc",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner instructed direct publication of courses and recordings without manual approval; actual fixed-model alignment validated; no human listening or independent expert review asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-social-introduce-friend",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "Voici 后接名字或身份，本课 Voici mon ami Luc 用于把朋友介绍给另一位朋友，不需要再加 être。",
+        "examples": [
+          {
+            "fr": "Voici mon ami Luc.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-20afcb663233301c6c6dc52800362ad38c6b87507431d8f343878ace674bbd17",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1280,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "c2c3e4669c49b758b2837c4bddaecc9839870a174639603cf1deed75932c6d88",
+                "url": "/api/audio/c2c3e4669c49b758b2837c4bddaecc9839870a174639603cf1deed75932c6d88.wav"
+              },
+              "endMs": 1280,
+              "startMs": 0
+            },
+            "zh": "这是我的朋友 Luc。"
+          }
+        ],
+        "id": "grammar-voici-person",
+        "titleZh": "Voici：介绍眼前的人"
+      },
+      {
+        "bodyZh": "物主限定词与后面的名词配合：本课男性朋友是 mon ami，房屋是 ma maison。阴性名词若以元音或哑音 h 开头，前面也用 mon，例如 mon amie。这些形式不由说话人的性别决定。",
+        "examples": [
+          {
+            "fr": "Mon ami habite à Lyon.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-8c62bd636a9cb4b6c03153ad495612785e81a4bf99d02f596a57cca85af451c5",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1440,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "f85cd32cf2941c6c099512d25caad8ebe769e6e96f00fb9bcbb7ab291b104f15",
+                "url": "/api/audio/f85cd32cf2941c6c099512d25caad8ebe769e6e96f00fb9bcbb7ab291b104f15.wav"
+              },
+              "endMs": 1440,
+              "startMs": 0
+            },
+            "zh": "我的朋友住在里昂。"
+          },
+          {
+            "fr": "Mon amie habite à Lyon.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-2ac1e219662905c722d9853a4e1c43b87a688989282fbb2759b36c734d5f271d",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1600,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "0f23b3ec2e81e92b9e08c979121c97dcc685620d1d53d0a60d6b2c7492073f91",
+                "url": "/api/audio/0f23b3ec2e81e92b9e08c979121c97dcc685620d1d53d0a60d6b2c7492073f91.wav"
+              },
+              "endMs": 1600,
+              "startMs": 0
+            },
+            "zh": "我的朋友（女性）住在里昂。"
+          }
+        ],
+        "id": "grammar-mon-ami",
+        "titleZh": "mon / ma：说我的……"
+      }
+    ],
+    "vocabulary": [
+      {
+        "id": "word-voici",
+        "lemma": "voici",
+        "meaningZh": "这是……；请看……",
+        "noteZh": "本课用 voici 介绍眼前的人。",
+        "partOfSpeech": "other",
+        "recording": {
+          "asset": {
+            "assetId": "speech-e06f2823c0e81e71ecfc104bcafd86c7a19109ef7b350a77e13d79649ca90704",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "ca3c0ff968bddfe02d24f013e07159d0572eea75a4b6d48920c8893e3c66f877",
+            "url": "/api/audio/ca3c0ff968bddfe02d24f013e07159d0572eea75a4b6d48920c8893e3c66f877.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-ami",
+        "lemma": "ami",
+        "meaningZh": "朋友（男性）",
+        "noteZh": "mon ami Luc 介绍男性朋友 Luc；女性形式为 amie。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-d996aba876a48cf4d60b1f538c40aa078e827fda515129729c6c3c4ef58e2fb4",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "10e841e89de164d8ae0ab8062e10d8523e496c9aed35586ee1b088aa9c6b2185",
+            "url": "/api/audio/10e841e89de164d8ae0ab8062e10d8523e496c9aed35586ee1b088aa9c6b2185.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-cinema",
+        "lemma": "cinéma",
+        "meaningZh": "电影；电影院",
+        "noteZh": "aimer le cinéma 表示喜欢电影；devant le cinéma 表示在电影院前。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-6f274b3d2ea2d09f6cdc9b211d8bfe1f55fd49ab36a8620c8a9008630f27e179",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "889e8dc81e1576f0dd30b5f50664b36d40f8f1f7f4c18854866b9ea7a6961c61",
+            "url": "/api/audio/889e8dc81e1576f0dd30b5f50664b36d40f8f1f7f4c18854866b9ea7a6961c61.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-musique",
+        "lemma": "musique",
+        "meaningZh": "音乐",
+        "noteZh": "musique 的单数形式；搭配冠词学习。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-03dc5a7a126dff320b5e076fd7c3b869ac4b7542c1c782b5a068bf948e489c1e",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "30cdf7404e0da8c816df6879f998a33f38352e9e0f36e6d200497f8c26224bf6",
+            "url": "/api/audio/30cdf7404e0da8c816df6879f998a33f38352e9e0f36e6d200497f8c26224bf6.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-ensemble",
+        "lemma": "ensemble",
+        "meaningZh": "一起",
+        "noteZh": "本课用于朋友一起活动的安排。",
+        "partOfSpeech": "adverb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-ce7e88979ea070171fec7b3cda4fb310808d4bc94640a124e16cb101f6d2d22f",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "78076cb4e3306cdaec260d835799af1e0a588c3287f3bea1416dfd1f4a222bd4",
+            "url": "/api/audio/78076cb4e3306cdaec260d835799af1e0a588c3287f3bea1416dfd1f4a222bd4.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-enchante",
+        "lemma": "enchanté",
+        "meaningZh": "很高兴认识你",
+        "noteZh": "本课 Luc 是男性，说 enchanté；女性可写 enchantée，读音相同。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-5500471c554a8d0938f534bd187c591802d0219ba2965b7b08e60c9fe7b6d055",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "924f7dc8d09f91df73d7c42f6f5d77e57caee253a9582fbd84e5e8a8b94c4e65",
+            "url": "/api/audio/924f7dc8d09f91df73d7c42f6f5d77e57caee253a9582fbd84e5e8a8b94c4e65.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-aimer",
+        "lemma": "aimer",
+        "meaningZh": "喜欢；爱",
+        "noteZh": "aimer 表示喜欢或爱，可用于食物、活动或其他事物。常见的现在时形式有 j’aime、elle aime。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-a621c846d30c2b74800fa9b34d898f25ed0f6a5025bd3324e26fbe626a39854b",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "cb94ac1a3bd9ee484af72b523fc26c5b5699ac53a02e2d0c258e23c8a4787181",
+            "url": "/api/audio/cb94ac1a3bd9ee484af72b523fc26c5b5699ac53a02e2d0c258e23c8a4787181.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-jhabite",
+        "lemma": "j’habite",
+        "meaningZh": "我住……",
+        "noteZh": "habiter 的第一人称单数现在时，后接居住地点。",
+        "partOfSpeech": "other",
+        "recording": {
+          "asset": {
+            "assetId": "speech-1f657be25e66024a1f0327661fc828f37caad8b2d240f4c4520150689d8dc37f",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "27df44533f1e81cfaba3ece02772d6cb1cc9d793780dee074d64c3c47259db02",
+            "url": "/api/audio/27df44533f1e81cfaba3ece02772d6cb1cc9d793780dee074d64c3c47259db02.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "虚构公园中的长椅、入口路牌与三位朋友，暖阳照着树木和小路",
+      "assetId": "art-park-meeting",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "8a13f40f43ae625232c469c455a5318e65b91ec060337d788dda8882bb91d98d",
+      "url": "/api/media/8a13f40f43ae625232c469c455a5318e65b91ec060337d788dda8882bb91d98d.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Luc 的头像",
+      "assetId": "avatar-luc-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b",
+      "url": "/api/media/75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "把朋友介绍给另一人",
+    "理解 mon ami 的搭配",
+    "从对话找出城市与喜好"
+  ],
+  "reviewItemIds": [
+    "word-ami",
+    "word-voici",
+    "expr-enchante"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：里昂。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "mon"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "ami 在本课是阳性名词，用 mon。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Voici mon ami Luc.",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "介绍朋友的名字、居住城市和喜好。",
+  "title": {
+    "fr": "Voici mon ami Luc",
+    "zh": "介绍一位朋友"
+  },
+  "unitId": "a1-social-meetings"
+}

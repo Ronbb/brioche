@@ -1,0 +1,1630 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-home-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-23d31ff44462c6f54dc2bfbf6b89ba51905b50391cd2cf3bfd2e7a4a1aba0107",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "9812706a17f9dc55d054e26c3a76f719446313e9196f10a5e79f3800719c404b",
+      "url": "/api/audio/9812706a17f9dc55d054e26c3a76f719446313e9196f10a5e79f3800719c404b.wav"
+    },
+    {
+      "assetId": "speech-2fb7752466330fcccea9ceca8881123c935f738185a8dea55c8bee1a5326ff5d",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "7bf62db136a6c5b82f3f04bc100b3c0bf327ea1f610fe7821ed8789caed0a04c",
+      "url": "/api/audio/7bf62db136a6c5b82f3f04bc100b3c0bf327ea1f610fe7821ed8789caed0a04c.wav"
+    },
+    {
+      "assetId": "speech-32cbb6ce359eef54a1e07203232303441619719520f73a5dda5b7b7b3805ddcf",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1120,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "3412c1c322a1e3673f14c6f1fbc3358926c0f371a23b3e76e73b2f6aabb511e9",
+      "url": "/api/audio/3412c1c322a1e3673f14c6f1fbc3358926c0f371a23b3e76e73b2f6aabb511e9.wav"
+    },
+    {
+      "assetId": "speech-43188601e8a5e01cd4195d500381b8459ccf2148945abd0bc1dac782d0302533",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 560,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "7ea526e9c787440243f8be05adf2c2e7b91cbfd02cf9c7d386e8eba32f88d47d",
+      "url": "/api/audio/7ea526e9c787440243f8be05adf2c2e7b91cbfd02cf9c7d386e8eba32f88d47d.wav"
+    },
+    {
+      "assetId": "speech-49abf720cfaba372504878947f6aab91806f5655785db473166ff11867abdcfa",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "6e17c41a7e8fc26c67b691c2b003011bc5dfc9e84df8cf7e2ca69384d9b752f3",
+      "url": "/api/audio/6e17c41a7e8fc26c67b691c2b003011bc5dfc9e84df8cf7e2ca69384d9b752f3.wav"
+    },
+    {
+      "assetId": "speech-53b5278d0576fb6f3526493a17a0260175e24f8229ff7966bfa5e8df553ba6dd",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1440,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "f3a4503f312ac30d04e0ceea08f9f8a8e323063b3242e7fc0dbd230ab083c527",
+      "url": "/api/audio/f3a4503f312ac30d04e0ceea08f9f8a8e323063b3242e7fc0dbd230ab083c527.wav"
+    },
+    {
+      "assetId": "speech-6985377386b36da25592b565eb7f536f6abf0c5ee81bb97956b139ad60076bf1",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "203a56fcfbe6e694064fecaf5586816975a3e39fbea1b0caefe1bb791907b4b1",
+      "url": "/api/audio/203a56fcfbe6e694064fecaf5586816975a3e39fbea1b0caefe1bb791907b4b1.wav"
+    },
+    {
+      "assetId": "speech-6d965d3148c0a3e1795bac2b08dba7ad62cfac8bcc3ab92f8b8e6bd6de0d36a0",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "96b6951580484ab830b84dfd9af18e823e61fc09b6ff7a6bbddfc95038594aa3",
+      "url": "/api/audio/96b6951580484ab830b84dfd9af18e823e61fc09b6ff7a6bbddfc95038594aa3.wav"
+    },
+    {
+      "assetId": "speech-7ea3588915f3efedab3a4b368084b0e9ba843d2cea54389d94074dd4c8c607a3",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "e0ce330d8b7d6c51e6992b729a68ba281cf1a90cdf6369424747bd207979d2e4",
+      "url": "/api/audio/e0ce330d8b7d6c51e6992b729a68ba281cf1a90cdf6369424747bd207979d2e4.wav"
+    },
+    {
+      "assetId": "speech-d26c92df57ecad97c1475725998dd711e0d863fc812bb67bd9d42d42e7c619b2",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "9e606aea3eb2262a68cd16a55511769203e8ecaadb035d3d34fd4a0eb7eae7e8",
+      "url": "/api/audio/9e606aea3eb2262a68cd16a55511769203e8ecaadb035d3d34fd4a0eb7eae7e8.wav"
+    },
+    {
+      "assetId": "speech-e29f7c074c23a0f9e99d11f8c3481642fcad6dc9645a5a94199003afb2cf1bc2",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 15270,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "2bd81283b23a58aa7bea3eb34cdfb8f8f9e01d9248f7b1afe2c6c7e0726bcd10",
+      "url": "/api/audio/2bd81283b23a58aa7bea3eb34cdfb8f8f9e01d9248f7b1afe2c6c7e0726bcd10.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-23d31ff44462c6f54dc2bfbf6b89ba51905b50391cd2cf3bfd2e7a4a1aba0107",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-2fb7752466330fcccea9ceca8881123c935f738185a8dea55c8bee1a5326ff5d",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-32cbb6ce359eef54a1e07203232303441619719520f73a5dda5b7b7b3805ddcf",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-43188601e8a5e01cd4195d500381b8459ccf2148945abd0bc1dac782d0302533",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-49abf720cfaba372504878947f6aab91806f5655785db473166ff11867abdcfa",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-53b5278d0576fb6f3526493a17a0260175e24f8229ff7966bfa5e8df553ba6dd",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-6985377386b36da25592b565eb7f536f6abf0c5ee81bb97956b139ad60076bf1",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-6d965d3148c0a3e1795bac2b08dba7ad62cfac8bcc3ab92f8b8e6bd6de0d36a0",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-7ea3588915f3efedab3a4b368084b0e9ba843d2cea54389d94074dd4c8c607a3",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-d26c92df57ecad97c1475725998dd711e0d863fc812bb67bd9d42d42e7c619b2",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-e29f7c074c23a0f9e99d11f8c3481642fcad6dc9645a5a94199003afb2cf1bc2",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-e29f7c074c23a0f9e99d11f8c3481642fcad6dc9645a5a94199003afb2cf1bc2",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 1360,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 400,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 400,
+          "wordRange": {
+            "end": 9,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 1200,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 560,
+          "wordRange": null
+        },
+        {
+          "endMs": 1200,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 560,
+          "wordRange": {
+            "end": 11,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3770,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 1610,
+          "wordRange": null
+        },
+        {
+          "endMs": 3450,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1690,
+          "wordRange": null
+        },
+        {
+          "endMs": 1850,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1690,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1930,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1850,
+          "wordRange": {
+            "end": 6,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 2410,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1930,
+          "wordRange": {
+            "end": 12,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 2970,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 2730,
+          "wordRange": {
+            "end": 18,
+            "start": 14
+          }
+        },
+        {
+          "endMs": 3450,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 2970,
+          "wordRange": {
+            "end": 27,
+            "start": 19
+          }
+        },
+        {
+          "endMs": 5220,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 4020,
+          "wordRange": null
+        },
+        {
+          "endMs": 4420,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 4100,
+          "wordRange": null
+        },
+        {
+          "endMs": 4260,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 4100,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4340,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 4260,
+          "wordRange": {
+            "end": 4,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 4420,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 4340,
+          "wordRange": {
+            "end": 6,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 4500,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 4420,
+          "wordRange": null
+        },
+        {
+          "endMs": 4500,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 4420,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 4900,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 4500,
+          "wordRange": null
+        },
+        {
+          "endMs": 4900,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 4500,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7790,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 5470,
+          "wordRange": null
+        },
+        {
+          "endMs": 5870,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 5550,
+          "wordRange": null
+        },
+        {
+          "endMs": 5870,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 5550,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6270,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 5950,
+          "wordRange": null
+        },
+        {
+          "endMs": 6110,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 5950,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6190,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 6110,
+          "wordRange": {
+            "end": 4,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 6270,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 6190,
+          "wordRange": {
+            "end": 6,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 6350,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 6270,
+          "wordRange": null
+        },
+        {
+          "endMs": 6350,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 6270,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 6830,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 6350,
+          "wordRange": null
+        },
+        {
+          "endMs": 6830,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 6350,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7150,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 6910,
+          "wordRange": null
+        },
+        {
+          "endMs": 6990,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 6910,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 7150,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 6990,
+          "wordRange": {
+            "end": 7,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 7550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-6",
+          "startMs": 7150,
+          "wordRange": null
+        },
+        {
+          "endMs": 7550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-6",
+          "startMs": 7150,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9000,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 8040,
+          "wordRange": null
+        },
+        {
+          "endMs": 8280,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 8120,
+          "wordRange": null
+        },
+        {
+          "endMs": 8280,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 8120,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8360,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 8280,
+          "wordRange": null
+        },
+        {
+          "endMs": 8360,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 8280,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8440,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 8360,
+          "wordRange": null
+        },
+        {
+          "endMs": 8440,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 8360,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 8840,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-4",
+          "startMs": 8440,
+          "wordRange": null
+        },
+        {
+          "endMs": 8840,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-4",
+          "startMs": 8440,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11490,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 9250,
+          "wordRange": null
+        },
+        {
+          "endMs": 9490,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 9330,
+          "wordRange": null
+        },
+        {
+          "endMs": 9490,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 9330,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10130,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 9890,
+          "wordRange": null
+        },
+        {
+          "endMs": 10130,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 9890,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10290,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 10130,
+          "wordRange": null
+        },
+        {
+          "endMs": 10290,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 10130,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 10610,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 10290,
+          "wordRange": null
+        },
+        {
+          "endMs": 10610,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 10290,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10850,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 10610,
+          "wordRange": null
+        },
+        {
+          "endMs": 10690,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 10610,
+          "wordRange": {
+            "end": 5,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 10850,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 10690,
+          "wordRange": {
+            "end": 8,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 11330,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-6",
+          "startMs": 10850,
+          "wordRange": null
+        },
+        {
+          "endMs": 11330,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-6",
+          "startMs": 10850,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 12540,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 11740,
+          "wordRange": null
+        },
+        {
+          "endMs": 11980,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11820,
+          "wordRange": null
+        },
+        {
+          "endMs": 11900,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11820,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11980,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 11900,
+          "wordRange": {
+            "end": 5,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 12380,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-2",
+          "startMs": 11980,
+          "wordRange": null
+        },
+        {
+          "endMs": 12380,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-2",
+          "startMs": 11980,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 15270,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 12790,
+          "wordRange": null
+        },
+        {
+          "endMs": 12950,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 12870,
+          "wordRange": null
+        },
+        {
+          "endMs": 12950,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 12870,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 13430,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-2",
+          "startMs": 12950,
+          "wordRange": null
+        },
+        {
+          "endMs": 13430,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-2",
+          "startMs": 12950,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 13750,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-3",
+          "startMs": 13590,
+          "wordRange": null
+        },
+        {
+          "endMs": 13750,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-3",
+          "startMs": 13590,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 14310,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-4",
+          "startMs": 13750,
+          "wordRange": null
+        },
+        {
+          "endMs": 13910,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-4",
+          "startMs": 13750,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 14230,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-4",
+          "startMs": 13910,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 14310,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-4",
+          "startMs": 14230,
+          "wordRange": {
+            "end": 9,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 14470,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-5",
+          "startMs": 14310,
+          "wordRange": null
+        },
+        {
+          "endMs": 14470,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-5",
+          "startMs": 14310,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 15030,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-6",
+          "startMs": 14470,
+          "wordRange": null
+        },
+        {
+          "endMs": 15030,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-6",
+          "startMs": 14470,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-home-morning",
+      "placeZh": "Camille 的虚构公寓",
+      "situationZh": "向朋友介绍公寓里的房间和书桌位置。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-1",
+          "labelZh": "公寓主人"
+        },
+        {
+          "avatarId": "avatar-lea-v1",
+          "characterId": "character-lea",
+          "displayName": "Léa",
+          "id": "speaker-2",
+          "labelZh": "来访的朋友"
+        }
+      ],
+      "titleZh": "描述我的房间",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Voilà mon "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "appartement",
+              "vocabularyId": "word-appartement"
+            },
+            {
+              "id": "segment-1-3",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "这是我的公寓。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Il est petit, mais lumineux."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "它不大，但很明亮。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "grammarId": "grammar-il-y-a-existence",
+              "id": "segment-3-1",
+              "text": "Il y a",
+              "vocabularyId": "expr-il-y-a"
+            },
+            {
+              "id": "segment-3-2",
+              "text": " une "
+            },
+            {
+              "id": "segment-3-3",
+              "text": "cuisine",
+              "vocabularyId": "word-cuisine"
+            },
+            {
+              "id": "segment-3-4",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "有厨房吗？"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Oui, "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "il y a",
+              "vocabularyId": "expr-il-y-a"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " une "
+            },
+            {
+              "id": "segment-4-4",
+              "text": "cuisine",
+              "vocabularyId": "word-cuisine"
+            },
+            {
+              "id": "segment-4-5",
+              "text": " et une "
+            },
+            {
+              "id": "segment-4-6",
+              "text": "chambre",
+              "vocabularyId": "word-chambre"
+            },
+            {
+              "id": "segment-4-7",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "是的，有厨房和卧室。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Tu "
+            },
+            {
+              "grammarId": "grammar-avoir-possession",
+              "id": "segment-5-2",
+              "text": "as",
+              "vocabularyId": "word-avoir"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " un "
+            },
+            {
+              "id": "segment-5-4",
+              "text": "bureau",
+              "vocabularyId": "word-bureau"
+            },
+            {
+              "id": "segment-5-5",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "你有书桌吗？"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Oui, "
+            },
+            {
+              "grammarId": "grammar-avoir-possession",
+              "id": "segment-6-2",
+              "text": "j’ai",
+              "vocabularyId": "word-avoir"
+            },
+            {
+              "id": "segment-6-3",
+              "text": " un "
+            },
+            {
+              "id": "segment-6-4",
+              "text": "bureau",
+              "vocabularyId": "word-bureau"
+            },
+            {
+              "id": "segment-6-5",
+              "text": " dans ma "
+            },
+            {
+              "id": "segment-6-6",
+              "text": "chambre",
+              "vocabularyId": "word-chambre"
+            },
+            {
+              "id": "segment-6-7",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "有，我的卧室里有一张书桌。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Et le "
+            },
+            {
+              "id": "segment-7-2",
+              "text": "salon",
+              "vocabularyId": "word-salon"
+            },
+            {
+              "id": "segment-7-3",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "那客厅呢？"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Le "
+            },
+            {
+              "id": "segment-8-2",
+              "text": "salon",
+              "vocabularyId": "word-salon"
+            },
+            {
+              "id": "segment-8-3",
+              "text": " est "
+            },
+            {
+              "id": "segment-8-4",
+              "text": "à côté de",
+              "vocabularyId": "expr-a-cote-de"
+            },
+            {
+              "id": "segment-8-5",
+              "text": " la "
+            },
+            {
+              "id": "segment-8-6",
+              "text": "cuisine",
+              "vocabularyId": "word-cuisine"
+            },
+            {
+              "id": "segment-8-7",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "客厅在厨房旁边。"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "petit 和 lumineux 分别表示“小”和“明亮”。Il y a 用来介绍有什么；j’ai 说明我拥有什么。这里的 bureau 是书桌。朋友之间使用 tu。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "房间和家具是虚构设定；本课不要求提供真实住址或住房信息。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-appartement",
+        "word-chambre",
+        "word-cuisine",
+        "word-bureau",
+        "word-salon",
+        "expr-il-y-a",
+        "word-avoir",
+        "expr-a-cote-de"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-avoir-possession",
+        "grammar-il-y-a-existence"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "厨房"
+        },
+        {
+          "id": "correct",
+          "text": "卧室"
+        },
+        {
+          "id": "distractor-b",
+          "text": "客厅"
+        }
+      ],
+      "promptZh": "Camille 的书桌在哪里？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "avoir 搭配 je 的形式是 ai；句子已经提供 j’。",
+      "id": "exercise-fill",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Dans ma chambre, j’___ un bureau.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "dans l’appartement."
+        },
+        {
+          "id": "token-1",
+          "text": "Il y a"
+        },
+        {
+          "id": "token-2",
+          "text": "une cuisine"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。",
+      "id": "habit-main",
+      "taskZh": "用 Il y a… 介绍一个房间里的东西，可以描述想象中的房间。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能说出房间名称。",
+        "我能用 il y a 描述某处有什么。",
+        "我能用 j’ai 说自己有什么。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner instructed direct publication of courses and recordings without manual approval; actual fixed-model alignment validated; no human listening or independent expert review asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-home-describe-room",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "avoir 的现在时随主语变化：je + ai 省音写作 j’ai，tu 搭配 as。J’ai un bureau 表示我有一张书桌。",
+        "examples": [
+          {
+            "fr": "J’ai un bureau.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-6985377386b36da25592b565eb7f536f6abf0c5ee81bb97956b139ad60076bf1",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 880,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "203a56fcfbe6e694064fecaf5586816975a3e39fbea1b0caefe1bb791907b4b1",
+                "url": "/api/audio/203a56fcfbe6e694064fecaf5586816975a3e39fbea1b0caefe1bb791907b4b1.wav"
+              },
+              "endMs": 880,
+              "startMs": 0
+            },
+            "zh": "我有一张书桌。"
+          }
+        ],
+        "id": "grammar-avoir-possession",
+        "titleZh": "avoir：说自己有什么"
+      },
+      {
+        "bodyZh": "Il y a 后接名词，说明某处有某物。本课用 une cuisine、une chambre；提问可保留语序，用问号和上扬语调。",
+        "examples": [
+          {
+            "fr": "Il y a une cuisine.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-53b5278d0576fb6f3526493a17a0260175e24f8229ff7966bfa5e8df553ba6dd",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1440,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "f3a4503f312ac30d04e0ceea08f9f8a8e323063b3242e7fc0dbd230ab083c527",
+                "url": "/api/audio/f3a4503f312ac30d04e0ceea08f9f8a8e323063b3242e7fc0dbd230ab083c527.wav"
+              },
+              "endMs": 1440,
+              "startMs": 0
+            },
+            "zh": "有一个厨房。"
+          }
+        ],
+        "id": "grammar-il-y-a-existence",
+        "titleZh": "Il y a：介绍房间里的东西"
+      }
+    ],
+    "vocabulary": [
+      {
+        "gender": "masculine",
+        "id": "word-appartement",
+        "lemma": "appartement",
+        "meaningZh": "公寓",
+        "noteZh": "appartement 的单数形式；搭配冠词学习。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-23d31ff44462c6f54dc2bfbf6b89ba51905b50391cd2cf3bfd2e7a4a1aba0107",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "9812706a17f9dc55d054e26c3a76f719446313e9196f10a5e79f3800719c404b",
+            "url": "/api/audio/9812706a17f9dc55d054e26c3a76f719446313e9196f10a5e79f3800719c404b.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-chambre",
+        "lemma": "chambre",
+        "meaningZh": "卧室；房间",
+        "noteZh": "chambre 的单数形式；搭配冠词学习。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-43188601e8a5e01cd4195d500381b8459ccf2148945abd0bc1dac782d0302533",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 560,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "7ea526e9c787440243f8be05adf2c2e7b91cbfd02cf9c7d386e8eba32f88d47d",
+            "url": "/api/audio/7ea526e9c787440243f8be05adf2c2e7b91cbfd02cf9c7d386e8eba32f88d47d.wav"
+          },
+          "endMs": 560,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-cuisine",
+        "lemma": "cuisine",
+        "meaningZh": "厨房",
+        "noteZh": "cuisine 的单数形式；搭配冠词学习。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-2fb7752466330fcccea9ceca8881123c935f738185a8dea55c8bee1a5326ff5d",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "7bf62db136a6c5b82f3f04bc100b3c0bf327ea1f610fe7821ed8789caed0a04c",
+            "url": "/api/audio/7bf62db136a6c5b82f3f04bc100b3c0bf327ea1f610fe7821ed8789caed0a04c.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-bureau",
+        "lemma": "bureau",
+        "meaningZh": "书桌；办公室",
+        "noteZh": "un bureau 可指书桌；au bureau 在本单元的工作场景中表示在办公室。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-7ea3588915f3efedab3a4b368084b0e9ba843d2cea54389d94074dd4c8c607a3",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "e0ce330d8b7d6c51e6992b729a68ba281cf1a90cdf6369424747bd207979d2e4",
+            "url": "/api/audio/e0ce330d8b7d6c51e6992b729a68ba281cf1a90cdf6369424747bd207979d2e4.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-salon",
+        "lemma": "salon",
+        "meaningZh": "客厅",
+        "noteZh": "salon 的单数形式；搭配冠词学习。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-49abf720cfaba372504878947f6aab91806f5655785db473166ff11867abdcfa",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "6e17c41a7e8fc26c67b691c2b003011bc5dfc9e84df8cf7e2ca69384d9b752f3",
+            "url": "/api/audio/6e17c41a7e8fc26c67b691c2b003011bc5dfc9e84df8cf7e2ca69384d9b752f3.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-il-y-a",
+        "lemma": "il y a",
+        "meaningZh": "有……",
+        "noteZh": "用于说明某处存在什么。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-6d965d3148c0a3e1795bac2b08dba7ad62cfac8bcc3ab92f8b8e6bd6de0d36a0",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "96b6951580484ab830b84dfd9af18e823e61fc09b6ff7a6bbddfc95038594aa3",
+            "url": "/api/audio/96b6951580484ab830b84dfd9af18e823e61fc09b6ff7a6bbddfc95038594aa3.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-avoir",
+        "lemma": "avoir",
+        "meaningZh": "有",
+        "noteZh": "本课先学习 j’ai 和 tu as，分别表示“我有”“你有”。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-d26c92df57ecad97c1475725998dd711e0d863fc812bb67bd9d42d42e7c619b2",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "9e606aea3eb2262a68cd16a55511769203e8ecaadb035d3d34fd4a0eb7eae7e8",
+            "url": "/api/audio/9e606aea3eb2262a68cd16a55511769203e8ecaadb035d3d34fd4a0eb7eae7e8.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-a-cote-de",
+        "lemma": "à côté de",
+        "meaningZh": "在……旁边",
+        "noteZh": "说明相邻的位置，后接地点。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-32cbb6ce359eef54a1e07203232303441619719520f73a5dda5b7b7b3805ddcf",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 1120,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "3412c1c322a1e3673f14c6f1fbc3358926c0f371a23b3e76e73b2f6aabb511e9",
+            "url": "/api/audio/3412c1c322a1e3673f14c6f1fbc3358926c0f371a23b3e76e73b2f6aabb511e9.wav"
+          },
+          "endMs": 1120,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "晨光照进虚构公寓，书桌上有书和杯子，旁边是扶手椅与绿植",
+      "assetId": "art-home-morning",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "aa1458e135b40b1df9c1f47aff2c4fd7f1a19ffc40a14af98467b93e1a2df652",
+      "url": "/api/media/aa1458e135b40b1df9c1f47aff2c4fd7f1a19ffc40a14af98467b93e1a2df652.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "说出房间名称",
+    "用 il y a 描述某处有什么",
+    "用 j’ai 说自己有什么"
+  ],
+  "reviewItemIds": [
+    "expr-il-y-a",
+    "word-bureau",
+    "expr-a-cote-de"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：卧室。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "ai"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "avoir 搭配 je 的形式是 ai；句子已经提供 j’。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Il y a une cuisine dans l’appartement.",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "向朋友介绍公寓里的房间和书桌位置。",
+  "title": {
+    "fr": "Dans mon appartement",
+    "zh": "描述我的房间"
+  },
+  "unitId": "a1-home-routine"
+}

@@ -1,0 +1,1664 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-home-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-0b4e800e9b1c31822335f6099ed8ac161222e82e3a2a4bb4bc480e8210bbae75",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "1bfe8ea9c0e2191f383717e871180d18d0874f7917a8f460038aaafd44b56103",
+      "url": "/api/audio/1bfe8ea9c0e2191f383717e871180d18d0874f7917a8f460038aaafd44b56103.wav"
+    },
+    {
+      "assetId": "speech-2205d20cd18cc6d1153c729d171e6870894517b0ed6b2ce2d1aa954b513d61f6",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "bfff2b94f446a432bba79243166e196926a3e3d3c5a15c6ee56e84e85aab004b",
+      "url": "/api/audio/bfff2b94f446a432bba79243166e196926a3e3d3c5a15c6ee56e84e85aab004b.wav"
+    },
+    {
+      "assetId": "speech-460d904ad30d88f0dc7562ed804596cd3c74d36dd0e0bde1a7d1e5ca0d26d5b2",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "b8d2c9b3042b0a21d083752ee5e9cdaec031f032120411c0a95e5ae63d062bc7",
+      "url": "/api/audio/b8d2c9b3042b0a21d083752ee5e9cdaec031f032120411c0a95e5ae63d062bc7.wav"
+    },
+    {
+      "assetId": "speech-46793e296abc587fa37b51b6c315eca1b4ac506f4d73f0b8c0078554e4017877",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 2800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "82c5290d509f1bb1deb6df0729d49e3948871d962f7da5760d2d1a4c5afbc952",
+      "url": "/api/audio/82c5290d509f1bb1deb6df0729d49e3948871d962f7da5760d2d1a4c5afbc952.wav"
+    },
+    {
+      "assetId": "speech-4dbd7a3a7c6cb9b1af62164fb0c2f9e01d3cc8a0b4765c0ef54e0f0a70ed5d1c",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "f442e85d7cef8e0a5b6ca5e46849de364e379bf101ffd0f2adfb2b346d54b948",
+      "url": "/api/audio/f442e85d7cef8e0a5b6ca5e46849de364e379bf101ffd0f2adfb2b346d54b948.wav"
+    },
+    {
+      "assetId": "speech-8e9fdabf1c11a4263f22a993742de70760a60269b53605ed8aae58663e874655",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "44bb5f0bbf7e7bc0c60c44588e2a066a1beae72e24e3d243c4b5d7b9f39c0052",
+      "url": "/api/audio/44bb5f0bbf7e7bc0c60c44588e2a066a1beae72e24e3d243c4b5d7b9f39c0052.wav"
+    },
+    {
+      "assetId": "speech-98268751f0d188128226982a1fc7df6fd253871d2ba25970a2c0b63f64e4f085",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 960,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "3bfd721e0c77081cc7a3573ae056d043224e5e404cea2b629103eb44e91915ad",
+      "url": "/api/audio/3bfd721e0c77081cc7a3573ae056d043224e5e404cea2b629103eb44e91915ad.wav"
+    },
+    {
+      "assetId": "speech-b67f7fa5625920eb0f214a1a77315c127ff6341cf56719203bf97f24568009d9",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 18790,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "47295cd1a2262c1dda9cb38342300cd0ca6b27d22f0a9047ec66a5cbf42ada56",
+      "url": "/api/audio/47295cd1a2262c1dda9cb38342300cd0ca6b27d22f0a9047ec66a5cbf42ada56.wav"
+    },
+    {
+      "assetId": "speech-e9ef0dae1a346e169bef774d5a12ec340f7edd85e8e2fa0d2e692e01d947c972",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "0577a39a8e36014776a7b155c8816806d5867cb5f7ffccccca0ac9421894ff81",
+      "url": "/api/audio/0577a39a8e36014776a7b155c8816806d5867cb5f7ffccccca0ac9421894ff81.wav"
+    },
+    {
+      "assetId": "speech-f37cbc39b2594a71e202be65dbb1af942cca9c532ce117b87941ed1f1ee768f8",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "5d09378817d7addeef7a046965de8ced9db6bc05b88c71b67525ed67f29ae77c",
+      "url": "/api/audio/5d09378817d7addeef7a046965de8ced9db6bc05b88c71b67525ed67f29ae77c.wav"
+    },
+    {
+      "assetId": "speech-f89528fa62931054ca139127ae5ed832bfa3ee8431e10003e67775675591bb5c",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1360,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "fba314eea0a28756845dd28ebc4790a2612297e3a11ebb9a37ac4e385ec51865",
+      "url": "/api/audio/fba314eea0a28756845dd28ebc4790a2612297e3a11ebb9a37ac4e385ec51865.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-0b4e800e9b1c31822335f6099ed8ac161222e82e3a2a4bb4bc480e8210bbae75",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-2205d20cd18cc6d1153c729d171e6870894517b0ed6b2ce2d1aa954b513d61f6",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-460d904ad30d88f0dc7562ed804596cd3c74d36dd0e0bde1a7d1e5ca0d26d5b2",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-46793e296abc587fa37b51b6c315eca1b4ac506f4d73f0b8c0078554e4017877",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-4dbd7a3a7c6cb9b1af62164fb0c2f9e01d3cc8a0b4765c0ef54e0f0a70ed5d1c",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-8e9fdabf1c11a4263f22a993742de70760a60269b53605ed8aae58663e874655",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-98268751f0d188128226982a1fc7df6fd253871d2ba25970a2c0b63f64e4f085",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-b67f7fa5625920eb0f214a1a77315c127ff6341cf56719203bf97f24568009d9",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-e9ef0dae1a346e169bef774d5a12ec340f7edd85e8e2fa0d2e692e01d947c972",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-f37cbc39b2594a71e202be65dbb1af942cca9c532ce117b87941ed1f1ee768f8",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-f89528fa62931054ca139127ae5ed832bfa3ee8431e10003e67775675591bb5c",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-b67f7fa5625920eb0f214a1a77315c127ff6341cf56719203bf97f24568009d9",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 1280,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 160,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 160,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 160,
+          "wordRange": null
+        },
+        {
+          "endMs": 640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 160,
+          "wordRange": {
+            "end": 10,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1120,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 640,
+          "wordRange": null
+        },
+        {
+          "endMs": 1120,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 640,
+          "wordRange": {
+            "end": 12,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 4490,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 1530,
+          "wordRange": null
+        },
+        {
+          "endMs": 2890,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1610,
+          "wordRange": null
+        },
+        {
+          "endMs": 1850,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1610,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2890,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 2330,
+          "wordRange": {
+            "end": 16,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 3770,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 3210,
+          "wordRange": null
+        },
+        {
+          "endMs": 3770,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 3210,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3930,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 3770,
+          "wordRange": null
+        },
+        {
+          "endMs": 3850,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 3770,
+          "wordRange": {
+            "end": 2,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 3930,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 3850,
+          "wordRange": {
+            "end": 5,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 4250,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4",
+          "startMs": 3930,
+          "wordRange": null
+        },
+        {
+          "endMs": 4250,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4",
+          "startMs": 3930,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6100,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 4740,
+          "wordRange": null
+        },
+        {
+          "endMs": 4980,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 4820,
+          "wordRange": null
+        },
+        {
+          "endMs": 4980,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 4820,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 5300,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 4980,
+          "wordRange": null
+        },
+        {
+          "endMs": 5300,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 4980,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 5940,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 5300,
+          "wordRange": null
+        },
+        {
+          "endMs": 5380,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 5300,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 5940,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 5380,
+          "wordRange": {
+            "end": 12,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 9870,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 6350,
+          "wordRange": null
+        },
+        {
+          "endMs": 6670,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 6430,
+          "wordRange": null
+        },
+        {
+          "endMs": 6670,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 6430,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7630,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 6910,
+          "wordRange": null
+        },
+        {
+          "endMs": 7630,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 6910,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8430,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 7630,
+          "wordRange": null
+        },
+        {
+          "endMs": 7790,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 7630,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 8430,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 7790,
+          "wordRange": {
+            "end": 12,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 8590,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 8510,
+          "wordRange": null
+        },
+        {
+          "endMs": 8590,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 8510,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 8590,
+          "wordRange": null
+        },
+        {
+          "endMs": 8670,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 8590,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 8910,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 8670,
+          "wordRange": {
+            "end": 8,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 9070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 8910,
+          "wordRange": {
+            "end": 11,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 9710,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-6",
+          "startMs": 9070,
+          "wordRange": null
+        },
+        {
+          "endMs": 9710,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-6",
+          "startMs": 9070,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11000,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 10120,
+          "wordRange": null
+        },
+        {
+          "endMs": 10800,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 10160,
+          "wordRange": null
+        },
+        {
+          "endMs": 10320,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 10160,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10400,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 10320,
+          "wordRange": {
+            "end": 5,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 10480,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 10400,
+          "wordRange": {
+            "end": 8,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 10800,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 10480,
+          "wordRange": {
+            "end": 15,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 14290,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 11250,
+          "wordRange": null
+        },
+        {
+          "endMs": 12130,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 11330,
+          "wordRange": null
+        },
+        {
+          "endMs": 11730,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 11330,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 12130,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 11970,
+          "wordRange": {
+            "end": 7,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 12450,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 12130,
+          "wordRange": null
+        },
+        {
+          "endMs": 12450,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 12130,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 12850,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 12450,
+          "wordRange": null
+        },
+        {
+          "endMs": 12530,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 12450,
+          "wordRange": {
+            "end": 2,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 12770,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 12530,
+          "wordRange": {
+            "end": 7,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 12850,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 12770,
+          "wordRange": {
+            "end": 14,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 13170,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 13090,
+          "wordRange": null
+        },
+        {
+          "endMs": 13170,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 13090,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 13330,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 13170,
+          "wordRange": null
+        },
+        {
+          "endMs": 13330,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 13170,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 13570,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-6",
+          "startMs": 13330,
+          "wordRange": null
+        },
+        {
+          "endMs": 13570,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-6",
+          "startMs": 13330,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 13730,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-7",
+          "startMs": 13650,
+          "wordRange": null
+        },
+        {
+          "endMs": 13730,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-7",
+          "startMs": 13650,
+          "wordRange": {
+            "end": 2,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 14050,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-8",
+          "startMs": 13730,
+          "wordRange": null
+        },
+        {
+          "endMs": 14050,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-8",
+          "startMs": 13730,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 15340,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 14540,
+          "wordRange": null
+        },
+        {
+          "endMs": 15100,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 14620,
+          "wordRange": null
+        },
+        {
+          "endMs": 14780,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 14620,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 15100,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 14780,
+          "wordRange": {
+            "end": 8,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 18790,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 15590,
+          "wordRange": null
+        },
+        {
+          "endMs": 16630,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 15750,
+          "wordRange": null
+        },
+        {
+          "endMs": 16150,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 15750,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 16230,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 16150,
+          "wordRange": {
+            "end": 9,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 16470,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 16230,
+          "wordRange": {
+            "end": 14,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 16630,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 16470,
+          "wordRange": {
+            "end": 18,
+            "start": 15
+          }
+        },
+        {
+          "endMs": 17030,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-2",
+          "startMs": 16630,
+          "wordRange": null
+        },
+        {
+          "endMs": 17030,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-2",
+          "startMs": 16630,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 17270,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-4",
+          "startMs": 17190,
+          "wordRange": null
+        },
+        {
+          "endMs": 17270,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-4",
+          "startMs": 17190,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 18630,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-5",
+          "startMs": 17270,
+          "wordRange": null
+        },
+        {
+          "endMs": 17350,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-5",
+          "startMs": 17270,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 17830,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-5",
+          "startMs": 17350,
+          "wordRange": {
+            "end": 11,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 17990,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-5",
+          "startMs": 17830,
+          "wordRange": {
+            "end": 14,
+            "start": 12
+          }
+        },
+        {
+          "endMs": 18630,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-5",
+          "startMs": 17990,
+          "wordRange": {
+            "end": 23,
+            "start": 15
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-home-morning",
+      "placeZh": "两位朋友聊今天的安排",
+      "situationZh": "与朋友聊今天在家学习的安排和休息时间。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-1",
+          "labelZh": "朋友"
+        },
+        {
+          "avatarId": "avatar-lea-v1",
+          "characterId": "character-lea",
+          "displayName": "Léa",
+          "id": "speaker-2",
+          "labelZh": "朋友"
+        }
+      ],
+      "titleZh": "工作与学习的一天",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Tu "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "travailles",
+              "vocabularyId": "word-travailler"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " aujourd’hui ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "你今天工作吗？"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Non, aujourd’hui, "
+            },
+            {
+              "grammarId": "grammar-etudier-present",
+              "id": "segment-2-2",
+              "text": "j’étudie",
+              "vocabularyId": "word-etudier"
+            },
+            {
+              "id": "segment-2-3",
+              "text": " à la "
+            },
+            {
+              "id": "segment-2-4",
+              "text": "maison",
+              "vocabularyId": "word-maison"
+            },
+            {
+              "id": "segment-2-5",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "不，今天我在家学习。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Tu "
+            },
+            {
+              "grammarId": "grammar-etudier-present",
+              "id": "segment-3-2",
+              "text": "étudies",
+              "vocabularyId": "word-etudier"
+            },
+            {
+              "id": "segment-3-3",
+              "text": " le français ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "你学习法语吗？"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Oui, "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "j’étudie",
+              "vocabularyId": "word-etudier"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " le français "
+            },
+            {
+              "grammarId": "grammar-et-connect",
+              "id": "segment-4-4",
+              "text": "et"
+            },
+            {
+              "id": "segment-4-5",
+              "text": " je fais un "
+            },
+            {
+              "id": "segment-4-6",
+              "text": "exercice",
+              "vocabularyId": "word-exercice"
+            },
+            {
+              "id": "segment-4-7",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "是的，我学习法语并做一道练习。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Tu as un bureau ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "你有书桌吗？"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Oui. Je "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "commence",
+              "vocabularyId": "word-commencer"
+            },
+            {
+              "id": "segment-6-3",
+              "text": " à neuf heures "
+            },
+            {
+              "grammarId": "grammar-et-connect",
+              "id": "segment-6-4",
+              "text": "et"
+            },
+            {
+              "id": "segment-6-5",
+              "text": " je "
+            },
+            {
+              "id": "segment-6-6",
+              "text": "finis",
+              "vocabularyId": "word-finir"
+            },
+            {
+              "id": "segment-6-7",
+              "text": " à "
+            },
+            {
+              "id": "segment-6-8",
+              "text": "midi",
+              "vocabularyId": "word-midi"
+            },
+            {
+              "id": "segment-6-9",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "有。我九点开始，中午十二点结束。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Et après ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "那之后呢？"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Après, je fais une "
+            },
+            {
+              "id": "segment-8-2",
+              "text": "pause",
+              "vocabularyId": "word-pause"
+            },
+            {
+              "id": "segment-8-3",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-et-connect",
+              "id": "segment-8-4",
+              "text": "et"
+            },
+            {
+              "id": "segment-8-5",
+              "text": " je prépare le déjeuner."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "之后，我休息一会儿，再准备午餐。"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "étudier 的词尾随主语改变：j’étudie、tu étudies。et 连接两个动作。je fais 本课作为“我做”的语块理解，faire 的完整变位以后学习。neuf heures 是九点，midi 是中午十二点。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "时间和学习安排只是角色的设定，不要求学习者披露雇主、学校或真实日程。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-etudier",
+        "word-travailler",
+        "word-maison",
+        "word-exercice",
+        "word-pause",
+        "word-commencer",
+        "word-finir",
+        "word-midi"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-etudier-present",
+        "grammar-et-connect"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "八点"
+        },
+        {
+          "id": "correct",
+          "text": "九点"
+        },
+        {
+          "id": "distractor-b",
+          "text": "中午十二点"
+        }
+      ],
+      "promptZh": "今天的学习几点开始？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "étudier 搭配 tu，词尾是 -es。",
+      "id": "exercise-fill",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Tu ___ le français.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "à la maison."
+        },
+        {
+          "id": "token-1",
+          "text": "J’étudie"
+        },
+        {
+          "id": "token-2",
+          "text": "le français"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。",
+      "id": "habit-main",
+      "taskZh": "用 J’étudie… 或 Je travaille… 说一句今天的安排。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能区分工作与学习。",
+        "我能使用 j’étudie 和 tu étudies。",
+        "我能连接两个日常动作。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner instructed direct publication of courses and recordings without manual approval; actual fixed-model alignment validated; no human listening or independent expert review asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-home-work-study",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "étudier 去掉 -er 后接现在时词尾：je 配 -e，tu 配 -es。je 在元音前省音，所以写 j’étudie；tu étudies 保留 tu。",
+        "examples": [
+          {
+            "fr": "Tu étudies le français.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-f89528fa62931054ca139127ae5ed832bfa3ee8431e10003e67775675591bb5c",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1360,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "fba314eea0a28756845dd28ebc4790a2612297e3a11ebb9a37ac4e385ec51865",
+                "url": "/api/audio/fba314eea0a28756845dd28ebc4790a2612297e3a11ebb9a37ac4e385ec51865.wav"
+              },
+              "endMs": 1360,
+              "startMs": 0
+            },
+            "zh": "你学习法语。"
+          }
+        ],
+        "id": "grammar-etudier-present",
+        "titleZh": "étudier 的现在时"
+      },
+      {
+        "bodyZh": "et 连接两个并列动作。J’étudie le français et je fais un exercice 先说学习，再补充做练习；je fais 本课作为“我做”的常用语块理解。",
+        "examples": [
+          {
+            "fr": "J’étudie le français et je fais un exercice.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-46793e296abc587fa37b51b6c315eca1b4ac506f4d73f0b8c0078554e4017877",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 2800,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "82c5290d509f1bb1deb6df0729d49e3948871d962f7da5760d2d1a4c5afbc952",
+                "url": "/api/audio/82c5290d509f1bb1deb6df0729d49e3948871d962f7da5760d2d1a4c5afbc952.wav"
+              },
+              "endMs": 2800,
+              "startMs": 0
+            },
+            "zh": "我学习法语并做一道练习。"
+          }
+        ],
+        "id": "grammar-et-connect",
+        "titleZh": "et：连接两个动作"
+      }
+    ],
+    "vocabulary": [
+      {
+        "id": "word-etudier",
+        "lemma": "étudier",
+        "meaningZh": "学习",
+        "noteZh": "j’étudie、tu étudies 分别表示“我学习”“你学习”。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-8e9fdabf1c11a4263f22a993742de70760a60269b53605ed8aae58663e874655",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "44bb5f0bbf7e7bc0c60c44588e2a066a1beae72e24e3d243c4b5d7b9f39c0052",
+            "url": "/api/audio/44bb5f0bbf7e7bc0c60c44588e2a066a1beae72e24e3d243c4b5d7b9f39c0052.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-travailler",
+        "lemma": "travailler",
+        "meaningZh": "工作",
+        "noteZh": "正文的 je travaille 表示“我工作”。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-f37cbc39b2594a71e202be65dbb1af942cca9c532ce117b87941ed1f1ee768f8",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "5d09378817d7addeef7a046965de8ced9db6bc05b88c71b67525ed67f29ae77c",
+            "url": "/api/audio/5d09378817d7addeef7a046965de8ced9db6bc05b88c71b67525ed67f29ae77c.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-maison",
+        "lemma": "maison",
+        "meaningZh": "房屋；家",
+        "noteZh": "à la maison 表示在家。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-0b4e800e9b1c31822335f6099ed8ac161222e82e3a2a4bb4bc480e8210bbae75",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "1bfe8ea9c0e2191f383717e871180d18d0874f7917a8f460038aaafd44b56103",
+            "url": "/api/audio/1bfe8ea9c0e2191f383717e871180d18d0874f7917a8f460038aaafd44b56103.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-exercice",
+        "lemma": "exercice",
+        "meaningZh": "练习",
+        "noteZh": "exercice 的单数形式；搭配冠词学习。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-98268751f0d188128226982a1fc7df6fd253871d2ba25970a2c0b63f64e4f085",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 960,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "3bfd721e0c77081cc7a3573ae056d043224e5e404cea2b629103eb44e91915ad",
+            "url": "/api/audio/3bfd721e0c77081cc7a3573ae056d043224e5e404cea2b629103eb44e91915ad.wav"
+          },
+          "endMs": 960,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-pause",
+        "lemma": "pause",
+        "meaningZh": "休息；暂停",
+        "noteZh": "faire une pause 表示休息一会儿。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-2205d20cd18cc6d1153c729d171e6870894517b0ed6b2ce2d1aa954b513d61f6",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "bfff2b94f446a432bba79243166e196926a3e3d3c5a15c6ee56e84e85aab004b",
+            "url": "/api/audio/bfff2b94f446a432bba79243166e196926a3e3d3c5a15c6ee56e84e85aab004b.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-commencer",
+        "lemma": "commencer",
+        "meaningZh": "开始",
+        "noteZh": "je commence 表示我开始。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-4dbd7a3a7c6cb9b1af62164fb0c2f9e01d3cc8a0b4765c0ef54e0f0a70ed5d1c",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "f442e85d7cef8e0a5b6ca5e46849de364e379bf101ffd0f2adfb2b346d54b948",
+            "url": "/api/audio/f442e85d7cef8e0a5b6ca5e46849de364e379bf101ffd0f2adfb2b346d54b948.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-finir",
+        "lemma": "finir",
+        "meaningZh": "结束；完成",
+        "noteZh": "je finis 表示我结束或完成。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-e9ef0dae1a346e169bef774d5a12ec340f7edd85e8e2fa0d2e692e01d947c972",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "0577a39a8e36014776a7b155c8816806d5867cb5f7ffccccca0ac9421894ff81",
+            "url": "/api/audio/0577a39a8e36014776a7b155c8816806d5867cb5f7ffccccca0ac9421894ff81.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-midi",
+        "lemma": "midi",
+        "meaningZh": "中午十二点",
+        "noteZh": "à midi 表示在中午十二点。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-460d904ad30d88f0dc7562ed804596cd3c74d36dd0e0bde1a7d1e5ca0d26d5b2",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "b8d2c9b3042b0a21d083752ee5e9cdaec031f032120411c0a95e5ae63d062bc7",
+            "url": "/api/audio/b8d2c9b3042b0a21d083752ee5e9cdaec031f032120411c0a95e5ae63d062bc7.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "晨光照进虚构公寓，书桌上有书和杯子，旁边是扶手椅与绿植",
+      "assetId": "art-home-morning",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "aa1458e135b40b1df9c1f47aff2c4fd7f1a19ffc40a14af98467b93e1a2df652",
+      "url": "/api/media/aa1458e135b40b1df9c1f47aff2c4fd7f1a19ffc40a14af98467b93e1a2df652.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "区分工作与学习",
+    "使用 j’étudie 和 tu étudies",
+    "连接两个日常动作"
+  ],
+  "reviewItemIds": [
+    "word-etudier",
+    "word-maison",
+    "word-pause"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：九点。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "étudies"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "étudier 搭配 tu，词尾是 -es。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "J’étudie le français à la maison.",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "与朋友聊今天在家学习的安排和休息时间。",
+  "title": {
+    "fr": "J’étudie à la maison",
+    "zh": "工作与学习的一天"
+  },
+  "unitId": "a1-home-routine"
+}

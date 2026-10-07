@@ -1,0 +1,1485 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-fruit-market",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-0c7e3442af62893a63a674921f4cbaf429a6f930276e981c971243f3ab45b88b",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 16790,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "6a58a1f50d6b860de96f277ac2f596e3c1d59a34b7a0d85ea3042c078e272eb6",
+      "url": "/api/audio/6a58a1f50d6b860de96f277ac2f596e3c1d59a34b7a0d85ea3042c078e272eb6.wav"
+    },
+    {
+      "assetId": "speech-0cd3270b0043a294aedaeb977581acc6d24d9c766d5713d33c116af66ad4142c",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f",
+      "url": "/api/audio/8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f.wav"
+    },
+    {
+      "assetId": "speech-24a602e7306bc258828898d61dc11e6de7c7c44d28ff1cdb505344159d2626a0",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "1b3e995a269ce0c20b7950aa46446195596176c91dd53cb73573814af068364f",
+      "url": "/api/audio/1b3e995a269ce0c20b7950aa46446195596176c91dd53cb73573814af068364f.wav"
+    },
+    {
+      "assetId": "speech-3da030bb91910bd31d5abb3511ea5d9ff5dbe2d12f1987e18487d7ee9fa5d7d3",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1840,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "d7656eb9cc79ada963f16ec3a381394623bd463f6fcd1bf363162c7eba99942c",
+      "url": "/api/audio/d7656eb9cc79ada963f16ec3a381394623bd463f6fcd1bf363162c7eba99942c.wav"
+    },
+    {
+      "assetId": "speech-605dbf52888434d2eb424975b4ecc2c2e18647748b42560e2b7504407f3e7b4d",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "b87a507ac0460160ce73e4e4e72267a9361f1cc00a916df8c61da1356df5d538",
+      "url": "/api/audio/b87a507ac0460160ce73e4e4e72267a9361f1cc00a916df8c61da1356df5d538.wav"
+    },
+    {
+      "assetId": "speech-8d162983fc6e01fc0034a54c01e058a3ea06afedfad90023395765372460ae42",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "693e2f0f789fdc1e16409f47061cf5036956f81691788276eda73cf8fd0bb13b",
+      "url": "/api/audio/693e2f0f789fdc1e16409f47061cf5036956f81691788276eda73cf8fd0bb13b.wav"
+    },
+    {
+      "assetId": "speech-a8fa63bc252d53a40f0c971a755c2c70a3ef133c0f2c2636dd06dd64aa5e70be",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 560,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "5dbd2352023ed2700b3135afae518d7162b99250141592455f91213d1918e4ed",
+      "url": "/api/audio/5dbd2352023ed2700b3135afae518d7162b99250141592455f91213d1918e4ed.wav"
+    },
+    {
+      "assetId": "speech-bc3f99bedc9d46dcbe57178f6e2002ddce7a904c936d9b1689e7ac520b186031",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "cec4d1ccd3e4b38519f8f23c2e6bda1006c0e49cf091a783fd4a9f986052a555",
+      "url": "/api/audio/cec4d1ccd3e4b38519f8f23c2e6bda1006c0e49cf091a783fd4a9f986052a555.wav"
+    },
+    {
+      "assetId": "speech-d7ed6bb9bc23d1475471689862a732573ab00c9daae910e3c721fefe278a9afd",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "90c659fd24f08ec3a85365f1485c1909db03fda173ab322b22a6845fef8cac5b",
+      "url": "/api/audio/90c659fd24f08ec3a85365f1485c1909db03fda173ab322b22a6845fef8cac5b.wav"
+    },
+    {
+      "assetId": "speech-deb474ce8af5208924877b2b591c28483638c49f603c7bd045d9ee261ac12b9e",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1040,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "7415f9a8126b7b5b8df3bb8295264bbb97335973d4c32503496f4cec975e28ba",
+      "url": "/api/audio/7415f9a8126b7b5b8df3bb8295264bbb97335973d4c32503496f4cec975e28ba.wav"
+    },
+    {
+      "assetId": "speech-ee325d4129fc5bb5af5fb8759bace30f4d6f17f4c70d9b501bbffe5176166f1d",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "c777c0812b119cddea6bc3ed95479cd449cd58b3e5c90b81dd99584c8336e912",
+      "url": "/api/audio/c777c0812b119cddea6bc3ed95479cd449cd58b3e5c90b81dd99584c8336e912.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-0c7e3442af62893a63a674921f4cbaf429a6f930276e981c971243f3ab45b88b",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-0cd3270b0043a294aedaeb977581acc6d24d9c766d5713d33c116af66ad4142c",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-24a602e7306bc258828898d61dc11e6de7c7c44d28ff1cdb505344159d2626a0",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-3da030bb91910bd31d5abb3511ea5d9ff5dbe2d12f1987e18487d7ee9fa5d7d3",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-605dbf52888434d2eb424975b4ecc2c2e18647748b42560e2b7504407f3e7b4d",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-8d162983fc6e01fc0034a54c01e058a3ea06afedfad90023395765372460ae42",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-a8fa63bc252d53a40f0c971a755c2c70a3ef133c0f2c2636dd06dd64aa5e70be",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-bc3f99bedc9d46dcbe57178f6e2002ddce7a904c936d9b1689e7ac520b186031",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-d7ed6bb9bc23d1475471689862a732573ab00c9daae910e3c721fefe278a9afd",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-deb474ce8af5208924877b2b591c28483638c49f603c7bd045d9ee261ac12b9e",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-ee325d4129fc5bb5af5fb8759bace30f4d6f17f4c70d9b501bbffe5176166f1d",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-0c7e3442af62893a63a674921f4cbaf429a6f930276e981c971243f3ab45b88b",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 3120,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1280,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 800,
+          "wordRange": null
+        },
+        {
+          "endMs": 960,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 800,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1280,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 960,
+          "wordRange": {
+            "end": 11,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 1600,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 1440,
+          "wordRange": null
+        },
+        {
+          "endMs": 1600,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 1440,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 1840,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 1600,
+          "wordRange": null
+        },
+        {
+          "endMs": 1840,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 1600,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1920,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-5",
+          "startMs": 1840,
+          "wordRange": null
+        },
+        {
+          "endMs": 1920,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-5",
+          "startMs": 1840,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 2320,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-6",
+          "startMs": 1920,
+          "wordRange": null
+        },
+        {
+          "endMs": 2320,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-6",
+          "startMs": 1920,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2880,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-7",
+          "startMs": 2320,
+          "wordRange": null
+        },
+        {
+          "endMs": 2560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-7",
+          "startMs": 2320,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 2640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-7",
+          "startMs": 2560,
+          "wordRange": {
+            "end": 11,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 2880,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-7",
+          "startMs": 2640,
+          "wordRange": {
+            "end": 17,
+            "start": 12
+          }
+        },
+        {
+          "endMs": 5850,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 3370,
+          "wordRange": null
+        },
+        {
+          "endMs": 4770,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 3490,
+          "wordRange": null
+        },
+        {
+          "endMs": 4130,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 3490,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4770,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 4690,
+          "wordRange": {
+            "end": 12,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 5010,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 4770,
+          "wordRange": null
+        },
+        {
+          "endMs": 5010,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 4770,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 5250,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4",
+          "startMs": 5010,
+          "wordRange": null
+        },
+        {
+          "endMs": 5250,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4",
+          "startMs": 5010,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 5330,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 5250,
+          "wordRange": null
+        },
+        {
+          "endMs": 5330,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-5",
+          "startMs": 5250,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 5730,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-6",
+          "startMs": 5330,
+          "wordRange": null
+        },
+        {
+          "endMs": 5730,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-6",
+          "startMs": 5330,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8740,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 6100,
+          "wordRange": null
+        },
+        {
+          "endMs": 6260,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 6180,
+          "wordRange": null
+        },
+        {
+          "endMs": 6260,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 6180,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6500,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 6260,
+          "wordRange": null
+        },
+        {
+          "endMs": 6500,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 6260,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6900,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 6500,
+          "wordRange": null
+        },
+        {
+          "endMs": 6900,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 6500,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8020,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 7380,
+          "wordRange": null
+        },
+        {
+          "endMs": 7780,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 7380,
+          "wordRange": {
+            "end": 4,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 8020,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 7780,
+          "wordRange": {
+            "end": 9,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 8340,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-6",
+          "startMs": 8020,
+          "wordRange": null
+        },
+        {
+          "endMs": 8340,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-6",
+          "startMs": 8020,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10430,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 8990,
+          "wordRange": null
+        },
+        {
+          "endMs": 10190,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 9150,
+          "wordRange": null
+        },
+        {
+          "endMs": 9230,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 9150,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 9230,
+          "wordRange": {
+            "end": 11,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 9790,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 9550,
+          "wordRange": {
+            "end": 17,
+            "start": 12
+          }
+        },
+        {
+          "endMs": 10190,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 9790,
+          "wordRange": {
+            "end": 23,
+            "start": 18
+          }
+        },
+        {
+          "endMs": 12120,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 10680,
+          "wordRange": null
+        },
+        {
+          "endMs": 11400,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 10760,
+          "wordRange": null
+        },
+        {
+          "endMs": 10920,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 10760,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11400,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 10920,
+          "wordRange": {
+            "end": 10,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 11880,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 11400,
+          "wordRange": null
+        },
+        {
+          "endMs": 11560,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 11400,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11880,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 11560,
+          "wordRange": {
+            "end": 13,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 13250,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 12370,
+          "wordRange": null
+        },
+        {
+          "endMs": 12770,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 12450,
+          "wordRange": null
+        },
+        {
+          "endMs": 12770,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 12450,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 13010,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 12770,
+          "wordRange": null
+        },
+        {
+          "endMs": 13010,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 12770,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 15020,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 13500,
+          "wordRange": null
+        },
+        {
+          "endMs": 14940,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 13580,
+          "wordRange": null
+        },
+        {
+          "endMs": 13980,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 13580,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 14940,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 14380,
+          "wordRange": {
+            "end": 12,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 16790,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 15270,
+          "wordRange": null
+        },
+        {
+          "endMs": 16710,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 15350,
+          "wordRange": null
+        },
+        {
+          "endMs": 15830,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 15350,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 16230,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 16150,
+          "wordRange": {
+            "end": 9,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 16710,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 16230,
+          "wordRange": {
+            "end": 16,
+            "start": 10
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-fruit-market",
+      "placeZh": "虚构市场中的水果摊",
+      "situationZh": "选择水果、说明重量和数量，并听懂总价。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-1",
+          "labelZh": "顾客"
+        },
+        {
+          "avatarId": "avatar-luc-v1",
+          "characterId": "character-luc",
+          "displayName": "Luc",
+          "id": "speaker-2",
+          "labelZh": "水果摊店员"
+        }
+      ],
+      "titleZh": "在市场买水果",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Bonjour, "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "je voudrais",
+              "vocabularyId": "expr-je-voudrais"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " un "
+            },
+            {
+              "grammarId": "grammar-kilo-de",
+              "id": "segment-1-4",
+              "text": "kilo",
+              "vocabularyId": "word-kilo"
+            },
+            {
+              "id": "segment-1-5",
+              "text": " de "
+            },
+            {
+              "grammarId": "grammar-food-plural",
+              "id": "segment-1-6",
+              "text": "pommes",
+              "vocabularyId": "word-pomme"
+            },
+            {
+              "id": "segment-1-7",
+              "text": ", s’il vous plaît."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "您好，我想要一公斤苹果，谢谢。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Bonjour. Des "
+            },
+            {
+              "id": "segment-2-2",
+              "text": "pommes",
+              "vocabularyId": "word-pomme"
+            },
+            {
+              "id": "segment-2-3",
+              "text": " "
+            },
+            {
+              "id": "segment-2-4",
+              "text": "rouges",
+              "vocabularyId": "word-rouge"
+            },
+            {
+              "id": "segment-2-5",
+              "text": " ou "
+            },
+            {
+              "id": "segment-2-6",
+              "text": "vertes",
+              "vocabularyId": "word-vert"
+            },
+            {
+              "id": "segment-2-7",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "您好。红苹果还是绿苹果？"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Des "
+            },
+            {
+              "id": "segment-3-2",
+              "text": "pommes",
+              "vocabularyId": "word-pomme"
+            },
+            {
+              "id": "segment-3-3",
+              "text": " "
+            },
+            {
+              "id": "segment-3-4",
+              "text": "rouges",
+              "vocabularyId": "word-rouge"
+            },
+            {
+              "id": "segment-3-5",
+              "text": ", et deux "
+            },
+            {
+              "grammarId": "grammar-food-plural",
+              "id": "segment-3-6",
+              "text": "bananes",
+              "vocabularyId": "word-banane"
+            },
+            {
+              "id": "segment-3-7",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "红苹果，再加两根香蕉。"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Vous voulez autre chose ?"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "您还想要别的吗？"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Non, merci. "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "C’est combien",
+              "vocabularyId": "expr-cest-combien"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "不用了，谢谢。多少钱？"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Cinq "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "euros",
+              "vocabularyId": "word-euro"
+            },
+            {
+              "id": "segment-6-3",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "五欧元。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Voilà. Merci."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "给您。谢谢。"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Merci, au revoir."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "谢谢，再见。"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "un kilo de pommes 说明重量；deux bananes 说明个数。rouges、vertes 分别修饰阴性复数 pommes。C’est combien ? 询问这次购买的总价。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-6"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "水果颜色、金额和服务对话均为虚构情境；不把五欧元当作当前市场价格。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-pomme",
+        "word-banane",
+        "word-kilo",
+        "word-rouge",
+        "word-vert",
+        "expr-je-voudrais",
+        "expr-cest-combien",
+        "word-euro"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-kilo-de",
+        "grammar-food-plural"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "两个"
+        },
+        {
+          "id": "correct",
+          "text": "一公斤"
+        },
+        {
+          "id": "distractor-b",
+          "text": "两公斤"
+        }
+      ],
+      "promptZh": "顾客想买多少苹果？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "重量单位与商品之间用 de。",
+      "id": "exercise-fill",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Je voudrais un kilo ___ pommes.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "s’il vous plaît."
+        },
+        {
+          "id": "token-1",
+          "text": "Je voudrais"
+        },
+        {
+          "id": "token-2",
+          "text": "un kilo de pommes,"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。",
+      "id": "habit-main",
+      "taskZh": "挑一种虚构商品，用 Je voudrais un kilo de… 说出想买的重量。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能用重量说明想买的水果。",
+        "我能理解商品复数。",
+        "我能询问总价。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-luc-v1",
+      "characterId": "character-luc",
+      "displayName": "Luc",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner instructed direct publication of courses and recordings without manual approval; actual fixed-model alignment validated; no human listening or independent expert review asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-food-buy-fruit",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "un kilo de pommes 说明苹果的重量。kilo 后的 de 连接商品，后面直接用复数 pommes，不写 de des pommes。",
+        "examples": [
+          {
+            "fr": "Je voudrais un kilo de pommes.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-3da030bb91910bd31d5abb3511ea5d9ff5dbe2d12f1987e18487d7ee9fa5d7d3",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1840,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "d7656eb9cc79ada963f16ec3a381394623bd463f6fcd1bf363162c7eba99942c",
+                "url": "/api/audio/d7656eb9cc79ada963f16ec3a381394623bd463f6fcd1bf363162c7eba99942c.wav"
+              },
+              "endMs": 1840,
+              "startMs": 0
+            },
+            "zh": "我想要一公斤苹果。"
+          }
+        ],
+        "id": "grammar-kilo-de",
+        "titleZh": "数量 + de + 商品"
+      },
+      {
+        "bodyZh": "本课 pomme、banane 的书面复数在词尾加 s。读数量要听前面的数字或重量表达，不能只靠通常不发音的词尾 s。",
+        "examples": [
+          {
+            "fr": "Deux bananes.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-deb474ce8af5208924877b2b591c28483638c49f603c7bd045d9ee261ac12b9e",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1040,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "7415f9a8126b7b5b8df3bb8295264bbb97335973d4c32503496f4cec975e28ba",
+                "url": "/api/audio/7415f9a8126b7b5b8df3bb8295264bbb97335973d4c32503496f4cec975e28ba.wav"
+              },
+              "endMs": 1040,
+              "startMs": 0
+            },
+            "zh": "两根香蕉。"
+          }
+        ],
+        "id": "grammar-food-plural",
+        "titleZh": "pommes / bananes：商品复数"
+      }
+    ],
+    "vocabulary": [
+      {
+        "gender": "feminine",
+        "id": "word-pomme",
+        "lemma": "pomme",
+        "meaningZh": "苹果",
+        "noteZh": "une pomme；复数 pommes，数量可说 un kilo de pommes。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-bc3f99bedc9d46dcbe57178f6e2002ddce7a904c936d9b1689e7ac520b186031",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "cec4d1ccd3e4b38519f8f23c2e6bda1006c0e49cf091a783fd4a9f986052a555",
+            "url": "/api/audio/cec4d1ccd3e4b38519f8f23c2e6bda1006c0e49cf091a783fd4a9f986052a555.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-banane",
+        "lemma": "banane",
+        "meaningZh": "香蕉",
+        "noteZh": "une banane；复数 bananes。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-ee325d4129fc5bb5af5fb8759bace30f4d6f17f4c70d9b501bbffe5176166f1d",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "c777c0812b119cddea6bc3ed95479cd449cd58b3e5c90b81dd99584c8336e912",
+            "url": "/api/audio/c777c0812b119cddea6bc3ed95479cd449cd58b3e5c90b81dd99584c8336e912.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-kilo",
+        "lemma": "kilo",
+        "meaningZh": "千克；公斤",
+        "noteZh": "kilogramme 的常用简写；un kilo de 后接商品。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-a8fa63bc252d53a40f0c971a755c2c70a3ef133c0f2c2636dd06dd64aa5e70be",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 560,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "5dbd2352023ed2700b3135afae518d7162b99250141592455f91213d1918e4ed",
+            "url": "/api/audio/5dbd2352023ed2700b3135afae518d7162b99250141592455f91213d1918e4ed.wav"
+          },
+          "endMs": 560,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-rouge",
+        "lemma": "rouge",
+        "meaningZh": "红色的",
+        "noteZh": "des pommes rouges 表示红苹果；rouge 的复数加 s。",
+        "partOfSpeech": "adjective",
+        "recording": {
+          "asset": {
+            "assetId": "speech-24a602e7306bc258828898d61dc11e6de7c7c44d28ff1cdb505344159d2626a0",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "1b3e995a269ce0c20b7950aa46446195596176c91dd53cb73573814af068364f",
+            "url": "/api/audio/1b3e995a269ce0c20b7950aa46446195596176c91dd53cb73573814af068364f.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-vert",
+        "lemma": "vert",
+        "meaningZh": "绿色的",
+        "noteZh": "des pommes vertes 中 vert 与阴性复数 pommes 配合，写 vertes。",
+        "partOfSpeech": "adjective",
+        "recording": {
+          "asset": {
+            "assetId": "speech-d7ed6bb9bc23d1475471689862a732573ab00c9daae910e3c721fefe278a9afd",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "90c659fd24f08ec3a85365f1485c1909db03fda173ab322b22a6845fef8cac5b",
+            "url": "/api/audio/90c659fd24f08ec3a85365f1485c1909db03fda173ab322b22a6845fef8cac5b.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-je-voudrais",
+        "lemma": "je voudrais",
+        "meaningZh": "我想要……",
+        "noteZh": "礼貌地提出请求。本课先作为常用语块学习。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-0cd3270b0043a294aedaeb977581acc6d24d9c766d5713d33c116af66ad4142c",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f",
+            "url": "/api/audio/8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-cest-combien",
+        "lemma": "c’est combien",
+        "meaningZh": "多少钱？",
+        "noteZh": "询价的常用口语。本例的价格只是教学情景设定。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-8d162983fc6e01fc0034a54c01e058a3ea06afedfad90023395765372460ae42",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "693e2f0f789fdc1e16409f47061cf5036956f81691788276eda73cf8fd0bb13b",
+            "url": "/api/audio/693e2f0f789fdc1e16409f47061cf5036956f81691788276eda73cf8fd0bb13b.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-euro",
+        "lemma": "euro",
+        "meaningZh": "欧元",
+        "noteZh": "复数 euros；课程价格均为虚构教学设定。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-605dbf52888434d2eb424975b4ecc2c2e18647748b42560e2b7504407f3e7b4d",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "b87a507ac0460160ce73e4e4e72267a9361f1cc00a916df8c61da1356df5d538",
+            "url": "/api/audio/b87a507ac0460160ce73e4e4e72267a9361f1cc00a916df8c61da1356df5d538.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "虚构水果摊的苹果、香蕉和秤，旁边摆着购物篮",
+      "assetId": "art-fruit-market",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "8948dc51a65a86e0f3eaab609c897be0ee32dd07614aa75f7454daedf0e02141",
+      "url": "/api/media/8948dc51a65a86e0f3eaab609c897be0ee32dd07614aa75f7454daedf0e02141.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Luc 的头像",
+      "assetId": "avatar-luc-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b",
+      "url": "/api/media/75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "用重量说明想买的水果",
+    "理解商品复数",
+    "询问总价"
+  ],
+  "reviewItemIds": [
+    "word-pomme",
+    "word-banane",
+    "word-kilo"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：一公斤。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "de"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "重量单位与商品之间用 de。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Je voudrais un kilo de pommes, s’il vous plaît.",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "选择水果、说明重量和数量，并听懂总价。",
+  "title": {
+    "fr": "Un kilo de pommes",
+    "zh": "在市场买水果"
+  },
+  "unitId": "a1-food-shopping"
+}
