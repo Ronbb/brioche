@@ -47,7 +47,7 @@ export default function Courses({
           else submitted.current = field.current?.value ?? "";
         }}
       >
-        <label htmlFor="course-query">找一个日常场景</label>
+        <label htmlFor="course-query">找一个场景或表达</label>
         <div className="course-search-field">
           <input
             ref={field}
@@ -106,7 +106,7 @@ export default function Courses({
           <h2>{query ? "还没有找到这个场景" : "课程正在准备中"}</h2>
           <p>
             {query
-              ? "试试中文场景或法语标题中的其他词。"
+              ? "试试中文场景、法语表达或中文词义。"
               : "发布课程后，就可以开始学习。"}
           </p>
           {query && (

@@ -340,6 +340,9 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         let mut source = development_source().unwrap();
         source["id"] = json!(id);
         source["revision"] = json!(revision);
+        if revision == 2 {
+            source["knowledge"]["vocabulary"][0]["meaningZh"] = json!("新版问候检索");
+        }
         source["assetRefs"] = asset_fixtures::fixture_refs();
         if reviewed {
             source["editorial"]["status"] = json!("reviewed");
@@ -405,6 +408,29 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         1
     );
     let catalog = content::catalog(&db).await.unwrap();
+    let searched =
+        content::catalog_matching(&db, &content::search_terms("BONJOUR 面包店").unwrap())
+            .await
+            .unwrap();
+    assert_eq!(
+        serde_json::to_value(&searched).unwrap(),
+        serde_json::to_value(&catalog).unwrap(),
+        "vocabulary and scene terms combine without reordering the release"
+    );
+    assert!(
+        content::catalog_matching(&db, &content::search_terms("新版问候检索").unwrap())
+            .await
+            .unwrap()
+            .levels
+            .is_empty(),
+        "an inactive revision must not contribute vocabulary"
+    );
+    let public_search = serde_json::to_value(&searched).unwrap().to_string();
+    assert!(
+        !public_search.contains("searchText")
+            && !public_search.contains("serverOnly")
+            && !public_search.contains("correctOptionId")
+    );
     let response = media_app
         .clone()
         .oneshot(
@@ -798,6 +824,12 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         )
         .await;
     assert_eq!(current["lesson"]["revision"], 2);
+    let matched = content::catalog_matching(&db, &content::search_terms("新版问候检索").unwrap())
+        .await
+        .unwrap();
+    assert_eq!(matched.levels[0].units[0].lessons.len(), 1);
+    assert_eq!(matched.levels[0].units[0].lessons[0].id, "release-z");
+    assert_eq!(matched.levels[0].units[0].lessons[0].revision, 2);
     let old_path = format!(
         "/api/v1/learning-sessions/{}",
         old["progress"]["id"].as_str().unwrap()
@@ -827,6 +859,14 @@ async fn releases_atomic_switch_rollback_and_hard_withdrawal() {
         b.send("GET", &new_path, None, true).await.1["lesson"]["revision"],
         2,
         "rollback does not withdraw pinned content"
+    );
+    assert!(
+        content::catalog_matching(&db, &content::search_terms("新版问候检索").unwrap())
+            .await
+            .unwrap()
+            .levels
+            .is_empty(),
+        "rollback restores the active vocabulary snapshot"
     );
     let public_app = brioche_server::router(brioche_server::AppState {
         db: Some(db.clone()),

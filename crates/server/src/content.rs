@@ -16,6 +16,7 @@ fn search_text(value: &str) -> String {
         .nfkd()
         .filter(|c| !is_combining_mark(*c))
         .collect::<String>()
+        .replace('’', "'")
         .to_lowercase()
 }
 pub fn search_terms(query: &str) -> Result<Vec<String>, AppError> {
@@ -27,7 +28,23 @@ pub fn search_terms(query: &str) -> Result<Vec<String>, AppError> {
         .map(str::to_owned)
         .collect())
 }
-pub fn search_catalog(mut catalog: Catalog, terms: &[String]) -> Catalog {
+pub fn search_catalog(catalog: Catalog, terms: &[String]) -> Catalog {
+    search_catalog_with_vocabulary(catalog, terms, &BTreeMap::new())
+}
+pub fn vocabulary_search_text(lesson: &PublicLesson) -> String {
+    lesson
+        .knowledge
+        .vocabulary
+        .iter()
+        .map(|word| format!("{} {}", word.lemma, word.meaning_zh))
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+pub fn search_catalog_with_vocabulary(
+    mut catalog: Catalog,
+    terms: &[String],
+    vocabulary: &BTreeMap<String, String>,
+) -> Catalog {
     if terms.is_empty() {
         return catalog;
     }
@@ -35,8 +52,13 @@ pub fn search_catalog(mut catalog: Catalog, terms: &[String]) -> Catalog {
         for unit in &mut level.units {
             unit.lessons.retain(|lesson| {
                 let text = search_text(&format!(
-                    "{} {} {} {} {}",
-                    level.label, unit.title_zh, lesson.title.zh, lesson.title.fr, lesson.summary_zh
+                    "{} {} {} {} {} {}",
+                    level.label,
+                    unit.title_zh,
+                    lesson.title.zh,
+                    lesson.title.fr,
+                    lesson.summary_zh,
+                    vocabulary.get(&lesson.id).map(String::as_str).unwrap_or("")
                 ));
                 terms.iter().all(|term| text.contains(term))
             });
@@ -560,10 +582,37 @@ async fn withdraw_impl(
     Ok(next)
 }
 pub async fn catalog<C: ConnectionTrait>(db: &C) -> Result<Catalog, AppError> {
+    catalog_matching(db, &[]).await
+}
+pub async fn catalog_matching<C: ConnectionTrait>(
+    db: &C,
+    terms: &[String],
+) -> Result<Catalog, AppError> {
     // One statement observes the pointer, immutable manifest and availability together.
     // Import/publication validate full immutable documents; catalog reads need only
     // the public summary, not every dialogue, answer-free exercise and audio timeline.
-    let rows=db.query_all_raw(Statement::from_string(DbBackend::Postgres,"SELECT cr.manifest,COALESCE(jsonb_agg(jsonb_build_object('id',r.public_document->'id','revision',r.public_document->'revision','levelId',r.public_document->'levelId','unitId',r.public_document->'unitId','title',r.public_document->'title','summaryZh',r.public_document->'summaryZh','estimatedMinutes',r.public_document->'estimatedMinutes') ORDER BY e.position) FILTER(WHERE r.lesson_id IS NOT NULL),'[]'::jsonb) AS summaries FROM content_state s JOIN content_releases cr ON cr.id=s.active_release LEFT JOIN release_entries e ON e.release_id=cr.id LEFT JOIN lesson_revisions r ON (r.lesson_id,r.revision)=(e.lesson_id,e.revision) AND r.published AND NOT EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(r.lesson_id,r.revision)) WHERE s.singleton GROUP BY cr.id")).await.map_err(|_|AppError::Unavailable)?;
+    // jsonb_to_record detoasts each immutable document once rather than once per
+    // summary key. The full body and private grading document are never returned.
+    let rows = db.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres, r#"
+        SELECT cr.manifest, COALESCE(jsonb_agg(jsonb_build_object(
+            'summary', jsonb_build_object(
+                'id',p.id,'revision',p.revision,'levelId',p."levelId",'unitId',p."unitId",
+                'title',p.title,'summaryZh',p."summaryZh",'estimatedMinutes',p."estimatedMinutes"),
+            'searchText', CASE WHEN $1 THEN COALESCE((
+                SELECT string_agg(concat_ws(' ',v->>'lemma',v->>'meaningZh'),' ')
+                FROM jsonb_array_elements(COALESCE(p.knowledge->'vocabulary','[]'::jsonb)) v
+            ),'') ELSE '' END
+        ) ORDER BY e.position) FILTER(WHERE r.lesson_id IS NOT NULL),'[]'::jsonb) AS summaries
+        FROM content_state s JOIN content_releases cr ON cr.id=s.active_release
+        LEFT JOIN release_entries e ON e.release_id=cr.id
+        LEFT JOIN lesson_revisions r ON (r.lesson_id,r.revision)=(e.lesson_id,e.revision)
+            AND r.published AND NOT EXISTS(
+                SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(r.lesson_id,r.revision))
+        LEFT JOIN LATERAL jsonb_to_record(r.public_document) AS p(
+            id text,revision integer,"levelId" text,"unitId" text,title jsonb,
+            "summaryZh" text,"estimatedMinutes" integer,knowledge jsonb) ON true
+        WHERE s.singleton GROUP BY cr.id
+    "#,[(!terms.is_empty()).into()])).await.map_err(|_|AppError::Unavailable)?;
     let Some(first) = rows.first() else {
         return Ok(Catalog {
             levels: vec![],
@@ -573,12 +622,20 @@ pub async fn catalog<C: ConnectionTrait>(db: &C) -> Result<Catalog, AppError> {
     let manifest: ReleaseManifest =
         serde_json::from_value(field(first, "manifest")?).map_err(|_| AppError::Unavailable)?;
     let mut lessons = BTreeMap::new();
-    let summaries: Vec<LessonSummary> =
-        serde_json::from_value(field(first, "summaries")?).map_err(|_| AppError::Unavailable)?;
-    for summary in summaries {
-        lessons.insert(summary.id.clone(), summary);
+    #[derive(Deserialize)]
+    #[serde(rename_all = "camelCase")]
+    struct SearchableSummary {
+        summary: LessonSummary,
+        search_text: String,
     }
-    Ok(Catalog {
+    let mut vocabulary = BTreeMap::new();
+    let summaries: Vec<SearchableSummary> =
+        serde_json::from_value(field(first, "summaries")?).map_err(|_| AppError::Unavailable)?;
+    for row in summaries {
+        vocabulary.insert(row.summary.id.clone(), row.search_text);
+        lessons.insert(row.summary.id.clone(), row.summary);
+    }
+    let catalog = Catalog {
         development_fixture: false,
         levels: manifest
             .levels
@@ -607,7 +664,8 @@ pub async fn catalog<C: ConnectionTrait>(db: &C) -> Result<Catalog, AppError> {
                 })
             })
             .collect(),
-    })
+    };
+    Ok(search_catalog_with_vocabulary(catalog, terms, &vocabulary))
 }
 
 #[cfg(test)]

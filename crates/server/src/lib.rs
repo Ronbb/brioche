@@ -214,8 +214,22 @@ async fn catalog(
     Query(query): Query<CatalogQuery>,
 ) -> Result<Json<Catalog>, AppError> {
     let query = content::search_terms(query.q.as_deref().unwrap_or(""))?;
+    if let Some(db) = &state.db {
+        return content::catalog_matching(db, &query).await.map(Json);
+    }
+    let vocabulary = state
+        .fixture
+        .as_ref()
+        .map(|lesson| {
+            BTreeMap::from([(lesson.id.clone(), content::vocabulary_search_text(lesson))])
+        })
+        .unwrap_or_default();
     let Json(catalog) = catalog_all(State(state)).await?;
-    Ok(Json(content::search_catalog(catalog, &query)))
+    Ok(Json(content::search_catalog_with_vocabulary(
+        catalog,
+        &query,
+        &vocabulary,
+    )))
 }
 async fn catalog_all(State(state): State<Arc<AppState>>) -> Result<Json<Catalog>, AppError> {
     if let Some(db) = &state.db {
@@ -393,6 +407,11 @@ mod tests {
             ),
             ("?q=boulangerie%20introuvable", StatusCode::OK, 0),
             ("?q=%25", StatusCode::OK, 0),
+            ("?q=bonjour", StatusCode::OK, 1),
+            ("?q=c%27est%20combien", StatusCode::OK, 1),
+            ("?q=%E4%BD%A0%E5%A5%BD", StatusCode::OK, 1),
+            ("?q=matin%20bonjour", StatusCode::OK, 1),
+            ("?q=bonjour%20introuvable", StatusCode::OK, 0),
             ("?q=%00", StatusCode::BAD_REQUEST, 0),
         ] {
             let response = app
