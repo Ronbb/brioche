@@ -6,9 +6,6 @@ COPY framework/Cargo.toml framework/Cargo.lock ./framework/
 COPY framework/crates ./framework/crates
 COPY framework/docs/examples ./framework/docs/examples
 COPY framework/scripts/alignment ./framework/scripts/alignment
-COPY scripts/alignment/model.json ./scripts/alignment/model.json
-COPY scripts/alignment/runtime.json ./scripts/alignment/runtime.json
-COPY scripts/alignment/transcript-aliases.json ./scripts/alignment/transcript-aliases.json
 RUN cargo build --locked --release -p brioche-server
 
 FROM debian:bookworm-slim@sha256:3783cc01769c7b2b1b83a5c5ad96c815348e28ed7da68e2e3687004faa906251
