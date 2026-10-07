@@ -37,7 +37,7 @@
 - Web only + server；生产本机 Docker，使用 Cloudflare DNS 和路由器静态端口映射；开发直接本机启动。
 - 使用当前稳定、适合长期维护的现代技术；界面美观并有插图。
 - 后端优先 Rust；前端选择 Vite 8 + TypeScript 7 + Tailwind CSS 4 + React Router，不使用 Next.js。
-- 设计文档保留为提案与视觉基准；当前已在本机 Docker Compose 实际部署，全部48课已导入并激活、47课正式录音，HTTPS入口已核对；当前详情见发布记录与实现清单。
+- 设计文档保留为提案与视觉基准；当前已在本机 Docker Compose 实际部署，全部48课已导入并激活、48课正式录音，HTTPS入口已核对；当前详情见发布记录与实现清单。
 - 当前生产通过独立 HTTPS 网关访问内部 Traefik，使用 HTTPS 覆盖文件取消宿主 HTTP 30075 映射；维护方式见独立 HTTPS 网关接入。开发仍直接本机启动。
 
 ## 本提案采用的默认选择
