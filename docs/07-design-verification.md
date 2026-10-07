@@ -916,3 +916,13 @@ Chef 33b025365ffdf70ea9ab4ee23253eeb4a6fec13c已实际提交推送迁移28：旧
 13项实际专用PostgreSQL回归全部通过，新增真实27→28迁移/回滚、Brioche原设置/版本和密码哈希保留、Hargow默认独立/交叉不影响、同产品并发CAS及账号版本不受设置修改影响。存在Hargow设置时回滚明确拒绝，测试验证数据仍保留；测试中显式删除合成Hargow数据只为完成可逆性检查，不能作为生产回滚方式。学习设置表临时改名时账号/内省仍200；独立账号流程未创建任何产品设置行。Rust常规工作区/fmt/Clippy/生成diff通过。全量PG通过后新增identity表不可用断言，定向测试和最终Clippy再次通过。专用Docker PostgreSQL在任务标签核对后清理。
 
 没有更新Brioche框架pin、没有迁移生产或重新发布课源。旧生产二进制仍读users.settings，必须与新API版本协调切换，禁止先执行drop列。Chef最新CI37668255797与前identity提交CI37667231222真实读取均仍in_progress。学习API私有内省消费者、产品角色/schema/最小权限、课程/目录/媒体及学习事实隔离、客户端范围与语言中立/Cantonese/Hargow入口仍未完成；目标保持进行中。
+
+## 学习 API 内网身份接入（2026-10-08）
+
+Chef42bcabb49dca09b7ac05e05fd27e559b0e975d65已实际normal push，learning_identity消费者连接独立账号内省，learning/reviews/library/dashboard共享提取已验证账号；旧本地路径兼容。服务器IDENTITY_INTERNAL_URL启用新模式，配置错误/失败不回退；固定Brioche，尚未隔离的Hargow业务路由拒绝。新模式不暴露本地登录/账号管理/后台，仍待产品权限、独立账号编辑/管理员接入与完整双服务部署，Brioche生产pin保持原值。
+
+实际隔离PostgreSQL13项全部通过（35865的PG阶段），新增真实TCP调用独立identity Router：profile200、错误CSRF settings403/正确200、收藏200、另一产品Cookie401、关停上游后503；设置只更新Brioche不影响Hargow。独立HTTP测试覆盖错误产品/无效JSON/超大响应/503/有效JSON重定向拒绝/2秒超时/401、重复或缺失Cookie不外呼及不返回Set-Cookie。自动重试/环境代理/重定向禁用，32并发/4KiB响应有界，身份和权限不缓存；账号服务核验原方法+Origin+会话CSRF，学习不获取CSRF秘密。
+
+首次HTTP测试因未安装rustls provider失败，补显式ring初始化后通过；PG全部通过后的Clippy因nestedif失败，修复后最终全workspace（20contract/62lib+1PGignored/25CLI/13curriculum/2speechplan）和Clippy/fmt/生成diff在59031终态0。最后命令启动分支防止无效Unicode配置或fixture模式忽略remote配置，随后fmt与全目标Clippy ad46e6终态0。隔离容器chef-consumer-tests-20261008在任务标签确认后stop/remove32be98终态0。没有production env/DB/账号/provider调用、域名/端口/dev变更，没有新的生产Docker部署，不把Rust Router TCP联调称实际完整生产Compose验收。
+
+远端Chef独立identity提交4feb66d的完整CI37667231222已真实completed/success；产品设置33b0253 CI37668255797及最新consumer42bcabb CI37670082800仍in_progress，不推广前一全绿。当前学习Backend状态仍含旧密码服务类型、学习设置read仍引用users.id、legacy/admin仍同进程，schema/最小权限和完整移除本地identity依赖尚待实施。完整goal还包含所有业务产品隔离、语言契约、粤语真实课源/Hargow入口、真实设备及异盘备份运维验收，保持进行中。
