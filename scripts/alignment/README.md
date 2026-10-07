@@ -24,7 +24,7 @@ python scripts/alignment/align.py .local/private/speech-<plan-id>.tar --check
 python -m unittest discover -s scripts/alignment -p test_align.py -v
 ```
 
-输出必须位于 `.local/private`，已有文件不会覆盖。退出码0表示结构/模型预测范围通过；2表示已保存结果，但至少一个片段或分段需要处理；1表示输入、模型或运行失败。所有输出都保留 `reviewRequired: true`，退出码0不代表听感/时间轴人工审核通过。异常中断可能留下不完整输出，需要使用新文件名重新执行，不能把旧文件当成完成回执。
+输出必须位于 `.local/private`，已有文件不会覆盖。退出码0表示结构/模型预测范围通过；2表示已保存结果，但至少一个片段或分段需要处理；1表示输入、模型或运行失败。默认人工流程输出保留 `reviewRequired: true`，退出码0不代表听感/时间轴人工审核通过。所有者直接发布输入另用下文的显式 `--direct` 流程，报告不声明人工审核。异常中断可能留下不完整输出，需要使用新文件名重新执行，不能把旧文件当成完成回执。
 
 清单校验固定 compiler、Rust Serde 字段顺序的 planHash、完整请求 generationKey、所有目标覆盖、原文 Unicode scalar 范围、真实来源审听记录、原始/修复 WAV 配对和 SHA-256。只接受未压缩、128 MiB以内的 TAR；清单4 MiB以内，媒体每个16 MiB以内、单声道24 kHz/16-bit PCM且不超过180秒。只在内存读取精确名称的普通成员，不 extractall，不接受路径穿越、链接、重复或多余文件。
 
@@ -44,3 +44,16 @@ python -m unittest discover -s scripts/alignment -p test_align.py -v
 2026-10-07 依赖检查：旧环境检出9项唯一 GHSA；新的58项依赖 OSV 查询未发现告警。依赖检查不替代真实模型推理和后台导入验收，也不表示未来不会出现新告警。
 
 原生实现已对8段现有法语试听运行完整命令，实际模型权重、配置、分词器等6文件哈希均通过。7段预测通过范围检查，1段保留重叠（前词结束0.72秒、后词开始0.56秒），命令返回2，全部结果仍要求人工核对。修正处理器参数传递后复验结果完全一致且无弃用提示。该输入使用明确的测试清单，不是生产生成或人工审听回执；没有登记或发布正式音频。
+
+## 所有者直接发布输入
+
+2026-10-07 所有者取消逐项人工审批后，可使用本机 `speech-plan-export-direct <plan-id> <operator-email> <new-private-output.tar>` 获取中性输入包。服务端仍校验当前管理员、固定计划、全部最新成功片段、原始/修复媒体配对、实际哈希和解码；已明确退回的最新片段不能导出。生成前后核对同一快照与权限，不调用 TTS，不写任何试听决定。
+
+新包具有 `kind: brioche-speech-inputs`、`publicationPolicy: owner-direct-publish` 和 `humanListeningAsserted: false`，片段 review 为 null。只有显式 `--direct` 才接受它；不会将这类包冒充旧人工审核输入：
+
+```powershell
+.local/alignment-native-venv/Scripts/python.exe scripts/alignment/align.py .local/private/direct-input.tar --direct --check
+.local/alignment-native-venv/Scripts/python.exe scripts/alignment/align.py .local/private/direct-input.tar --direct --output .local/private/direct-predictions-v1.json
+```
+
+这类报告标识为 `brioche-automatic-alignment-predictions`、reviewRequired=false，保留同样的真实模型原始预测、异常和固定来源包哈希。取消人工门槛不会取消模型、媒体、词范围或时间区间校验，也不会自动修补异常或登记/发布课程。旧人工报告导入API仍要求原类型；直接报告的正式组装入口尚在接入中，不能直接送入旧审核API。

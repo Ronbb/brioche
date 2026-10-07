@@ -150,7 +150,7 @@ def words_valid(text, words):
     require(not any(c.isalnum() or unicodedata.category(c).startswith("M") for c in text[previous:]), "unmapped source letters")
 
 
-def read_export(path):
+def read_export(path, direct=False):
     with open(path, "rb") as file:
         raw = file.read(MAX_ARCHIVE + 1)
     require(len(raw) <= MAX_ARCHIVE, "archive exceeds size limit")
@@ -166,7 +166,13 @@ def read_export(path):
             require(len(members[entry.name]) == entry.size, "incomplete archive member")
     require("manifest.json" in members, "missing manifest")
     manifest = parse_json(members["manifest.json"])
-    require(set(manifest) == {"schemaVersion", "planId", "plan", "clips"} and manifest["schemaVersion"] == "1.0" and hex_id(manifest["planId"], 32), "unsupported manifest")
+    fields = {"schemaVersion", "planId", "plan", "clips"}
+    if direct:
+        fields |= {"kind", "publicationPolicy", "humanListeningAsserted"}
+        require(manifest.get("kind") == "brioche-speech-inputs" and
+                manifest.get("publicationPolicy") == "owner-direct-publish" and
+                manifest.get("humanListeningAsserted") is False, "unsupported direct input policy")
+    require(set(manifest) == fields and manifest["schemaVersion"] == "1.0" and hex_id(manifest["planId"], 32), "unsupported manifest")
     plan = manifest["plan"]
     require(plan["compilerVersion"] == COMPILER and hex_id(plan["planHash"], 64) and
             hex_id(plan["sourceHash"], 64) and integer(plan["lessonRevision"], 1), "unsupported fixed plan")
@@ -190,8 +196,11 @@ def read_export(path):
                 request["profile"]["locale"] == "fr-FR" and request["parameters"]["input"]["voice"] == request["profile"]["voiceId"], "unsupported/mismatched speech request")
         words_valid(text, clip["words"])
         review = clip["review"]
-        require(set(review) == {"actorId", "reason"} and integer(review["actorId"], 1) and
-                isinstance(review["reason"], str) and review["reason"].strip(), "missing source hearing record")
+        if direct:
+            require(review is None, "direct inputs must not assert a hearing record")
+        else:
+            require(isinstance(review, dict) and set(review) == {"actorId", "reason"} and integer(review["actorId"], 1) and
+                    isinstance(review["reason"], str) and review["reason"].strip(), "missing source hearing record")
         result = clip["result"]
         for name, field in [("file", "sha256"), ("providerFile", "providerSha256")]:
             require(hex_id(result[field], 64) and clip[name] == f'media/{result[field]}.wav' and clip[name] in members, "missing/mismatched media")
@@ -278,7 +287,7 @@ def load_model(directory):
     return NativeAligner(directory), versions
 
 
-def align_export(manifest, members, archive_hash, model, versions):
+def align_export(manifest, members, archive_hash, model, versions, direct=False):
     results = []
     for index, clip in enumerate(manifest["clips"]):
         payload, duration = pcm(members[clip["file"]])
@@ -297,11 +306,11 @@ def align_export(manifest, members, archive_hash, model, versions):
                         "sha256": clip["result"]["sha256"], "durationMs": duration,
                         "rawPredictions": raw, "words": words, "issues": issues, "targets": targets})
         print(f"Aligned clip {index + 1}/{len(manifest['clips'])}", file=sys.stderr, flush=True)
-    return {"schemaVersion": "1.0", "kind": "brioche-alignment-predictions", "planId": manifest["planId"],
+    return {"schemaVersion": "1.0", "kind": "brioche-automatic-alignment-predictions" if direct else "brioche-alignment-predictions", "planId": manifest["planId"],
             "planHash": manifest["plan"]["planHash"], "sourceArchiveSha256": archive_hash,
             "engine": {**MODEL, "versions": versions, "device": "cpu", "dtype": "float32", "attention": "eager",
                        "transcript": "NFC source word units, apostrophes normalized; original scalar ranges retained; raw timestamp classes without interpolation"},
-            "reviewRequired": True, "clips": results}
+            "reviewRequired": not direct, "clips": results}
 
 
 def write_private(path, value):
@@ -321,21 +330,22 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("export", type=Path)
     parser.add_argument("--check", action="store_true", help="validate without loading model")
+    parser.add_argument("--direct", action="store_true", help="use owner-authorized inputs without a human hearing declaration")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--model", type=Path, default=ROOT / ".local/models/qwen3-forced-aligner-0.6b-hf" / MODEL["revision"])
     args = parser.parse_args()
     try:
-        manifest, members, archive_hash = read_export(args.export)
+        manifest, members, archive_hash = read_export(args.export, args.direct)
         if args.check:
             print(json.dumps({"valid": True, "requests": len(manifest["clips"]), "archiveSha256": archive_hash}))
             return 0
         require(args.output is not None and not args.output.exists(), "provide a new private output path")
         require(args.output.resolve().is_relative_to((ROOT / ".local/private").resolve()), "output must remain private")
         model, versions = load_model(args.model)
-        report = align_export(manifest, members, archive_hash, model, versions)
+        report = align_export(manifest, members, archive_hash, model, versions, args.direct)
         write_private(args.output, report)
         invalid = sum(bool(c["issues"] or any(t["issues"] for t in c["targets"])) for c in report["clips"])
-        print(json.dumps({"clips": len(report["clips"]), "clipsWithIssues": invalid, "reviewRequired": True}))
+        print(json.dumps({"clips": len(report["clips"]), "clipsWithIssues": invalid, "reviewRequired": not args.direct}))
         return 2 if invalid else 0
     except (ValueError, KeyError, TypeError, OSError, tarfile.TarError, wave.Error, RecursionError, OverflowError, RuntimeError, ImportError):
         print("Alignment failed validation; no registration or publication occurred.", file=sys.stderr)

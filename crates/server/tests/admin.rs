@@ -3946,6 +3946,58 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
             assert_eq!(operator.send("POST", clips, Some(body), true).await.0, 200);
             settled(&mut operator, &format!("{clips}/{attempt_id}")).await
         };
+        if index + 1 == keys.len() {
+            // The final ready clip has no hearing decision yet. Direct input
+            // delivery verifies media without inventing one, while legacy export stays gated.
+            assert_eq!(operator.send("GET", &export_path, None, true).await.0, 409);
+            let direct = brioche_server::speech_export::export_direct_for_actor(
+                &backend,
+                actor,
+                id.to_owned(),
+                root.clone(),
+            )
+            .await
+            .unwrap();
+            let mut input = tar::Archive::new(std::io::Cursor::new(&direct));
+            let mut document = None;
+            for entry in input.entries().unwrap() {
+                use std::io::Read;
+                let mut entry = entry.unwrap();
+                if entry.path().unwrap().as_ref() == std::path::Path::new("manifest.json") {
+                    let mut data = Vec::new();
+                    entry.read_to_end(&mut data).unwrap();
+                    document = Some(serde_json::from_slice::<Value>(&data).unwrap());
+                }
+            }
+            let document = document.unwrap();
+            assert_eq!(document["publicationPolicy"], "owner-direct-publish");
+            assert_eq!(document["humanListeningAsserted"], false);
+            assert!(
+                document["clips"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .all(|c| c["review"].is_null())
+            );
+            assert_eq!(
+                settled(
+                    &mut operator,
+                    &format!("{clips}/{}", ready["id"].as_str().unwrap())
+                )
+                .await["accepted"],
+                Value::Null
+            );
+            assert!(
+                brioche_server::speech_export::export_direct_for_actor(
+                    &backend,
+                    -1,
+                    id.to_owned(),
+                    root.clone()
+                )
+                .await
+                .is_err()
+            );
+        }
         let review =
             json!({"heard":true,"accepted":true,"reason":"Synthetic export fixture review"});
         let clip_id = ready["id"].as_str().unwrap().to_owned();

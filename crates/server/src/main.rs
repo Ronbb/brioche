@@ -260,6 +260,7 @@ async fn main() -> Result<()> {
         "voice-audition-review"
         | "speech-clip-review"
         | "speech-plan-export"
+        | "speech-plan-export-direct"
         | "speech-alignment-import" => {
             let args: Vec<String> = std::env::args().skip(2).collect();
             if args.len() != 3 {
@@ -279,7 +280,7 @@ async fn main() -> Result<()> {
                 .ok_or_else(|| anyhow::anyhow!("operator not found"))?;
             let actor: i64 = row.try_get("", "id")?;
             let backend = brioche_server::identity::Backend::new(database.clone()).await?;
-            if command == "speech-plan-export" {
+            if command == "speech-plan-export" || command == "speech-plan-export-direct" {
                 let mut options = std::fs::OpenOptions::new();
                 options.write(true).create_new(true);
                 #[cfg(unix)]
@@ -290,20 +291,30 @@ async fn main() -> Result<()> {
                 let mut output = options
                     .open(&args[2])
                     .map_err(|_| anyhow::anyhow!("private output must be a new writable file"))?;
-                let bytes = brioche_server::speech_export::export_for_actor(
-                    &backend,
-                    actor,
-                    args[0].clone(),
-                    brioche_server::media::media_root(),
-                )
-                .await
+                let bytes = if command == "speech-plan-export-direct" {
+                    brioche_server::speech_export::export_direct_for_actor(
+                        &backend,
+                        actor,
+                        args[0].clone(),
+                        brioche_server::media::media_root(),
+                    )
+                    .await
+                } else {
+                    brioche_server::speech_export::export_for_actor(
+                        &backend,
+                        actor,
+                        args[0].clone(),
+                        brioche_server::media::media_root(),
+                    )
+                    .await
+                }
                 .map_err(|_| anyhow::anyhow!("private export failed; output is not confirmed"))?;
                 use std::io::Write;
                 output.write_all(&bytes)?;
                 output.sync_all()?;
                 println!(
                     "{}",
-                    serde_json::json!({"planId":args[0],"byteLength":bytes.len(),"reviewRequired":true})
+                    serde_json::json!({"planId":args[0],"byteLength":bytes.len(),"reviewRequired":command == "speech-plan-export","published":false})
                 );
                 return Ok(());
             }

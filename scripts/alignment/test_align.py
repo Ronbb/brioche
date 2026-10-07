@@ -91,6 +91,29 @@ class ExportTests(unittest.TestCase):
         self.assertEqual(set(media), {"manifest.json", *self.members})
         self.assertEqual(sha, align.digest(self.path.read_bytes()))
 
+    def test_direct_inputs_are_explicit_and_keep_all_media_checks(self):
+        self.manifest.update(kind="brioche-speech-inputs", publicationPolicy="owner-direct-publish", humanListeningAsserted=False)
+        self.manifest["clips"][0]["review"] = None
+        archive(self.path, self.manifest, self.members)
+        manifest, _, _ = align.read_export(self.path, direct=True)
+        self.assertIsNone(manifest["clips"][0]["review"])
+        with self.assertRaises(ValueError):
+            align.read_export(self.path)
+        self.manifest["humanListeningAsserted"] = True
+        archive(self.path, self.manifest, self.members)
+        with self.assertRaises(ValueError):
+            align.read_export(self.path, direct=True)
+        self.manifest["humanListeningAsserted"] = False
+        self.manifest["clips"][0]["review"] = {"actorId": 1, "reason": "invented"}
+        archive(self.path, self.manifest, self.members)
+        with self.assertRaises(ValueError):
+            align.read_export(self.path, direct=True)
+        self.manifest["clips"][0]["review"] = None
+        self.members[next(iter(self.members))] = b"corrupt"
+        archive(self.path, self.manifest, self.members)
+        with self.assertRaises(ValueError):
+            align.read_export(self.path, direct=True)
+
     def test_hashes_match_actual_rust_compiler_vector(self):
         # Public demo source + synthetic Léa profile, never a production voice decision.
         plan = json.loads(Path(__file__).with_name("rust-plan.fixture.json").read_text(encoding="utf-8"))

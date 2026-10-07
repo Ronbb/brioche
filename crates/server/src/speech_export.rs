@@ -23,6 +23,13 @@ pub fn router() -> Router<Backend> {
     Router::new().route("/api/v1/operator/speech-plans/{id}/export", get(export))
 }
 pub(crate) async fn snapshot(db: &impl ConnectionTrait, id: &str) -> Result<Value, AppError> {
+    snapshot_policy(db, id, true).await
+}
+async fn snapshot_policy(
+    db: &impl ConnectionTrait,
+    id: &str,
+    reviewed: bool,
+) -> Result<Value, AppError> {
     let plan = speech_clips::plan(db, id).await?;
     let requests = plan["requests"].as_object().ok_or(AppError::Unavailable)?;
     let mut clips = Vec::new();
@@ -31,7 +38,10 @@ pub(crate) async fn snapshot(db: &impl ConnectionTrait, id: &str) -> Result<Valu
             .await?
             .ok_or(AppError::Conflict)?;
         let clip = speech_clips::item(&row)?;
-        if clip.status != "ready" || clip.accepted != Some(true) {
+        if clip.status != "ready"
+            || clip.accepted == Some(false)
+            || (reviewed && clip.accepted != Some(true))
+        {
             return Err(AppError::Conflict);
         }
         let result: Value = field::<Option<Value>>(&row, "result")?.ok_or(AppError::Unavailable)?;
@@ -45,9 +55,22 @@ pub(crate) async fn snapshot(db: &impl ConnectionTrait, id: &str) -> Result<Valu
                 json!({"text":word,"start":start,"end":start+word.chars().count()})
             })
             .collect();
-        clips.push(json!({"words":words,"id":clip.id,"generationKey":key,"result":result,"review":{"actorId":field::<i64>(&row,"review_actor")?,"reason":field::<String>(&row,"review_reason")?}}));
+        let review = if reviewed {
+            json!({"actorId":field::<i64>(&row,"review_actor")?,"reason":field::<String>(&row,"review_reason")?})
+        } else {
+            Value::Null
+        };
+        clips.push(
+            json!({"words":words,"id":clip.id,"generationKey":key,"result":result,"review":review}),
+        );
     }
-    Ok(json!({"schemaVersion":"1.0","planId":id,"plan":plan,"clips":clips}))
+    let mut result = json!({"schemaVersion":"1.0","planId":id,"plan":plan,"clips":clips});
+    if !reviewed {
+        result["kind"] = json!("brioche-speech-inputs");
+        result["publicationPolicy"] = json!("owner-direct-publish");
+        result["humanListeningAsserted"] = json!(false);
+    }
+    Ok(result)
 }
 fn append(builder: &mut tar::Builder<Vec<u8>>, name: &str, bytes: &[u8]) -> Result<(), AppError> {
     let mut header = tar::Header::new_gnu();
@@ -158,6 +181,25 @@ pub async fn export_for_actor(
     id: String,
     root: PathBuf,
 ) -> Result<Vec<u8>, AppError> {
+    export_policy(b, actor, id, root, true).await
+}
+/// Technical input delivery for the owner's direct publication workflow.
+/// Ready clips are required; no human listening declaration is generated.
+pub async fn export_direct_for_actor(
+    b: &Backend,
+    actor: i64,
+    id: String,
+    root: PathBuf,
+) -> Result<Vec<u8>, AppError> {
+    export_policy(b, actor, id, root, false).await
+}
+async fn export_policy(
+    b: &Backend,
+    actor: i64,
+    id: String,
+    root: PathBuf,
+    reviewed: bool,
+) -> Result<Vec<u8>, AppError> {
     let tx = b.db.begin().await.map_err(|_| AppError::Unavailable)?;
     lock_operator(&tx, actor).await?;
     tx.commit().await.map_err(|_| AppError::Unavailable)?;
@@ -165,7 +207,7 @@ pub async fn export_for_actor(
         b.db.begin_with_config(Some(IsolationLevel::RepeatableRead), None)
             .await
             .map_err(|_| AppError::Unavailable)?;
-    let manifest = snapshot(&tx, &id).await?;
+    let manifest = snapshot_policy(&tx, &id, reviewed).await?;
     tx.commit().await.map_err(|_| AppError::Unavailable)?;
     let expected = manifest.clone();
     let bytes = tokio::task::spawn_blocking(move || pack(&root, manifest))
@@ -180,7 +222,7 @@ pub async fn export_for_actor(
         vec![],
     )
     .await?;
-    if snapshot(&tx, &id).await? != expected {
+    if snapshot_policy(&tx, &id, reviewed).await? != expected {
         return Err(AppError::Conflict);
     }
     tx.commit().await.map_err(|_| AppError::Unavailable)?;
