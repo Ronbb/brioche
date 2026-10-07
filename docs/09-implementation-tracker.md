@@ -751,3 +751,11 @@ Chef46e51943c8efd6646dcebcd5d51463122edb14d8实际提交推送migration29/produc
 真实专用Docker PostgreSQL14项最终全部通过（46410终态0含Clippy），新增真实28→29迁移、Brioche原权限/默认Hargow、不继承globalrole、grant隔离、并发一个CAS成功、actor撤销后拒绝、最后管理员保护、5条实际审计与rollback拒绝。身份HTTP确认Hargow内省membership learner以及global operator修改H授权403。常规workspace/fmt/生成diff59958实际0（62lib pass+2专用PGignored、20contract/25CLI/13curriculum/2speechplan）；最终check/fmt/diff0。首全PG跑到identity-service回滚触发保护失败：测试之前修改合成globalrole但未恢复，补复原测试账号后完整14PG/Clippy重跑通过；不能将首失败当全绿，也未削弱rollback保护。product-settings测试固定只升级28，避免未来29被误当设置迁移回滚。
 
 所有本机句柄终态，专用PGchef-membership-tests-20261008标签product-membership-20261008核对后stop自动remove（c65363终态0，包含failed合成schema一起清除）。没有生产迁移/授权/媒体/provider调用，无产品pin/Compose/域名/端口/dev变更。最新ChefCI37671868670以及consumer37670082800/settings37668255797真实读取均in_progress，不推广较早identity全绿。旧后台仍globalrole/同进程操作，独立后台与全schema/leastprivilege未接入；Hargow首管理员明确bootstrap尚待实施。后续继续后台/账号编辑管理UI、其余产品事实/目录/媒体隔离、语言中立与粤语Hargow真实入口，完整设备和异盘ops验收仍待完成。目标保持active。
+
+## 独立账号资料编辑与公共契约（2026-10-08）
+
+Chef18bbdbeea99ac5c38b2c1fb9398fcb3128eb399e已实际normal push，共享Rust AccountProfile/AccountProfileUpdateRequest/AccountAuthResult与生成TS真源，移除服务手写重复DTO及会混淆产品version的隐式From转换。独立身份/旧组合进程均提供GET/PATCH /api/v1/account，PATCH只接受displayName+expectedAccountVersion，账号ID来自真实session。姓名trim/非空/80字符/控制字符限制，SQL账号profile_version CAS，冲突409；不更改产品prefs/权限/密码。
+
+14项专用真实PostgreSQL与HTTP回归完整通过（68792终态0含Clippy），新增B/H同账号昵称跨入口同步、两产品并发同expectedAccountVersion只有200/409、原产品设置version1不推进、身份流程prefs行数0、空白/超长/控制字符拒绝，以及settings/userId/role注入422。常规Rust工作区49574终态0（20contract/62lib+2专用PGignored/25CLI/13curriculum/2speechplan）/fmt/check均通过。Rust exporter94451终态0，只新增3份TS，无现有v1载荷变化；pnpm严格TS7 typecheck32660终态0。专用PG容器chef-account-profile-tests-20261008标签核对后stop/remove90e9f6终态0，无生产数据/env/provider调用/镜像部署/产品pin/域名/端口/dev变更。
+
+当前共享Web仍是个人资料+学习日常组合编辑，未切到新账号API；新登录AccountAuthResult也需组合读取产品profile，前端交互及对应真实浏览器回归是后续工作，本次不宣称完整账号UI或双服务发布完成。产品后台事务权限与账户管理、完整schema/最小权限、其余产品事实/目录/媒体、语言中立/粤语Hargow、真实设备与异盘ops仍未完成。远端Chef最新CI37673375168和前成员37671868670/消费者37670082800实际读取仍in_progress，不能称其全绿；全部本机句柄终态，goal保持active。
