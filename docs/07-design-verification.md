@@ -1,5 +1,15 @@
 # 设计验证记录
 
+## Chef 共享契约真实抽取（2026-10-08）
+
+Chef `2d96053de488eb0255fe75e8a63d16863a537e86` 实际包含原 Rust 契约与生成器，法语兼容样本仅作 test fixture。独立20项契约测试、Clippy及重新生成TS/Schema无差异通过，远端CI `37650258408` completed/success。暂保留原内部包名与v1法语字段，不代表粤语或独立身份服务完成。
+
+Brioche `4c657c9` 删除本地契约crate，改用固定 `framework` Git子模块的path依赖；外层workspace明确exclude framework，避免Cargo自动把框架加入产品workspace。最终 `pnpm contracts` 从框架生成产品快照/作者Schema，git diff无差异；Brioche完整常规Rust工作区测试与Clippy、TypeScript检查和28项Web单元通过。数据库ignored测试本轮未执行，无SQL/数据库语义变更。初始化后的框架子模块独立20项测试及两workspace fmt检查也通过。
+
+从GitHub在全新私有目录clone --recurse-submodules，实际检出上述固定Chef提交，Cargo metadata成功，不依赖开发机相邻Chef目录。产品CI已配置递归checkout和框架测试，保留原生成物漂移检查；新产品CI `37651002731` 当次仍in_progress，不提前称通过。
+
+最终workspace exclude版本的Docker API实际构建成功，三覆盖up --wait --no-deps server成功。运行镜像`sha256:a0d8500d8eb59bf25487a8d79dc0f761a80c8216931fa4de6e54fc350edbe9ab`，healthy/0restart；真实release-status仍为48课正式录音目录、generation10。五服务/四HTTP健康检查通过。没有账号/课程/媒体迁移或付费合成，不改变既有公开契约，HTTPS和TTS覆盖保留。
+
 ## 完成提交的离页恢复与远端完成（2026-10-07）
 
 隔离 Chromium 浏览器新增完成课程故障组合：先成功确认必需步骤，完成请求返回 503 后经原生离页保护离开，再返回并重放保存的请求。实际核对路径、POST 方法、全部请求字段及幂等键完全相同；收到完成回执后移除待确认草稿，焦点落到「本课已完成」。另一组合让完成请求返回 409，读取另一处已完成的进度，核对不再发送新的完成请求且保留完成页面。新增测试通过（1 项，50.94 秒）。
