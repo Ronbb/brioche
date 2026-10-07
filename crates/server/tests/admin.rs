@@ -3419,6 +3419,43 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
     assert_eq!(preview.0, 200);
     assert!(preview.1["targets"].as_array().unwrap().len() > 11);
     assert!(preview.1.get("serverOnly").is_none());
+    let actor = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT id FROM users WHERE email='speech-operator@example.test'",
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get::<i64>("", "id")
+        .unwrap();
+    let learner_actor = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT id FROM users WHERE email='speech-learner@example.test'",
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get::<i64>("", "id")
+        .unwrap();
+    let local_preview = brioche_server::admin_speech_plans::preview_for_actor(
+        &backend,
+        actor,
+        &serde_json::from_value(preview_request.clone()).unwrap(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(serde_json::to_value(local_preview).unwrap(), preview.1);
+    assert!(matches!(
+        brioche_server::admin_speech_plans::preview_for_actor(
+            &backend,
+            learner_actor,
+            &serde_json::from_value(preview_request.clone()).unwrap()
+        )
+        .await,
+        Err(brioche_server::AppError::Forbidden)
+    ));
     let id = "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
     let request = json!({"id":id,"preview":preview_request,"expectedPlanHash":preview.1["planHash"],"reason":"Fixed synthetic plan"});
     assert_eq!(
@@ -3438,10 +3475,37 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
     let mut wrong = request.clone();
     wrong["expectedPlanHash"] = json!("0".repeat(64));
     assert_eq!(operator.send("POST", path, Some(wrong), true).await.0, 409);
+    let local_request = serde_json::from_value(request.clone()).unwrap();
+    assert!(matches!(
+        brioche_server::admin_speech_plans::save_local(&backend, learner_actor, local_request)
+            .await,
+        Err(brioche_server::AppError::Forbidden)
+    ));
+    let local_saved = brioche_server::admin_speech_plans::save_local(
+        &backend,
+        actor,
+        serde_json::from_value(request.clone()).unwrap(),
+    )
+    .await
+    .unwrap();
+    let local_retry = brioche_server::admin_speech_plans::save_local(
+        &backend,
+        actor,
+        serde_json::from_value(request.clone()).unwrap(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(
+        serde_json::to_value(&local_saved).unwrap(),
+        serde_json::to_value(local_retry).unwrap()
+    );
+    let mut request = request;
+    request["reason"] = json!("[local-cli] Fixed synthetic plan");
     let saved = operator
         .send("POST", path, Some(request.clone()), true)
         .await;
     assert_eq!(saved.0, 200);
+    assert_eq!(saved.1, serde_json::to_value(local_saved).unwrap());
     assert_eq!(saved.1["id"], id);
     assert_eq!(
         operator
@@ -3507,7 +3571,7 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
         .unwrap();
     assert_eq!(
         row.try_get::<String>("", "reason").unwrap(),
-        "Fixed synthetic plan"
+        "[local-cli] Fixed synthetic plan"
     );
     assert_eq!(
         row.try_get::<String>("", "hash").unwrap(),

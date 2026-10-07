@@ -219,6 +219,65 @@ async fn main() -> Result<()> {
         )
     };
     match command.as_str() {
+        "speech-plan-preview" | "speech-plan-save" => {
+            let args: Vec<String> = std::env::args().skip(2).collect();
+            let preview = command == "speech-plan-preview";
+            if args.len() != if preview { 3 } else { 2 } {
+                bail!(
+                    "usage: speech-plan-preview <request.json> <operator-email> <private-output.json>; speech-plan-save <request.json> <operator-email>"
+                );
+            }
+            let document = brioche_server::author_json::Document::load(&args[0])?;
+            let database = db.as_ref().unwrap();
+            let row = database
+                .query_one_raw(sea_orm::Statement::from_sql_and_values(
+                    sea_orm::DbBackend::Postgres,
+                    "SELECT id FROM users WHERE email=$1 AND role='operator'",
+                    vec![args[1].clone().into()],
+                ))
+                .await
+                .map_err(|_| anyhow::anyhow!("operator lookup failed"))?
+                .ok_or_else(|| anyhow::anyhow!("operator not found"))?;
+            let backend = brioche_server::identity::Backend::new(database.clone()).await?;
+            let actor: i64 = row.try_get("", "id")?;
+            let result = if preview {
+                let request = brioche_server::author_json::from_value(document.value, "")?;
+                let plan = brioche_server::admin_speech_plans::preview_for_actor(
+                    &backend, actor, &request,
+                )
+                .await
+                .map_err(|_| anyhow::anyhow!("fixed speech plan preview failed"))?;
+                // Private plans contain full voice parameters. Never print them or overwrite files.
+                let mut options = std::fs::OpenOptions::new();
+                options.write(true).create_new(true);
+                #[cfg(unix)]
+                {
+                    use std::os::unix::fs::OpenOptionsExt;
+                    options.mode(0o600);
+                }
+                let mut output = options
+                    .open(&args[2])
+                    .map_err(|_| anyhow::anyhow!("private output must be a new writable file"))?;
+                use std::io::Write;
+                output.write_all(&serde_json::to_vec_pretty(&plan)?)?;
+                output.sync_all()?;
+                plan
+            } else {
+                let request = brioche_server::author_json::from_value(document.value, "")?;
+                brioche_server::admin_speech_plans::save_local(&backend, actor, request)
+                    .await
+                    .map_err(|_| {
+                        anyhow::anyhow!(
+                            "speech plan not confirmed; inspect the fixed attempt before retrying"
+                        )
+                    })?
+            };
+            println!(
+                "{}",
+                serde_json::json!({"id":result.id,"planHash":result.plan_hash,"requestCount":result.request_count,"totalRequestCharacters":result.total_request_characters,"audioGenerated":false})
+            );
+            return Ok(());
+        }
         "voice-audition-generate" => {
             let args: Vec<String> = std::env::args().skip(2).collect();
             if args.len() != 2 {

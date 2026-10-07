@@ -135,13 +135,23 @@ async fn preview(
     Json(request): Json<AdminSpeechPreviewRequest>,
 ) -> Result<Json<AdminSpeechPlan>, AppError> {
     require_operator(&auth)?;
+    Ok(Json(preview_for_actor(&b, owner(&auth)?, &request).await?))
+}
+
+/// Compile a private plan from registered, fixed versions without generating audio.
+pub async fn preview_for_actor(
+    b: &Backend,
+    actor: i64,
+    request: &AdminSpeechPreviewRequest,
+) -> Result<AdminSpeechPlan, AppError> {
     let tx =
         b.db.begin_with_config(Some(IsolationLevel::RepeatableRead), None)
             .await
             .map_err(|_| AppError::Unavailable)?;
-    let (_, view) = compile(&tx, &request).await?;
+    lock_operator(&tx, actor).await?;
+    let (_, view) = compile(&tx, request).await?;
     tx.commit().await.map_err(|_| AppError::Unavailable)?;
-    Ok(Json(view))
+    Ok(view)
 }
 const SELECT: &str = r#"SELECT p.summary,p.id,to_char(p.created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at FROM course_speech_plans p WHERE NOT EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(p.lesson_id,p.lesson_revision))"#;
 fn item(row: &QueryResult) -> Result<AdminSpeechPlan, AppError> {
@@ -205,11 +215,28 @@ async fn save(
     Json(request): Json<AdminSpeechPlanRequest>,
 ) -> Result<Json<AdminSpeechPlan>, AppError> {
     require_operator(&auth)?;
+    Ok(Json(save_for_actor(&b, owner(&auth)?, request).await?))
+}
+
+/// Trusted local entry point; records its origin and shares the HTTP transaction.
+pub async fn save_local(
+    b: &Backend,
+    actor: i64,
+    mut request: AdminSpeechPlanRequest,
+) -> Result<AdminSpeechPlan, AppError> {
+    request.reason = format!("[local-cli] {}", request.reason);
+    save_for_actor(b, actor, request).await
+}
+
+async fn save_for_actor(
+    b: &Backend,
+    actor: i64,
+    request: AdminSpeechPlanRequest,
+) -> Result<AdminSpeechPlan, AppError> {
     crate::admin::reason(&request.reason)?;
     if !hex(&request.id, 32) || !hex(&request.expected_plan_hash, 64) {
         return Err(AppError::InvalidInput);
     }
-    let actor = owner(&auth)?;
     let tx = b.db.begin().await.map_err(|_| AppError::Unavailable)?;
     lock_operator(&tx, actor).await?;
     let request_json = serde_json::to_value(&request).map_err(|_| AppError::InvalidInput)?;
@@ -225,7 +252,7 @@ async fn save(
         {
             return Err(AppError::Conflict);
         }
-        return Ok(Json(load(&tx, &request.id).await?));
+        return load(&tx, &request.id).await;
     }
     exec(
         &tx,
@@ -240,5 +267,5 @@ async fn save(
     exec(&tx,"INSERT INTO course_speech_plans(id,lesson_id,lesson_revision,request,plan,summary,actor_id,reason) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",vec![request.id.clone().into(),request.preview.lesson_id.into(),(request.preview.lesson_revision as i32).into(),request_json.into(),serde_json::to_value(plan).map_err(|_|AppError::Unavailable)?.into(),serde_json::to_value(view).map_err(|_|AppError::Unavailable)?.into(),actor.into(),request.reason.into()]).await?;
     let result = load(&tx, &request.id).await?;
     tx.commit().await.map_err(|_| AppError::Unavailable)?;
-    Ok(Json(result))
+    Ok(result)
 }

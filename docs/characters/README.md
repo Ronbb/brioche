@@ -1,5 +1,12 @@
 # 角色与声音档案
 
+## 本机准备固定课程配音计划（2026-10-07）
+
+`speech-plan-preview <request.json> <operator-email> <private-output.json>` 从数据库中的固定课源和已登记声音版本编译计划，请求遵循 `AdminSpeechPreviewRequest`。输出包含完整声音参数，必须保存到本机私有目录；文件只能新建，不覆盖，Unix 权限为0600，终端仅打印计划哈希、请求数和字符数。预览不保存计划、不调用提供方，也不生成录音。
+
+核对后使用 `speech-plan-save <request.json> <operator-email>`，请求遵循 `AdminSpeechPlanRequest`，包含固定尝试ID、完整预览选择、预期计划哈希与理由。它复用网页保存事务和当前operator校验，理由标注`[local-cli]`；相同管理员/ID/完整请求重试返回原计划，变更参数或身份冲突拒绝。保存重新编译实际课源和固定声音档案，哈希变化拒绝，不接受离线旧计划代替核对。命令由持有本机数据库访问权的维护者使用，不创建网页会话、不自动确认审听或发布课程。
+
+
 ## 审听后组装录音课包（2026-10-07）
 
 `/admin/speech-alignments` 在全部片段人工审听、逐词校时通过后，可填写新课程版本、句间停顿、来源、授权依据、创作主体和公开署名，下载私有录音课包。授权确认默认不勾选。接口 `POST /api/v1/operator/speech-alignments/{id}/package` 要求当前管理员、CSRF 和固定报告哈希；组装前后核对固定课源、最新片段及审听决定，新版本必须高于所有已导入版本。
