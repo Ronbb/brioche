@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/server", "crates/migration"]
+members = ["crates/server"]
 exclude = ["framework"]
 resolver = "3"
 

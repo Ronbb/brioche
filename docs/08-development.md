@@ -205,9 +205,9 @@ pnpm build
 PostgreSQL 集成测试显式要求 `TEST_DATABASE_URL` 指向专用测试数据库：
 
 ```sh
-cargo test -p brioche-server --test postgres -- --ignored
-cargo test -p brioche-server --test identity -- --ignored
-cargo test -p brioche-server --test learning -- --ignored
+cargo test --manifest-path framework/Cargo.toml -p chef-engine --test postgres -- --ignored
+cargo test --manifest-path framework/Cargo.toml -p chef-engine --test identity -- --ignored
+cargo test --manifest-path framework/Cargo.toml -p chef-engine --test learning -- --ignored
 ```
 
 测试在独立、随机命名的 schema 中执行迁移、发布读取与唯一约束验证。普通测试运行会跳过它；CI 使用隔离的 PostgreSQL 服务执行。测试失败可能留下该测试 schema，禁止在生产数据库运行。
@@ -358,7 +358,7 @@ restore 首先完整校验 manifest、文件大小/哈希和 pg_restore 的 arch
 
 ## 隔离浏览器验收数据
 
-`cargo run -p brioche-server --example browser_fixture` 仅接受 TEST_DATABASE_URL 指向 loopback 的 `/brioche_browser_qa` 数据库，执行迁移并创建合成协议课/测试账号。它绕过正式课程审校与素材发布流程，仅用于一次性浏览器测试，不能替代正式内容发布。该 example 使用与 PostgreSQL 集成测试相同的测试 release helper；拒绝其他数据库或 query 参数。账号为 browser-qa@example.test，固定口令仅用于此隔离测试库，源码内可见，不用于生产。
+`cargo run --manifest-path framework/Cargo.toml -p chef-engine --example browser_fixture` 仅接受 TEST_DATABASE_URL 指向 loopback 的 `/brioche_browser_qa` 数据库，执行迁移并创建合成协议课/测试账号。它绕过正式课程审校与素材发布流程，仅用于一次性浏览器测试，不能替代正式内容发布。该 example 使用与 PostgreSQL 集成测试相同的测试 release helper；拒绝其他数据库或 query 参数。账号为 browser-qa@example.test，固定口令仅用于此隔离测试库，源码内可见，不用于生产。
 
 验收可在独立 PostgreSQL 临时容器（55432）、数据库 API（3003、PUBLIC_APP_URL=http://127.0.0.1:5175）和独立 Web（INTERNAL_API_URL=http://127.0.0.1:3003，react-router dev --port 5175）进行，完成后清理这组资源；不替换用户开发进程或生产服务。测试单选/填空草稿刷新、服务器提交后丢失响应、刷新/SPA 离页后重试和两标签页不同答案冲突，同时核对数据库真实尝试数。
 
@@ -366,7 +366,7 @@ restore 首先完整校验 manifest、文件大小/哈希和 pg_restore 的 arch
 
 API 在公共课程、身份/学习、媒体路由合并后统一添加观测层。每次请求由服务器生成 128-bit 随机 ID，通过 X-Request-Id 响应头返回；忽略调用者传入的同名 header。INFO 级请求完成日志只包含 request_id、规范 HTTP method、注册路由模板、status 和 duration_ms。路由参数不记录，未匹配请求记为 <unmatched>；不记录原始 URL/query、请求体、cookie、Authorization、CSRF 或用户资料。随机源不可用时明确返回服务不可用并写固定错误文本。
 
-耗时度量从进入路由中间件到产生响应头，包含处理与数据库等待，不代表网络下载结束。日志暂用于排查单次请求，指标采集、告警及性能基线仍待建立。日志由 RUST_LOG 控制；默认 brioche_server=info。此前只包围公共路由的通用 TraceLayer 已移除，避免高日志级别意外记录原始 URI。
+耗时度量从进入路由中间件到产生响应头，包含处理与数据库等待，不代表网络下载结束。日志暂用于排查单次请求，指标采集、告警及性能基线仍待建立。日志由 RUST_LOG 控制；默认 chef_engine=info。此前只包围公共路由的通用 TraceLayer 已移除，避免高日志级别意外记录原始 URI。
 
 Compose 所有五个服务使用 Docker local 日志驱动，配置 max-size=10m、max-file=3，限制单个容器的保留日志。宿主 Docker local 驱动已确认可用，Compose 解析验证每个服务均应用该配置；本轮没有执行生产容器重建或声称实际磁盘轮换演练完成。仍可使用 docker compose logs 查看日志。
 
@@ -472,3 +472,7 @@ Qwen后台音色创建：可选-f compose.tts.yaml仅给server加载.local/tts.e
 `brioche-server voice-audition-generate <request.json> <operator-email>` 接收生成契约 `AdminAuditionRequest`（固定尝试ID、候选角色/声音版本、原文/情绪、费用确认与理由）。与网页复用当前管理员事务校验、先保存任务再收费、原请求精确重试及私有媒体保存；理由自动加 `[local-cli]`，明确本机执行来源。仅从已存在operator邮箱解析实际actor，既不创建账号/登录会话，也不批准角色声音。请求文件仅保存在私有目录，不含API Key。
 
 命令保持runtime最多245秒等待该尝试，返回脱敏ID/status/durationMs和reviewRequired。submitted/unknown不能视为生成失败或自动改ID重发；应核对同一后台记录。相同ID/actor/完整原请求重试不再调用提供方；改变参数冲突。停止命令不能撤销外部已发送的请求，未确认记录继续保留。命令需显式私有提供方配置与媒体卷，生产维护仍保留HTTPS覆盖；正式试听接受只由人工后台审批完成。
+
+## Chef 后端装配
+
+共享后端和显式迁移的真源在 `framework/crates/server` / `framework/crates/migration`，产品 `crates/server/src/main.rs` 只调用框架入口。先执行 `git submodule update --init --recursive`，随后原 `pnpm dev:api` 与 Docker 命令保持可用。通用测试执行 `cargo test --manifest-path framework/Cargo.toml --workspace --locked`；数据库回归须设置独立 `TEST_DATABASE_URL` 后对 `chef-engine` 执行 ignored 测试，禁止指向生产。旧 `brioche-server` 命令名只为产品启动兼容。独立身份运行服务与双产品数据迁移仍在后续阶段。

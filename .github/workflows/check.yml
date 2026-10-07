@@ -59,22 +59,22 @@ jobs:
           exit "$test_status"
       - run: cargo run -p brioche-server --locked -- check docs/examples/a1-bakery.lesson.json
       - run: cargo run -p brioche-server --locked -- check-release docs/examples/catalog.release.json
-      - run: cargo test -p brioche-server --test postgres --locked -- --ignored
+      - run: cargo test --manifest-path framework/Cargo.toml -p chef-engine --test postgres --locked -- --ignored
         env:
           TEST_DATABASE_URL: postgres://postgres@localhost:5432/brioche_test
-      - run: cargo test -p brioche-server --test identity --locked -- --ignored
+      - run: cargo test --manifest-path framework/Cargo.toml -p chef-engine --test identity --locked -- --ignored
         env:
           TEST_DATABASE_URL: postgres://postgres@localhost:5432/brioche_test
-      - run: cargo test -p brioche-server --test learning --locked -- --ignored
+      - run: cargo test --manifest-path framework/Cargo.toml -p chef-engine --test learning --locked -- --ignored
         env:
           TEST_DATABASE_URL: postgres://postgres@localhost:5432/brioche_test
-      - run: cargo test -p brioche-server --test recording --locked -- --ignored
+      - run: cargo test --manifest-path framework/Cargo.toml -p chef-engine --test recording --locked -- --ignored
         env:
           TEST_DATABASE_URL: postgres://postgres@localhost:5432/brioche_test
-      - run: cargo test -p brioche-server --test author_runtime --locked -- --ignored
+      - run: cargo test --manifest-path framework/Cargo.toml -p chef-engine --test author_runtime --locked -- --ignored
         env:
           TEST_DATABASE_URL: postgres://postgres@localhost:5432/brioche_test
-      - run: cargo test -p brioche-server --test admin --locked -- --ignored
+      - run: cargo test --manifest-path framework/Cargo.toml -p chef-engine --test admin --locked -- --ignored
         env:
           TEST_DATABASE_URL: postgres://postgres@localhost:5432/brioche_test
       - run: pnpm contracts

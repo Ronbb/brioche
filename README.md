@@ -22,3 +22,5 @@
 保留已确认的静态 [Preview](docs/preview/README.md) 作为视觉基准；通过 `python -m http.server 4173 --directory docs/preview` 查看。法语内容与正式媒体仍需审校。
 
 协作约定见 [AGENTS.md](AGENTS.md)；本机信息见不进入版本控制的 `AGENTS.local.md`。早期设计提案保留规划范围；实际启动、作者工具和验收命令以 [工程说明](docs/08-development.md) 为准，不能把提案或草稿当作已验收结果。
+
+共享学习/账号/后台/配音后端与数据库迁移已迁入固定 Chef 子模块；本产品 Rust 入口只负责启动装配。首次检出执行 `git submodule update --init --recursive`。通用 Web、独立身份服务及产品数据隔离仍在拆分，见 [多产品架构](docs/14-multi-product-architecture.md)。

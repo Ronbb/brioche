@@ -1448,7 +1448,7 @@ test("operator uploads an actual MP3 with rights and a fixed revision", async ()
       "input[name=file]",
       fileURLToPath(
         new URL(
-          "../../../crates/server/tests/fixtures/audio/synthetic.mp3",
+          "../../../framework/crates/server/tests/fixtures/audio/synthetic.mp3",
           import.meta.url,
         ),
       ),
@@ -1482,7 +1482,7 @@ test("operator uploads an actual MP3 with rights and a fixed revision", async ()
       (
         await readFile(
           new URL(
-            "../../../crates/server/tests/fixtures/audio/synthetic.mp3",
+            "../../../framework/crates/server/tests/fixtures/audio/synthetic.mp3",
             import.meta.url,
           ),
         )

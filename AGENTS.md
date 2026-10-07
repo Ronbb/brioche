@@ -114,3 +114,5 @@
 - 本机voice-audition-review/speech-clip-review只代录明确的人类反馈，复用网页审核事务与当前operator，理由标注local-cli；候选重复决定冲突，片段仅精确重试。speech-plan-export复用全部最新已接受片段/实际媒体/交付前后权限和来源核对，私有输出不可覆盖，失败文件不能当完成包。试听音质批准不能自动timingsChecked或最终整课接受。
 
 - speech-alignment-import共用网页导入与实际媒体/来源包哈希核对，只保留预测和异常，不能写人工时间审核。相同actor/固定ID/完整请求重试返回原回执，理由标注local-cli，不生成账号会话。批量课程生成保持固定尝试，顺序调用，unknown停止；不能在收费任务仍运行时重建生产server打断它。
+
+后端抽取补充（2026-10-08）：共享服务端/迁移/回归测试真源已迁入 `framework` 的 Chef；Brioche `crates/server` 仅薄启动与 Schema 导出装配。不要在产品重建业务模块或迁移副本；通用测试用 Chef manifest 和 `chef-engine`。独立身份进程、通用 Web 和产品数据库隔离仍待实现，不能把此阶段当完整多语言支持。

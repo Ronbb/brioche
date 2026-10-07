@@ -3,7 +3,7 @@ fn main() -> anyhow::Result<()> {
     std::fs::create_dir_all(&root)?;
     std::fs::write(
         root.join("author-lesson.schema.json"),
-        serde_json::to_string_pretty(&brioche_server::author_source::schema())?,
+        serde_json::to_string_pretty(&chef_engine::author_source::schema())?,
     )?;
     Ok(())
 }

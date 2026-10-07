@@ -73,3 +73,11 @@ Hargow 目标语言采用粤语 `yue-Hant-HK`，面向中文学习者；繁体�
 共享契约首步抽取：Chef 已拥有 `crates/course-contract` 及生成的 TS/Schema，暂保留原内部包名与 v1 法语字段。Brioche 使用固定 Chef 提交的 `framework` 子模块，Rust path dependency 指向其中的 crate；原本地 Rust 契约副本移除，生成快照由 `pnpm contracts` 从固定框架生成。首次检出必须初始化子模块；CI checkout recursive，API Docker 构建显式复制框架源码，不依赖开发机相邻目录。
 
 账号/数据库未迁移；契约抽取与四仓库初始化不代表完整框架、身份服务或双语言能力已完成。
+
+## Chef 后端真源与薄产品入口（2026-10-08）
+
+学习 API、账号逻辑、课程解释器、复习、后台、配音/媒体业务、全部 SeaORM 迁移及回归测试已经迁入 Chef `crates/server` / `crates/migration`。Chef 固定提交 `900375c042e6a5d75965aaf108f61a3e5905a1ba`，兼容课源子模块固定 `brioche-courses` `7a84c185735a14e42801c1de27522c668c8c09ad`。课程仓库明确 LF，避免平台换行改变登记素材哈希；正式课程仍属于课程仓库。
+
+Brioche 删除原业务模块/迁移/数据库测试，仅保留 `brioche-server` 启动入口调用 `chef_engine::command::run()` 和作者 Schema 导出装配。公共 DTO/Schema 保持逐字节一致，依赖锁文件仅变更本地包关系，外部版本不升级；CLI、Docker 入口、现有数据迁移顺序保持兼容。CI 的 PostgreSQL 测试转向固定 Chef，独立 Chef CI 也执行全部隔离数据库回归。首次检出使用递归子模块初始化。
+
+这一步尚未迁出通用 Web、独立身份运行服务或引入产品数据隔离；Hargow 仍为产品配置起点，不能把后端抽取称双产品已经可上线。继续迁出共享界面和播放器，产品最终只拥有品牌、配置、入口与部署装配。
