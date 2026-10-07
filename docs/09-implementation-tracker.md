@@ -707,3 +707,7 @@ Chef已拥有学习/账号/后台/配音API、CLI、显式迁移和完整后端�
 ## 共享 Web 与产品减重（2026-10-08）
 
 实际 Chef `1f28553` 拥有通用 Web、播放器、后台及通用测试，并有可独立构建/测试的 synthetic fixture；Brioche `cb94ea3` 使用外部共享 appDirectory 与独立品牌配置，移除原通用 Web/测试/契约副本，本次删除31320行。全新递归远端checkout、严格TS7、SSR build、28单元/29SSR、5 SSR浏览器/12精选交互回归通过，Web已在生产三覆盖Compose启动，48课程/generation10不变。具体失败修复与真实镜像证据见docs07。两个最新远端CI收尾仍in_progress。下一阶段继续课源/通用运维迁出、独立身份服务、产品隔离及粤语/Hargow实际入口；不能以抽取完Web宣称多产品整体迁移已完成。
+
+## 法语课源独立消费（2026-10-08）
+
+Brioche已固定独立curriculum，移除139份重复课源/历史目录/示例，约13.9万行。本地与全新递归checkout均通过真实Rust全48精确revision校验；课程repo新增独立CI，Chef通用解析器拒绝缺失/不同内容同版本，产品作者路径与CI已切换。没有重新导入生产或更改发布历史。共享Web上一轮完整Chef与Brioche远端CI已确认成功。通用运维/课程资产后续归属、独立身份、双产品隔离及粤语/Hargow仍继续。

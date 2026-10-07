@@ -878,3 +878,15 @@ Chef 真源已推送至 `1f285538b83a89f7e5bd41e64b2704a385abaf2e`，Brioche 实
 最终 Docker Web image 为 `sha256:364b5cd844385a5379c53fb246b65ae02ca9c2eb4be2033dcdd56db78d163148`，HTTPS+TTS三覆盖 up --wait 已实际 healthy/0restart。API保持 `sha256:aad948cf294f73d1ff53cdec70b140777ca13bc2311642785e907fbe8a3b986c`；五服务/四HTTP healthy，release仍48课正式录音/generation10。两个既有HTTPS入口首页、目录、品牌SVG、CSS均200，匿名admin401/private no-store，目录各48课。实际390×844匿名Chromium首页截图已查看，品牌与主卡片无可见溢出。没有内容/媒体/账号/数据库迁移、付费生成、DNS或不安全端口变更。证据仅在本机私有目录 `.local/private/chef-web-20261008`。
 
 远端 Chef CI37658166111 与 Brioche CI37658317014 在本次收尾读取时仍in_progress，不能声称这两次完整CI已通过。独立身份服务、按产品隔离数据库/授权/草稿、语言中立契约及粤语课源/Hargow实际入口尚未完成；课程与运维源码继续迁出产品，原设备/异盘恢复验收仍待完成。
+
+## 独立课程仓库消费验证（2026-10-08）
+
+Brioche `a7bb574` 实际公开推送，151文件变更、138883行删除。原134份content及5份example共139份文件的Git对象哈希与固定课程仓库逐一一致后移除，定位README替代旧路径。产品直接固定 `curriculum` e61e0f1759de66d768616c7a4ddda01b40d71f1b 和 Chef78f33e874ed8ecf3b2981de22d8c3f92eceacb3a；课程repo新增独立CI，框架提供通用精确release解析工具，产品CI与文档作者命令更新，不依赖Chef兼容样本作为正式课程。
+
+第一次向旧CLI传递content父目录，实际失败且退出1：CLI本身不递归，也不能从多份历史源猜测revision。新增共享工具递归选择精确id/revision，缺失版本、不同内容的同版本与错误目录归属都拒绝；聚合到临时目录后调用实际Rust check-release --sources，退出后清理，不读写数据库。选择器实际回归验证旧版不能满足新版、完全一致副本可共存、不同副本/归属拒绝。产品本地实际48精确revision通过；全新远端递归checkout再次实际48通过、gitclean。原课程发布/媒体/账号没有重写，私有证据记录48来源哈希，不含作者答案。
+
+此前共享Web的完整远端CI已实际读取completed/success：Chef37658166111的contracts和web两job、Brioche37658317014的check全部通过。这证明对应1f28553/cb94提交，不能推广为新78f33e8/e61e0f1/a7bb574已绿。
+
+课程CI首次37660495743失败在第二次checkout（Git退出1，构建/校验未执行）；改为完整Chef SHA并在其目录运行固定Rust工具链，课程caceab58e4d6244f58ccf4be2367dce4416e7263的独立CI37661255990实际completed/success，checkout、Linux构建与全48验证均成功。产品a95bf534cbcd02552ead23eac967bf9334411369已公开推送并固定该课程提交。本地再次48及选择器回归通过。
+
+产品API Docker在移除无用课源COPY后实际完整release重建成功，三覆盖up server --wait已终态healthy/0restart；实际API Image `sha256:65415f4c20466d96843c2857a438fba092c6bcc355d52b6b8ebc4811ea2ef28e`。release-status仍48课正式录音目录/generation10，2026-10-07T17:44:32.282Z五服务/四HTTP健康、D盘空闲415664394240bytes。Web镜像保持此前已验收版本。本次没有数据库迁移、内容导入、媒体/账号写入、提供方调用或域名改动。Chef78f33e8 CI37660317607及Briochea95bf53 CI37661317751最近读取仍in_progress；课程CI成功不代表另两全套CI已通过。
