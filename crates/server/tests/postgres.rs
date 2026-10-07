@@ -67,13 +67,43 @@ async fn migrations_publication_and_revision_uniqueness() {
     .await
     .unwrap();
     support::fixture_release(&db).await;
-    let response = app.oneshot(request()).await.unwrap();
+    let response = app.clone().oneshot(request()).await.unwrap();
     assert_eq!(response.status(), 200);
     use http_body_util::BodyExt;
     let body = response.into_body().collect().await.unwrap().to_bytes();
     let public: serde_json::Value = serde_json::from_slice(&body).unwrap();
     assert_eq!(public["revision"], 2);
     assert!(public.get("serverOnly").is_none());
+    let catalog = brioche_server::content::catalog(&db).await.unwrap();
+    let summaries: Vec<_> = catalog
+        .levels
+        .iter()
+        .flat_map(|l| &l.units)
+        .flat_map(|u| &u.lessons)
+        .collect();
+    assert_eq!(summaries.len(), 1);
+    assert_eq!(
+        serde_json::to_value(summaries[0]).unwrap(),
+        serde_json::to_value(lesson.summary()).unwrap()
+    );
+    let explicit = app
+        .clone()
+        .oneshot(
+            axum::http::Request::builder()
+                .uri("/api/lessons/a1-bakery-buy-breakfast?revision=2")
+                .body(axum::body::Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(explicit.status(), 200);
+    assert_eq!(
+        serde_json::from_slice::<serde_json::Value>(
+            &explicit.into_body().collect().await.unwrap().to_bytes()
+        )
+        .unwrap(),
+        public
+    );
     // Exercise the actual adapter against PostgreSQL, including stale in-flight saves.
     use brioche_server::session_store::PgSessionStore;
     use tower_sessions::{

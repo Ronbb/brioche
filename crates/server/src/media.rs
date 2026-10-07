@@ -995,9 +995,7 @@ pub(crate) async fn asset_response(
     {
         return Err(AppError::Unavailable);
     }
-    let permit = permits
-        .try_acquire_owned()
-        .map_err(|_| AppError::Unavailable)?;
+    let permit = crate::media_read::acquire(permits).await?;
     let bytes = tokio::task::spawn_blocking(move || -> Result<Vec<u8>> {
         let _permit = permit;
         let bytes = stored_bytes(&root, &sha, &ext)?;

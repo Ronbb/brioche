@@ -484,9 +484,7 @@ pub(crate) async fn asset_response(
         return Err(crate::AppError::Unavailable);
     }
     let etag = format!("\"{sha}\"");
-    let permit = permits
-        .try_acquire_owned()
-        .map_err(|_| crate::AppError::Unavailable)?;
+    let permit = crate::media_read::acquire(permits).await?;
     let bytes = tokio::task::spawn_blocking(move || -> Result<Vec<u8>> {
         let _permit = permit;
         let bytes = media::stored_bytes(&root, &sha, &ext)?;

@@ -5,7 +5,7 @@ use crate::{
     learning::{exec, field, hash, one},
     project_source,
 };
-use brioche_course_contract::{Catalog, Level, PublicLesson, Unit};
+use brioche_course_contract::{Catalog, LessonSummary, Level, PublicLesson, Unit};
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement, TransactionTrait};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
@@ -560,8 +560,10 @@ async fn withdraw_impl(
     Ok(next)
 }
 pub async fn catalog<C: ConnectionTrait>(db: &C) -> Result<Catalog, AppError> {
-    // One SQL statement observes the pointer, immutable manifest and available revisions together.
-    let rows=db.query_all_raw(Statement::from_string(DbBackend::Postgres,"SELECT cr.manifest,r.public_document FROM content_state s JOIN content_releases cr ON cr.id=s.active_release LEFT JOIN release_entries e ON e.release_id=cr.id LEFT JOIN lesson_revisions r ON (r.lesson_id,r.revision)=(e.lesson_id,e.revision) AND r.published WHERE s.singleton ORDER BY e.position")).await.map_err(|_|AppError::Unavailable)?;
+    // One statement observes the pointer, immutable manifest and availability together.
+    // Import/publication validate full immutable documents; catalog reads need only
+    // the public summary, not every dialogue, answer-free exercise and audio timeline.
+    let rows=db.query_all_raw(Statement::from_string(DbBackend::Postgres,"SELECT cr.manifest,COALESCE(jsonb_agg(jsonb_build_object('id',r.public_document->'id','revision',r.public_document->'revision','levelId',r.public_document->'levelId','unitId',r.public_document->'unitId','title',r.public_document->'title','summaryZh',r.public_document->'summaryZh','estimatedMinutes',r.public_document->'estimatedMinutes') ORDER BY e.position) FILTER(WHERE r.lesson_id IS NOT NULL),'[]'::jsonb) AS summaries FROM content_state s JOIN content_releases cr ON cr.id=s.active_release LEFT JOIN release_entries e ON e.release_id=cr.id LEFT JOIN lesson_revisions r ON (r.lesson_id,r.revision)=(e.lesson_id,e.revision) AND r.published AND NOT EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(r.lesson_id,r.revision)) WHERE s.singleton GROUP BY cr.id")).await.map_err(|_|AppError::Unavailable)?;
     let Some(first) = rows.first() else {
         return Ok(Catalog {
             levels: vec![],
@@ -571,13 +573,10 @@ pub async fn catalog<C: ConnectionTrait>(db: &C) -> Result<Catalog, AppError> {
     let manifest: ReleaseManifest =
         serde_json::from_value(field(first, "manifest")?).map_err(|_| AppError::Unavailable)?;
     let mut lessons = BTreeMap::new();
-    for row in &rows {
-        if let Some(document) = field::<Option<serde_json::Value>>(row, "public_document")? {
-            let lesson: PublicLesson =
-                serde_json::from_value(document).map_err(|_| AppError::Unavailable)?;
-            lesson.validate().map_err(|_| AppError::Unavailable)?;
-            lessons.insert(lesson.id.clone(), lesson.summary());
-        }
+    let summaries: Vec<LessonSummary> =
+        serde_json::from_value(field(first, "summaries")?).map_err(|_| AppError::Unavailable)?;
+    for summary in summaries {
+        lessons.insert(summary.id.clone(), summary);
     }
     Ok(Catalog {
         development_fixture: false,

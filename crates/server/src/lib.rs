@@ -17,6 +17,7 @@ pub mod learning;
 pub mod lesson_audio_reviews;
 pub mod library;
 pub mod media;
+mod media_read;
 pub mod observability;
 pub mod password;
 pub mod preview;
@@ -288,13 +289,21 @@ async fn lesson(
         lesson.validate().map_err(|_| AppError::Unavailable)?;
         return Ok(Json(lesson));
     }
-    state
-        .lessons()
-        .await?
-        .into_iter()
-        .find(|lesson| lesson.id == id)
-        .map(Json)
-        .ok_or(AppError::NotFound)
+    if let Some(fixture) = &state.fixture {
+        return if fixture.id == id {
+            Ok(Json(fixture.clone()))
+        } else {
+            Err(AppError::NotFound)
+        };
+    }
+    let db = state.db.as_ref().ok_or(AppError::Unavailable)?;
+    // Read only the requested revision, together with the current release pointer.
+    // Old published revisions remain available only through the explicit revision path.
+    let row = learning::one(db, "SELECT r.public_document FROM content_state s JOIN release_entries e ON e.release_id=s.active_release JOIN lesson_revisions r ON (r.lesson_id,r.revision)=(e.lesson_id,e.revision) WHERE s.singleton AND e.lesson_id=$1 AND r.published AND NOT EXISTS(SELECT 1 FROM content_withdrawals w WHERE (w.lesson_id,w.revision)=(r.lesson_id,r.revision))", vec![id.into()]).await?.ok_or(AppError::NotFound)?;
+    let lesson: PublicLesson = serde_json::from_value(learning::field(&row, "public_document")?)
+        .map_err(|_| AppError::Unavailable)?;
+    lesson.validate().map_err(|_| AppError::Unavailable)?;
+    Ok(Json(lesson))
 }
 fn project_source_types(mut source: serde_json::Value) -> anyhow::Result<PublicLesson> {
     author_source::editorial(&source)?;
