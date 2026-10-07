@@ -22,7 +22,7 @@ const MAX_EXPORT: usize = 128 * 1024 * 1024;
 pub fn router() -> Router<Backend> {
     Router::new().route("/api/v1/operator/speech-plans/{id}/export", get(export))
 }
-async fn snapshot(db: &impl ConnectionTrait, id: &str) -> Result<Value, AppError> {
+pub(crate) async fn snapshot(db: &impl ConnectionTrait, id: &str) -> Result<Value, AppError> {
     let plan = speech_clips::plan(db, id).await?;
     let requests = plan["requests"].as_object().ok_or(AppError::Unavailable)?;
     let mut clips = Vec::new();
@@ -59,7 +59,7 @@ fn append(builder: &mut tar::Builder<Vec<u8>>, name: &str, bytes: &[u8]) -> Resu
         .append_data(&mut header, name, bytes)
         .map_err(|_| AppError::Unavailable)
 }
-fn pack(root: &std::path::Path, mut manifest: Value) -> Result<Vec<u8>, AppError> {
+pub(crate) fn pack(root: &std::path::Path, mut manifest: Value) -> Result<Vec<u8>, AppError> {
     let mut builder = tar::Builder::new(Vec::new());
     let mut files = BTreeMap::<String, String>::new();
     for clip in manifest["clips"]

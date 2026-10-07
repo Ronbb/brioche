@@ -21,6 +21,7 @@ export default [
   route("admin/voice-auditions", "routes/admin-voice-auditions.tsx"),
   route("admin/speech-plans", "routes/admin-speech-plans.tsx"),
   route("admin/speech-clips", "routes/admin-speech-clips.tsx"),
+  route("admin/speech-alignments", "routes/admin-speech-alignments.tsx"),
   route("admin/tokens", "routes/admin-tokens.tsx"),
   route("admin/accounts/:accountId/sessions", "routes/admin-sessions.tsx"),
   route("author-preview", "routes/author-preview.tsx"),

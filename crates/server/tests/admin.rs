@@ -3528,11 +3528,6 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
             .await
             .is_err()
     );
-    assert!(
-        brioche_migration::Migrator::down(&db, Some(1))
-            .await
-            .is_err()
-    );
     // Competing administrators cannot both charge the same fresh generation key.
     let mut parallel_a = clip_request.clone();
     parallel_a["id"] = json!("ccccccccccccccccccccccccccccccc5");
@@ -3608,6 +3603,10 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
     assert_eq!(response.headers()["content-type"], "application/x-tar");
     assert_eq!(response.headers()["cache-control"], "private, no-store");
     let bytes = response.into_body().collect().await.unwrap().to_bytes();
+    let source_archive_hash = {
+        use sha2::Digest;
+        format!("{:x}", sha2::Sha256::digest(&bytes))
+    };
     let mut archive = tar::Archive::new(std::io::Cursor::new(bytes));
     let mut members = std::collections::BTreeMap::new();
     for entry in archive.entries().unwrap() {
@@ -3665,6 +3664,198 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
             );
         }
     }
+    // Synthetic alignment predictions are compared with real fixed plan/clip identities.
+    let model: Value =
+        serde_json::from_str(include_str!("../../../scripts/alignment/model.json")).unwrap();
+    let engine = json!({"repository":model["repository"],"revision":model["revision"],"files":model["files"],"versions":{"qwen-asr":"0.0.6","torch":"2.10.0+cpu","transformers":"4.57.6","numpy":"2.5.3"},"device":"cpu","dtype":"float32","attention":"eager","transcript":"NFC source word units, apostrophes normalized; original scalar ranges retained"});
+    let report_clips:Vec<_>=manifest["clips"].as_array().unwrap().iter().map(|clip| {
+        let key=clip["generationKey"].as_str().unwrap();
+        let words:Vec<_>=clip["words"].as_array().unwrap().iter().enumerate().map(|(i,w)|{
+            let mut w=w.clone(); w["startMs"]=json!(i);w["endMs"]=json!(i+1);w
+        }).collect();
+        let raw:Vec<_>=words.iter().map(|w|json!({"text":w["text"],"startSeconds":w["startMs"].as_u64().unwrap() as f64/1000.0,"endSeconds":w["endMs"].as_u64().unwrap() as f64/1000.0})).collect();
+        let targets:Vec<_>=manifest["plan"]["targets"].as_array().unwrap().iter().filter(|t|t["generationKey"]==key).map(|t|json!({"pointer":t["pointer"],"blockId":t["blockId"],"entryId":t["entryId"],"words":[],"issues":[]})).collect();
+        json!({"clipId":clip["id"],"generationKey":key,"sha256":clip["result"]["sha256"],"durationMs":clip["result"]["durationMs"],"rawPredictions":raw,"words":words,"issues":[],"targets":targets})
+    }).collect();
+    let mut report = json!({"schemaVersion":"1.0","kind":"brioche-alignment-predictions","planId":id,"planHash":saved.1["planHash"],"sourceArchiveSha256":source_archive_hash,"engine":engine,"reviewRequired":true,"clips":report_clips});
+    let corrected = report["clips"][0]["words"].clone();
+    report["clips"][0]["words"] = json!([]);
+    report["clips"][0]["issues"] = json!(["invalidTimeRange"]);
+    let alignment_id = "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1";
+    let alignment_path = "/api/v1/operator/speech-alignments";
+    let import_request = json!({"id":alignment_id,"planId":id,"expectedPlanHash":saved.1["planHash"],"reportJson":serde_json::to_string(&report).unwrap(),"reason":"Synthetic alignment import, not a production hearing"});
+    assert_eq!(
+        visitor
+            .send("POST", alignment_path, Some(import_request.clone()), true)
+            .await
+            .0,
+        401
+    );
+    assert_eq!(
+        learner
+            .send("POST", alignment_path, Some(import_request.clone()), true)
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        operator
+            .send("POST", alignment_path, Some(import_request.clone()), false)
+            .await
+            .0,
+        403
+    );
+    let imported_alignment = operator
+        .send("POST", alignment_path, Some(import_request.clone()), true)
+        .await;
+    assert_eq!(imported_alignment.0, 200, "{:?}", imported_alignment.1);
+    assert_eq!(
+        imported_alignment.1["clips"][0]["words"][0]["startMs"],
+        Value::Null
+    );
+    assert_eq!(
+        operator
+            .send("POST", alignment_path, Some(import_request.clone()), true)
+            .await
+            .1,
+        imported_alignment.1
+    );
+    assert_eq!(
+        second
+            .send("POST", alignment_path, Some(import_request.clone()), true)
+            .await
+            .0,
+        409
+    );
+    let mut changed = import_request.clone();
+    changed["reason"] = json!("Different immutable body");
+    assert_eq!(
+        operator
+            .send("POST", alignment_path, Some(changed), true)
+            .await
+            .0,
+        409
+    );
+    let mut corrupt_report = report.clone();
+    corrupt_report["sourceArchiveSha256"] = json!("f".repeat(64));
+    let mut invalid_archive = import_request.clone();
+    invalid_archive["id"] = json!("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeea");
+    invalid_archive["reportJson"] = json!(serde_json::to_string(&corrupt_report).unwrap());
+    assert_eq!(
+        operator
+            .send("POST", alignment_path, Some(invalid_archive), true)
+            .await
+            .0,
+        409
+    );
+    let mut duplicate_json = import_request.clone();
+    duplicate_json["id"] = json!("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb");
+    duplicate_json["reportJson"] = json!(format!(
+        "{{\"schemaVersion\":\"1.0\",{}",
+        &serde_json::to_string(&report).unwrap()[1..]
+    ));
+    assert_eq!(
+        operator
+            .send("POST", alignment_path, Some(duplicate_json), true)
+            .await
+            .0,
+        400
+    );
+    let mut corrupt_report = report.clone();
+    corrupt_report["clips"][0]["sha256"] = json!("f".repeat(64));
+    let mut invalid_import = import_request.clone();
+    invalid_import["id"] = json!("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee2");
+    invalid_import["reportJson"] = json!(serde_json::to_string(&corrupt_report).unwrap());
+    assert_eq!(
+        operator
+            .send("POST", alignment_path, Some(invalid_import), true)
+            .await
+            .0,
+        409
+    );
+    let list_path = format!("{path}/{id}/alignments");
+    let listing = operator.send("GET", &list_path, None, true).await;
+    assert_eq!(listing.0, 200, "{:?}", listing.1);
+    assert_eq!(listing.1["items"].as_array().unwrap().len(), 1);
+    assert!(listing.1["items"][0].get("report").is_none());
+    let read_alignment = format!("{alignment_path}/{alignment_id}");
+    assert_eq!(
+        learner.send("GET", &read_alignment, None, true).await.0,
+        403
+    );
+    let alignment_clip = report["clips"][0]["clipId"].as_str().unwrap();
+    let review_path = format!("{read_alignment}/clips/{alignment_clip}/review");
+    let mut decision = json!({"expectedReportHash":imported_alignment.1["reportHash"],"heard":true,"timingsChecked":true,"accepted":true,"words":corrected,"reason":"Synthetic timing correction fixture"});
+    decision["heard"] = json!(false);
+    assert_eq!(
+        operator
+            .send("POST", &review_path, Some(decision.clone()), true)
+            .await
+            .0,
+        400
+    );
+    decision["heard"] = json!(true);
+    decision["timingsChecked"] = json!(false);
+    assert_eq!(
+        operator
+            .send("POST", &review_path, Some(decision.clone()), true)
+            .await
+            .0,
+        400
+    );
+    decision["timingsChecked"] = json!(true);
+    let mut overlap = decision.clone();
+    overlap["words"][0]["endMs"] = json!(999);
+    assert_eq!(
+        operator
+            .send("POST", &review_path, Some(overlap), true)
+            .await
+            .0,
+        400
+    );
+    let accepted = operator
+        .send("POST", &review_path, Some(decision.clone()), true)
+        .await;
+    assert_eq!(accepted.0, 200, "{:?}", accepted.1);
+    assert_eq!(accepted.1["clips"][0]["accepted"], true);
+    assert_eq!(accepted.1["clips"][0]["words"], decision["words"]);
+    assert_eq!(
+        operator
+            .send("POST", &review_path, Some(decision.clone()), true)
+            .await
+            .1,
+        accepted.1
+    );
+    assert_eq!(
+        second
+            .send("POST", &review_path, Some(decision.clone()), true)
+            .await
+            .0,
+        409
+    );
+    decision["reason"] = json!("Cannot overwrite timing review");
+    assert_eq!(
+        operator
+            .send("POST", &review_path, Some(decision), true)
+            .await
+            .0,
+        409
+    );
+    assert!(
+        db.execute_unprepared("UPDATE speech_alignments SET reason='overwrite'")
+            .await
+            .is_err()
+    );
+    assert!(
+        db.execute_unprepared("DELETE FROM speech_alignment_reviews")
+            .await
+            .is_err()
+    );
+    assert!(
+        brioche_migration::Migrator::down(&db, Some(1))
+            .await
+            .is_err()
+    );
     let calls_after_export = qwen.calls.lock().unwrap().len();
     // A corrupt cached object fails closed rather than silently issuing another paid call.
     let raw=db.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT result->>'sha256' AS hash FROM course_speech_clip_events WHERE status='ready' LIMIT 1")).await.unwrap().unwrap();
@@ -3683,6 +3874,15 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
     );
     assert_eq!(qwen.calls.lock().unwrap().len(), calls_after_export);
     assert_eq!(operator.send("GET", &export_path, None, true).await.0, 503);
+    let mut broken_import = import_request.clone();
+    broken_import["id"] = json!("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee3");
+    assert_eq!(
+        operator
+            .send("POST", alignment_path, Some(broken_import), true)
+            .await
+            .0,
+        503
+    );
     // Real withdrawal hides existing plan text and prevents further preview/creation.
     db.execute_raw(Statement::from_sql_and_values(
         DbBackend::Postgres,
@@ -3711,6 +3911,17 @@ async fn course_speech_plans_are_fixed_private_idempotent_and_retained() {
         404
     );
     assert_eq!(operator.send("GET", &export_path, None, true).await.0, 404);
+    assert_eq!(
+        operator.send("GET", &read_alignment, None, true).await.0,
+        404
+    );
+    assert_eq!(
+        operator
+            .send("POST", alignment_path, Some(import_request), true)
+            .await
+            .0,
+        404
+    );
     assert_eq!(operator.send("GET", &clip_path, None, true).await.0, 404);
     assert_eq!(
         operator

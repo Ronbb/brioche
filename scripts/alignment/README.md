@@ -33,7 +33,7 @@ python -m unittest discover -s scripts/alignment -p test_align.py -v
 
 课程 segment 若把一个词切成不同文本范围，无法与整词预测精确映射时标记 `segmentWordBoundaryMismatch`。工具不平均拆分声学区间。需要人工修改分段或经过实际音频核对的时间轴；修改课程须追加新版本，再重新生成固定计划。Qwen 库自身会处理部分预测异常，输出仍是模型预测，不能宣称音素边界或人工审听已确认。
 
-正式录音包组装、后台时间轴审查、登记和新课程/release 发布仍是后续步骤；目前不应直接把预测 JSON 导入已发布课程。
+后台时间轴审查入口为固定计划的 `/admin/speech-alignments?planId=<id>`：导入这里生成的私有 JSON，逐片段试听、修改逐词毫秒范围并明确确认。服务端重建实际导出包核对 SHA-256、固定计划及最新已审听片段；其他包或测试清单不能冒充生产来源。异常预测保持原样保存，校正结果另记不可变人工决定。正式录音包组装、登记和新课程/release 发布仍是后续步骤；核对通过不直接修改已发布课程。
 
 来源：[官方 Qwen3-ASR / ForcedAligner](https://github.com/QwenLM/Qwen3-ASR)、[固定模型](https://huggingface.co/Qwen/Qwen3-ForcedAligner-0.6B/tree/c7cbfc2048c462b0d63a45797104fc9db3ad62b7)。模型许可证 Apache-2.0，模型文件不进入 Git。
 

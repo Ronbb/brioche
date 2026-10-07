@@ -3820,3 +3820,15 @@ h2[tabindex="-1"]:focus {
 .speech-plans-page input { width: 100%; min-width: 0; min-height: 48px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font: inherit; }
 
 .speech-clip-list{display:grid;gap:1rem;margin-top:2rem}.speech-clip-list article{padding:1.2rem;border-radius:1.25rem;background:var(--surface);overflow-wrap:anywhere}.speech-clip-list .fr{font-size:1.45rem}.speech-clip-list .text-button{margin-right:1rem}
+
+.alignment-import { padding: 1.25rem; margin: 1.5rem 0 2.5rem; }
+.alignment-import fieldset,.alignment-word-times { border: 0; padding: 0; min-width: 0; }
+.alignment-import label,.alignment-word-times > label { display: grid; gap: .6rem; margin-bottom: 1rem; }
+.alignment-import input[type=file] { max-width: 100%; }
+.alignment-word { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,5.5rem) minmax(0,5.5rem); align-items: center; gap: .65rem; border-bottom: 1px solid var(--line); padding: .85rem 0; }
+.alignment-word button { min-width: 0; overflow-wrap: anywhere; text-align: left; }
+.alignment-word label { display: grid; gap: .4rem; font-size: .8rem; }
+.alignment-word input { width: 100%; min-width: 0; padding: .55rem; }
+.alignment-word-times legend { margin: 1rem 0; }
+.alignment-word-times > label { margin-top: 1.5rem; }
+.alignment-navigation { display: flex; justify-content: space-between; margin: 1rem 0 2.5rem; }

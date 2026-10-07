@@ -1,4 +1,11 @@
 import type { CsrfToken } from "@brioche/contracts/CsrfToken";
+export class AdminWriteError extends Error {
+  readonly status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
 export async function adminWrite<T>(
   path: string,
   body: object | FormData,
@@ -34,10 +41,11 @@ export async function adminWrite<T>(
       404: "没有找到指定对象，请刷新后核对。",
       409: "状态已发生变化，请刷新后核对再操作。",
       410: "这个课程版本已撤回。",
-      413: "文件过大，请选择不超过32 MB的图片。",
+      413: "提交内容过大，请核对文件大小。",
     };
-    throw Error(
+    throw new AdminWriteError(
       messages[response.status] ?? "操作未确认，请刷新核对状态后重试。",
+      response.status,
     );
   }
   return response.json() as Promise<T>;

@@ -1230,3 +1230,42 @@ test("course speech clips deny visitors and learners before private reads, and r
     profile.role = "learner";
   }
 });
+
+test("speech alignments deny visitors and learners before private reads, and reject malformed plan ids", async () => {
+  authenticated = false;
+  fixture = false;
+  requests.length = 0;
+  try {
+    assert.equal(
+      (await request("/admin/speech-alignments?planId=" + "f".repeat(32)))
+        .status,
+      401,
+    );
+    assert.ok(!requests.some((r) => r.path.includes("/operator/")));
+    authenticated = true;
+    profile.role = "learner";
+    requests.length = 0;
+    assert.equal(
+      (await request("/admin/speech-alignments?planId=" + "f".repeat(32)))
+        .status,
+      403,
+    );
+    assert.ok(!requests.some((r) => r.path.includes("/operator/")));
+    profile.role = "operator";
+    for (const id of ["", "../escape", "f".repeat(33)]) {
+      requests.length = 0;
+      assert.equal(
+        (
+          await request(
+            "/admin/speech-alignments?planId=" + encodeURIComponent(id),
+          )
+        ).status,
+        400,
+      );
+      assert.ok(!requests.some((r) => r.path.includes("/operator/")));
+    }
+  } finally {
+    authenticated = false;
+    profile.role = "learner";
+  }
+});

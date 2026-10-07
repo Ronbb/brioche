@@ -17,8 +17,11 @@ const LIMIT: usize = 2 * 1024 * 1024;
 
 /// HTTP author imports use the same duplicate-member and size checks as local files.
 pub fn parse_document(bytes: &[u8]) -> Result<Value> {
-    if bytes.len() > LIMIT {
-        bail!("author JSON exceeds 2 MiB");
+    parse_document_bounded(bytes, LIMIT)
+}
+pub(crate) fn parse_document_bounded(bytes: &[u8], limit: usize) -> Result<Value> {
+    if bytes.len() > limit {
+        bail!("JSON exceeds {limit} bytes");
     }
     Ok(parse(bytes)?)
 }

@@ -60,6 +60,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     brioche_course_contract::AdminSpeechClipRequest::export_all(&config)?;
     brioche_course_contract::AdminSpeechClips::export_all(&config)?;
     brioche_course_contract::AdminSpeechClipReview::export_all(&config)?;
+    brioche_course_contract::AdminAlignmentImport::export_all(&config)?;
+    brioche_course_contract::AdminAlignment::export_all(&config)?;
+    brioche_course_contract::AdminAlignments::export_all(&config)?;
+    brioche_course_contract::AdminAlignmentReview::export_all(&config)?;
     brioche_course_contract::AdminSpeechOptions::export_all(&config)?;
     brioche_course_contract::AdminRevokeTokenRequest::export_all(&config)?;
     brioche_course_contract::PreviewRelease::export_all(&config)?;

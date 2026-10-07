@@ -570,3 +570,70 @@ pub struct AdminSpeechClipReview {
     pub accepted: bool,
     pub reason: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAlignmentImport {
+    pub id: String,
+    pub plan_id: String,
+    pub expected_plan_hash: String,
+    pub report_json: String,
+    pub reason: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAlignmentWord {
+    pub text: String,
+    pub start: u32,
+    pub end: u32,
+    pub start_ms: Option<u32>,
+    pub end_ms: Option<u32>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAlignmentClip {
+    pub clip_id: String,
+    pub generation_key: String,
+    pub text: String,
+    pub duration_ms: u32,
+    pub issues: Vec<String>,
+    pub words: Vec<AdminAlignmentWord>,
+    pub accepted: Option<bool>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAlignment {
+    pub id: String,
+    pub plan_id: String,
+    pub plan_hash: String,
+    pub report_hash: String,
+    pub clips: Vec<AdminAlignmentClip>,
+    pub created_at: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAlignments {
+    pub items: Vec<AdminAlignmentSummary>,
+    pub next: Option<String>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAlignmentSummary {
+    pub id: String,
+    pub plan_id: String,
+    pub plan_hash: String,
+    pub report_hash: String,
+    pub clip_count: u32,
+    pub accepted_count: u32,
+    pub created_at: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AdminAlignmentReview {
+    pub expected_report_hash: String,
+    pub heard: bool,
+    pub timings_checked: bool,
+    pub accepted: bool,
+    pub words: Vec<AdminAlignmentWord>,
+    pub reason: String,
+}

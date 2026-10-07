@@ -1,9 +1,16 @@
 import { before, after, test } from "node:test";
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
-import { readFile, writeFile, mkdtemp, unlink, rmdir } from "node:fs/promises";
+import {
+  readFile,
+  writeFile,
+  mkdtemp,
+  unlink,
+  rmdir,
+  mkdir,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { resolve, sep, extname } from "node:path";
+import { resolve, sep, extname, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -97,6 +104,9 @@ let voiceAuditions = [],
 let lessonStatus = 200;
 let speechClips = [],
   clipLostReply = false;
+let alignmentResult = null,
+  alignmentLostImport = false,
+  alignmentLostReview = false;
 let speechPlans = [],
   speechLostReply = false;
 const speechVoices = lesson.cast.map((character) => ({
@@ -122,11 +132,65 @@ const profile = (id) => ({
 });
 const api = createServer((request, response) => {
   response.setHeader("Content-Type", "application/json");
+  if (request.url.match(/speech-plans\/[a-f0-9]{32}\/alignments/)) {
+    response.end(JSON.stringify({ items: [], next: null }));
+    return;
+  }
+  if (request.url.startsWith("/api/v1/operator/speech-alignments")) {
+    if (request.method === "POST") {
+      let body = "";
+      request.on("data", (c) => (body += c));
+      request.on("end", () => {
+        const payload = JSON.parse(body);
+        adminWrites.push({ operation: request.url, ...payload });
+        if (request.url.endsWith("/review")) {
+          alignmentResult.clips[0].accepted = payload.accepted;
+          alignmentResult.clips[0].words = payload.words;
+          if (alignmentLostReview) {
+            alignmentLostReview = false;
+            response.statusCode = 503;
+            response.end("{}");
+            return;
+          }
+        } else {
+          alignmentResult.id = payload.id;
+          if (alignmentLostImport) {
+            alignmentLostImport = false;
+            response.statusCode = 503;
+            response.end("{}");
+            return;
+          }
+        }
+        response.end(JSON.stringify(alignmentResult));
+      });
+      return;
+    }
+    response.end(JSON.stringify(alignmentResult));
+    return;
+  }
   if (request.url.match(/speech-plans\/[a-f0-9]{32}\/clips$/)) {
     response.end(JSON.stringify({ items: speechClips, configured: true }));
     return;
   }
   if (request.url.startsWith("/api/v1/operator/speech-clips")) {
+    if (request.url.endsWith("/file")) {
+      const bytes = Buffer.alloc(44 + 24000 * 4 * 2);
+      bytes.write("RIFF");
+      bytes.writeUInt32LE(bytes.length - 8, 4);
+      bytes.write("WAVEfmt ", 8);
+      bytes.writeUInt32LE(16, 16);
+      bytes.writeUInt16LE(1, 20);
+      bytes.writeUInt16LE(1, 22);
+      bytes.writeUInt32LE(24000, 24);
+      bytes.writeUInt32LE(48000, 28);
+      bytes.writeUInt16LE(2, 32);
+      bytes.writeUInt16LE(16, 34);
+      bytes.write("data", 36);
+      bytes.writeUInt32LE(bytes.length - 44, 40);
+      response.setHeader("Content-Type", "audio/wav");
+      response.end(bytes);
+      return;
+    }
     if (request.method === "POST") {
       let body = "";
       request.on("data", (chunk) => (body += chunk));
@@ -2990,6 +3054,144 @@ test("course clip batch stops on lost receipt and retries only the same immutabl
     speechPlans = [];
     speechClips = [];
     clipLostReply = false;
+    await browser("cookies", "clear");
+  }
+});
+
+test("speech alignment imports and human corrections preserve exact requests after lost receipts", async () => {
+  accounts = true;
+  operatorAccount = true;
+  adminWrites = [];
+  const planId = "f".repeat(32);
+  const voice = {
+    characterId: lesson.cast[0].characterId,
+    characterRevision: 1,
+    voiceRevision: 1,
+  };
+  speechPlans = [
+    {
+      id: planId,
+      lessonId: lesson.id,
+      lessonRevision: 1,
+      planHash: "a".repeat(64),
+      sourceHash: "b".repeat(64),
+      targets: [],
+      voices: [],
+      selection: { voices: [voice], knowledgeNarrator: voice, emotions: {} },
+      requestCount: 1,
+      totalRequestCharacters: 7,
+      createdAt: null,
+    },
+  ];
+  alignmentResult = {
+    id: "e".repeat(32),
+    planId,
+    planHash: "a".repeat(64),
+    reportHash: "b".repeat(64),
+    createdAt: "2026-10-07T00:00:00Z",
+    clips: [
+      {
+        clipId: "c".repeat(32),
+        generationKey: "d".repeat(64),
+        text: "Bonjour !",
+        durationMs: 4000,
+        issues: ["invalidTimeRange"],
+        words: [
+          { text: "Bonjour", start: 0, end: 7, startMs: null, endMs: null },
+        ],
+        accepted: null,
+      },
+    ],
+  };
+  alignmentLostImport = true;
+  alignmentLostReview = true;
+  async function act(role, name, action = "click", value) {
+    const snap = await browser("snapshot", "-i");
+    const ref = Object.entries(snap.refs).find(
+      ([, r]) => r.role === role && r.name === name,
+    )?.[0];
+    assert.ok(ref, name);
+    await browser(action, "@" + ref, ...(value === undefined ? [] : [value]));
+  }
+  const input = resolve(".local/qa/alignment-browser-input.json");
+  await mkdir(dirname(input), { recursive: true });
+  await writeFile(
+    input,
+    JSON.stringify({
+      test: "Controlled prediction file; real schema tested in PostgreSQL",
+    }),
+  );
+  try {
+    await browser("open", origin + "/");
+    await browser("cookies", "set", "brioche.sid", "shell-a");
+    await browser("set", "viewport", "390", "844");
+    await browser("open", origin + "/admin/speech-alignments?planId=" + planId);
+    await browser("wait", "--text", "导入预测");
+    await act("textbox", "导入理由", "fill", "Controlled import");
+    const snap = await browser("snapshot", "-i");
+    const fileRef = Object.entries(snap.refs).find(
+      ([, r]) => r.name === "对齐结果 JSON",
+    )?.[0];
+    assert.ok(fileRef);
+    await browser("upload", "@" + fileRef, input);
+    await act("button", "导入预测");
+    await browser("wait", "--text", "核对同一导入请求");
+    await act("button", "核对同一导入请求");
+    await browser("wait", "--text", "逐片段核对");
+    assert.deepEqual(adminWrites[0], adminWrites[1]);
+    await act("textbox", "核对理由", "fill", "Controlled correction");
+    await act("checkbox", "我已实际试听这个片段", "check");
+    await act("checkbox", "我已核对逐词时间", "check");
+    await act("button", "确认时间轴");
+    await browser(
+      "wait",
+      "--text",
+      "请填写完整、依次排列且不超出录音的单词时间。",
+    );
+    assert.equal(adminWrites.length, 2);
+    await act("spinbutton", "Bonjour 起点（毫秒）", "fill", "80");
+    await act("spinbutton", "Bonjour 终点（毫秒）", "fill", "600");
+    await act("button", "确认时间轴");
+    await browser("wait", "--text", "核对同一审核请求");
+    await act("button", "核对同一审核请求");
+    await browser("wait", "--text", "时间轴已核对通过");
+    assert.deepEqual(adminWrites[2], adminWrites[3]);
+    assert.equal(adminWrites[2].words[0].startMs, 80);
+    await evaluate(
+      "window.__timelineAudio = []; window.__originalAudio = window.Audio; window.Audio = class extends window.__originalAudio { constructor(...args) { super(...args); window.__timelineAudio.push(this); } }",
+    );
+    await act("button", "试听整句");
+    await browser(
+      "wait",
+      "--fn",
+      "parseFloat(document.querySelector('.recording-preview-track > span')?.style.width)>0",
+    );
+    await act("button", "Bonjour");
+    await browser(
+      "wait",
+      "--fn",
+      "window.__timelineAudio.at(-1).paused && window.__timelineAudio.at(-1).currentTime >= 0.6",
+    );
+    assert.ok(
+      await evaluate("window.__timelineAudio.at(-1).currentTime < 0.9"),
+    );
+    await evaluate("window.Audio = window.__originalAudio");
+    for (const width of [320, 390, 678]) {
+      await browser("set", "viewport", String(width), "844");
+      assert.equal(
+        await evaluate("document.documentElement.scrollWidth<=innerWidth"),
+        true,
+      );
+    }
+    assert.deepEqual((await browser("errors")).errors, []);
+    assert.equal(serverErrors.length, 0);
+  } finally {
+    accounts = false;
+    operatorAccount = false;
+    speechPlans = [];
+    alignmentResult = null;
+    alignmentLostImport = false;
+    alignmentLostReview = false;
     await browser("cookies", "clear");
   }
 });

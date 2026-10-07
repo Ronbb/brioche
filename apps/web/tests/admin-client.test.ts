@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { adminWrite } from "../app/lib/admin.client.ts";
+import { adminWrite, AdminWriteError } from "../app/lib/admin.client.ts";
 test("canceled admin writes cannot issue a token after late CSRF bootstrap", async () => {
   const original = globalThis.fetch;
   const controller = new AbortController();
@@ -29,6 +29,37 @@ test("canceled admin writes cannot issue a token after late CSRF bootstrap", asy
       name: "AbortError",
     });
     assert.equal(paths.length, 1);
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+
+test("only a rejected write supplies a definite validation status", async () => {
+  const original = globalThis.fetch;
+  try {
+    let calls = 0;
+    globalThis.fetch = async () => {
+      calls++;
+      return new Response(null, { status: 400 });
+    };
+    await assert.rejects(adminWrite("speech-alignments", {}), (error) => {
+      assert.ok(error instanceof Error);
+      assert.equal(error instanceof AdminWriteError, false);
+      return true;
+    });
+    assert.equal(calls, 1);
+    globalThis.fetch = async (input) => {
+      calls++;
+      return String(input).endsWith("/csrf")
+        ? new Response(JSON.stringify({ csrfToken: "controlled" }))
+        : new Response(null, { status: 422 });
+    };
+    await assert.rejects(adminWrite("speech-alignments", {}), (error) => {
+      assert.ok(error instanceof AdminWriteError);
+      assert.equal(error.status, 422);
+      return true;
+    });
+    assert.equal(calls, 3);
   } finally {
     globalThis.fetch = original;
   }

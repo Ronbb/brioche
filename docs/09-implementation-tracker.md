@@ -403,3 +403,7 @@ pre-course-speech-clips-20261007数据库+5媒体backup/verify完成。API镜像
 
 
 2026-10-07：本机离线alignment工具接入私有TAR，固定模型revision/文件SHA、Windows CPU全依赖版本；清单及19请求Rust哈希交叉核对、原始/修复WAV配对/PCM解码、词scalar范围、成员边界完整验证，保留原始预测，异常不修复、不伪造人工审核。13项标准库用例加入CI。实际8段旧试听+明确测试清单完成离线预测，零结构/范围问题但reviewRequired；不等于实际生产审听或准确时间轴证明。工具/模型不加入生产镜像，未计费/改账号/发布。正式后端时间轴接收/审查、录音包组装与新课程release仍待实现，目标active。
+
+2026-10-07：私有时间轴接收与逐片段核对后台已实现。固定计划入口、JSON导入/摘要分页、整句与逐词播放、人工毫秒修订/接受/退回、精确失联重试与离页保护接入。服务端核对实际导出包SHA/最新审听片段/完整计划和原文，保存不可变原预测与真实actor决定；不调用TTS、不自动登记或发布。最终隔离PG后台4项/完整迁移上下、Rust工作区常规/Clippy/fmt、25Web/28SSR/TS7/build/格式通过。最终新页Chromium定向49.62秒通过，包含真实受控PCM播放/逐词终点、导入与审核丢回执精确重试和320/390/678px无溢出；其余SSR浏览器未重跑，不冒充真实iPhone/法语审听。首次浏览器工具启动超时后确认终态，检查并关闭本用例会话再运行通过；首次前端错误类型使用Node strip不支持的TS参数属性，改为普通字段并复验。Docker部署结果另记。首六课实际正式语音、录音包组装与新release及其他后台/运维/设备缺口继续，完整目标active。
+
+时间轴核对部署收尾（2026-10-07）：最终补丁保留等待期间按钮焦点，防重复提交仍由同步锁控制；TS7/build/28SSR/格式及新页最终Chromium48.99秒复验通过。pre-speech-alignments-20261007数据库+5媒体backup/verify完成。server/web重建并以HTTPS+TTS覆盖实际up--wait，迁移24/四长期服务healthy，两HTTPS巡检healthy；新page/list/detail匿名401且private/no-store。Traefik无宿主映射，30075零监听；生产只读音频0/试听0/声音2/published6/generation1/计划0/片段0/对齐0/对齐决定0。没有真实计费生成、人工审核或课程发布；专用PG容器及匿名卷已删除，全部本轮命令已终态。API镜像3d131a328a29bba08428fb7c728f8397514ff32a086ed37f04540041e730a659、Web73dd8b7dcbb8dc7b02d64cf9d50a4986fde3fb999dede7654c3ff6c8971b457d。完整目标active，正式录音组装/登记/新release和剩余后台/运维/设备验收仍待完成；独立gateway和开发服务未改。

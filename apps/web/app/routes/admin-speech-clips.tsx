@@ -301,6 +301,12 @@ export default function SpeechClips({
       <p>
         {plan.lessonId} · v{plan.lessonRevision} · {targets.length} 个独立片段
       </p>
+      <Link
+        className="text-button"
+        to={`/admin/speech-alignments?planId=${plan.id}`}
+      >
+        逐词时间轴核对
+      </Link>
       <p>
         生成使用本计划固定的角色声音和情绪。已有有效音频会复用；未确认的任务需要单独核对。
       </p>

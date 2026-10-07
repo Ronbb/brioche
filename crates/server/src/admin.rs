@@ -27,6 +27,7 @@ pub fn router(root: std::path::PathBuf) -> Router<Backend> {
         .merge(crate::admin_speech_plans::router())
         .merge(crate::speech_clips::router())
         .merge(crate::speech_export::router())
+        .merge(crate::speech_alignments::router())
         .route("/api/v1/operator/overview", get(overview))
         .route("/api/v1/operator/history", get(history))
         .route("/api/v1/operator/accounts", get(accounts))
@@ -491,6 +492,10 @@ async fn history(
             SELECT 'account:'||id, CASE WHEN action='invite' AND details->>'role'='operator' THEN 'inviteOperator' ELSE action END, target_email, 'user:'||actor_id, reason, created_at FROM account_admin_audit
             UNION ALL
             SELECT 'voice:'||character_id||':'||character_revision||':'||revision, 'voiceProfile', character_id||' v'||character_revision||' / voice v'||revision, 'user:'||actor_id, reason, created_at FROM character_voice_profiles
+            UNION ALL
+            SELECT 'alignment:'||id,'alignmentImport',id,'user:'||actor_id,reason,created_at FROM speech_alignments
+            UNION ALL
+            SELECT 'alignmentReview:'||alignment_id||':'||clip_id,CASE WHEN accepted THEN 'alignmentAccepted' ELSE 'alignmentRejected' END,alignment_id||':'||clip_id,'user:'||actor_id,reason,created_at FROM speech_alignment_reviews
             UNION ALL
             SELECT 'speechClip:'||id, 'speechClip', id, 'user:'||actor_id, reason, created_at FROM course_speech_clips
             UNION ALL
