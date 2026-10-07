@@ -1,0 +1,1665 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-cafe-lunch",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-077c5f0540df8873adae1b4683a36a883916a36f6e1ab939fec0eb5f959308c8",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "0b59af1cb6fbcda9d6d6f3c197ec27ad394b5ca086cf4e83428904c5bb633c10",
+      "url": "/api/audio/0b59af1cb6fbcda9d6d6f3c197ec27ad394b5ca086cf4e83428904c5bb633c10.wav"
+    },
+    {
+      "assetId": "speech-1c5f268a6a57d6319fc18fb177635c5e7fe56aff07cbda3a22e100676417129e",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "f2ad328aebe16c90f8c91d4632be428537df8ab695a60dc9e180d266f56f60a7",
+      "url": "/api/audio/f2ad328aebe16c90f8c91d4632be428537df8ab695a60dc9e180d266f56f60a7.wav"
+    },
+    {
+      "assetId": "speech-4495a30e3a9c4a49f9b9cac8f571d269789c3006eabb6d648e453b34cb11771d",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "9925c18f233162a2f80075d02fe6367be0637ae42e7b2113e5bc16865aa667da",
+      "url": "/api/audio/9925c18f233162a2f80075d02fe6367be0637ae42e7b2113e5bc16865aa667da.wav"
+    },
+    {
+      "assetId": "speech-46cfe475d78b0037063866cb9f6ea682ca71353a6420737a302e56fed9ead717",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1280,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "0738a62c132a8e844a99030c87db839671c20914235b2f2ee5a086bc5f38468d",
+      "url": "/api/audio/0738a62c132a8e844a99030c87db839671c20914235b2f2ee5a086bc5f38468d.wav"
+    },
+    {
+      "assetId": "speech-698c6efafa8f2e0e8682d7365c5c05a7d9538d27e783ae6f3b32c581bc68ae15",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 560,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "fc983f13154c5d5398bd99e4acfaf94009150157316820fbdd2c7bdad08e1178",
+      "url": "/api/audio/fc983f13154c5d5398bd99e4acfaf94009150157316820fbdd2c7bdad08e1178.wav"
+    },
+    {
+      "assetId": "speech-999aa92aaf873b6709cb3421337519a37bfae52e59c6973a4937d18c7f12f472",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "a3847477e957e7e1a81a2e4382bc25fe95c11dbeea10c3117118995f415a607d",
+      "url": "/api/audio/a3847477e957e7e1a81a2e4382bc25fe95c11dbeea10c3117118995f415a607d.wav"
+    },
+    {
+      "assetId": "speech-9d7a10f219b0821ae3a1fa11b4ae7809e03779f88ee8175421e0004cc7b1ed24",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 560,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "5871bba674c77082d96c98b9558128df213bdb254e1e6166ca76c09080926156",
+      "url": "/api/audio/5871bba674c77082d96c98b9558128df213bdb254e1e6166ca76c09080926156.wav"
+    },
+    {
+      "assetId": "speech-a6e730494a32841e7d476130fdb41ee3f522e5e6c2b910b8d54669b5925bf895",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 960,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "f62d0a13e0e3bae49fce6ce856cdef80911064f276fe0f059a5b3faebfa24bbe",
+      "url": "/api/audio/f62d0a13e0e3bae49fce6ce856cdef80911064f276fe0f059a5b3faebfa24bbe.wav"
+    },
+    {
+      "assetId": "speech-baf0bad2ac7ad55465f9f20b43aa57f58fc1ef3f463a44e8d4f0894dcc97f7c8",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 2400,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "1a45cf10e56b9ef86e0d04247de6f3151d95736d2aeeed30f0a60ff7d5578b7b",
+      "url": "/api/audio/1a45cf10e56b9ef86e0d04247de6f3151d95736d2aeeed30f0a60ff7d5578b7b.wav"
+    },
+    {
+      "assetId": "speech-cf2bd04f1154a748005120e78947ff617aed1612fef2ddee17113f5e69f54571",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "78129b4d945d508071001ae96f643fcc575ff01ea5fe3383061de21909271a07",
+      "url": "/api/audio/78129b4d945d508071001ae96f643fcc575ff01ea5fe3383061de21909271a07.wav"
+    },
+    {
+      "assetId": "speech-dc27204629c606f4bf3e4eab825bfad9c1a57f3e2ee6b10937867cbac0b43abb",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 18230,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "863fb92fe0925b541250a14bedfe8eebe63b3fe71c0e8c1acf6f52b86dbc5320",
+      "url": "/api/audio/863fb92fe0925b541250a14bedfe8eebe63b3fe71c0e8c1acf6f52b86dbc5320.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-077c5f0540df8873adae1b4683a36a883916a36f6e1ab939fec0eb5f959308c8",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-1c5f268a6a57d6319fc18fb177635c5e7fe56aff07cbda3a22e100676417129e",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-4495a30e3a9c4a49f9b9cac8f571d269789c3006eabb6d648e453b34cb11771d",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-46cfe475d78b0037063866cb9f6ea682ca71353a6420737a302e56fed9ead717",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-698c6efafa8f2e0e8682d7365c5c05a7d9538d27e783ae6f3b32c581bc68ae15",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-999aa92aaf873b6709cb3421337519a37bfae52e59c6973a4937d18c7f12f472",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-9d7a10f219b0821ae3a1fa11b4ae7809e03779f88ee8175421e0004cc7b1ed24",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-a6e730494a32841e7d476130fdb41ee3f522e5e6c2b910b8d54669b5925bf895",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-baf0bad2ac7ad55465f9f20b43aa57f58fc1ef3f463a44e8d4f0894dcc97f7c8",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-cf2bd04f1154a748005120e78947ff617aed1612fef2ddee17113f5e69f54571",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-dc27204629c606f4bf3e4eab825bfad9c1a57f3e2ee6b10937867cbac0b43abb",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-dc27204629c606f4bf3e4eab825bfad9c1a57f3e2ee6b10937867cbac0b43abb",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 2800,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 1360,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1120,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 880,
+          "wordRange": {
+            "end": 12,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 1360,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 1120,
+          "wordRange": {
+            "end": 18,
+            "start": 13
+          }
+        },
+        {
+          "endMs": 1520,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 1360,
+          "wordRange": null
+        },
+        {
+          "endMs": 1520,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 1360,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1680,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 1520,
+          "wordRange": null
+        },
+        {
+          "endMs": 1680,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 1520,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 2080,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 1680,
+          "wordRange": null
+        },
+        {
+          "endMs": 2080,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 1680,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-5",
+          "startMs": 2080,
+          "wordRange": null
+        },
+        {
+          "endMs": 2240,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-5",
+          "startMs": 2080,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 2400,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-5",
+          "startMs": 2240,
+          "wordRange": {
+            "end": 11,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 2640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-5",
+          "startMs": 2400,
+          "wordRange": {
+            "end": 17,
+            "start": 12
+          }
+        },
+        {
+          "endMs": 5290,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 3050,
+          "wordRange": null
+        },
+        {
+          "endMs": 4570,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 3130,
+          "wordRange": null
+        },
+        {
+          "endMs": 3850,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 3130,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4490,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 4090,
+          "wordRange": {
+            "end": 14,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 4570,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 4490,
+          "wordRange": {
+            "end": 17,
+            "start": 15
+          }
+        },
+        {
+          "endMs": 5130,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 4570,
+          "wordRange": null
+        },
+        {
+          "endMs": 5130,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 4570,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8980,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 5540,
+          "wordRange": null
+        },
+        {
+          "endMs": 5940,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 5620,
+          "wordRange": null
+        },
+        {
+          "endMs": 5940,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 5620,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6100,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 5940,
+          "wordRange": null
+        },
+        {
+          "endMs": 6100,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 5940,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 6660,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 6100,
+          "wordRange": null
+        },
+        {
+          "endMs": 6660,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 6100,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7620,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 6980,
+          "wordRange": null
+        },
+        {
+          "endMs": 7220,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 6980,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 7460,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 7220,
+          "wordRange": {
+            "end": 11,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 7620,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 7460,
+          "wordRange": {
+            "end": 14,
+            "start": 12
+          }
+        },
+        {
+          "endMs": 7940,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 7620,
+          "wordRange": null
+        },
+        {
+          "endMs": 7940,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-5",
+          "startMs": 7620,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8340,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-6",
+          "startMs": 8020,
+          "wordRange": null
+        },
+        {
+          "endMs": 8260,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-6",
+          "startMs": 8020,
+          "wordRange": {
+            "end": 5,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 8340,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-6",
+          "startMs": 8260,
+          "wordRange": {
+            "end": 9,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 8660,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-7",
+          "startMs": 8340,
+          "wordRange": null
+        },
+        {
+          "endMs": 8660,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-7",
+          "startMs": 8340,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 12430,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 9230,
+          "wordRange": null
+        },
+        {
+          "endMs": 10430,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 9230,
+          "wordRange": null
+        },
+        {
+          "endMs": 9550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 9230,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10110,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 9950,
+          "wordRange": {
+            "end": 9,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 10350,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 10110,
+          "wordRange": {
+            "end": 15,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 10430,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 10350,
+          "wordRange": {
+            "end": 19,
+            "start": 16
+          }
+        },
+        {
+          "endMs": 10830,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 10430,
+          "wordRange": null
+        },
+        {
+          "endMs": 10830,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 10430,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10910,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 10830,
+          "wordRange": null
+        },
+        {
+          "endMs": 10910,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 10830,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 11470,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 10910,
+          "wordRange": null
+        },
+        {
+          "endMs": 11470,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 10910,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11710,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 11470,
+          "wordRange": null
+        },
+        {
+          "endMs": 11550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 11470,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 11710,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 11550,
+          "wordRange": {
+            "end": 7,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 12270,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-6",
+          "startMs": 11710,
+          "wordRange": null
+        },
+        {
+          "endMs": 12270,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-6",
+          "startMs": 11710,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 14360,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 12680,
+          "wordRange": null
+        },
+        {
+          "endMs": 13320,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 12760,
+          "wordRange": null
+        },
+        {
+          "endMs": 12840,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 12760,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 13160,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 12840,
+          "wordRange": {
+            "end": 11,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 13320,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 13160,
+          "wordRange": {
+            "end": 15,
+            "start": 12
+          }
+        },
+        {
+          "endMs": 13640,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 13320,
+          "wordRange": null
+        },
+        {
+          "endMs": 13640,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 13320,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 14120,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 13640,
+          "wordRange": null
+        },
+        {
+          "endMs": 13720,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 13640,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 13880,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 13720,
+          "wordRange": {
+            "end": 6,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 14120,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 13880,
+          "wordRange": {
+            "end": 11,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 15650,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 14610,
+          "wordRange": null
+        },
+        {
+          "endMs": 15010,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 14690,
+          "wordRange": null
+        },
+        {
+          "endMs": 14770,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 14690,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 15010,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 14770,
+          "wordRange": {
+            "end": 8,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 15490,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 15010,
+          "wordRange": null
+        },
+        {
+          "endMs": 15490,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 15010,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 17420,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 15900,
+          "wordRange": null
+        },
+        {
+          "endMs": 16220,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 15980,
+          "wordRange": null
+        },
+        {
+          "endMs": 16220,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 15980,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 16460,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-2",
+          "startMs": 16220,
+          "wordRange": null
+        },
+        {
+          "endMs": 16460,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-2",
+          "startMs": 16220,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 17180,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-3",
+          "startMs": 16460,
+          "wordRange": null
+        },
+        {
+          "endMs": 16700,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-3",
+          "startMs": 16460,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 16860,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-3",
+          "startMs": 16700,
+          "wordRange": {
+            "end": 11,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 17180,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-3",
+          "startMs": 16860,
+          "wordRange": {
+            "end": 17,
+            "start": 12
+          }
+        },
+        {
+          "endMs": 18230,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 17670,
+          "wordRange": null
+        },
+        {
+          "endMs": 17990,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 17670,
+          "wordRange": null
+        },
+        {
+          "endMs": 17830,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 17670,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 17990,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 17830,
+          "wordRange": {
+            "end": 9,
+            "start": 5
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-cafe-lunch",
+      "placeZh": "虚构餐馆的午餐服务",
+      "situationZh": "说明用餐人数，表达对蔬菜的喜好，并选择餐点和饮品。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-1",
+          "labelZh": "顾客"
+        },
+        {
+          "avatarId": "avatar-luc-v1",
+          "characterId": "character-luc",
+          "displayName": "Luc",
+          "id": "speaker-2",
+          "labelZh": "餐馆服务员"
+        }
+      ],
+      "titleZh": "看菜单并点餐",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Bonjour. Une table "
+            },
+            {
+              "grammarId": "grammar-table-pour",
+              "id": "segment-1-2",
+              "text": "pour"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " une "
+            },
+            {
+              "id": "segment-1-4",
+              "text": "personne",
+              "vocabularyId": "word-personne"
+            },
+            {
+              "id": "segment-1-5",
+              "text": ", s’il vous plaît."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "您好。请给我一张一人用餐的桌子。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Bonjour. Voici la "
+            },
+            {
+              "id": "segment-2-2",
+              "text": "carte",
+              "vocabularyId": "word-menu-carte"
+            },
+            {
+              "id": "segment-2-3",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "您好。这是菜单。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "grammarId": "grammar-aimer-food",
+              "id": "segment-3-1",
+              "text": "J’aime"
+            },
+            {
+              "id": "segment-3-2",
+              "text": " les "
+            },
+            {
+              "id": "segment-3-3",
+              "text": "légumes",
+              "vocabularyId": "word-legume"
+            },
+            {
+              "id": "segment-3-4",
+              "text": ". Vous avez un "
+            },
+            {
+              "id": "segment-3-5",
+              "text": "plat",
+              "vocabularyId": "word-plat"
+            },
+            {
+              "id": "segment-3-6",
+              "text": " avec des "
+            },
+            {
+              "id": "segment-3-7",
+              "text": "légumes",
+              "vocabularyId": "word-legume"
+            },
+            {
+              "id": "segment-3-8",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "我喜欢蔬菜。你们有蔬菜做的菜吗？"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Oui, nous avons une "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "soupe",
+              "vocabularyId": "word-soupe"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " de "
+            },
+            {
+              "id": "segment-4-4",
+              "text": "légumes",
+              "vocabularyId": "word-legume"
+            },
+            {
+              "id": "segment-4-5",
+              "text": " et une "
+            },
+            {
+              "id": "segment-4-6",
+              "text": "salade",
+              "vocabularyId": "word-salade"
+            },
+            {
+              "id": "segment-4-7",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "有，我们有蔬菜汤和沙拉。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Je voudrais une "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "salade",
+              "vocabularyId": "word-salade"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " et du pain."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "我想要一份沙拉和一些面包。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Et comme "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "boisson",
+              "vocabularyId": "word-boisson"
+            },
+            {
+              "id": "segment-6-3",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "那饮品呢？"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "De "
+            },
+            {
+              "id": "segment-7-2",
+              "text": "l’eau",
+              "vocabularyId": "word-eau"
+            },
+            {
+              "id": "segment-7-3",
+              "text": ", s’il vous plaît."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "请给我一些水。"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "Très bien."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "好的。"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "pour une personne 说明一人用餐。这里的 la carte 是菜单；J’aime les légumes 表达对蔬菜的喜好，后面接定冠词 les。Et comme boisson ? 在点餐中询问饮品。de l’eau 是不指定精确数量的水；eau 以元音开头。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "餐馆菜品与服务过程是本课设定；不推断所有餐馆的菜单、配菜、供水或收费方式。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-menu-carte",
+        "word-personne",
+        "word-legume",
+        "word-plat",
+        "word-salade",
+        "word-soupe",
+        "word-boisson",
+        "word-eau"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-table-pour",
+        "grammar-aimer-food"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "蔬菜汤"
+        },
+        {
+          "id": "correct",
+          "text": "沙拉"
+        },
+        {
+          "id": "distractor-b",
+          "text": "对话没有提到"
+        }
+      ],
+      "promptZh": "顾客最后选择了哪道菜？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "pour 后面接用餐人数。",
+      "id": "exercise-fill",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Une table ___ une personne, s’il vous plaît.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "et du pain."
+        },
+        {
+          "id": "token-1",
+          "text": "Je voudrais"
+        },
+        {
+          "id": "token-2",
+          "text": "une salade"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。",
+      "id": "habit-main",
+      "taskZh": "用 Une table pour… 说明虚构的用餐人数，再选择一道餐点。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能说明用餐人数。",
+        "我能表达食物喜好。",
+        "我能从菜单信息选择餐点。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-luc-v1",
+      "characterId": "character-luc",
+      "displayName": "Luc",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner authorized direct publication; exact existing PCM and actual fixed-model predictions reused after whole-word annotation repair, with no new synthesis or human hearing asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-food-order-lunch",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "Une table pour une personne 用来说明一人用餐。pour 后接人数；两个人可说 pour deux personnes。personne 在这个搭配中是“人”，不是否定代词。",
+        "examples": [
+          {
+            "fr": "Une table pour une personne, s’il vous plaît.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-baf0bad2ac7ad55465f9f20b43aa57f58fc1ef3f463a44e8d4f0894dcc97f7c8",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 2400,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "1a45cf10e56b9ef86e0d04247de6f3151d95736d2aeeed30f0a60ff7d5578b7b",
+                "url": "/api/audio/1a45cf10e56b9ef86e0d04247de6f3151d95736d2aeeed30f0a60ff7d5578b7b.wav"
+              },
+              "endMs": 2400,
+              "startMs": 0
+            },
+            "zh": "请给我一张一人用餐的桌子。"
+          }
+        ],
+        "id": "grammar-table-pour",
+        "titleZh": "pour + 人数：说明用餐人数"
+      },
+      {
+        "bodyZh": "泛指喜欢某种食物时，本课使用定冠词：J’aime les légumes、elle aime les tomates。je 在元音前省音为 j’，写 j’aime；否定时写 je n’aime pas，保留后面的定冠词。",
+        "examples": [
+          {
+            "fr": "J’aime les légumes.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-46cfe475d78b0037063866cb9f6ea682ca71353a6420737a302e56fed9ead717",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1280,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "0738a62c132a8e844a99030c87db839671c20914235b2f2ee5a086bc5f38468d",
+                "url": "/api/audio/0738a62c132a8e844a99030c87db839671c20914235b2f2ee5a086bc5f38468d.wav"
+              },
+              "endMs": 1280,
+              "startMs": 0
+            },
+            "zh": "我喜欢蔬菜。"
+          }
+        ],
+        "id": "grammar-aimer-food",
+        "titleZh": "aimer + 定冠词：表达食物喜好"
+      }
+    ],
+    "vocabulary": [
+      {
+        "gender": "feminine",
+        "id": "word-menu-carte",
+        "lemma": "carte",
+        "meaningZh": "菜单",
+        "noteZh": "在餐馆场景中 la carte 指菜单，区别于银行卡。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-4495a30e3a9c4a49f9b9cac8f571d269789c3006eabb6d648e453b34cb11771d",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "9925c18f233162a2f80075d02fe6367be0637ae42e7b2113e5bc16865aa667da",
+            "url": "/api/audio/9925c18f233162a2f80075d02fe6367be0637ae42e7b2113e5bc16865aa667da.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-personne",
+        "lemma": "personne",
+        "meaningZh": "人",
+        "noteZh": "une personne 表示一个人；两个人为 deux personnes。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-a6e730494a32841e7d476130fdb41ee3f522e5e6c2b910b8d54669b5925bf895",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 960,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "f62d0a13e0e3bae49fce6ce856cdef80911064f276fe0f059a5b3faebfa24bbe",
+            "url": "/api/audio/f62d0a13e0e3bae49fce6ce856cdef80911064f276fe0f059a5b3faebfa24bbe.wav"
+          },
+          "endMs": 960,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-legume",
+        "lemma": "légume",
+        "meaningZh": "蔬菜",
+        "noteZh": "复数 légumes；les légumes 泛指蔬菜。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-cf2bd04f1154a748005120e78947ff617aed1612fef2ddee17113f5e69f54571",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "78129b4d945d508071001ae96f643fcc575ff01ea5fe3383061de21909271a07",
+            "url": "/api/audio/78129b4d945d508071001ae96f643fcc575ff01ea5fe3383061de21909271a07.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-plat",
+        "lemma": "plat",
+        "meaningZh": "菜肴；一道菜",
+        "noteZh": "plat 的单数形式；搭配冠词学习。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-698c6efafa8f2e0e8682d7365c5c05a7d9538d27e783ae6f3b32c581bc68ae15",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 560,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "fc983f13154c5d5398bd99e4acfaf94009150157316820fbdd2c7bdad08e1178",
+            "url": "/api/audio/fc983f13154c5d5398bd99e4acfaf94009150157316820fbdd2c7bdad08e1178.wav"
+          },
+          "endMs": 560,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-salade",
+        "lemma": "salade",
+        "meaningZh": "沙拉",
+        "noteZh": "salade 的单数形式；搭配冠词学习。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-1c5f268a6a57d6319fc18fb177635c5e7fe56aff07cbda3a22e100676417129e",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "f2ad328aebe16c90f8c91d4632be428537df8ab695a60dc9e180d266f56f60a7",
+            "url": "/api/audio/f2ad328aebe16c90f8c91d4632be428537df8ab695a60dc9e180d266f56f60a7.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-soupe",
+        "lemma": "soupe",
+        "meaningZh": "汤",
+        "noteZh": "soupe 的单数形式；搭配冠词学习。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-999aa92aaf873b6709cb3421337519a37bfae52e59c6973a4937d18c7f12f472",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "a3847477e957e7e1a81a2e4382bc25fe95c11dbeea10c3117118995f415a607d",
+            "url": "/api/audio/a3847477e957e7e1a81a2e4382bc25fe95c11dbeea10c3117118995f415a607d.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-boisson",
+        "lemma": "boisson",
+        "meaningZh": "饮品",
+        "noteZh": "boisson 的单数形式；搭配冠词学习。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-077c5f0540df8873adae1b4683a36a883916a36f6e1ab939fec0eb5f959308c8",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "0b59af1cb6fbcda9d6d6f3c197ec27ad394b5ca086cf4e83428904c5bb633c10",
+            "url": "/api/audio/0b59af1cb6fbcda9d6d6f3c197ec27ad394b5ca086cf4e83428904c5bb633c10.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-eau",
+        "lemma": "eau",
+        "meaningZh": "水",
+        "noteZh": "l’eau；une bouteille d’eau 表示一瓶水。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-9d7a10f219b0821ae3a1fa11b4ae7809e03779f88ee8175421e0004cc7b1ed24",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 560,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "5871bba674c77082d96c98b9558128df213bdb254e1e6166ca76c09080926156",
+            "url": "/api/audio/5871bba674c77082d96c98b9558128df213bdb254e1e6166ca76c09080926156.wav"
+          },
+          "endMs": 560,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "虚构餐馆桌上的沙拉、汤、水杯和菜单",
+      "assetId": "art-cafe-lunch",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "374a0e0606bc2048aadba21775822d182d58754834e0b7c4fb3d98d932292dd5",
+      "url": "/api/media/374a0e0606bc2048aadba21775822d182d58754834e0b7c4fb3d98d932292dd5.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Luc 的头像",
+      "assetId": "avatar-luc-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b",
+      "url": "/api/media/75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "说明用餐人数",
+    "表达食物喜好",
+    "从菜单信息选择餐点"
+  ],
+  "reviewItemIds": [
+    "word-menu-carte",
+    "word-salade",
+    "word-boisson"
+  ],
+  "revision": 3,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：沙拉。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "pour"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "pour 后面接用餐人数。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Je voudrais une salade et du pain.",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "说明用餐人数，表达对蔬菜的喜好，并选择餐点和饮品。",
+  "title": {
+    "fr": "Une salade, s’il vous plaît",
+    "zh": "看菜单并点餐"
+  },
+  "unitId": "a1-food-shopping"
+}

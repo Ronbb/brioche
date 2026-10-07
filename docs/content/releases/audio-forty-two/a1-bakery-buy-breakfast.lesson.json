@@ -1,0 +1,1541 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-bakery-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-luc-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-0cd3270b0043a294aedaeb977581acc6d24d9c766d5713d33c116af66ad4142c",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f",
+      "url": "/api/audio/8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f.wav"
+    },
+    {
+      "assetId": "speech-52c8ff1230ca5b2bccb9213b4481365e71960e854edf24ac71124c4c4eeaf95f",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "d15ca4fb15ea3110bae378bb0f5b757321e65fa99b2e304460b9fdcc4829290a",
+      "url": "/api/audio/d15ca4fb15ea3110bae378bb0f5b757321e65fa99b2e304460b9fdcc4829290a.wav"
+    },
+    {
+      "assetId": "speech-62a182bf3557946bcec663241cc2f68cf54cc21b41aa092e3da0e59090edc6f3",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1120,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "ca3c81523ad8217341be8a9b92b1be88aeb408b27ca475ba34f5146573260100",
+      "url": "/api/audio/ca3c81523ad8217341be8a9b92b1be88aeb408b27ca475ba34f5146573260100.wav"
+    },
+    {
+      "assetId": "speech-67b93e5abd330c2b2d844e8acf65c553075f3d081d8f3dd72d52af5e484e39fd",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 11670,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "8bee512b6d22bda19d5e86b452bf4d912f49d34ce7bf97ac25a56d4b09979df1",
+      "url": "/api/audio/8bee512b6d22bda19d5e86b452bf4d912f49d34ce7bf97ac25a56d4b09979df1.wav"
+    },
+    {
+      "assetId": "speech-8d162983fc6e01fc0034a54c01e058a3ea06afedfad90023395765372460ae42",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "693e2f0f789fdc1e16409f47061cf5036956f81691788276eda73cf8fd0bb13b",
+      "url": "/api/audio/693e2f0f789fdc1e16409f47061cf5036956f81691788276eda73cf8fd0bb13b.wav"
+    },
+    {
+      "assetId": "speech-b73b8bf8b16f06231e6339076f21953a8e60482c5e06e6f0679df2c8520e16ff",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "bf2528f9360391b0164a54c1a154a2a2b61155d3bd8e77703c9727e9bbdd74d5",
+      "url": "/api/audio/bf2528f9360391b0164a54c1a154a2a2b61155d3bd8e77703c9727e9bbdd74d5.wav"
+    },
+    {
+      "assetId": "speech-bdd03cf58d2d2cf93f9c20962333fa701f659603823b9c86d1ecab64c9498923",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426",
+      "url": "/api/audio/6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426.wav"
+    },
+    {
+      "assetId": "speech-c57dec644ca3b1a02feb15b5c31a347cfd4dc3da6854c9b417843370c733126d",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "b166e4ff080b3c1fb36b35eeffcd73a209098760e9fd2edbaf4298d552411ae9",
+      "url": "/api/audio/b166e4ff080b3c1fb36b35eeffcd73a209098760e9fd2edbaf4298d552411ae9.wav"
+    },
+    {
+      "assetId": "speech-dac8d47660d151ae887bc5d8011e29ef98dfc742b5308c17e1557af49ea56d85",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "39e7ca2f9acf0f4ec809c3fdbf89c01b4ce7e30a80c4a116fcf0e4ff9edb9e57",
+      "url": "/api/audio/39e7ca2f9acf0f4ec809c3fdbf89c01b4ce7e30a80c4a116fcf0e4ff9edb9e57.wav"
+    },
+    {
+      "assetId": "speech-eeebab1ebbdd167bccd4996a9ff2a8baa0a2123154bdceb885eaf22b8bf2b122",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 7620,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "f0473206b7b4ddf6c0bee909174bc016112c9dc9a84e1a1b5205129226770fb9",
+      "url": "/api/audio/f0473206b7b4ddf6c0bee909174bc016112c9dc9a84e1a1b5205129226770fb9.wav"
+    },
+    {
+      "assetId": "speech-f8b07c281aabc03f93cf4301be9af36d18c32b5253e8b0a2c51272e161bd3d53",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1840,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "10dff182cbb6bf95b6be8d5c6c8797a9c6c6714e8dae85166b979a183a6da7c0",
+      "url": "/api/audio/10dff182cbb6bf95b6be8d5c6c8797a9c6c6714e8dae85166b979a183a6da7c0.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-0cd3270b0043a294aedaeb977581acc6d24d9c766d5713d33c116af66ad4142c",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-52c8ff1230ca5b2bccb9213b4481365e71960e854edf24ac71124c4c4eeaf95f",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-62a182bf3557946bcec663241cc2f68cf54cc21b41aa092e3da0e59090edc6f3",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-67b93e5abd330c2b2d844e8acf65c553075f3d081d8f3dd72d52af5e484e39fd",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-8d162983fc6e01fc0034a54c01e058a3ea06afedfad90023395765372460ae42",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-b73b8bf8b16f06231e6339076f21953a8e60482c5e06e6f0679df2c8520e16ff",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-bdd03cf58d2d2cf93f9c20962333fa701f659603823b9c86d1ecab64c9498923",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-c57dec644ca3b1a02feb15b5c31a347cfd4dc3da6854c9b417843370c733126d",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-dac8d47660d151ae887bc5d8011e29ef98dfc742b5308c17e1557af49ea56d85",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-eeebab1ebbdd167bccd4996a9ff2a8baa0a2123154bdceb885eaf22b8bf2b122",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-f8b07c281aabc03f93cf4301be9af36d18c32b5253e8b0a2c51272e161bd3d53",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-67b93e5abd330c2b2d844e8acf65c553075f3d081d8f3dd72d52af5e484e39fd",
+      "blockId": "dialogue-buy-bread",
+      "cues": [
+        {
+          "endMs": 720,
+          "entryId": "turn-greeting",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 400,
+          "entryId": "turn-greeting",
+          "segmentId": "seg-bonjour",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 400,
+          "entryId": "turn-greeting",
+          "segmentId": "seg-bonjour",
+          "startMs": 80,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1690,
+          "entryId": "turn-clerk-greeting",
+          "segmentId": null,
+          "startMs": 970,
+          "wordRange": null
+        },
+        {
+          "endMs": 1610,
+          "entryId": "turn-clerk-greeting",
+          "segmentId": "seg-clerk-bonjour",
+          "startMs": 1050,
+          "wordRange": null
+        },
+        {
+          "endMs": 1610,
+          "entryId": "turn-clerk-greeting",
+          "segmentId": "seg-clerk-bonjour",
+          "startMs": 1050,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3780,
+          "entryId": "turn-request",
+          "segmentId": null,
+          "startMs": 1940,
+          "wordRange": null
+        },
+        {
+          "endMs": 2580,
+          "entryId": "turn-request",
+          "segmentId": "seg-request-article",
+          "startMs": 2500,
+          "wordRange": null
+        },
+        {
+          "endMs": 2580,
+          "entryId": "turn-request",
+          "segmentId": "seg-request-article",
+          "startMs": 2500,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 2980,
+          "entryId": "turn-request",
+          "segmentId": "seg-request-bread",
+          "startMs": 2580,
+          "wordRange": null
+        },
+        {
+          "endMs": 2980,
+          "entryId": "turn-request",
+          "segmentId": "seg-request-bread",
+          "startMs": 2580,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2500,
+          "entryId": "turn-request",
+          "segmentId": "seg-request-chunk",
+          "startMs": 2020,
+          "wordRange": null
+        },
+        {
+          "endMs": 2180,
+          "entryId": "turn-request",
+          "segmentId": "seg-request-chunk",
+          "startMs": 2020,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2500,
+          "entryId": "turn-request",
+          "segmentId": "seg-request-chunk",
+          "startMs": 2180,
+          "wordRange": {
+            "end": 11,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 3540,
+          "entryId": "turn-request",
+          "segmentId": "seg-request-please",
+          "startMs": 2980,
+          "wordRange": null
+        },
+        {
+          "endMs": 3140,
+          "entryId": "turn-request",
+          "segmentId": "seg-request-please",
+          "startMs": 2980,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3300,
+          "entryId": "turn-request",
+          "segmentId": "seg-request-please",
+          "startMs": 3140,
+          "wordRange": {
+            "end": 9,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 3540,
+          "entryId": "turn-request",
+          "segmentId": "seg-request-please",
+          "startMs": 3300,
+          "wordRange": {
+            "end": 15,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 4750,
+          "entryId": "turn-handover",
+          "segmentId": null,
+          "startMs": 4030,
+          "wordRange": null
+        },
+        {
+          "endMs": 4590,
+          "entryId": "turn-handover",
+          "segmentId": "seg-handover",
+          "startMs": 4110,
+          "wordRange": null
+        },
+        {
+          "endMs": 4590,
+          "entryId": "turn-handover",
+          "segmentId": "seg-handover",
+          "startMs": 4110,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6840,
+          "entryId": "turn-price-question",
+          "segmentId": null,
+          "startMs": 5000,
+          "wordRange": null
+        },
+        {
+          "endMs": 6600,
+          "entryId": "turn-price-question",
+          "segmentId": "seg-price-question",
+          "startMs": 6120,
+          "wordRange": null
+        },
+        {
+          "endMs": 6280,
+          "entryId": "turn-price-question",
+          "segmentId": "seg-price-question",
+          "startMs": 6120,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6600,
+          "entryId": "turn-price-question",
+          "segmentId": "seg-price-question",
+          "startMs": 6280,
+          "wordRange": {
+            "end": 13,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 5960,
+          "entryId": "turn-price-question",
+          "segmentId": "seg-thank",
+          "startMs": 5080,
+          "wordRange": null
+        },
+        {
+          "endMs": 5960,
+          "entryId": "turn-price-question",
+          "segmentId": "seg-thank",
+          "startMs": 5080,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8930,
+          "entryId": "turn-price-answer",
+          "segmentId": null,
+          "startMs": 7090,
+          "wordRange": null
+        },
+        {
+          "endMs": 8730,
+          "entryId": "turn-price-answer",
+          "segmentId": "seg-price-answer",
+          "startMs": 7170,
+          "wordRange": null
+        },
+        {
+          "endMs": 7330,
+          "entryId": "turn-price-answer",
+          "segmentId": "seg-price-answer",
+          "startMs": 7170,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7650,
+          "entryId": "turn-price-answer",
+          "segmentId": "seg-price-answer",
+          "startMs": 7370,
+          "wordRange": {
+            "end": 7,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 7970,
+          "entryId": "turn-price-answer",
+          "segmentId": "seg-price-answer",
+          "startMs": 7650,
+          "wordRange": {
+            "end": 13,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 8410,
+          "entryId": "turn-price-answer",
+          "segmentId": "seg-price-answer",
+          "startMs": 8170,
+          "wordRange": {
+            "end": 19,
+            "start": 15
+          }
+        },
+        {
+          "endMs": 8530,
+          "entryId": "turn-price-answer",
+          "segmentId": "seg-price-answer",
+          "startMs": 8410,
+          "wordRange": {
+            "end": 24,
+            "start": 20
+          }
+        },
+        {
+          "endMs": 8730,
+          "entryId": "turn-price-answer",
+          "segmentId": "seg-price-answer",
+          "startMs": 8530,
+          "wordRange": {
+            "end": 30,
+            "start": 25
+          }
+        },
+        {
+          "endMs": 10540,
+          "entryId": "turn-goodbye",
+          "segmentId": null,
+          "startMs": 9180,
+          "wordRange": null
+        },
+        {
+          "endMs": 10220,
+          "entryId": "turn-goodbye",
+          "segmentId": "seg-goodbye",
+          "startMs": 9900,
+          "wordRange": null
+        },
+        {
+          "endMs": 9980,
+          "entryId": "turn-goodbye",
+          "segmentId": "seg-goodbye",
+          "startMs": 9900,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10220,
+          "entryId": "turn-goodbye",
+          "segmentId": "seg-goodbye",
+          "startMs": 9980,
+          "wordRange": {
+            "end": 9,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 9660,
+          "entryId": "turn-goodbye",
+          "segmentId": "seg-goodbye-thanks",
+          "startMs": 9260,
+          "wordRange": null
+        },
+        {
+          "endMs": 9660,
+          "entryId": "turn-goodbye",
+          "segmentId": "seg-goodbye-thanks",
+          "startMs": 9260,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11670,
+          "entryId": "turn-clerk-goodbye",
+          "segmentId": null,
+          "startMs": 10790,
+          "wordRange": null
+        },
+        {
+          "endMs": 11510,
+          "entryId": "turn-clerk-goodbye",
+          "segmentId": "seg-clerk-goodbye",
+          "startMs": 10870,
+          "wordRange": null
+        },
+        {
+          "endMs": 10950,
+          "entryId": "turn-clerk-goodbye",
+          "segmentId": "seg-clerk-goodbye",
+          "startMs": 10870,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11510,
+          "entryId": "turn-clerk-goodbye",
+          "segmentId": "seg-clerk-goodbye",
+          "startMs": 10950,
+          "wordRange": {
+            "end": 9,
+            "start": 3
+          }
+        }
+      ]
+    },
+    {
+      "assetId": "speech-eeebab1ebbdd167bccd4996a9ff2a8baa0a2123154bdceb885eaf22b8bf2b122",
+      "blockId": "article-breakfast",
+      "cues": [
+        {
+          "endMs": 2400,
+          "entryId": "paragraph-morning",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 2240,
+          "entryId": "paragraph-morning",
+          "segmentId": "seg-morning-text",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 240,
+          "entryId": "paragraph-morning",
+          "segmentId": "seg-morning-text",
+          "startMs": 80,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 560,
+          "entryId": "paragraph-morning",
+          "segmentId": "seg-morning-text",
+          "startMs": 240,
+          "wordRange": {
+            "end": 8,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 1360,
+          "entryId": "paragraph-morning",
+          "segmentId": "seg-morning-text",
+          "startMs": 1040,
+          "wordRange": {
+            "end": 17,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 1520,
+          "entryId": "paragraph-morning",
+          "segmentId": "seg-morning-text",
+          "startMs": 1360,
+          "wordRange": {
+            "end": 20,
+            "start": 18
+          }
+        },
+        {
+          "endMs": 1600,
+          "entryId": "paragraph-morning",
+          "segmentId": "seg-morning-text",
+          "startMs": 1520,
+          "wordRange": {
+            "end": 22,
+            "start": 21
+          }
+        },
+        {
+          "endMs": 1680,
+          "entryId": "paragraph-morning",
+          "segmentId": "seg-morning-text",
+          "startMs": 1600,
+          "wordRange": {
+            "end": 25,
+            "start": 23
+          }
+        },
+        {
+          "endMs": 2240,
+          "entryId": "paragraph-morning",
+          "segmentId": "seg-morning-text",
+          "startMs": 1680,
+          "wordRange": {
+            "end": 37,
+            "start": 26
+          }
+        },
+        {
+          "endMs": 5130,
+          "entryId": "paragraph-order",
+          "segmentId": null,
+          "startMs": 2650,
+          "wordRange": null
+        },
+        {
+          "endMs": 4970,
+          "entryId": "paragraph-order",
+          "segmentId": "seg-article-baguette",
+          "startMs": 4410,
+          "wordRange": null
+        },
+        {
+          "endMs": 4970,
+          "entryId": "paragraph-order",
+          "segmentId": "seg-article-baguette",
+          "startMs": 4410,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4410,
+          "entryId": "paragraph-order",
+          "segmentId": "seg-article-order-start",
+          "startMs": 2730,
+          "wordRange": null
+        },
+        {
+          "endMs": 2890,
+          "entryId": "paragraph-order",
+          "segmentId": "seg-article-order-start",
+          "startMs": 2730,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3050,
+          "entryId": "paragraph-order",
+          "segmentId": "seg-article-order-start",
+          "startMs": 2890,
+          "wordRange": {
+            "end": 8,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 3690,
+          "entryId": "paragraph-order",
+          "segmentId": "seg-article-order-start",
+          "startMs": 3050,
+          "wordRange": {
+            "end": 16,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 3930,
+          "entryId": "paragraph-order",
+          "segmentId": "seg-article-order-start",
+          "startMs": 3770,
+          "wordRange": {
+            "end": 19,
+            "start": 17
+          }
+        },
+        {
+          "endMs": 4250,
+          "entryId": "paragraph-order",
+          "segmentId": "seg-article-order-start",
+          "startMs": 3930,
+          "wordRange": {
+            "end": 27,
+            "start": 20
+          }
+        },
+        {
+          "endMs": 4410,
+          "entryId": "paragraph-order",
+          "segmentId": "seg-article-order-start",
+          "startMs": 4250,
+          "wordRange": {
+            "end": 31,
+            "start": 28
+          }
+        },
+        {
+          "endMs": 7620,
+          "entryId": "paragraph-leaving",
+          "segmentId": null,
+          "startMs": 5380,
+          "wordRange": null
+        },
+        {
+          "endMs": 7460,
+          "entryId": "paragraph-leaving",
+          "segmentId": "seg-article-leaving",
+          "startMs": 5460,
+          "wordRange": null
+        },
+        {
+          "endMs": 5620,
+          "entryId": "paragraph-leaving",
+          "segmentId": "seg-article-leaving",
+          "startMs": 5460,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 5940,
+          "entryId": "paragraph-leaving",
+          "segmentId": "seg-article-leaving",
+          "startMs": 5620,
+          "wordRange": {
+            "end": 12,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 6020,
+          "entryId": "paragraph-leaving",
+          "segmentId": "seg-article-leaving",
+          "startMs": 5940,
+          "wordRange": {
+            "end": 15,
+            "start": 13
+          }
+        },
+        {
+          "endMs": 6260,
+          "entryId": "paragraph-leaving",
+          "segmentId": "seg-article-leaving",
+          "startMs": 6020,
+          "wordRange": {
+            "end": 20,
+            "start": 16
+          }
+        },
+        {
+          "endMs": 6820,
+          "entryId": "paragraph-leaving",
+          "segmentId": "seg-article-leaving",
+          "startMs": 6660,
+          "wordRange": {
+            "end": 26,
+            "start": 22
+          }
+        },
+        {
+          "endMs": 6980,
+          "entryId": "paragraph-leaving",
+          "segmentId": "seg-article-leaving",
+          "startMs": 6820,
+          "wordRange": {
+            "end": 30,
+            "start": 27
+          }
+        },
+        {
+          "endMs": 7060,
+          "entryId": "paragraph-leaving",
+          "segmentId": "seg-article-leaving",
+          "startMs": 6980,
+          "wordRange": {
+            "end": 33,
+            "start": 31
+          }
+        },
+        {
+          "endMs": 7460,
+          "entryId": "paragraph-leaving",
+          "segmentId": "seg-article-leaving",
+          "startMs": 7060,
+          "wordRange": {
+            "end": 40,
+            "start": 34
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-bakery",
+      "illustrationId": "art-bakery-morning",
+      "placeZh": "一家社区面包店",
+      "situationZh": "你准备买早餐。先向店员问好，再说想要什么。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-buy-bread",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "customer",
+          "labelZh": "顾客"
+        },
+        {
+          "avatarId": "avatar-luc-v1",
+          "characterId": "character-luc",
+          "displayName": "Luc",
+          "id": "clerk",
+          "labelZh": "店员"
+        }
+      ],
+      "titleZh": "顾客与店员",
+      "turns": [
+        {
+          "id": "turn-greeting",
+          "segments": [
+            {
+              "id": "seg-bonjour",
+              "text": "Bonjour",
+              "vocabularyId": "word-bonjour"
+            },
+            {
+              "id": "seg-greeting-mark",
+              "text": " !"
+            }
+          ],
+          "speakerId": "customer",
+          "translationZh": "您好！"
+        },
+        {
+          "id": "turn-clerk-greeting",
+          "segments": [
+            {
+              "id": "seg-clerk-bonjour",
+              "text": "Bonjour",
+              "vocabularyId": "word-bonjour"
+            },
+            {
+              "id": "seg-clerk-mark",
+              "text": " !"
+            }
+          ],
+          "speakerId": "clerk",
+          "translationZh": "您好！"
+        },
+        {
+          "id": "turn-request",
+          "segments": [
+            {
+              "grammarId": "grammar-polite-voudrais-chunk",
+              "id": "seg-request-chunk",
+              "text": "Je voudrais",
+              "vocabularyId": "expr-je-voudrais"
+            },
+            {
+              "grammarId": "grammar-indefinite-un-une",
+              "id": "seg-request-article",
+              "text": " une "
+            },
+            {
+              "id": "seg-request-bread",
+              "text": "baguette",
+              "vocabularyId": "word-baguette"
+            },
+            {
+              "id": "seg-request-comma",
+              "text": ", "
+            },
+            {
+              "id": "seg-request-please",
+              "text": "s’il vous plaît",
+              "vocabularyId": "expr-sil-vous-plait"
+            },
+            {
+              "id": "seg-request-period",
+              "text": "."
+            }
+          ],
+          "speakerId": "customer",
+          "translationZh": "我想要一根法棍，谢谢。"
+        },
+        {
+          "id": "turn-handover",
+          "segments": [
+            {
+              "id": "seg-handover",
+              "text": "Voilà !"
+            }
+          ],
+          "speakerId": "clerk",
+          "translationZh": "给您！"
+        },
+        {
+          "id": "turn-price-question",
+          "segments": [
+            {
+              "id": "seg-thank",
+              "text": "Merci. "
+            },
+            {
+              "id": "seg-price-question",
+              "text": "C’est combien",
+              "vocabularyId": "expr-cest-combien"
+            },
+            {
+              "id": "seg-price-mark",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "customer",
+          "translationZh": "谢谢。多少钱？"
+        },
+        {
+          "id": "turn-price-answer",
+          "segments": [
+            {
+              "id": "seg-price-answer",
+              "text": "Un euro vingt, s’il vous plaît."
+            }
+          ],
+          "speakerId": "clerk",
+          "translationZh": "一欧元二十分，谢谢。"
+        },
+        {
+          "id": "turn-goodbye",
+          "segments": [
+            {
+              "id": "seg-goodbye-thanks",
+              "text": "Merci, "
+            },
+            {
+              "id": "seg-goodbye",
+              "text": "au revoir",
+              "vocabularyId": "expr-au-revoir"
+            },
+            {
+              "id": "seg-goodbye-mark",
+              "text": " !"
+            }
+          ],
+          "speakerId": "customer",
+          "translationZh": "谢谢，再见！"
+        },
+        {
+          "id": "turn-clerk-goodbye",
+          "segments": [
+            {
+              "id": "seg-clerk-goodbye",
+              "text": "Au revoir !"
+            }
+          ],
+          "speakerId": "clerk",
+          "translationZh": "再见！"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "id": "article-breakfast",
+      "narratorId": "character-lea",
+      "paragraphs": [
+        {
+          "id": "paragraph-morning",
+          "segments": [
+            {
+              "id": "seg-morning-text",
+              "text": "Le matin, Camille va à la boulangerie."
+            }
+          ],
+          "translationZh": "早晨，Camille 去面包店。"
+        },
+        {
+          "id": "paragraph-order",
+          "segments": [
+            {
+              "id": "seg-article-order-start",
+              "text": "Elle dit bonjour et demande une "
+            },
+            {
+              "id": "seg-article-baguette",
+              "text": "baguette",
+              "vocabularyId": "word-baguette"
+            },
+            {
+              "id": "seg-article-order-end",
+              "text": "."
+            }
+          ],
+          "translationZh": "她问好，然后要了一根法棍。"
+        },
+        {
+          "id": "paragraph-leaving",
+          "segments": [
+            {
+              "id": "seg-article-leaving",
+              "text": "Elle demande le prix, puis dit au revoir."
+            }
+          ],
+          "translationZh": "她询问价格，然后道别。"
+        }
+      ],
+      "titleZh": "早餐前的一次采购",
+      "type": "article"
+    },
+    {
+      "bodyZh": "这个语块表达礼貌请求。换成 un café 可以请求一杯咖啡；冠词随名词改变。句末的 s’il vous plaît 让请求更完整。",
+      "id": "explanation-request",
+      "targets": [
+        {
+          "blockId": "dialogue-buy-bread",
+          "entryId": "turn-request",
+          "segmentId": "seg-request-chunk"
+        }
+      ],
+      "titleZh": "把想要的东西放在 Je voudrais 后面",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "在本课模拟的小店交谈里，bonjour 为请求建立友好的开场。观察实际场合的互动方式，离开时可以说 au revoir。",
+      "id": "culture-shop-greeting",
+      "scopeZh": "教学情景为法国社区小店的顾客服务交流；不是对所有法语地区或个人行为的统一规定。",
+      "titleZh": "先打招呼，再提出请求",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-bonjour",
+        "expr-je-voudrais",
+        "word-baguette",
+        "expr-sil-vous-plait",
+        "expr-cest-combien",
+        "expr-au-revoir"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-indefinite-un-une",
+        "grammar-polite-voudrais-chunk"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-intention",
+      "options": [
+        {
+          "id": "ask-price",
+          "text": "询问价格"
+        },
+        {
+          "id": "request-bread",
+          "text": "礼貌地请求一根法棍"
+        },
+        {
+          "id": "say-goodbye",
+          "text": "道别"
+        }
+      ],
+      "promptZh": "顾客说 Je voudrais une baguette 的主要目的是什么？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "baguette 是阴性名词。",
+      "id": "exercise-article",
+      "promptZh": "根据 baguette 的语法性别，填入合适的冠词。",
+      "templateFr": "Je voudrais ___ baguette, s’il vous plaît.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把下面的语块排成一句礼貌的请求。",
+      "tokens": [
+        {
+          "id": "please",
+          "text": "s’il vous plaît."
+        },
+        {
+          "id": "bread",
+          "text": "une baguette,"
+        },
+        {
+          "id": "request",
+          "text": "Je voudrais"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "如果没有合适场景，想象自己站在面包店，把 une baguette 换成 un café，练说两次。",
+      "id": "habit-breakfast",
+      "taskZh": "下次准备早餐时，用 Je voudrais… 练说一句自己的选择。不需要真的到店里购买。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-breakfast",
+      "takeawaysZh": [
+        "我能用 Bonjour 开始交流。",
+        "我能用 Je voudrais… 请求商品。",
+        "我能用 C’est combien ? 询价，并用 Au revoir 道别。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-luc-v1",
+      "characterId": "character-luc",
+      "displayName": "Luc",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-intention",
+      "exercise-article",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner authorized direct publication; actual fixed-model inference of offline tempo-stretched analysis PCM, exact declared time scale, original playback unchanged; no new synthesis or human listening asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-bakery-buy-breakfast",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "法语名词有语法性别，冠词与它配合。baguette 是阴性名词，所以这里说 une baguette。不要根据物品的自然属性猜语法性别。",
+        "examples": [
+          {
+            "fr": "une baguette",
+            "recording": {
+              "asset": {
+                "assetId": "speech-62a182bf3557946bcec663241cc2f68cf54cc21b41aa092e3da0e59090edc6f3",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1120,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "ca3c81523ad8217341be8a9b92b1be88aeb408b27ca475ba34f5146573260100",
+                "url": "/api/audio/ca3c81523ad8217341be8a9b92b1be88aeb408b27ca475ba34f5146573260100.wav"
+              },
+              "endMs": 1120,
+              "startMs": 0
+            },
+            "zh": "一根法棍"
+          },
+          {
+            "fr": "un café",
+            "recording": {
+              "asset": {
+                "assetId": "speech-52c8ff1230ca5b2bccb9213b4481365e71960e854edf24ac71124c4c4eeaf95f",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 800,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "d15ca4fb15ea3110bae378bb0f5b757321e65fa99b2e304460b9fdcc4829290a",
+                "url": "/api/audio/d15ca4fb15ea3110bae378bb0f5b757321e65fa99b2e304460b9fdcc4829290a.wav"
+              },
+              "endMs": 800,
+              "startMs": 0
+            },
+            "zh": "一杯咖啡"
+          }
+        ],
+        "id": "grammar-indefinite-un-une",
+        "titleZh": "un / une：一个或一种"
+      },
+      {
+        "bodyZh": "voudrais 是 vouloir 的条件式形式。A1 这里先掌握 Je voudrais + 想要的东西，用来礼貌提出请求；后续再系统学习条件式。",
+        "examples": [
+          {
+            "fr": "Je voudrais une baguette, s’il vous plaît.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-f8b07c281aabc03f93cf4301be9af36d18c32b5253e8b0a2c51272e161bd3d53",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1840,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "10dff182cbb6bf95b6be8d5c6c8797a9c6c6714e8dae85166b979a183a6da7c0",
+                "url": "/api/audio/10dff182cbb6bf95b6be8d5c6c8797a9c6c6714e8dae85166b979a183a6da7c0.wav"
+              },
+              "endMs": 1840,
+              "startMs": 0
+            },
+            "zh": "我想要一根法棍，谢谢。"
+          }
+        ],
+        "id": "grammar-polite-voudrais-chunk",
+        "titleZh": "Je voudrais…：礼貌请求"
+      }
+    ],
+    "vocabulary": [
+      {
+        "id": "word-bonjour",
+        "lemma": "bonjour",
+        "meaningZh": "你好；您好",
+        "noteZh": "白天问候。进入店内时可先用它向店员打招呼。",
+        "partOfSpeech": "interjection",
+        "recording": {
+          "asset": {
+            "assetId": "speech-b73b8bf8b16f06231e6339076f21953a8e60482c5e06e6f0679df2c8520e16ff",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "bf2528f9360391b0164a54c1a154a2a2b61155d3bd8e77703c9727e9bbdd74d5",
+            "url": "/api/audio/bf2528f9360391b0164a54c1a154a2a2b61155d3bd8e77703c9727e9bbdd74d5.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-je-voudrais",
+        "lemma": "je voudrais",
+        "meaningZh": "我想要……",
+        "noteZh": "礼貌地提出请求。本课先作为常用语块学习。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-0cd3270b0043a294aedaeb977581acc6d24d9c766d5713d33c116af66ad4142c",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f",
+            "url": "/api/audio/8215a436977edfaa988f342a3a12c9efcec74b8ab7335332cc3b2765000c212f.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-baguette",
+        "lemma": "baguette",
+        "meaningZh": "法棍面包",
+        "noteZh": "在面包店场景中指法棍；一根法棍说 une baguette。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-c57dec644ca3b1a02feb15b5c31a347cfd4dc3da6854c9b417843370c733126d",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "b166e4ff080b3c1fb36b35eeffcd73a209098760e9fd2edbaf4298d552411ae9",
+            "url": "/api/audio/b166e4ff080b3c1fb36b35eeffcd73a209098760e9fd2edbaf4298d552411ae9.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-sil-vous-plait",
+        "lemma": "s’il vous plaît",
+        "meaningZh": "请",
+        "noteZh": "这里使用 vous，适用于不熟悉的人和服务场景。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-bdd03cf58d2d2cf93f9c20962333fa701f659603823b9c86d1ecab64c9498923",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426",
+            "url": "/api/audio/6a4166f1e381a6c8d0b81bbc1f9689d028b81c094ba80d8b1364e4ab299b8426.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-cest-combien",
+        "lemma": "c’est combien",
+        "meaningZh": "多少钱？",
+        "noteZh": "询价的常用口语。本例的价格只是教学情景设定。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-8d162983fc6e01fc0034a54c01e058a3ea06afedfad90023395765372460ae42",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "693e2f0f789fdc1e16409f47061cf5036956f81691788276eda73cf8fd0bb13b",
+            "url": "/api/audio/693e2f0f789fdc1e16409f47061cf5036956f81691788276eda73cf8fd0bb13b.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-au-revoir",
+        "lemma": "au revoir",
+        "meaningZh": "再见",
+        "noteZh": "结束交谈、离开时使用。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-dac8d47660d151ae887bc5d8011e29ef98dfc742b5308c17e1557af49ea56d85",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "39e7ca2f9acf0f4ec809c3fdbf89c01b4ce7e30a80c4a116fcf0e4ff9edb9e57",
+            "url": "/api/audio/39e7ca2f9acf0f4ec809c3fdbf89c01b4ce7e30a80c4a116fcf0e4ff9edb9e57.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "社区面包店的清晨",
+      "assetId": "art-bakery-morning",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "2154bad9ebb6f592e210e24eacc5dd97cf0be05d5f8b33fedd313e1e58ba5412",
+      "url": "/api/media/2154bad9ebb6f592e210e24eacc5dd97cf0be05d5f8b33fedd313e1e58ba5412.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Luc 的头像",
+      "assetId": "avatar-luc-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b",
+      "url": "/api/media/75ab6b4e317ac3557b8e5b7e8644895068f5e13b4423a7d25965ad343290356b.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "进入店内时打招呼",
+    "礼貌地请求一种商品",
+    "询问价格并道别"
+  ],
+  "reviewItemIds": [
+    "expr-je-voudrais",
+    "word-baguette",
+    "expr-cest-combien"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-article": {
+        "accepted": [
+          "une"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "baguette 是阴性名词，所以用 une。",
+        "kind": "text"
+      },
+      "exercise-intention": {
+        "correctOptionId": "request-bread",
+        "feedbackZh": "Je voudrais + 商品表示礼貌请求；询价则用 C’est combien ?。",
+        "kind": "choice"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "request",
+          "bread",
+          "please"
+        ],
+        "feedbackZh": "Je voudrais une baguette, s’il vous plaît. 先提出请求，接商品，再加礼貌用语。",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-bakery"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "走进面包店"
+    },
+    {
+      "blockIds": [
+        "dialogue-buy-bread",
+        "article-breakfast"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-request",
+        "culture-shop-greeting",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-intention",
+        "exercise-article",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-breakfast"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-breakfast"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "今天能做到什么"
+    }
+  ],
+  "summaryZh": "用简单而礼貌的表达买一根法棍，并询问价格。",
+  "title": {
+    "fr": "Un matin à la boulangerie",
+    "zh": "在面包店买早餐"
+  },
+  "unitId": "a1-breakfast-bakery"
+}

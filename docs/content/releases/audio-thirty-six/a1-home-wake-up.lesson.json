@@ -1,0 +1,1708 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-home-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-0da642b8b5d1eb8d06c3cb108a65c5a3f026e4b9c07ea032c4471ea89f8a45b1",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "42ea6acc3b90ffb774af7ae418510d37dd9b99eeb8f249d7614848ecf2fa86aa",
+      "url": "/api/audio/42ea6acc3b90ffb774af7ae418510d37dd9b99eeb8f249d7614848ecf2fa86aa.wav"
+    },
+    {
+      "assetId": "speech-2a84f71fad7f3ede45262b62e06c2860f49c459d172e85a2c289f1ea7449bf47",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "ba966a0c17596e98ef11254fe01d3326de6ee0a65832513f99ac2cf5239c5857",
+      "url": "/api/audio/ba966a0c17596e98ef11254fe01d3326de6ee0a65832513f99ac2cf5239c5857.wav"
+    },
+    {
+      "assetId": "speech-35b87c13f45e9797f3a4316ef87673e3f92d6a5a69dde043337bf5d55cbe79c2",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "e97f3b87c400a5b91de983af7b371ba135cb0683b586859aaacca72326f13799",
+      "url": "/api/audio/e97f3b87c400a5b91de983af7b371ba135cb0683b586859aaacca72326f13799.wav"
+    },
+    {
+      "assetId": "speech-aa357cc9a6ba11f038daf96a4e89d13ced64d92ca64ea7c44744fe75703e7c95",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "49bd4c14d34d2ecd9fdd0af841a11372b04aec1248cf63fd68e4e3b83683fd61",
+      "url": "/api/audio/49bd4c14d34d2ecd9fdd0af841a11372b04aec1248cf63fd68e4e3b83683fd61.wav"
+    },
+    {
+      "assetId": "speech-ac44959aa643ff544072c1052c85bd8faf7b5337710dc7024b581cc6c8375ad0",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1920,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "d61dcbd77fa57d54266a20056322eac32409cc4bddcc9154973aedce720a448b",
+      "url": "/api/audio/d61dcbd77fa57d54266a20056322eac32409cc4bddcc9154973aedce720a448b.wav"
+    },
+    {
+      "assetId": "speech-ac83a0a2da14da82f6635ddbbec833be03bac0174b9e55f309acd01774a2d378",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1440,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "cc1a25381c49644283fc31b8c943abbc7f7efef27d8e6e43ded4f36944ec9c0f",
+      "url": "/api/audio/cc1a25381c49644283fc31b8c943abbc7f7efef27d8e6e43ded4f36944ec9c0f.wav"
+    },
+    {
+      "assetId": "speech-b555398518d5f13a613df5491c00361f38bd1cc5de4bf26778876dd9b80e0d7f",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "fa2d5bc11c3b16f3ec8208c9186c13fd6f47c19f530d75389503ac0b203d69a1",
+      "url": "/api/audio/fa2d5bc11c3b16f3ec8208c9186c13fd6f47c19f530d75389503ac0b203d69a1.wav"
+    },
+    {
+      "assetId": "speech-d1bcb8f45451d41bb262854387cdde7f0b55cb3f58e9d02d839ecb29d020d976",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 19340,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "cdeb06b26c69751a6eed3146b35860c512a88faaae5951cb1b2a06b35004d4c8",
+      "url": "/api/audio/cdeb06b26c69751a6eed3146b35860c512a88faaae5951cb1b2a06b35004d4c8.wav"
+    },
+    {
+      "assetId": "speech-e6c98971a88fb4586040f63e9e11a4b04b727275e3b993f9183af48fee3bb917",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "51d8c3dd8f32f770d86c0f4c959c6b1fa0a53555ea6290107037c44d053abd62",
+      "url": "/api/audio/51d8c3dd8f32f770d86c0f4c959c6b1fa0a53555ea6290107037c44d053abd62.wav"
+    },
+    {
+      "assetId": "speech-f8d8aa496910fac62275a662631866f5de50f0f223cc4da062015d784db42e40",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "6fcffbad8cd491bb997b60965d488bab6daa672cfe4407cffdab63eb8f62a67a",
+      "url": "/api/audio/6fcffbad8cd491bb997b60965d488bab6daa672cfe4407cffdab63eb8f62a67a.wav"
+    },
+    {
+      "assetId": "speech-fc0041900ca37892ef54baefe1704702a961d97616a929664c86c9c2931b26cc",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "faca39d4b7f13e2d8431a213375a488ec35cf2a17a59722aa32b3cc5c254fd71",
+      "url": "/api/audio/faca39d4b7f13e2d8431a213375a488ec35cf2a17a59722aa32b3cc5c254fd71.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-0da642b8b5d1eb8d06c3cb108a65c5a3f026e4b9c07ea032c4471ea89f8a45b1",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-2a84f71fad7f3ede45262b62e06c2860f49c459d172e85a2c289f1ea7449bf47",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-35b87c13f45e9797f3a4316ef87673e3f92d6a5a69dde043337bf5d55cbe79c2",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-aa357cc9a6ba11f038daf96a4e89d13ced64d92ca64ea7c44744fe75703e7c95",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-ac44959aa643ff544072c1052c85bd8faf7b5337710dc7024b581cc6c8375ad0",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-ac83a0a2da14da82f6635ddbbec833be03bac0174b9e55f309acd01774a2d378",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-b555398518d5f13a613df5491c00361f38bd1cc5de4bf26778876dd9b80e0d7f",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-d1bcb8f45451d41bb262854387cdde7f0b55cb3f58e9d02d839ecb29d020d976",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-e6c98971a88fb4586040f63e9e11a4b04b727275e3b993f9183af48fee3bb917",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-f8d8aa496910fac62275a662631866f5de50f0f223cc4da062015d784db42e40",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-fc0041900ca37892ef54baefe1704702a961d97616a929664c86c9c2931b26cc",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-d1bcb8f45451d41bb262854387cdde7f0b55cb3f58e9d02d839ecb29d020d976",
+      "blockId": "article-main",
+      "cues": [
+        {
+          "endMs": 2320,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 240,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 240,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 240,
+          "wordRange": null
+        },
+        {
+          "endMs": 640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 240,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1200,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 960,
+          "wordRange": null
+        },
+        {
+          "endMs": 1200,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 960,
+          "wordRange": {
+            "end": 9,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 1520,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 1200,
+          "wordRange": null
+        },
+        {
+          "endMs": 1360,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 1200,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1520,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 1360,
+          "wordRange": {
+            "end": 7,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 1600,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-5",
+          "startMs": 1520,
+          "wordRange": null
+        },
+        {
+          "endMs": 1600,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-5",
+          "startMs": 1520,
+          "wordRange": {
+            "end": 2,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 1920,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-6",
+          "startMs": 1600,
+          "wordRange": null
+        },
+        {
+          "endMs": 1920,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-6",
+          "startMs": 1600,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2160,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-8",
+          "startMs": 1920,
+          "wordRange": null
+        },
+        {
+          "endMs": 2160,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-8",
+          "startMs": 1920,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 5050,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 2570,
+          "wordRange": null
+        },
+        {
+          "endMs": 4890,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 2650,
+          "wordRange": null
+        },
+        {
+          "endMs": 2810,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 2650,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3050,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 2810,
+          "wordRange": {
+            "end": 10,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 3130,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 3050,
+          "wordRange": {
+            "end": 13,
+            "start": 11
+          }
+        },
+        {
+          "endMs": 3690,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 3130,
+          "wordRange": {
+            "end": 21,
+            "start": 14
+          }
+        },
+        {
+          "endMs": 3850,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 3770,
+          "wordRange": {
+            "end": 24,
+            "start": 22
+          }
+        },
+        {
+          "endMs": 4250,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 3850,
+          "wordRange": {
+            "end": 32,
+            "start": 25
+          }
+        },
+        {
+          "endMs": 4330,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 4250,
+          "wordRange": {
+            "end": 35,
+            "start": 33
+          }
+        },
+        {
+          "endMs": 4890,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 4330,
+          "wordRange": {
+            "end": 40,
+            "start": 36
+          }
+        },
+        {
+          "endMs": 7700,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 5300,
+          "wordRange": null
+        },
+        {
+          "endMs": 5940,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 5380,
+          "wordRange": null
+        },
+        {
+          "endMs": 5540,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 5380,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 5780,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 5540,
+          "wordRange": {
+            "end": 10,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 5940,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 5780,
+          "wordRange": {
+            "end": 14,
+            "start": 11
+          }
+        },
+        {
+          "endMs": 6340,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 5940,
+          "wordRange": null
+        },
+        {
+          "endMs": 6340,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 5940,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7460,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 6580,
+          "wordRange": null
+        },
+        {
+          "endMs": 6740,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 6580,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 6900,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 6740,
+          "wordRange": {
+            "end": 11,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 7460,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 6900,
+          "wordRange": {
+            "end": 21,
+            "start": 12
+          }
+        },
+        {
+          "endMs": 10670,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 7950,
+          "wordRange": null
+        },
+        {
+          "endMs": 8110,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 8030,
+          "wordRange": null
+        },
+        {
+          "endMs": 8110,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 8030,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8430,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 8110,
+          "wordRange": null
+        },
+        {
+          "endMs": 8430,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 8110,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8590,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 8430,
+          "wordRange": null
+        },
+        {
+          "endMs": 8590,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 8430,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8990,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-6",
+          "startMs": 8590,
+          "wordRange": null
+        },
+        {
+          "endMs": 8990,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-6",
+          "startMs": 8590,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9230,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-7",
+          "startMs": 9070,
+          "wordRange": null
+        },
+        {
+          "endMs": 9230,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-7",
+          "startMs": 9070,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 9550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-8",
+          "startMs": 9230,
+          "wordRange": null
+        },
+        {
+          "endMs": 9550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-8",
+          "startMs": 9230,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10510,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-9",
+          "startMs": 9550,
+          "wordRange": null
+        },
+        {
+          "endMs": 9790,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-9",
+          "startMs": 9550,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 10030,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-9",
+          "startMs": 9790,
+          "wordRange": {
+            "end": 10,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 10510,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-9",
+          "startMs": 10030,
+          "wordRange": {
+            "end": 19,
+            "start": 11
+          }
+        },
+        {
+          "endMs": 13560,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 10920,
+          "wordRange": null
+        },
+        {
+          "endMs": 13400,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 11000,
+          "wordRange": null
+        },
+        {
+          "endMs": 11160,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 11000,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11400,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 11160,
+          "wordRange": {
+            "end": 10,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 11560,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 11400,
+          "wordRange": {
+            "end": 13,
+            "start": 11
+          }
+        },
+        {
+          "endMs": 11800,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 11560,
+          "wordRange": {
+            "end": 18,
+            "start": 14
+          }
+        },
+        {
+          "endMs": 12040,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 11880,
+          "wordRange": {
+            "end": 21,
+            "start": 19
+          }
+        },
+        {
+          "endMs": 12200,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 12040,
+          "wordRange": {
+            "end": 26,
+            "start": 22
+          }
+        },
+        {
+          "endMs": 12280,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 12200,
+          "wordRange": {
+            "end": 29,
+            "start": 27
+          }
+        },
+        {
+          "endMs": 12600,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 12280,
+          "wordRange": {
+            "end": 34,
+            "start": 30
+          }
+        },
+        {
+          "endMs": 12680,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 12600,
+          "wordRange": {
+            "end": 39,
+            "start": 35
+          }
+        },
+        {
+          "endMs": 12840,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 12680,
+          "wordRange": {
+            "end": 42,
+            "start": 40
+          }
+        },
+        {
+          "endMs": 13400,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 12840,
+          "wordRange": {
+            "end": 50,
+            "start": 43
+          }
+        },
+        {
+          "endMs": 15810,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 13810,
+          "wordRange": null
+        },
+        {
+          "endMs": 14450,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 13890,
+          "wordRange": null
+        },
+        {
+          "endMs": 14050,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 13890,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 14450,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 14050,
+          "wordRange": {
+            "end": 12,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 14690,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 14450,
+          "wordRange": null
+        },
+        {
+          "endMs": 14690,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 14450,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 15570,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 14690,
+          "wordRange": null
+        },
+        {
+          "endMs": 14850,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 14690,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 15010,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 14850,
+          "wordRange": {
+            "end": 8,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 15570,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 15010,
+          "wordRange": {
+            "end": 18,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 19340,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 16060,
+          "wordRange": null
+        },
+        {
+          "endMs": 16220,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 16140,
+          "wordRange": null
+        },
+        {
+          "endMs": 16220,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 16140,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 16540,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-2",
+          "startMs": 16220,
+          "wordRange": null
+        },
+        {
+          "endMs": 16540,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-2",
+          "startMs": 16220,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 16700,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-4",
+          "startMs": 16540,
+          "wordRange": null
+        },
+        {
+          "endMs": 16700,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-4",
+          "startMs": 16540,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 19100,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-5",
+          "startMs": 17020,
+          "wordRange": null
+        },
+        {
+          "endMs": 17180,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-5",
+          "startMs": 17020,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 17340,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-5",
+          "startMs": 17180,
+          "wordRange": {
+            "end": 11,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 17500,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-5",
+          "startMs": 17340,
+          "wordRange": {
+            "end": 14,
+            "start": 12
+          }
+        },
+        {
+          "endMs": 17740,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-5",
+          "startMs": 17500,
+          "wordRange": {
+            "end": 19,
+            "start": 15
+          }
+        },
+        {
+          "endMs": 17900,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-5",
+          "startMs": 17740,
+          "wordRange": {
+            "end": 24,
+            "start": 20
+          }
+        },
+        {
+          "endMs": 18060,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-5",
+          "startMs": 17900,
+          "wordRange": {
+            "end": 29,
+            "start": 25
+          }
+        },
+        {
+          "endMs": 18220,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-5",
+          "startMs": 18060,
+          "wordRange": {
+            "end": 35,
+            "start": 30
+          }
+        },
+        {
+          "endMs": 18300,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-5",
+          "startMs": 18220,
+          "wordRange": {
+            "end": 37,
+            "start": 36
+          }
+        },
+        {
+          "endMs": 19100,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-5",
+          "startMs": 18300,
+          "wordRange": {
+            "end": 50,
+            "start": 38
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-home-morning",
+      "placeZh": "Camille 在家的一天早晨",
+      "situationZh": "读懂一段早晨安排，分清起床、早餐和出门的时间。",
+      "type": "scene"
+    },
+    {
+      "id": "article-main",
+      "narratorId": "character-camille",
+      "paragraphs": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Le "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "matin",
+              "vocabularyId": "word-matin"
+            },
+            {
+              "id": "segment-1-3",
+              "text": ", Camille "
+            },
+            {
+              "grammarId": "grammar-se-lever-present",
+              "id": "segment-1-4",
+              "text": "se lève",
+              "vocabularyId": "word-se-lever"
+            },
+            {
+              "id": "segment-1-5",
+              "text": " à "
+            },
+            {
+              "id": "segment-1-6",
+              "text": "sept",
+              "vocabularyId": "word-sept"
+            },
+            {
+              "id": "segment-1-7",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-time-a",
+              "id": "segment-1-8",
+              "text": "heures",
+              "vocabularyId": "word-heure"
+            },
+            {
+              "id": "segment-1-9",
+              "text": "."
+            }
+          ],
+          "translationZh": "早晨，Camille 七点起床。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Elle ouvre la fenêtre et regarde le ciel."
+            }
+          ],
+          "translationZh": "她打开窗户，看看天空。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Elle prend une "
+            },
+            {
+              "id": "segment-3-2",
+              "text": "douche",
+              "vocabularyId": "word-douche"
+            },
+            {
+              "id": "segment-3-3",
+              "text": ", puis elle s’habille."
+            }
+          ],
+          "translationZh": "她洗淋浴，然后穿衣服。"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "À "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "sept",
+              "vocabularyId": "word-sept"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-time-a",
+              "id": "segment-4-4",
+              "text": "heures",
+              "vocabularyId": "word-heure"
+            },
+            {
+              "id": "segment-4-5",
+              "text": " "
+            },
+            {
+              "id": "segment-4-6",
+              "text": "trente",
+              "vocabularyId": "word-trente"
+            },
+            {
+              "id": "segment-4-7",
+              "text": ", elle "
+            },
+            {
+              "id": "segment-4-8",
+              "text": "prépare",
+              "vocabularyId": "word-preparer"
+            },
+            {
+              "id": "segment-4-9",
+              "text": " son petit-déjeuner."
+            }
+          ],
+          "translationZh": "七点半，她准备早餐。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Elle mange du pain et boit un café dans la cuisine."
+            }
+          ],
+          "translationZh": "她在厨房吃面包、喝咖啡。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Elle regarde "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "l’heure",
+              "vocabularyId": "word-heure"
+            },
+            {
+              "id": "segment-6-3",
+              "text": " sur son téléphone."
+            }
+          ],
+          "translationZh": "她在手机上看时间。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "À "
+            },
+            {
+              "id": "segment-7-2",
+              "text": "huit",
+              "vocabularyId": "word-huit"
+            },
+            {
+              "id": "segment-7-3",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-time-a",
+              "id": "segment-7-4",
+              "text": "heures",
+              "vocabularyId": "word-heure"
+            },
+            {
+              "id": "segment-7-5",
+              "text": ", elle part de chez elle pour aller à l’université."
+            }
+          ],
+          "translationZh": "八点，她离开家去大学。"
+        }
+      ],
+      "titleZh": "说说起床时间",
+      "type": "article"
+    },
+    {
+      "bodyZh": "à 引出事情发生的时刻：à sept heures 是七点，à sept heures trente 是七点半。短文中 elle se lève 说她起床；换成自己时用 je me lève。puis 表示“然后”，帮助串起早晨的动作。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "article-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4"
+        },
+        {
+          "blockId": "article-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-8"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "这是一个虚构学生的早晨，不代表法国人的统一作息或早餐习惯。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-se-lever",
+        "word-douche",
+        "word-sept",
+        "word-trente",
+        "word-huit",
+        "word-preparer",
+        "word-matin",
+        "word-heure"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-se-lever-present",
+        "grammar-time-a"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "七点半"
+        },
+        {
+          "id": "correct",
+          "text": "七点"
+        },
+        {
+          "id": "distractor-b",
+          "text": "八点"
+        }
+      ],
+      "promptZh": "Camille 几点起床？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "保留 lève 中的重音符号；se 已经给出。",
+      "id": "exercise-fill",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Elle se ___ à sept heures.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "le matin."
+        },
+        {
+          "id": "token-1",
+          "text": "Je me lève"
+        },
+        {
+          "id": "token-2",
+          "text": "à sept heures"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。",
+      "id": "habit-main",
+      "taskZh": "用 Je me lève à… 说一个起床时间，可以采用虚构作息。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能理解早晨安排的顺序。",
+        "我能说出起床时间。",
+        "我能区分整点和半点。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner authorized direct publication; exact existing PCM and actual fixed-model predictions reused after whole-word annotation repair, with no new synthesis or human hearing asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-home-wake-up",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "se lever 中的小代词随主语变化：je me lève、elle se lève。本课只练习这两种形式，注意 lève 的重音符号。",
+        "examples": [
+          {
+            "fr": "Je me lève à sept heures.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-ac83a0a2da14da82f6635ddbbec833be03bac0174b9e55f309acd01774a2d378",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1440,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "cc1a25381c49644283fc31b8c943abbc7f7efef27d8e6e43ded4f36944ec9c0f",
+                "url": "/api/audio/cc1a25381c49644283fc31b8c943abbc7f7efef27d8e6e43ded4f36944ec9c0f.wav"
+              },
+              "endMs": 1440,
+              "startMs": 0
+            },
+            "zh": "我七点起床。"
+          }
+        ],
+        "id": "grammar-se-lever-present",
+        "titleZh": "se lever：说起床"
+      },
+      {
+        "bodyZh": "Le train part à neuf heures dix 说明列车九点十分发车。à 引出事件发生的时刻。",
+        "examples": [
+          {
+            "fr": "Le train part à neuf heures dix.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-ac44959aa643ff544072c1052c85bd8faf7b5337710dc7024b581cc6c8375ad0",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1920,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "d61dcbd77fa57d54266a20056322eac32409cc4bddcc9154973aedce720a448b",
+                "url": "/api/audio/d61dcbd77fa57d54266a20056322eac32409cc4bddcc9154973aedce720a448b.wav"
+              },
+              "endMs": 1920,
+              "startMs": 0
+            },
+            "zh": "列车九点十分发车。"
+          }
+        ],
+        "id": "grammar-time-a",
+        "titleZh": "à + 时刻：说明发生时间"
+      }
+    ],
+    "vocabulary": [
+      {
+        "id": "word-se-lever",
+        "lemma": "se lever",
+        "meaningZh": "起床",
+        "noteZh": "正文 elle se lève；说自己时用 je me lève。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-0da642b8b5d1eb8d06c3cb108a65c5a3f026e4b9c07ea032c4471ea89f8a45b1",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "42ea6acc3b90ffb774af7ae418510d37dd9b99eeb8f249d7614848ecf2fa86aa",
+            "url": "/api/audio/42ea6acc3b90ffb774af7ae418510d37dd9b99eeb8f249d7614848ecf2fa86aa.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-douche",
+        "lemma": "douche",
+        "meaningZh": "淋浴",
+        "noteZh": "prendre une douche 表示洗淋浴。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-f8d8aa496910fac62275a662631866f5de50f0f223cc4da062015d784db42e40",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "6fcffbad8cd491bb997b60965d488bab6daa672cfe4407cffdab63eb8f62a67a",
+            "url": "/api/audio/6fcffbad8cd491bb997b60965d488bab6daa672cfe4407cffdab63eb8f62a67a.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-sept",
+        "lemma": "sept",
+        "meaningZh": "七",
+        "noteZh": "sept heures 表示七点。",
+        "partOfSpeech": "numeral",
+        "recording": {
+          "asset": {
+            "assetId": "speech-b555398518d5f13a613df5491c00361f38bd1cc5de4bf26778876dd9b80e0d7f",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "fa2d5bc11c3b16f3ec8208c9186c13fd6f47c19f530d75389503ac0b203d69a1",
+            "url": "/api/audio/fa2d5bc11c3b16f3ec8208c9186c13fd6f47c19f530d75389503ac0b203d69a1.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-trente",
+        "lemma": "trente",
+        "meaningZh": "三十",
+        "noteZh": "sept heures trente 表示七点半。",
+        "partOfSpeech": "numeral",
+        "recording": {
+          "asset": {
+            "assetId": "speech-35b87c13f45e9797f3a4316ef87673e3f92d6a5a69dde043337bf5d55cbe79c2",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "e97f3b87c400a5b91de983af7b371ba135cb0683b586859aaacca72326f13799",
+            "url": "/api/audio/e97f3b87c400a5b91de983af7b371ba135cb0683b586859aaacca72326f13799.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-huit",
+        "lemma": "huit",
+        "meaningZh": "八",
+        "noteZh": "huit heures 表示八点。",
+        "partOfSpeech": "numeral",
+        "recording": {
+          "asset": {
+            "assetId": "speech-2a84f71fad7f3ede45262b62e06c2860f49c459d172e85a2c289f1ea7449bf47",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "ba966a0c17596e98ef11254fe01d3326de6ee0a65832513f99ac2cf5239c5857",
+            "url": "/api/audio/ba966a0c17596e98ef11254fe01d3326de6ee0a65832513f99ac2cf5239c5857.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-preparer",
+        "lemma": "préparer",
+        "meaningZh": "准备",
+        "noteZh": "elle prépare 是第三人称单数现在时。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-fc0041900ca37892ef54baefe1704702a961d97616a929664c86c9c2931b26cc",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "faca39d4b7f13e2d8431a213375a488ec35cf2a17a59722aa32b3cc5c254fd71",
+            "url": "/api/audio/faca39d4b7f13e2d8431a213375a488ec35cf2a17a59722aa32b3cc5c254fd71.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-matin",
+        "lemma": "matin",
+        "meaningZh": "早晨",
+        "noteZh": "le matin 可用于描述早晨的习惯。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-aa357cc9a6ba11f038daf96a4e89d13ced64d92ca64ea7c44744fe75703e7c95",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "49bd4c14d34d2ecd9fdd0af841a11372b04aec1248cf63fd68e4e3b83683fd61",
+            "url": "/api/audio/49bd4c14d34d2ecd9fdd0af841a11372b04aec1248cf63fd68e4e3b83683fd61.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-heure",
+        "lemma": "heure",
+        "meaningZh": "小时；时刻",
+        "noteZh": "neuf heures dix 表示九点十分。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-e6c98971a88fb4586040f63e9e11a4b04b727275e3b993f9183af48fee3bb917",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "51d8c3dd8f32f770d86c0f4c959c6b1fa0a53555ea6290107037c44d053abd62",
+            "url": "/api/audio/51d8c3dd8f32f770d86c0f4c959c6b1fa0a53555ea6290107037c44d053abd62.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "晨光照进虚构公寓，书桌上有书和杯子，旁边是扶手椅与绿植",
+      "assetId": "art-home-morning",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "aa1458e135b40b1df9c1f47aff2c4fd7f1a19ffc40a14af98467b93e1a2df652",
+      "url": "/api/media/aa1458e135b40b1df9c1f47aff2c4fd7f1a19ffc40a14af98467b93e1a2df652.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "理解早晨安排的顺序",
+    "说出起床时间",
+    "区分整点和半点"
+  ],
+  "reviewItemIds": [
+    "word-se-lever",
+    "word-sept",
+    "word-trente"
+  ],
+  "revision": 3,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：七点。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "lève"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "保留 lève 中的重音符号；se 已经给出。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Je me lève à sept heures le matin.",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "article-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段短文"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "读懂一段早晨安排，分清起床、早餐和出门的时间。",
+  "title": {
+    "fr": "Le matin de Camille",
+    "zh": "说说起床时间"
+  },
+  "unitId": "a1-home-routine"
+}

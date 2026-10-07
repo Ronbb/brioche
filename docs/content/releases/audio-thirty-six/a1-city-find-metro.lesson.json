@@ -1,0 +1,1519 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-city-morning",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-1f63b2c74c3981c54665c01b2db32c506f872f22179f229f46f349bdb70f8410",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 960,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "076ebab194ec3b665739d90554a95508b990cf6716cc56b7fa5470f177e6c463",
+      "url": "/api/audio/076ebab194ec3b665739d90554a95508b990cf6716cc56b7fa5470f177e6c463.wav"
+    },
+    {
+      "assetId": "speech-42e96eb6ac3eba45854202f393c3bfdd02eee49b1e572f24c52179e37a48262d",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "c83f07dae1639b6e58bec45c575526e9f43097e11f004bad841a402bc161fa3e",
+      "url": "/api/audio/c83f07dae1639b6e58bec45c575526e9f43097e11f004bad841a402bc161fa3e.wav"
+    },
+    {
+      "assetId": "speech-74aa92ae56465815f776a50ab7b23ea3d9171988977f4da98647406b0f67c305",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 15990,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "63b3e95eb708cb8cb0fad81f8926f9114c1234e8a259929f531b8d8549b300a4",
+      "url": "/api/audio/63b3e95eb708cb8cb0fad81f8926f9114c1234e8a259929f531b8d8549b300a4.wav"
+    },
+    {
+      "assetId": "speech-83d711326cedbef3efe73299ce74da30a99c9635f54085a925119fd99ca42182",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "55dc196f2ae4b13f101e7a2571a8ed7e4594343dcf74077a76b26c64721e08be",
+      "url": "/api/audio/55dc196f2ae4b13f101e7a2571a8ed7e4594343dcf74077a76b26c64721e08be.wav"
+    },
+    {
+      "assetId": "speech-99e752df2869be49c9f842686e475387c66ccb663471c051e6e30bc086a75df6",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "c4d4ca44660c506236c88bb373061c5f630617a49d5100b3697c8348ef159597",
+      "url": "/api/audio/c4d4ca44660c506236c88bb373061c5f630617a49d5100b3697c8348ef159597.wav"
+    },
+    {
+      "assetId": "speech-9d83f9c21d2b19131c06ef34cbb3481ffa8f01f4a1f342d1c7d2ad62e2b79c6d",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "90e3c3b11d1c97f79d7699301190d2a100dd9db826f78856b8cc7c4f17666a9b",
+      "url": "/api/audio/90e3c3b11d1c97f79d7699301190d2a100dd9db826f78856b8cc7c4f17666a9b.wav"
+    },
+    {
+      "assetId": "speech-9f9236a405f6547daadeed203eaf1d3a73776df72066b1748e2e87c99e45acdd",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "74028e84cbe6848ee658d26fa8b41dc999e76156b6b8b408096c527cc6839739",
+      "url": "/api/audio/74028e84cbe6848ee658d26fa8b41dc999e76156b6b8b408096c527cc6839739.wav"
+    },
+    {
+      "assetId": "speech-a761fed4164846926f82bded7d6f1579c8aa38f4f4eabe88117e59bf99081414",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "e7477569fa2bb4958f7ba58595b99400ddc0f3a9e3cf368529f67e8aa6305689",
+      "url": "/api/audio/e7477569fa2bb4958f7ba58595b99400ddc0f3a9e3cf368529f67e8aa6305689.wav"
+    },
+    {
+      "assetId": "speech-b45fa8bef549fa20a20185791f4616034db2fcd072be67506a7ba4702ee4ad96",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "a05d9cebdf74ede87825a78f0a79ed431a8db209fb82eedd1105221afd58445c",
+      "url": "/api/audio/a05d9cebdf74ede87825a78f0a79ed431a8db209fb82eedd1105221afd58445c.wav"
+    },
+    {
+      "assetId": "speech-d2cfaee6b0ac2c40c0820575faa9d205df025827da5ca57d22bc578bcc11b826",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1840,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "9347ee505a00bcb3dc8278f698a1e8c179d129725174c6bc2546763da0f02bac",
+      "url": "/api/audio/9347ee505a00bcb3dc8278f698a1e8c179d129725174c6bc2546763da0f02bac.wav"
+    },
+    {
+      "assetId": "speech-ebdc63b207ea1201ce13bf0fc1c12c7750be76a3f162093614cb03378a5497b7",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 960,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "e6255731f620935d7b16b723149d3028c11c9fdbb136586abf96fcb918250f1f",
+      "url": "/api/audio/e6255731f620935d7b16b723149d3028c11c9fdbb136586abf96fcb918250f1f.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-1f63b2c74c3981c54665c01b2db32c506f872f22179f229f46f349bdb70f8410",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-42e96eb6ac3eba45854202f393c3bfdd02eee49b1e572f24c52179e37a48262d",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-74aa92ae56465815f776a50ab7b23ea3d9171988977f4da98647406b0f67c305",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-83d711326cedbef3efe73299ce74da30a99c9635f54085a925119fd99ca42182",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-99e752df2869be49c9f842686e475387c66ccb663471c051e6e30bc086a75df6",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-9d83f9c21d2b19131c06ef34cbb3481ffa8f01f4a1f342d1c7d2ad62e2b79c6d",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-9f9236a405f6547daadeed203eaf1d3a73776df72066b1748e2e87c99e45acdd",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-a761fed4164846926f82bded7d6f1579c8aa38f4f4eabe88117e59bf99081414",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-b45fa8bef549fa20a20185791f4616034db2fcd072be67506a7ba4702ee4ad96",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-d2cfaee6b0ac2c40c0820575faa9d205df025827da5ca57d22bc578bcc11b826",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-ebdc63b207ea1201ce13bf0fc1c12c7750be76a3f162093614cb03378a5497b7",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-74aa92ae56465815f776a50ab7b23ea3d9171988977f4da98647406b0f67c305",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 1680,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 800,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 800,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 560,
+          "wordRange": {
+            "end": 11,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 1040,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 800,
+          "wordRange": null
+        },
+        {
+          "endMs": 960,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 800,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 1040,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 960,
+          "wordRange": {
+            "end": 6,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 1120,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 1040,
+          "wordRange": null
+        },
+        {
+          "endMs": 1120,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 1040,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 1520,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-5",
+          "startMs": 1120,
+          "wordRange": null
+        },
+        {
+          "endMs": 1520,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-5",
+          "startMs": 1120,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3690,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 1930,
+          "wordRange": null
+        },
+        {
+          "endMs": 2490,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 2010,
+          "wordRange": null
+        },
+        {
+          "endMs": 2170,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 2010,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2490,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 2170,
+          "wordRange": {
+            "end": 10,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 2890,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 2570,
+          "wordRange": null
+        },
+        {
+          "endMs": 2890,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 2570,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 3530,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 2970,
+          "wordRange": null
+        },
+        {
+          "endMs": 3050,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 2970,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3530,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 3050,
+          "wordRange": {
+            "end": 8,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 5380,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 3940,
+          "wordRange": null
+        },
+        {
+          "endMs": 4580,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 4020,
+          "wordRange": null
+        },
+        {
+          "endMs": 4580,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 4020,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4740,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 4580,
+          "wordRange": null
+        },
+        {
+          "endMs": 4740,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 4580,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 5300,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 4740,
+          "wordRange": null
+        },
+        {
+          "endMs": 4820,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 4740,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 5300,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 4820,
+          "wordRange": {
+            "end": 8,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 8990,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 5630,
+          "wordRange": null
+        },
+        {
+          "endMs": 7310,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 5710,
+          "wordRange": null
+        },
+        {
+          "endMs": 6030,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 5710,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6590,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 6350,
+          "wordRange": {
+            "end": 7,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 7150,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 6590,
+          "wordRange": {
+            "end": 17,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 7310,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 7150,
+          "wordRange": {
+            "end": 21,
+            "start": 18
+          }
+        },
+        {
+          "endMs": 7870,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 7310,
+          "wordRange": null
+        },
+        {
+          "endMs": 7390,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 7310,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7870,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 7390,
+          "wordRange": {
+            "end": 8,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 8350,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 8030,
+          "wordRange": null
+        },
+        {
+          "endMs": 8350,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 8030,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8910,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-6",
+          "startMs": 8350,
+          "wordRange": null
+        },
+        {
+          "endMs": 8510,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-6",
+          "startMs": 8350,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8910,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-6",
+          "startMs": 8510,
+          "wordRange": {
+            "end": 8,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 10840,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 9240,
+          "wordRange": null
+        },
+        {
+          "endMs": 10040,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 9320,
+          "wordRange": null
+        },
+        {
+          "endMs": 9480,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 9320,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10040,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 9480,
+          "wordRange": {
+            "end": 12,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 10680,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 10200,
+          "wordRange": null
+        },
+        {
+          "endMs": 10280,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 10200,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10680,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 10280,
+          "wordRange": {
+            "end": 8,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 13730,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 11090,
+          "wordRange": null
+        },
+        {
+          "endMs": 11570,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 11170,
+          "wordRange": null
+        },
+        {
+          "endMs": 11570,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 11170,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 12290,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 11890,
+          "wordRange": null
+        },
+        {
+          "endMs": 12290,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-2",
+          "startMs": 11890,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 12370,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 12290,
+          "wordRange": null
+        },
+        {
+          "endMs": 12370,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-3",
+          "startMs": 12290,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 12770,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 12370,
+          "wordRange": null
+        },
+        {
+          "endMs": 12770,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-4",
+          "startMs": 12370,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 12930,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 12770,
+          "wordRange": null
+        },
+        {
+          "endMs": 12930,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-5",
+          "startMs": 12770,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 13570,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-6",
+          "startMs": 12930,
+          "wordRange": null
+        },
+        {
+          "endMs": 13010,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-6",
+          "startMs": 12930,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 13570,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-6",
+          "startMs": 13010,
+          "wordRange": {
+            "end": 7,
+            "start": 3
+          }
+        },
+        {
+          "endMs": 14940,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 13980,
+          "wordRange": null
+        },
+        {
+          "endMs": 14780,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 14060,
+          "wordRange": null
+        },
+        {
+          "endMs": 14380,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 14060,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 14780,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 14380,
+          "wordRange": {
+            "end": 14,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 15990,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 15190,
+          "wordRange": null
+        },
+        {
+          "endMs": 15830,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 15270,
+          "wordRange": null
+        },
+        {
+          "endMs": 15430,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 15270,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 15830,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 15430,
+          "wordRange": {
+            "end": 7,
+            "start": 3
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-city-morning",
+      "placeZh": "一座虚构城市的街道与车站",
+      "situationZh": "问入口在哪里，理解简单的方向说明。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-1",
+          "labelZh": "出行者"
+        },
+        {
+          "avatarId": "avatar-lea-v1",
+          "characterId": "character-lea",
+          "displayName": "Léa",
+          "id": "speaker-2",
+          "labelZh": "路人"
+        }
+      ],
+      "titleZh": "找到地铁入口",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Excusez-moi",
+              "vocabularyId": "expr-excusez-moi"
+            },
+            {
+              "id": "segment-1-2",
+              "text": ", "
+            },
+            {
+              "grammarId": "grammar-location-ou-est",
+              "id": "segment-1-3",
+              "text": "où est",
+              "vocabularyId": "expr-ou-est"
+            },
+            {
+              "id": "segment-1-4",
+              "text": " le "
+            },
+            {
+              "id": "segment-1-5",
+              "text": "métro",
+              "vocabularyId": "word-metro"
+            },
+            {
+              "id": "segment-1-6",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "打扰一下，地铁在哪里？"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Tout droit",
+              "vocabularyId": "expr-tout-droit"
+            },
+            {
+              "id": "segment-2-2",
+              "text": ", puis "
+            },
+            {
+              "grammarId": "grammar-direction-phrases",
+              "id": "segment-2-3",
+              "text": "à gauche",
+              "vocabularyId": "expr-a-gauche"
+            },
+            {
+              "id": "segment-2-4",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "直走，然后向左。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-2",
+              "text": "L’entrée",
+              "vocabularyId": "word-entree"
+            },
+            {
+              "id": "segment-3-3",
+              "text": " est "
+            },
+            {
+              "grammarId": "grammar-direction-phrases",
+              "id": "segment-3-4",
+              "text": "à gauche",
+              "vocabularyId": "expr-a-gauche"
+            },
+            {
+              "id": "segment-3-5",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "入口在左边吗？"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Oui. La pharmacie est "
+            },
+            {
+              "id": "segment-4-2",
+              "text": "à droite",
+              "vocabularyId": "expr-a-droite"
+            },
+            {
+              "id": "segment-4-3",
+              "text": ", "
+            },
+            {
+              "id": "segment-4-4",
+              "text": "l’entrée",
+              "vocabularyId": "word-entree"
+            },
+            {
+              "id": "segment-4-5",
+              "text": " "
+            },
+            {
+              "grammarId": "grammar-direction-phrases",
+              "id": "segment-4-6",
+              "text": "à gauche",
+              "vocabularyId": "expr-a-gauche"
+            },
+            {
+              "id": "segment-4-7",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "是的。药店在右边，入口在左边。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "La pharmacie, "
+            },
+            {
+              "id": "segment-5-2",
+              "text": "à droite",
+              "vocabularyId": "expr-a-droite"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "药店在右边吗？"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Oui. "
+            },
+            {
+              "id": "segment-6-2",
+              "text": "L’entrée",
+              "vocabularyId": "word-entree"
+            },
+            {
+              "id": "segment-6-3",
+              "text": " du "
+            },
+            {
+              "id": "segment-6-4",
+              "text": "métro",
+              "vocabularyId": "word-metro"
+            },
+            {
+              "id": "segment-6-5",
+              "text": " est "
+            },
+            {
+              "id": "segment-6-6",
+              "text": "en face",
+              "vocabularyId": "expr-en-face"
+            },
+            {
+              "id": "segment-6-7",
+              "text": "."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "是的。地铁入口在对面。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Merci beaucoup."
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "非常感谢。"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "De rien."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "不客气。"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "où est 后面接要找的地方。où 带重音，区别于表示“或者”的 ou。\n\ntout droit 是直走；à gauche / à droite 表示左/右；en face 表示对面。具体移动方向要结合现场位置。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "路线为虚构，指路中的左右需要明确站立位置；本课不提供真实城市导航。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "expr-excusez-moi",
+        "word-metro",
+        "word-entree",
+        "expr-ou-est",
+        "expr-tout-droit",
+        "expr-a-gauche",
+        "expr-a-droite",
+        "expr-en-face"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-location-ou-est",
+        "grammar-direction-phrases"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "直走，然后向右"
+        },
+        {
+          "id": "correct",
+          "text": "直走，然后向左"
+        },
+        {
+          "id": "distractor-b",
+          "text": "直接回头"
+        }
+      ],
+      "promptZh": "对方最开始给出的路线是什么？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "对方说 tout droit, puis à gauche。",
+      "id": "exercise-fill",
+      "promptZh": "根据对话补完整最初的路线。",
+      "templateFr": "Tout droit, puis à ___.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句可以在本课场景中使用的话。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "le métro ?"
+        },
+        {
+          "id": "token-2",
+          "text": "où est"
+        },
+        {
+          "id": "token-1",
+          "text": "Excusez-moi,"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "如果暂时没有合适场景，可以在家用虚构信息练说，不需要真实购物或出行。",
+      "id": "habit-main",
+      "taskZh": "看一张附近街区地图，用 à gauche / à droite 练习描述两个地点的位置。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能礼貌地问路。",
+        "我能区分左右和直走。",
+        "我能确认入口位置。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner authorized direct publication; exact existing PCM and actual fixed-model predictions reused after whole-word annotation repair, with no new synthesis or human hearing asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-city-find-metro",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "où est 后面接要找的地方。où 带重音，区别于表示“或者”的 ou。",
+        "examples": [
+          {
+            "fr": "Où est le métro ?",
+            "recording": {
+              "asset": {
+                "assetId": "speech-1f63b2c74c3981c54665c01b2db32c506f872f22179f229f46f349bdb70f8410",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 960,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "076ebab194ec3b665739d90554a95508b990cf6716cc56b7fa5470f177e6c463",
+                "url": "/api/audio/076ebab194ec3b665739d90554a95508b990cf6716cc56b7fa5470f177e6c463.wav"
+              },
+              "endMs": 960,
+              "startMs": 0
+            },
+            "zh": "地铁在哪里？"
+          }
+        ],
+        "id": "grammar-location-ou-est",
+        "titleZh": "Où est…?：询问位置"
+      },
+      {
+        "bodyZh": "tout droit 是直走；à gauche / à droite 表示左/右；en face 表示对面。具体移动方向要结合现场位置。",
+        "examples": [
+          {
+            "fr": "Tout droit, puis à gauche.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-d2cfaee6b0ac2c40c0820575faa9d205df025827da5ca57d22bc578bcc11b826",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1840,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "9347ee505a00bcb3dc8278f698a1e8c179d129725174c6bc2546763da0f02bac",
+                "url": "/api/audio/9347ee505a00bcb3dc8278f698a1e8c179d129725174c6bc2546763da0f02bac.wav"
+              },
+              "endMs": 1840,
+              "startMs": 0
+            },
+            "zh": "直走，然后向左。"
+          }
+        ],
+        "id": "grammar-direction-phrases",
+        "titleZh": "位置与方向语块"
+      }
+    ],
+    "vocabulary": [
+      {
+        "id": "expr-excusez-moi",
+        "lemma": "excusez-moi",
+        "meaningZh": "打扰一下",
+        "noteZh": "向尚不熟悉的人问路时，可先礼貌引起注意。",
+        "partOfSpeech": "other",
+        "recording": {
+          "asset": {
+            "assetId": "speech-ebdc63b207ea1201ce13bf0fc1c12c7750be76a3f162093614cb03378a5497b7",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 960,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "e6255731f620935d7b16b723149d3028c11c9fdbb136586abf96fcb918250f1f",
+            "url": "/api/audio/e6255731f620935d7b16b723149d3028c11c9fdbb136586abf96fcb918250f1f.wav"
+          },
+          "endMs": 960,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-metro",
+        "lemma": "métro",
+        "meaningZh": "地铁",
+        "noteZh": "le métro；本课线路和城市为虚构。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-99e752df2869be49c9f842686e475387c66ccb663471c051e6e30bc086a75df6",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "c4d4ca44660c506236c88bb373061c5f630617a49d5100b3697c8348ef159597",
+            "url": "/api/audio/c4d4ca44660c506236c88bb373061c5f630617a49d5100b3697c8348ef159597.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-entree",
+        "lemma": "entrée",
+        "meaningZh": "入口",
+        "noteZh": "l’entrée 是阴性名词，省音形式不表示阳性。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-83d711326cedbef3efe73299ce74da30a99c9635f54085a925119fd99ca42182",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "55dc196f2ae4b13f101e7a2571a8ed7e4594343dcf74077a76b26c64721e08be",
+            "url": "/api/audio/55dc196f2ae4b13f101e7a2571a8ed7e4594343dcf74077a76b26c64721e08be.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-ou-est",
+        "lemma": "où est",
+        "meaningZh": "……在哪里？",
+        "noteZh": "où 带重音，表示“在哪里”；ou 不带重音表示“或者”。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-a761fed4164846926f82bded7d6f1579c8aa38f4f4eabe88117e59bf99081414",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "e7477569fa2bb4958f7ba58595b99400ddc0f3a9e3cf368529f67e8aa6305689",
+            "url": "/api/audio/e7477569fa2bb4958f7ba58595b99400ddc0f3a9e3cf368529f67e8aa6305689.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-tout-droit",
+        "lemma": "tout droit",
+        "meaningZh": "直走",
+        "noteZh": "在指路场景里表示继续向前。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-42e96eb6ac3eba45854202f393c3bfdd02eee49b1e572f24c52179e37a48262d",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "c83f07dae1639b6e58bec45c575526e9f43097e11f004bad841a402bc161fa3e",
+            "url": "/api/audio/c83f07dae1639b6e58bec45c575526e9f43097e11f004bad841a402bc161fa3e.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-a-gauche",
+        "lemma": "à gauche",
+        "meaningZh": "在左边；向左",
+        "noteZh": "根据上下文表示位置或转向。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-b45fa8bef549fa20a20185791f4616034db2fcd072be67506a7ba4702ee4ad96",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "a05d9cebdf74ede87825a78f0a79ed431a8db209fb82eedd1105221afd58445c",
+            "url": "/api/audio/a05d9cebdf74ede87825a78f0a79ed431a8db209fb82eedd1105221afd58445c.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-a-droite",
+        "lemma": "à droite",
+        "meaningZh": "在右边；向右",
+        "noteZh": "根据上下文表示位置或转向。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-9d83f9c21d2b19131c06ef34cbb3481ffa8f01f4a1f342d1c7d2ad62e2b79c6d",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "90e3c3b11d1c97f79d7699301190d2a100dd9db826f78856b8cc7c4f17666a9b",
+            "url": "/api/audio/90e3c3b11d1c97f79d7699301190d2a100dd9db826f78856b8cc7c4f17666a9b.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-en-face",
+        "lemma": "en face",
+        "meaningZh": "在对面",
+        "noteZh": "本课表示从当前所在位置看去的对面。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-9f9236a405f6547daadeed203eaf1d3a73776df72066b1748e2e87c99e45acdd",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "74028e84cbe6848ee658d26fa8b41dc999e76156b6b8b408096c527cc6839739",
+            "url": "/api/audio/74028e84cbe6848ee658d26fa8b41dc999e76156b6b8b408096c527cc6839739.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "Camille 在虚构城市的车站入口查看路线卡",
+      "assetId": "art-city-morning",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "bd40f4d53c9e86e695f7edbd64156aa57279bae083fab43c805ae27af88f909b",
+      "url": "/api/media/bd40f4d53c9e86e695f7edbd64156aa57279bae083fab43c805ae27af88f909b.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "礼貌地问路",
+    "区分左右和直走",
+    "确认入口位置"
+  ],
+  "reviewItemIds": [
+    "expr-excusez-moi",
+    "word-metro",
+    "word-entree"
+  ],
+  "revision": 3,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：直走，然后向左。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "gauche"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "对方说 tout droit, puis à gauche。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Excusez-moi, où est le métro ? 问入口在哪里，理解简单的方向说明。",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "问入口在哪里，理解简单的方向说明。",
+  "title": {
+    "fr": "Où est l’entrée du métro ?",
+    "zh": "找到地铁入口"
+  },
+  "unitId": "a1-city-travel"
+}

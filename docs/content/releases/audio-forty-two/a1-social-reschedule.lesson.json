@@ -1,0 +1,1569 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-park-meeting",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-lea-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-2261d76e1eee63d682b5e7610a0eb01b4c33cd9fc17cebf75783026681f0be2a",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "e1292249ef0edecfd0e2851bedc591606aabdf08ad8049880d45944b3dcc8fae",
+      "url": "/api/audio/e1292249ef0edecfd0e2851bedc591606aabdf08ad8049880d45944b3dcc8fae.wav"
+    },
+    {
+      "assetId": "speech-280025b9fb1441deb3a6af0613bd80acb85e6ce25cadbc85919529a9be316d48",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "ae361a8a7e59f82e146215687a6a55022b2b27670452031822490b7ba748aec2",
+      "url": "/api/audio/ae361a8a7e59f82e146215687a6a55022b2b27670452031822490b7ba748aec2.wav"
+    },
+    {
+      "assetId": "speech-3d894b5b06cecdd6488a201806594961c8dc3ccd1b60051cffef1edef2c6c698",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "811060c79a20bc7c04e47ff88f9a9641a688c18e7e702edd61b05c3ce05170be",
+      "url": "/api/audio/811060c79a20bc7c04e47ff88f9a9641a688c18e7e702edd61b05c3ce05170be.wav"
+    },
+    {
+      "assetId": "speech-51e261422faa950b4fc03fb89663e78b03d683e5aaada9da6b41feff96020676",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 17110,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "6b3d5fa11f1d8f3036298075ef61816dcf3a2a84a27532b9c9d739adb5431691",
+      "url": "/api/audio/6b3d5fa11f1d8f3036298075ef61816dcf3a2a84a27532b9c9d739adb5431691.wav"
+    },
+    {
+      "assetId": "speech-7cddaf72ccaa5b6b34edac999d4b4040ae2760a3bce57d6881e0729a760b1daf",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 960,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "5baaeafae0cab25faff56b0ba28e75ff661009e5516bc88030586dc17a460cf5",
+      "url": "/api/audio/5baaeafae0cab25faff56b0ba28e75ff661009e5516bc88030586dc17a460cf5.wav"
+    },
+    {
+      "assetId": "speech-808e63aaa63542e027f07fbdcc0fd4e9cd9bdd1f79e89b373f254b2abd54e7be",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "fcf2b92cd7e15ac84a3d11e392fe7d38a6371286e7696810c5ed8f99c0a231f1",
+      "url": "/api/audio/fcf2b92cd7e15ac84a3d11e392fe7d38a6371286e7696810c5ed8f99c0a231f1.wav"
+    },
+    {
+      "assetId": "speech-8b15988f6bcba4b1e1671c33de0b4b70c63f8ebd6bf39823832ad99fb9bc1ef4",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1920,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "08decfc96223c7efadae538512823649aa0cd4c1289c4709f6e4755bb596d246",
+      "url": "/api/audio/08decfc96223c7efadae538512823649aa0cd4c1289c4709f6e4755bb596d246.wav"
+    },
+    {
+      "assetId": "speech-c30ea1cef266ae3fcca35402822350a0600f3cc22f2d9ccbde0f9c04dbf60355",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1600,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "63ca01cb339f83de7eec607c2a337d8e4fc9a8db211ac988de7d1275c4775636",
+      "url": "/api/audio/63ca01cb339f83de7eec607c2a337d8e4fc9a8db211ac988de7d1275c4775636.wav"
+    },
+    {
+      "assetId": "speech-dbb37b0e528b0f06d6451a910f6ce1de32ed7a8a9eaa2aeec4577b2e0c7cbe34",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "05c8db639b03c53b45345a226d2f071c746810d980eeaa32e371601c1dce4c06",
+      "url": "/api/audio/05c8db639b03c53b45345a226d2f071c746810d980eeaa32e371601c1dce4c06.wav"
+    },
+    {
+      "assetId": "speech-e1e6f6d77f6f0891c81f5708ee6e0c565b024a2095acb6804cec568d42eda00a",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "069dfbb000782f95968e42ff64c71ce74ea5914d7d7cfa6cd20d0b0c04d89127",
+      "url": "/api/audio/069dfbb000782f95968e42ff64c71ce74ea5914d7d7cfa6cd20d0b0c04d89127.wav"
+    },
+    {
+      "assetId": "speech-f2a267396e1962b301f74ade60631a3338794b31f03164232ca10e48c240e627",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 720,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "c7a25b0edcfbec00b21a71972a6e6b2aaa818e5dc99ffe4606e35b0b068a7cf4",
+      "url": "/api/audio/c7a25b0edcfbec00b21a71972a6e6b2aaa818e5dc99ffe4606e35b0b068a7cf4.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-2261d76e1eee63d682b5e7610a0eb01b4c33cd9fc17cebf75783026681f0be2a",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-280025b9fb1441deb3a6af0613bd80acb85e6ce25cadbc85919529a9be316d48",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-3d894b5b06cecdd6488a201806594961c8dc3ccd1b60051cffef1edef2c6c698",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-51e261422faa950b4fc03fb89663e78b03d683e5aaada9da6b41feff96020676",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-7cddaf72ccaa5b6b34edac999d4b4040ae2760a3bce57d6881e0729a760b1daf",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-808e63aaa63542e027f07fbdcc0fd4e9cd9bdd1f79e89b373f254b2abd54e7be",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-8b15988f6bcba4b1e1671c33de0b4b70c63f8ebd6bf39823832ad99fb9bc1ef4",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-c30ea1cef266ae3fcca35402822350a0600f3cc22f2d9ccbde0f9c04dbf60355",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-dbb37b0e528b0f06d6451a910f6ce1de32ed7a8a9eaa2aeec4577b2e0c7cbe34",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-e1e6f6d77f6f0891c81f5708ee6e0c565b024a2095acb6804cec568d42eda00a",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-f2a267396e1962b301f74ade60631a3338794b31f03164232ca10e48c240e627",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-51e261422faa950b4fc03fb89663e78b03d683e5aaada9da6b41feff96020676",
+      "blockId": "dialogue-main",
+      "cues": [
+        {
+          "endMs": 1200,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 160,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 160,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 320,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 160,
+          "wordRange": null
+        },
+        {
+          "endMs": 320,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 160,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 320,
+          "wordRange": null
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 320,
+          "wordRange": {
+            "end": 6,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 1040,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 560,
+          "wordRange": null
+        },
+        {
+          "endMs": 1040,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-4",
+          "startMs": 560,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4250,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 1450,
+          "wordRange": null
+        },
+        {
+          "endMs": 2010,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1530,
+          "wordRange": null
+        },
+        {
+          "endMs": 2010,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 1530,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2170,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 2010,
+          "wordRange": null
+        },
+        {
+          "endMs": 2090,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 2010,
+          "wordRange": {
+            "end": 4,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 2170,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 2090,
+          "wordRange": {
+            "end": 7,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 2330,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 2170,
+          "wordRange": null
+        },
+        {
+          "endMs": 2330,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 2170,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4010,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4",
+          "startMs": 2330,
+          "wordRange": null
+        },
+        {
+          "endMs": 2730,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4",
+          "startMs": 2330,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 3450,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4",
+          "startMs": 3370,
+          "wordRange": {
+            "end": 8,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 4010,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-4",
+          "startMs": 3450,
+          "wordRange": {
+            "end": 18,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 6180,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 4500,
+          "wordRange": null
+        },
+        {
+          "endMs": 5220,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 4580,
+          "wordRange": null
+        },
+        {
+          "endMs": 4660,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 4580,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 4740,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 4660,
+          "wordRange": {
+            "end": 6,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 5220,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 4740,
+          "wordRange": {
+            "end": 15,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 5620,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 5540,
+          "wordRange": null
+        },
+        {
+          "endMs": 5620,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 5540,
+          "wordRange": {
+            "end": 4,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 6020,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 5700,
+          "wordRange": null
+        },
+        {
+          "endMs": 6020,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-3",
+          "startMs": 5700,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8990,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 6430,
+          "wordRange": null
+        },
+        {
+          "endMs": 7070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 6510,
+          "wordRange": null
+        },
+        {
+          "endMs": 7070,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 6510,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 7150,
+          "wordRange": null
+        },
+        {
+          "endMs": 7230,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 7150,
+          "wordRange": {
+            "end": 4,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 7550,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 7310,
+          "wordRange": {
+            "end": 9,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 7870,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 7550,
+          "wordRange": null
+        },
+        {
+          "endMs": 7870,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 7550,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8030,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 7870,
+          "wordRange": null
+        },
+        {
+          "endMs": 8030,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 7870,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8590,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-7",
+          "startMs": 8110,
+          "wordRange": null
+        },
+        {
+          "endMs": 8350,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-7",
+          "startMs": 8110,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8590,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-7",
+          "startMs": 8350,
+          "wordRange": {
+            "end": 8,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 8910,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-8",
+          "startMs": 8590,
+          "wordRange": null
+        },
+        {
+          "endMs": 8910,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-8",
+          "startMs": 8590,
+          "wordRange": {
+            "end": 7,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 11480,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 9240,
+          "wordRange": null
+        },
+        {
+          "endMs": 9480,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 9320,
+          "wordRange": null
+        },
+        {
+          "endMs": 9480,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 9320,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 9640,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 9480,
+          "wordRange": null
+        },
+        {
+          "endMs": 9640,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-2",
+          "startMs": 9480,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10360,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 9640,
+          "wordRange": null
+        },
+        {
+          "endMs": 9720,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 9640,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 10200,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 9720,
+          "wordRange": {
+            "end": 13,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 10360,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-3",
+          "startMs": 10200,
+          "wordRange": {
+            "end": 15,
+            "start": 14
+          }
+        },
+        {
+          "endMs": 10760,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-4",
+          "startMs": 10360,
+          "wordRange": null
+        },
+        {
+          "endMs": 10680,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-4",
+          "startMs": 10360,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10760,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-4",
+          "startMs": 10680,
+          "wordRange": {
+            "end": 8,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 11320,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-5",
+          "startMs": 10760,
+          "wordRange": null
+        },
+        {
+          "endMs": 10920,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-5",
+          "startMs": 10760,
+          "wordRange": {
+            "end": 7,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 11320,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-5",
+          "startMs": 10920,
+          "wordRange": {
+            "end": 14,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 14130,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 11730,
+          "wordRange": null
+        },
+        {
+          "endMs": 13810,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 11890,
+          "wordRange": null
+        },
+        {
+          "endMs": 12210,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 11890,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 13170,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 12850,
+          "wordRange": {
+            "end": 11,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 13250,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 13170,
+          "wordRange": {
+            "end": 14,
+            "start": 12
+          }
+        },
+        {
+          "endMs": 13810,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 13250,
+          "wordRange": {
+            "end": 21,
+            "start": 15
+          }
+        },
+        {
+          "endMs": 16140,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 14380,
+          "wordRange": null
+        },
+        {
+          "endMs": 15500,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 14460,
+          "wordRange": null
+        },
+        {
+          "endMs": 15100,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 14460,
+          "wordRange": {
+            "end": 8,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 15500,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 15340,
+          "wordRange": {
+            "end": 11,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 15900,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-2",
+          "startMs": 15500,
+          "wordRange": null
+        },
+        {
+          "endMs": 15900,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-2",
+          "startMs": 15500,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 17110,
+          "entryId": "entry-8",
+          "segmentId": null,
+          "startMs": 16390,
+          "wordRange": null
+        },
+        {
+          "endMs": 16550,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 16470,
+          "wordRange": null
+        },
+        {
+          "endMs": 16550,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-1",
+          "startMs": 16470,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 17030,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-2",
+          "startMs": 16550,
+          "wordRange": null
+        },
+        {
+          "endMs": 17030,
+          "entryId": "entry-8",
+          "segmentId": "segment-8-2",
+          "startMs": 16550,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-park-meeting",
+      "placeZh": "两位朋友调整虚构电影院约见",
+      "situationZh": "说明当天不能参加，并确认另一个见面时间。",
+      "type": "scene"
+    },
+    {
+      "id": "dialogue-main",
+      "speakers": [
+        {
+          "avatarId": "avatar-camille-v1",
+          "characterId": "character-camille",
+          "displayName": "Camille",
+          "id": "speaker-1",
+          "labelZh": "朋友"
+        },
+        {
+          "avatarId": "avatar-lea-v1",
+          "characterId": "character-lea",
+          "displayName": "Léa",
+          "id": "speaker-2",
+          "labelZh": "朋友"
+        }
+      ],
+      "titleZh": "拒绝并提出新的时间",
+      "turns": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Tu "
+            },
+            {
+              "grammarId": "grammar-pouvoir-invite",
+              "id": "segment-1-2",
+              "text": "peux",
+              "vocabularyId": "word-pouvoir"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " venir "
+            },
+            {
+              "id": "segment-1-4",
+              "text": "dimanche",
+              "vocabularyId": "word-dimanche"
+            },
+            {
+              "id": "segment-1-5",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "你星期日能来吗？"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Désolée",
+              "vocabularyId": "expr-desolee"
+            },
+            {
+              "id": "segment-2-2",
+              "text": ", je ne "
+            },
+            {
+              "grammarId": "grammar-ne-peux-pas",
+              "id": "segment-2-3",
+              "text": "peux",
+              "vocabularyId": "word-pouvoir"
+            },
+            {
+              "id": "segment-2-4",
+              "text": " pas. Je travaille."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "抱歉，我不能来。我那天工作。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Pas de problème",
+              "vocabularyId": "expr-pas-de-probleme"
+            },
+            {
+              "id": "segment-3-2",
+              "text": ". Et "
+            },
+            {
+              "id": "segment-3-3",
+              "text": "lundi",
+              "vocabularyId": "word-lundi"
+            },
+            {
+              "id": "segment-3-4",
+              "text": " ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "没问题。那星期一呢？"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Lundi",
+              "vocabularyId": "word-lundi"
+            },
+            {
+              "id": "segment-4-2",
+              "text": ", je suis "
+            },
+            {
+              "id": "segment-4-3",
+              "text": "libre",
+              "vocabularyId": "word-libre"
+            },
+            {
+              "id": "segment-4-4",
+              "text": " "
+            },
+            {
+              "id": "segment-4-5",
+              "text": "après",
+              "vocabularyId": "word-apres"
+            },
+            {
+              "id": "segment-4-6",
+              "text": " "
+            },
+            {
+              "id": "segment-4-7",
+              "text": "dix-huit",
+              "vocabularyId": "word-dix-huit"
+            },
+            {
+              "id": "segment-4-8",
+              "text": " heures."
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "星期一，我下午六点以后有空。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "On "
+            },
+            {
+              "grammarId": "grammar-pouvoir-invite",
+              "id": "segment-5-2",
+              "text": "peut",
+              "vocabularyId": "word-pouvoir"
+            },
+            {
+              "id": "segment-5-3",
+              "text": " se retrouver à "
+            },
+            {
+              "id": "segment-5-4",
+              "text": "dix-huit",
+              "vocabularyId": "word-dix-huit"
+            },
+            {
+              "id": "segment-5-5",
+              "text": " heures trente ?"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "我们可以在下午六点半碰面吗？"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "Oui. Devant le cinéma ?"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "可以。在电影院前面吗？"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "D’accord. À "
+            },
+            {
+              "id": "segment-7-2",
+              "text": "lundi",
+              "vocabularyId": "word-lundi"
+            },
+            {
+              "id": "segment-7-3",
+              "text": " !"
+            }
+          ],
+          "speakerId": "speaker-1",
+          "translationZh": "好的。星期一见！"
+        },
+        {
+          "id": "entry-8",
+          "segments": [
+            {
+              "id": "segment-8-1",
+              "text": "À "
+            },
+            {
+              "id": "segment-8-2",
+              "text": "lundi",
+              "vocabularyId": "word-lundi"
+            },
+            {
+              "id": "segment-8-3",
+              "text": " !"
+            }
+          ],
+          "speakerId": "speaker-2",
+          "translationZh": "星期一见！"
+        }
+      ],
+      "type": "dialogue"
+    },
+    {
+      "bodyZh": "je ne peux pas 是完整否定，peux 是 pouvoir 的第一人称形式。对方先接受这个情况，再提出星期一。après dix-huit heures 是十八点之后，最终约定 dix-huit heures trente，即下午六点半。本课 se retrouver 作为“碰面”的常用搭配理解。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3"
+        },
+        {
+          "blockId": "dialogue-main",
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "工作、空闲时间与朋友关系都是虚构设定；本课的改期话语不是对所有社会关系的礼仪规定。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "expr-desolee",
+        "word-pouvoir",
+        "word-dimanche",
+        "word-lundi",
+        "word-apres",
+        "word-dix-huit",
+        "expr-pas-de-probleme",
+        "word-libre"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-ne-peux-pas",
+        "grammar-pouvoir-invite"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "星期日下午六点半"
+        },
+        {
+          "id": "correct",
+          "text": "星期一下午六点半"
+        },
+        {
+          "id": "distractor-b",
+          "text": "星期一下午六点"
+        }
+      ],
+      "promptZh": "两人最终约定什么时候见面？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "pouvoir 搭配 je 用 peux，ne…pas 表示否定。",
+      "id": "exercise-fill",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Je ne ___ pas venir dimanche.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "dimanche."
+        },
+        {
+          "id": "token-1",
+          "text": "Je ne peux pas"
+        },
+        {
+          "id": "token-2",
+          "text": "venir"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。",
+      "id": "habit-main",
+      "taskZh": "替虚构角色写一句不能参加的答复，并提出另一个时间。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能用 je ne peux pas 说明不能参加。",
+        "我能给出简单原因。",
+        "我能确认改期后的时间。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    },
+    {
+      "avatarId": "avatar-lea-v1",
+      "characterId": "character-lea",
+      "displayName": "Léa",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner authorized direct publication; actual fixed-model inference of offline tempo-stretched analysis PCM, exact declared time scale, original playback unchanged; no new synthesis or human listening asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-social-reschedule",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "pouvoir 的第一人称现在时是 peux。完整否定把 ne 和 pas 放在它两边：je ne peux pas venir。venir 保留原形；可以再说一个简单原因或提出新的时间。",
+        "examples": [
+          {
+            "fr": "Je ne peux pas venir dimanche.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-c30ea1cef266ae3fcca35402822350a0600f3cc22f2d9ccbde0f9c04dbf60355",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1600,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "63ca01cb339f83de7eec607c2a337d8e4fc9a8db211ac988de7d1275c4775636",
+                "url": "/api/audio/63ca01cb339f83de7eec607c2a337d8e4fc9a8db211ac988de7d1275c4775636.wav"
+              },
+              "endMs": 1600,
+              "startMs": 0
+            },
+            "zh": "我星期日不能来。"
+          }
+        ],
+        "id": "grammar-ne-peux-pas",
+        "titleZh": "Je ne peux pas：说明不能参加"
+      },
+      {
+        "bodyZh": "本课 je peux、tu peux、on peut 后接动词原形。口语中 on 可表示“我们”，但动词仍用第三人称单数 peut。On peut prendre un café ? 用来提议一起喝咖啡。",
+        "examples": [
+          {
+            "fr": "On peut prendre un café ensemble ?",
+            "recording": {
+              "asset": {
+                "assetId": "speech-8b15988f6bcba4b1e1671c33de0b4b70c63f8ebd6bf39823832ad99fb9bc1ef4",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1920,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "08decfc96223c7efadae538512823649aa0cd4c1289c4709f6e4755bb596d246",
+                "url": "/api/audio/08decfc96223c7efadae538512823649aa0cd4c1289c4709f6e4755bb596d246.wav"
+              },
+              "endMs": 1920,
+              "startMs": 0
+            },
+            "zh": "我们可以一起喝杯咖啡吗？"
+          }
+        ],
+        "id": "grammar-pouvoir-invite",
+        "titleZh": "pouvoir + 动词原形：提出安排"
+      }
+    ],
+    "vocabulary": [
+      {
+        "id": "expr-desolee",
+        "lemma": "désolée",
+        "meaningZh": "抱歉",
+        "noteZh": "本课 Léa 是女性，说 désolée；男性可写 désolé，读音相同。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-dbb37b0e528b0f06d6451a910f6ce1de32ed7a8a9eaa2aeec4577b2e0c7cbe34",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "05c8db639b03c53b45345a226d2f071c746810d980eeaa32e371601c1dce4c06",
+            "url": "/api/audio/05c8db639b03c53b45345a226d2f071c746810d980eeaa32e371601c1dce4c06.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-pouvoir",
+        "lemma": "pouvoir",
+        "meaningZh": "能；可以",
+        "noteZh": "本单元学习 je peux、tu peux、on peut；后接动词原形。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-3d894b5b06cecdd6488a201806594961c8dc3ccd1b60051cffef1edef2c6c698",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "811060c79a20bc7c04e47ff88f9a9641a688c18e7e702edd61b05c3ce05170be",
+            "url": "/api/audio/811060c79a20bc7c04e47ff88f9a9641a688c18e7e702edd61b05c3ce05170be.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-dimanche",
+        "lemma": "dimanche",
+        "meaningZh": "星期日",
+        "noteZh": "星期名称作名词时为阳性；描述每周习惯可在前面加 le。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-2261d76e1eee63d682b5e7610a0eb01b4c33cd9fc17cebf75783026681f0be2a",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "e1292249ef0edecfd0e2851bedc591606aabdf08ad8049880d45944b3dcc8fae",
+            "url": "/api/audio/e1292249ef0edecfd0e2851bedc591606aabdf08ad8049880d45944b3dcc8fae.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-lundi",
+        "lemma": "lundi",
+        "meaningZh": "星期一",
+        "noteZh": "星期名称作名词时为阳性；描述每周习惯可在前面加 le。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-280025b9fb1441deb3a6af0613bd80acb85e6ce25cadbc85919529a9be316d48",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "ae361a8a7e59f82e146215687a6a55022b2b27670452031822490b7ba748aec2",
+            "url": "/api/audio/ae361a8a7e59f82e146215687a6a55022b2b27670452031822490b7ba748aec2.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-apres",
+        "lemma": "après",
+        "meaningZh": "在……之后",
+        "noteZh": "après dix-huit heures 表示十八点之后。",
+        "partOfSpeech": "preposition",
+        "recording": {
+          "asset": {
+            "assetId": "speech-e1e6f6d77f6f0891c81f5708ee6e0c565b024a2095acb6804cec568d42eda00a",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "069dfbb000782f95968e42ff64c71ce74ea5914d7d7cfa6cd20d0b0c04d89127",
+            "url": "/api/audio/069dfbb000782f95968e42ff64c71ce74ea5914d7d7cfa6cd20d0b0c04d89127.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-dix-huit",
+        "lemma": "dix-huit",
+        "meaningZh": "十八",
+        "noteZh": "dix-huit heures 是十八点，即下午六点。",
+        "partOfSpeech": "numeral",
+        "recording": {
+          "asset": {
+            "assetId": "speech-808e63aaa63542e027f07fbdcc0fd4e9cd9bdd1f79e89b373f254b2abd54e7be",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "fcf2b92cd7e15ac84a3d11e392fe7d38a6371286e7696810c5ed8f99c0a231f1",
+            "url": "/api/audio/fcf2b92cd7e15ac84a3d11e392fe7d38a6371286e7696810c5ed8f99c0a231f1.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "expr-pas-de-probleme",
+        "lemma": "pas de problème",
+        "meaningZh": "没问题",
+        "noteZh": "本课用于接受对方不能参加的情况，再提出另一个日期。",
+        "partOfSpeech": "phrase",
+        "recording": {
+          "asset": {
+            "assetId": "speech-7cddaf72ccaa5b6b34edac999d4b4040ae2760a3bce57d6881e0729a760b1daf",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 960,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "5baaeafae0cab25faff56b0ba28e75ff661009e5516bc88030586dc17a460cf5",
+            "url": "/api/audio/5baaeafae0cab25faff56b0ba28e75ff661009e5516bc88030586dc17a460cf5.wav"
+          },
+          "endMs": 960,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-libre",
+        "lemma": "libre",
+        "meaningZh": "有空的",
+        "noteZh": "Tu es libre…? 在约见中询问对方是否有空。",
+        "partOfSpeech": "adjective",
+        "recording": {
+          "asset": {
+            "assetId": "speech-f2a267396e1962b301f74ade60631a3338794b31f03164232ca10e48c240e627",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 720,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "c7a25b0edcfbec00b21a71972a6e6b2aaa818e5dc99ffe4606e35b0b068a7cf4",
+            "url": "/api/audio/c7a25b0edcfbec00b21a71972a6e6b2aaa818e5dc99ffe4606e35b0b068a7cf4.wav"
+          },
+          "endMs": 720,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "虚构公园中的长椅、入口路牌与三位朋友，暖阳照着树木和小路",
+      "assetId": "art-park-meeting",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "8a13f40f43ae625232c469c455a5318e65b91ec060337d788dda8882bb91d98d",
+      "url": "/api/media/8a13f40f43ae625232c469c455a5318e65b91ec060337d788dda8882bb91d98d.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    },
+    {
+      "altZh": "Léa 的头像",
+      "assetId": "avatar-lea-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9",
+      "url": "/api/media/54b7d0bd3dfa0d3189d154eee90c41b0a2f7bdf7155aa6c569f006abf9c1b1c9.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "用 je ne peux pas 说明不能参加",
+    "给出简单原因",
+    "确认改期后的时间"
+  ],
+  "reviewItemIds": [
+    "expr-desolee",
+    "expr-pas-de-probleme",
+    "word-apres"
+  ],
+  "revision": 2,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：星期一下午六点半。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "peux"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "pouvoir 搭配 je 用 peux，ne…pas 表示否定。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "Je ne peux pas venir dimanche.",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "dialogue-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段对话"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "说明当天不能参加，并确认另一个见面时间。",
+  "title": {
+    "fr": "Dimanche, je ne peux pas",
+    "zh": "拒绝并提出新的时间"
+  },
+  "unitId": "a1-social-meetings"
+}

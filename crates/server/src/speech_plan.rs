@@ -134,6 +134,23 @@ pub fn compile(lesson: &PublicLesson, source: &Value, config: &Config) -> Result
                    voice_key: VoiceKey,
                    word_targets: Vec<Word>|
      -> Result<()> {
+        if block_id.is_some() {
+            let whole_words: Vec<_> = text
+                .unicode_word_indices()
+                .map(|(byte, word)| {
+                    let start = text[..byte].chars().count();
+                    (start, start + word.chars().count(), word)
+                })
+                .collect();
+            ensure!(
+                whole_words
+                    == word_targets
+                        .iter()
+                        .map(|w| (w.entry_start, w.entry_end, w.text.as_str()))
+                        .collect::<Vec<_>>(),
+                "{pointer}: text segments split a whole word; keep each complete word in one segment before generating speech"
+            );
+        }
         let voice = voices
             .get(&voice_key)
             .ok_or_else(|| anyhow!("{pointer}: fixed voice missing"))?;
@@ -368,6 +385,47 @@ mod tests {
             changed.targets[0].generation_key,
             compile(&lesson, &source, &config).unwrap().targets[0].generation_key
         );
+    }
+    #[test]
+    fn refuses_segment_boundaries_inside_words_before_creating_requests() {
+        let (mut lesson, source, config) = fixture();
+        let original = compile(&lesson, &source, &config).unwrap();
+        let Block::Dialogue { turns, .. } = lesson
+            .blocks
+            .iter_mut()
+            .find(|b| matches!(b, Block::Dialogue { .. }))
+            .unwrap()
+        else {
+            unreachable!()
+        };
+        let segments = turns[0].segments.clone();
+        turns[0].segments = vec![
+            Segment {
+                id: "split-prefix".into(),
+                text: "Je m’".into(),
+                vocabulary_id: None,
+                grammar_id: None,
+            },
+            Segment {
+                id: "split-word".into(),
+                text: "appelle Camille.".into(),
+                vocabulary_id: None,
+                grammar_id: None,
+            },
+        ];
+        let error = compile(&lesson, &source, &config).err().unwrap();
+        assert!(error.to_string().contains("segments split a whole word"));
+        let Block::Dialogue { turns, .. } = lesson
+            .blocks
+            .iter_mut()
+            .find(|b| matches!(b, Block::Dialogue { .. }))
+            .unwrap()
+        else {
+            unreachable!()
+        };
+        turns[0].segments = segments;
+        let restored = compile(&lesson, &source, &config).unwrap();
+        assert_eq!(original.plan_hash, restored.plan_hash);
     }
     #[test]
     fn scalar_ranges_preserve_apostrophes_accents_and_combining_marks() {

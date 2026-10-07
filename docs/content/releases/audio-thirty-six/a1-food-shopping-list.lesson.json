@@ -1,0 +1,1751 @@
+{
+  "assetRefs": [
+    {
+      "assetId": "art-fruit-market",
+      "revision": 1
+    },
+    {
+      "assetId": "avatar-camille-v1",
+      "revision": 1
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "speech-29365506821a71bacb2f7640194bbaa6c1c11fb65facdb5c06d6179f798a6494",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 21420,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "5c4784f6cac813d77bca980c1a40e856e8a4950d7d9cb138bac03b79bd44cc39",
+      "url": "/api/audio/5c4784f6cac813d77bca980c1a40e856e8a4950d7d9cb138bac03b79bd44cc39.wav"
+    },
+    {
+      "assetId": "speech-3b67eee88264e3517743c01f0a2bdcf511e08be142f5babff5a9c4c0d6a01511",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "d2a50e1c3e84d5a6ca6230c3d74e05e3f111c36df96f4f9cada05c1d3f7b0127",
+      "url": "/api/audio/d2a50e1c3e84d5a6ca6230c3d74e05e3f111c36df96f4f9cada05c1d3f7b0127.wav"
+    },
+    {
+      "assetId": "speech-441870167f225088aafb39fb442a472440ec50d9640fd4047dae3834decab746",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "8eaa2476a5abacc5852222a2ec9fc232dcf7abacced89003590b18620ad71cc3",
+      "url": "/api/audio/8eaa2476a5abacc5852222a2ec9fc232dcf7abacced89003590b18620ad71cc3.wav"
+    },
+    {
+      "assetId": "speech-46cfe475d78b0037063866cb9f6ea682ca71353a6420737a302e56fed9ead717",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1280,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "0738a62c132a8e844a99030c87db839671c20914235b2f2ee5a086bc5f38468d",
+      "url": "/api/audio/0738a62c132a8e844a99030c87db839671c20914235b2f2ee5a086bc5f38468d.wav"
+    },
+    {
+      "assetId": "speech-5304b117ad7323b78fc40a672c2ec3649e21de169846ff86fab6a67adc4a2d18",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 880,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "17619035f5d8c6428ed3fb5dc7b4069dd74a3266adbefb38888e981c59f72de1",
+      "url": "/api/audio/17619035f5d8c6428ed3fb5dc7b4069dd74a3266adbefb38888e981c59f72de1.wav"
+    },
+    {
+      "assetId": "speech-5eaa0b1a841759d432029568a634efe588f10612c1752504fb4beba58d560f0b",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 1040,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "6a6f3fb7e78483a530dcd4d397d08c23b5065445fe09cbe2bd56046a261aaea5",
+      "url": "/api/audio/6a6f3fb7e78483a530dcd4d397d08c23b5065445fe09cbe2bd56046a261aaea5.wav"
+    },
+    {
+      "assetId": "speech-9d7a10f219b0821ae3a1fa11b4ae7809e03779f88ee8175421e0004cc7b1ed24",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 560,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "5871bba674c77082d96c98b9558128df213bdb254e1e6166ca76c09080926156",
+      "url": "/api/audio/5871bba674c77082d96c98b9558128df213bdb254e1e6166ca76c09080926156.wav"
+    },
+    {
+      "assetId": "speech-a621c846d30c2b74800fa9b34d898f25ed0f6a5025bd3324e26fbe626a39854b",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 640,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "cb94ac1a3bd9ee484af72b523fc26c5b5699ac53a02e2d0c258e23c8a4787181",
+      "url": "/api/audio/cb94ac1a3bd9ee484af72b523fc26c5b5699ac53a02e2d0c258e23c8a4787181.wav"
+    },
+    {
+      "assetId": "speech-a78508e67e5a055f28577ea2c44b36b474c28fc1659ba9c4447fe91d6ee9fae2",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 2080,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "d5be5d135cd9c9734cc370b11ee77846b34b168c1264a87ef924b8a92ae1ffbb",
+      "url": "/api/audio/d5be5d135cd9c9734cc370b11ee77846b34b168c1264a87ef924b8a92ae1ffbb.wav"
+    },
+    {
+      "assetId": "speech-dd531c6443de8be07997409b6cdb089e0fab7cf0cd738a514d05b66c48172d7f",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 800,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "4e003b120369ade50f2a02d2c9d4d77af307f6b6e27d6f366b2e6b8a25518ef9",
+      "url": "/api/audio/4e003b120369ade50f2a02d2c9d4d77af307f6b6e27d6f366b2e6b8a25518ef9.wav"
+    },
+    {
+      "assetId": "speech-ddd7ad48c7a0d6ef698196d16633af77c75b07b387824c0e10b9cd6b9299bae4",
+      "creditZh": "Brioche 原创课程，Qwen 合成语音",
+      "durationMs": 960,
+      "mimeType": "audio/wav",
+      "revision": 1,
+      "sha256": "8b6727a8f8e520e6d5c589505ee1c8188a268a08fa7d9d8bfbe8cf6479caa108",
+      "url": "/api/audio/8b6727a8f8e520e6d5c589505ee1c8188a268a08fa7d9d8bfbe8cf6479caa108.wav"
+    }
+  ],
+  "audioRefs": [
+    {
+      "assetId": "speech-29365506821a71bacb2f7640194bbaa6c1c11fb65facdb5c06d6179f798a6494",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-3b67eee88264e3517743c01f0a2bdcf511e08be142f5babff5a9c4c0d6a01511",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-441870167f225088aafb39fb442a472440ec50d9640fd4047dae3834decab746",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-46cfe475d78b0037063866cb9f6ea682ca71353a6420737a302e56fed9ead717",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-5304b117ad7323b78fc40a672c2ec3649e21de169846ff86fab6a67adc4a2d18",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-5eaa0b1a841759d432029568a634efe588f10612c1752504fb4beba58d560f0b",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-9d7a10f219b0821ae3a1fa11b4ae7809e03779f88ee8175421e0004cc7b1ed24",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-a621c846d30c2b74800fa9b34d898f25ed0f6a5025bd3324e26fbe626a39854b",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-a78508e67e5a055f28577ea2c44b36b474c28fc1659ba9c4447fe91d6ee9fae2",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-dd531c6443de8be07997409b6cdb089e0fab7cf0cd738a514d05b66c48172d7f",
+      "revision": 1
+    },
+    {
+      "assetId": "speech-ddd7ad48c7a0d6ef698196d16633af77c75b07b387824c0e10b9cd6b9299bae4",
+      "revision": 1
+    }
+  ],
+  "audioTracks": [
+    {
+      "assetId": "speech-29365506821a71bacb2f7640194bbaa6c1c11fb65facdb5c06d6179f798a6494",
+      "blockId": "article-main",
+      "cues": [
+        {
+          "endMs": 2960,
+          "entryId": "entry-1",
+          "segmentId": null,
+          "startMs": 0,
+          "wordRange": null
+        },
+        {
+          "endMs": 640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": null
+        },
+        {
+          "endMs": 400,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 80,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 560,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 400,
+          "wordRange": {
+            "end": 10,
+            "start": 8
+          }
+        },
+        {
+          "endMs": 640,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-1",
+          "startMs": 560,
+          "wordRange": {
+            "end": 13,
+            "start": 11
+          }
+        },
+        {
+          "endMs": 1360,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 640,
+          "wordRange": null
+        },
+        {
+          "endMs": 1360,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-2",
+          "startMs": 640,
+          "wordRange": {
+            "end": 11,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 2800,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 1360,
+          "wordRange": null
+        },
+        {
+          "endMs": 1600,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 1360,
+          "wordRange": {
+            "end": 5,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 2160,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 1600,
+          "wordRange": {
+            "end": 14,
+            "start": 6
+          }
+        },
+        {
+          "endMs": 2240,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 2160,
+          "wordRange": {
+            "end": 17,
+            "start": 15
+          }
+        },
+        {
+          "endMs": 2800,
+          "entryId": "entry-1",
+          "segmentId": "segment-1-3",
+          "startMs": 2240,
+          "wordRange": {
+            "end": 26,
+            "start": 18
+          }
+        },
+        {
+          "endMs": 5930,
+          "entryId": "entry-2",
+          "segmentId": null,
+          "startMs": 3210,
+          "wordRange": null
+        },
+        {
+          "endMs": 4490,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 3290,
+          "wordRange": null
+        },
+        {
+          "endMs": 3450,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 3290,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 3610,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 3450,
+          "wordRange": {
+            "end": 8,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 4090,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 3610,
+          "wordRange": {
+            "end": 12,
+            "start": 9
+          }
+        },
+        {
+          "endMs": 4330,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 4170,
+          "wordRange": {
+            "end": 18,
+            "start": 14
+          }
+        },
+        {
+          "endMs": 4410,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 4330,
+          "wordRange": {
+            "end": 20,
+            "start": 19
+          }
+        },
+        {
+          "endMs": 4490,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-1",
+          "startMs": 4410,
+          "wordRange": {
+            "end": 24,
+            "start": 21
+          }
+        },
+        {
+          "endMs": 4890,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 4490,
+          "wordRange": null
+        },
+        {
+          "endMs": 4890,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-2",
+          "startMs": 4490,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 5770,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 4970,
+          "wordRange": null
+        },
+        {
+          "endMs": 5050,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 4970,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 5130,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 5050,
+          "wordRange": {
+            "end": 6,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 5450,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 5130,
+          "wordRange": {
+            "end": 12,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 5770,
+          "entryId": "entry-2",
+          "segmentId": "segment-2-3",
+          "startMs": 5450,
+          "wordRange": {
+            "end": 19,
+            "start": 13
+          }
+        },
+        {
+          "endMs": 9140,
+          "entryId": "entry-3",
+          "segmentId": null,
+          "startMs": 6180,
+          "wordRange": null
+        },
+        {
+          "endMs": 6740,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 6260,
+          "wordRange": null
+        },
+        {
+          "endMs": 6420,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 6260,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6740,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-1",
+          "startMs": 6420,
+          "wordRange": {
+            "end": 11,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 8740,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-10",
+          "startMs": 8420,
+          "wordRange": null
+        },
+        {
+          "endMs": 8740,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-10",
+          "startMs": 8420,
+          "wordRange": {
+            "end": 9,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8900,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-12",
+          "startMs": 8740,
+          "wordRange": null
+        },
+        {
+          "endMs": 8900,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-12",
+          "startMs": 8740,
+          "wordRange": {
+            "end": 5,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 6900,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 6740,
+          "wordRange": null
+        },
+        {
+          "endMs": 6900,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2",
+          "startMs": 6740,
+          "wordRange": {
+            "end": 2,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7140,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 6900,
+          "wordRange": null
+        },
+        {
+          "endMs": 7140,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-4",
+          "startMs": 6900,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 7620,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-6",
+          "startMs": 7460,
+          "wordRange": null
+        },
+        {
+          "endMs": 7620,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-6",
+          "startMs": 7460,
+          "wordRange": {
+            "end": 3,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8100,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-8",
+          "startMs": 7620,
+          "wordRange": null
+        },
+        {
+          "endMs": 8100,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-8",
+          "startMs": 7620,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 8420,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-9",
+          "startMs": 8180,
+          "wordRange": null
+        },
+        {
+          "endMs": 8260,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-9",
+          "startMs": 8180,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 8420,
+          "entryId": "entry-3",
+          "segmentId": "segment-3-9",
+          "startMs": 8260,
+          "wordRange": {
+            "end": 7,
+            "start": 4
+          }
+        },
+        {
+          "endMs": 12990,
+          "entryId": "entry-4",
+          "segmentId": null,
+          "startMs": 9390,
+          "wordRange": null
+        },
+        {
+          "endMs": 9710,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 9470,
+          "wordRange": null
+        },
+        {
+          "endMs": 9710,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-1",
+          "startMs": 9470,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10030,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 9790,
+          "wordRange": null
+        },
+        {
+          "endMs": 10030,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2",
+          "startMs": 9790,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 10190,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 10030,
+          "wordRange": null
+        },
+        {
+          "endMs": 10190,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-3",
+          "startMs": 10030,
+          "wordRange": {
+            "end": 4,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 10830,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 10190,
+          "wordRange": null
+        },
+        {
+          "endMs": 10830,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-4",
+          "startMs": 10190,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 11710,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 11070,
+          "wordRange": null
+        },
+        {
+          "endMs": 11470,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 11070,
+          "wordRange": {
+            "end": 6,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 11710,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-5",
+          "startMs": 11550,
+          "wordRange": {
+            "end": 11,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 12110,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-6",
+          "startMs": 11710,
+          "wordRange": null
+        },
+        {
+          "endMs": 11950,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-6",
+          "startMs": 11710,
+          "wordRange": {
+            "end": 6,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 12110,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-6",
+          "startMs": 11950,
+          "wordRange": {
+            "end": 10,
+            "start": 7
+          }
+        },
+        {
+          "endMs": 12190,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-7",
+          "startMs": 12110,
+          "wordRange": null
+        },
+        {
+          "endMs": 12190,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-7",
+          "startMs": 12110,
+          "wordRange": {
+            "end": 3,
+            "start": 1
+          }
+        },
+        {
+          "endMs": 12830,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-8",
+          "startMs": 12190,
+          "wordRange": null
+        },
+        {
+          "endMs": 12830,
+          "entryId": "entry-4",
+          "segmentId": "segment-4-8",
+          "startMs": 12190,
+          "wordRange": {
+            "end": 7,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 15800,
+          "entryId": "entry-5",
+          "segmentId": null,
+          "startMs": 13240,
+          "wordRange": null
+        },
+        {
+          "endMs": 15640,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 13320,
+          "wordRange": null
+        },
+        {
+          "endMs": 13480,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 13320,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 13800,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 13480,
+          "wordRange": {
+            "end": 12,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 13960,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 13800,
+          "wordRange": {
+            "end": 16,
+            "start": 13
+          }
+        },
+        {
+          "endMs": 14360,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 13960,
+          "wordRange": {
+            "end": 21,
+            "start": 17
+          }
+        },
+        {
+          "endMs": 14680,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 14360,
+          "wordRange": {
+            "end": 27,
+            "start": 22
+          }
+        },
+        {
+          "endMs": 14760,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 14680,
+          "wordRange": {
+            "end": 30,
+            "start": 28
+          }
+        },
+        {
+          "endMs": 15080,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 14760,
+          "wordRange": {
+            "end": 38,
+            "start": 31
+          }
+        },
+        {
+          "endMs": 15240,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 15080,
+          "wordRange": {
+            "end": 42,
+            "start": 39
+          }
+        },
+        {
+          "endMs": 15640,
+          "entryId": "entry-5",
+          "segmentId": "segment-5-1",
+          "startMs": 15240,
+          "wordRange": {
+            "end": 51,
+            "start": 43
+          }
+        },
+        {
+          "endMs": 18930,
+          "entryId": "entry-6",
+          "segmentId": null,
+          "startMs": 16050,
+          "wordRange": null
+        },
+        {
+          "endMs": 18770,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 16130,
+          "wordRange": null
+        },
+        {
+          "endMs": 16210,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 16130,
+          "wordRange": {
+            "end": 1,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 16370,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 16210,
+          "wordRange": {
+            "end": 4,
+            "start": 2
+          }
+        },
+        {
+          "endMs": 16850,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 16370,
+          "wordRange": {
+            "end": 11,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 17410,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 17250,
+          "wordRange": {
+            "end": 17,
+            "start": 13
+          }
+        },
+        {
+          "endMs": 17650,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 17410,
+          "wordRange": {
+            "end": 22,
+            "start": 18
+          }
+        },
+        {
+          "endMs": 17730,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 17650,
+          "wordRange": {
+            "end": 26,
+            "start": 23
+          }
+        },
+        {
+          "endMs": 18050,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 17730,
+          "wordRange": {
+            "end": 34,
+            "start": 27
+          }
+        },
+        {
+          "endMs": 18210,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 18050,
+          "wordRange": {
+            "end": 38,
+            "start": 35
+          }
+        },
+        {
+          "endMs": 18290,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 18210,
+          "wordRange": {
+            "end": 41,
+            "start": 39
+          }
+        },
+        {
+          "endMs": 18770,
+          "entryId": "entry-6",
+          "segmentId": "segment-6-1",
+          "startMs": 18290,
+          "wordRange": {
+            "end": 47,
+            "start": 42
+          }
+        },
+        {
+          "endMs": 21420,
+          "entryId": "entry-7",
+          "segmentId": null,
+          "startMs": 19180,
+          "wordRange": null
+        },
+        {
+          "endMs": 21240,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 19240,
+          "wordRange": null
+        },
+        {
+          "endMs": 19400,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 19240,
+          "wordRange": {
+            "end": 4,
+            "start": 0
+          }
+        },
+        {
+          "endMs": 19560,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 19400,
+          "wordRange": {
+            "end": 9,
+            "start": 5
+          }
+        },
+        {
+          "endMs": 19800,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 19560,
+          "wordRange": {
+            "end": 13,
+            "start": 10
+          }
+        },
+        {
+          "endMs": 20200,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 19800,
+          "wordRange": {
+            "end": 19,
+            "start": 14
+          }
+        },
+        {
+          "endMs": 20440,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 20280,
+          "wordRange": {
+            "end": 25,
+            "start": 21
+          }
+        },
+        {
+          "endMs": 20520,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 20440,
+          "wordRange": {
+            "end": 30,
+            "start": 26
+          }
+        },
+        {
+          "endMs": 20760,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 20520,
+          "wordRange": {
+            "end": 37,
+            "start": 31
+          }
+        },
+        {
+          "endMs": 20840,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 20760,
+          "wordRange": {
+            "end": 39,
+            "start": 38
+          }
+        },
+        {
+          "endMs": 20920,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 20840,
+          "wordRange": {
+            "end": 42,
+            "start": 40
+          }
+        },
+        {
+          "endMs": 21240,
+          "entryId": "entry-7",
+          "segmentId": "segment-7-1",
+          "startMs": 20920,
+          "wordRange": {
+            "end": 49,
+            "start": 43
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "scene-main",
+      "illustrationId": "art-fruit-market",
+      "placeZh": "Camille 按清单购买午餐食材",
+      "situationZh": "从购物短文中辨认食材、数量表达和个人喜好。",
+      "type": "scene"
+    },
+    {
+      "id": "article-main",
+      "narratorId": "character-camille",
+      "paragraphs": [
+        {
+          "id": "entry-1",
+          "segments": [
+            {
+              "id": "segment-1-1",
+              "text": "Camille va au "
+            },
+            {
+              "id": "segment-1-2",
+              "text": "supermarché",
+              "vocabularyId": "word-supermarche"
+            },
+            {
+              "id": "segment-1-3",
+              "text": " pour préparer le déjeuner."
+            }
+          ],
+          "translationZh": "Camille 去超市购买食材，准备午餐。"
+        },
+        {
+          "id": "entry-2",
+          "segments": [
+            {
+              "id": "segment-2-1",
+              "text": "Dans son sac, elle a une "
+            },
+            {
+              "id": "segment-2-2",
+              "text": "liste",
+              "vocabularyId": "word-liste"
+            },
+            {
+              "id": "segment-2-3",
+              "text": " et un petit carnet."
+            }
+          ],
+          "translationZh": "她的包里有一张清单和一个小本子。"
+        },
+        {
+          "id": "entry-3",
+          "segments": [
+            {
+              "id": "segment-3-1",
+              "text": "Elle achète "
+            },
+            {
+              "grammarId": "grammar-food-partitive",
+              "id": "segment-3-2",
+              "text": "du"
+            },
+            {
+              "id": "segment-3-3",
+              "text": " "
+            },
+            {
+              "id": "segment-3-4",
+              "text": "riz",
+              "vocabularyId": "word-riz"
+            },
+            {
+              "id": "segment-3-5",
+              "text": ", "
+            },
+            {
+              "grammarId": "grammar-food-partitive",
+              "id": "segment-3-6",
+              "text": "des"
+            },
+            {
+              "id": "segment-3-7",
+              "text": " "
+            },
+            {
+              "id": "segment-3-8",
+              "text": "tomates",
+              "vocabularyId": "word-tomate"
+            },
+            {
+              "id": "segment-3-9",
+              "text": " et une "
+            },
+            {
+              "id": "segment-3-10",
+              "text": "bouteille",
+              "vocabularyId": "word-bouteille"
+            },
+            {
+              "id": "segment-3-11",
+              "text": " "
+            },
+            {
+              "id": "segment-3-12",
+              "text": "d’eau",
+              "vocabularyId": "word-eau"
+            },
+            {
+              "id": "segment-3-13",
+              "text": "."
+            }
+          ],
+          "translationZh": "她买一些米、西红柿和一瓶水。"
+        },
+        {
+          "id": "entry-4",
+          "segments": [
+            {
+              "id": "segment-4-1",
+              "text": "Elle "
+            },
+            {
+              "grammarId": "grammar-aimer-food",
+              "id": "segment-4-2",
+              "text": "aime",
+              "vocabularyId": "word-aimer"
+            },
+            {
+              "id": "segment-4-3",
+              "text": " les "
+            },
+            {
+              "id": "segment-4-4",
+              "text": "tomates",
+              "vocabularyId": "word-tomate"
+            },
+            {
+              "id": "segment-4-5",
+              "text": ", mais elle "
+            },
+            {
+              "grammarId": "grammar-aimer-food",
+              "id": "segment-4-6",
+              "text": "n’aime pas",
+              "vocabularyId": "word-aimer"
+            },
+            {
+              "id": "segment-4-7",
+              "text": " le "
+            },
+            {
+              "id": "segment-4-8",
+              "text": "fromage",
+              "vocabularyId": "word-fromage"
+            },
+            {
+              "id": "segment-4-9",
+              "text": "."
+            }
+          ],
+          "translationZh": "她喜欢西红柿，但不喜欢奶酪。"
+        },
+        {
+          "id": "entry-5",
+          "segments": [
+            {
+              "id": "segment-5-1",
+              "text": "Elle regarde les prix avant de choisir les produits."
+            }
+          ],
+          "translationZh": "她挑选商品前先看看价格。"
+        },
+        {
+          "id": "entry-6",
+          "segments": [
+            {
+              "id": "segment-6-1",
+              "text": "À la caisse, elle pose les courses sur le tapis."
+            }
+          ],
+          "translationZh": "在收银处，她把购买的东西放到传送带上。"
+        },
+        {
+          "id": "entry-7",
+          "segments": [
+            {
+              "id": "segment-7-1",
+              "text": "Elle paie par carte, puis elle rentre à la maison."
+            }
+          ],
+          "translationZh": "她用银行卡付款，然后回家。"
+        }
+      ],
+      "titleZh": "读懂一张购物清单",
+      "type": "article"
+    },
+    {
+      "bodyZh": "du riz 表示不指定精确数量的米；des tomates 表示若干西红柿。une bouteille d’eau 已有瓶数，所以用 d’eau。泛指喜欢食物用定冠词，elle aime les tomates；否定写 elle n’aime pas le fromage。la caisse 是收银处，le tapis 在这里是收银传送带。",
+      "id": "explanation-main",
+      "targets": [
+        {
+          "blockId": "article-main",
+          "entryId": "entry-3",
+          "segmentId": "segment-3-2"
+        },
+        {
+          "blockId": "article-main",
+          "entryId": "entry-4",
+          "segmentId": "segment-4-2"
+        }
+      ],
+      "titleZh": "这句话如何使用",
+      "type": "explanation"
+    },
+    {
+      "bodyZh": "清单与食物喜好属于虚构角色，不代表统一的法国家庭菜单、饮食或购物方式。",
+      "id": "culture-context",
+      "scopeZh": "本课虚构场景，不概括所有法语地区或个人的行为。",
+      "titleZh": "场景中的细节",
+      "type": "culture"
+    },
+    {
+      "entryIds": [
+        "word-riz",
+        "word-tomate",
+        "word-eau",
+        "word-bouteille",
+        "word-fromage",
+        "word-liste",
+        "word-supermarche",
+        "word-aimer"
+      ],
+      "id": "vocabulary-targets",
+      "type": "vocabulary"
+    },
+    {
+      "entryIds": [
+        "grammar-food-partitive",
+        "grammar-aimer-food"
+      ],
+      "id": "grammar-targets",
+      "type": "grammar"
+    },
+    {
+      "exerciseType": "single-choice",
+      "id": "exercise-comprehension",
+      "options": [
+        {
+          "id": "distractor-a",
+          "text": "西红柿"
+        },
+        {
+          "id": "correct",
+          "text": "奶酪"
+        },
+        {
+          "id": "distractor-b",
+          "text": "米饭"
+        }
+      ],
+      "promptZh": "Camille 不喜欢哪种食物？",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "fill-blank",
+      "hintZh": "这里的 riz 是阳性食物名词，不指定精确数量，用部分冠词 du。",
+      "id": "exercise-fill",
+      "promptZh": "根据提示补全句子。",
+      "templateFr": "Elle achète ___ riz.",
+      "type": "exercise"
+    },
+    {
+      "exerciseType": "order",
+      "id": "exercise-order",
+      "promptZh": "把语块排成一句日常表达。",
+      "tokens": [
+        {
+          "id": "token-3",
+          "text": "et le riz."
+        },
+        {
+          "id": "token-1",
+          "text": "J’aime"
+        },
+        {
+          "id": "token-2",
+          "text": "les tomates"
+        }
+      ],
+      "type": "exercise"
+    },
+    {
+      "alternativeZh": "也可以只在心里构思或写一句虚构信息，不需要提供现实行为证明。",
+      "id": "habit-main",
+      "taskZh": "用 J’aime… 说一种喜欢的食物，也可以替虚构角色写一句。",
+      "type": "habit"
+    },
+    {
+      "id": "summary-main",
+      "takeawaysZh": [
+        "我能读懂购物清单中的食材。",
+        "我能区分 du riz 和 des tomates。",
+        "我能用 aimer 说食物喜好。"
+      ],
+      "type": "summary"
+    }
+  ],
+  "cast": [
+    {
+      "avatarId": "avatar-camille-v1",
+      "characterId": "character-camille",
+      "displayName": "Camille",
+      "revision": 1,
+      "speechLocale": "fr-FR"
+    }
+  ],
+  "completion": {
+    "requiredExerciseIds": [
+      "exercise-comprehension",
+      "exercise-fill",
+      "exercise-order"
+    ],
+    "requiredStepIds": [
+      "step-read",
+      "step-practice",
+      "step-recap"
+    ],
+    "strategy": "attempt-all"
+  },
+  "editorial": {
+    "note": "所有者授权直接发布；未声明人工试听或独立专家审校。Owner authorized direct publication; exact existing PCM and actual fixed-model predictions reused after whole-word annotation repair, with no new synthesis or human hearing asserted",
+    "status": "reviewed"
+  },
+  "estimatedMinutes": 12,
+  "id": "a1-food-shopping-list",
+  "knowledge": {
+    "grammar": [
+      {
+        "bodyZh": "du riz 中 du 是部分冠词，表示一些米，不指定精确数量；des tomates 中 des 是复数不定冠词，表示若干西红柿。表达明确数量时用 un kilo de… 或 une bouteille de…。",
+        "examples": [
+          {
+            "fr": "Elle achète du riz et des tomates.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-a78508e67e5a055f28577ea2c44b36b474c28fc1659ba9c4447fe91d6ee9fae2",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 2080,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "d5be5d135cd9c9734cc370b11ee77846b34b168c1264a87ef924b8a92ae1ffbb",
+                "url": "/api/audio/d5be5d135cd9c9734cc370b11ee77846b34b168c1264a87ef924b8a92ae1ffbb.wav"
+              },
+              "endMs": 2080,
+              "startMs": 0
+            },
+            "zh": "她买一些米和西红柿。"
+          }
+        ],
+        "id": "grammar-food-partitive",
+        "titleZh": "du riz / des tomates：不指定精确数量"
+      },
+      {
+        "bodyZh": "泛指喜欢某种食物时，本课使用定冠词：J’aime les légumes、elle aime les tomates。je 在元音前省音为 j’，写 j’aime；否定时写 je n’aime pas，保留后面的定冠词。",
+        "examples": [
+          {
+            "fr": "J’aime les légumes.",
+            "recording": {
+              "asset": {
+                "assetId": "speech-46cfe475d78b0037063866cb9f6ea682ca71353a6420737a302e56fed9ead717",
+                "creditZh": "Brioche 原创课程，Qwen 合成语音",
+                "durationMs": 1280,
+                "mimeType": "audio/wav",
+                "revision": 1,
+                "sha256": "0738a62c132a8e844a99030c87db839671c20914235b2f2ee5a086bc5f38468d",
+                "url": "/api/audio/0738a62c132a8e844a99030c87db839671c20914235b2f2ee5a086bc5f38468d.wav"
+              },
+              "endMs": 1280,
+              "startMs": 0
+            },
+            "zh": "我喜欢蔬菜。"
+          }
+        ],
+        "id": "grammar-aimer-food",
+        "titleZh": "aimer + 定冠词：表达食物喜好"
+      }
+    ],
+    "vocabulary": [
+      {
+        "gender": "masculine",
+        "id": "word-riz",
+        "lemma": "riz",
+        "meaningZh": "米；米饭",
+        "noteZh": "本课 du riz 指购买一些米，数量未具体说明。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-5304b117ad7323b78fc40a672c2ec3649e21de169846ff86fab6a67adc4a2d18",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "17619035f5d8c6428ed3fb5dc7b4069dd74a3266adbefb38888e981c59f72de1",
+            "url": "/api/audio/17619035f5d8c6428ed3fb5dc7b4069dd74a3266adbefb38888e981c59f72de1.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-tomate",
+        "lemma": "tomate",
+        "meaningZh": "西红柿",
+        "noteZh": "une tomate；复数 tomates。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-441870167f225088aafb39fb442a472440ec50d9640fd4047dae3834decab746",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "8eaa2476a5abacc5852222a2ec9fc232dcf7abacced89003590b18620ad71cc3",
+            "url": "/api/audio/8eaa2476a5abacc5852222a2ec9fc232dcf7abacced89003590b18620ad71cc3.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-eau",
+        "lemma": "eau",
+        "meaningZh": "水",
+        "noteZh": "l’eau；une bouteille d’eau 表示一瓶水。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-9d7a10f219b0821ae3a1fa11b4ae7809e03779f88ee8175421e0004cc7b1ed24",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 560,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "5871bba674c77082d96c98b9558128df213bdb254e1e6166ca76c09080926156",
+            "url": "/api/audio/5871bba674c77082d96c98b9558128df213bdb254e1e6166ca76c09080926156.wav"
+          },
+          "endMs": 560,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-bouteille",
+        "lemma": "bouteille",
+        "meaningZh": "瓶子",
+        "noteZh": "une bouteille d’eau 表示一瓶水。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-3b67eee88264e3517743c01f0a2bdcf511e08be142f5babff5a9c4c0d6a01511",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 880,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "d2a50e1c3e84d5a6ca6230c3d74e05e3f111c36df96f4f9cada05c1d3f7b0127",
+            "url": "/api/audio/d2a50e1c3e84d5a6ca6230c3d74e05e3f111c36df96f4f9cada05c1d3f7b0127.wav"
+          },
+          "endMs": 880,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-fromage",
+        "lemma": "fromage",
+        "meaningZh": "奶酪",
+        "noteZh": "le fromage 可泛指奶酪；sans fromage 表示不加奶酪。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-ddd7ad48c7a0d6ef698196d16633af77c75b07b387824c0e10b9cd6b9299bae4",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 960,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "8b6727a8f8e520e6d5c589505ee1c8188a268a08fa7d9d8bfbe8cf6479caa108",
+            "url": "/api/audio/8b6727a8f8e520e6d5c589505ee1c8188a268a08fa7d9d8bfbe8cf6479caa108.wav"
+          },
+          "endMs": 960,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "feminine",
+        "id": "word-liste",
+        "lemma": "liste",
+        "meaningZh": "清单",
+        "noteZh": "liste 的单数形式；搭配冠词学习。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-dd531c6443de8be07997409b6cdb089e0fab7cf0cd738a514d05b66c48172d7f",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 800,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "4e003b120369ade50f2a02d2c9d4d77af307f6b6e27d6f366b2e6b8a25518ef9",
+            "url": "/api/audio/4e003b120369ade50f2a02d2c9d4d77af307f6b6e27d6f366b2e6b8a25518ef9.wav"
+          },
+          "endMs": 800,
+          "startMs": 0
+        }
+      },
+      {
+        "gender": "masculine",
+        "id": "word-supermarche",
+        "lemma": "supermarché",
+        "meaningZh": "超市",
+        "noteZh": "supermarché 的单数形式；搭配冠词学习。",
+        "partOfSpeech": "noun",
+        "recording": {
+          "asset": {
+            "assetId": "speech-5eaa0b1a841759d432029568a634efe588f10612c1752504fb4beba58d560f0b",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 1040,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "6a6f3fb7e78483a530dcd4d397d08c23b5065445fe09cbe2bd56046a261aaea5",
+            "url": "/api/audio/6a6f3fb7e78483a530dcd4d397d08c23b5065445fe09cbe2bd56046a261aaea5.wav"
+          },
+          "endMs": 1040,
+          "startMs": 0
+        }
+      },
+      {
+        "id": "word-aimer",
+        "lemma": "aimer",
+        "meaningZh": "喜欢；爱",
+        "noteZh": "aimer 表示喜欢或爱，可用于食物、活动或其他事物。常见的现在时形式有 j’aime、elle aime。",
+        "partOfSpeech": "verb",
+        "recording": {
+          "asset": {
+            "assetId": "speech-a621c846d30c2b74800fa9b34d898f25ed0f6a5025bd3324e26fbe626a39854b",
+            "creditZh": "Brioche 原创课程，Qwen 合成语音",
+            "durationMs": 640,
+            "mimeType": "audio/wav",
+            "revision": 1,
+            "sha256": "cb94ac1a3bd9ee484af72b523fc26c5b5699ac53a02e2d0c258e23c8a4787181",
+            "url": "/api/audio/cb94ac1a3bd9ee484af72b523fc26c5b5699ac53a02e2d0c258e23c8a4787181.wav"
+          },
+          "endMs": 640,
+          "startMs": 0
+        }
+      }
+    ]
+  },
+  "levelId": "a1",
+  "media": [
+    {
+      "altZh": "虚构水果摊的苹果、香蕉和秤，旁边摆着购物篮",
+      "assetId": "art-fruit-market",
+      "creditZh": "Brioche · 原创插图",
+      "height": 470,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "8948dc51a65a86e0f3eaab609c897be0ee32dd07614aa75f7454daedf0e02141",
+      "url": "/api/media/8948dc51a65a86e0f3eaab609c897be0ee32dd07614aa75f7454daedf0e02141.svg",
+      "width": 640
+    },
+    {
+      "altZh": "Camille 的头像",
+      "assetId": "avatar-camille-v1",
+      "creditZh": "Brioche · 原创插图",
+      "height": 96,
+      "mimeType": "image/svg+xml",
+      "revision": 1,
+      "sha256": "3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e",
+      "url": "/api/media/3ff6d718198b499e956f01729a5093352850f79538d6f2c1e0815be6a4a0db3e.svg",
+      "width": 96
+    }
+  ],
+  "objectivesZh": [
+    "读懂购物清单中的食材",
+    "区分 du riz 和 des tomates",
+    "用 aimer 说食物喜好"
+  ],
+  "reviewItemIds": [
+    "word-riz",
+    "word-tomate",
+    "word-aimer"
+  ],
+  "revision": 3,
+  "schemaVersion": "1.0",
+  "serverOnly": {
+    "grading": {
+      "exercise-comprehension": {
+        "correctOptionId": "correct",
+        "feedbackZh": "正文中对应的信息是：奶酪。",
+        "kind": "choice"
+      },
+      "exercise-fill": {
+        "accepted": [
+          "du"
+        ],
+        "caseSensitive": false,
+        "feedbackZh": "这里的 riz 是阳性食物名词，不指定精确数量，用部分冠词 du。",
+        "kind": "text"
+      },
+      "exercise-order": {
+        "correctTokenIds": [
+          "token-1",
+          "token-2",
+          "token-3"
+        ],
+        "feedbackZh": "J’aime les tomates et le riz.",
+        "kind": "order"
+      }
+    }
+  },
+  "steps": [
+    {
+      "blockIds": [
+        "scene-main"
+      ],
+      "id": "step-discover",
+      "kind": "discover",
+      "titleZh": "进入场景"
+    },
+    {
+      "blockIds": [
+        "article-main"
+      ],
+      "id": "step-read",
+      "kind": "read",
+      "titleZh": "读一段短文"
+    },
+    {
+      "blockIds": [
+        "explanation-main",
+        "culture-context",
+        "vocabulary-targets",
+        "grammar-targets"
+      ],
+      "id": "step-explore",
+      "kind": "explore",
+      "titleZh": "理解表达"
+    },
+    {
+      "blockIds": [
+        "exercise-comprehension",
+        "exercise-fill",
+        "exercise-order"
+      ],
+      "id": "step-practice",
+      "kind": "practice",
+      "titleZh": "试着用一用"
+    },
+    {
+      "blockIds": [
+        "habit-main"
+      ],
+      "id": "step-apply",
+      "kind": "apply",
+      "titleZh": "带进日常"
+    },
+    {
+      "blockIds": [
+        "summary-main"
+      ],
+      "id": "step-recap",
+      "kind": "recap",
+      "titleZh": "回顾这一课"
+    }
+  ],
+  "summaryZh": "从购物短文中辨认食材、数量表达和个人喜好。",
+  "title": {
+    "fr": "Une liste pour le déjeuner",
+    "zh": "读懂一张购物清单"
+  },
+  "unitId": "a1-food-shopping"
+}
