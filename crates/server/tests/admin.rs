@@ -974,7 +974,7 @@ async fn voice_reference_delivery_is_bounded_revocable_private_and_audited() {
     );
     let mut candidate = json!({"characterId":"character-system-qa","characterRevision":1,"expectedVoiceRevision":0,"profile":seed["items"][0]["profile"]});
     candidate["profile"]["rate"] = json!(1.0);
-    let system = json!({"id":"f".repeat(32),"cloneJobId":null,"expectedCloneVersion":null,"candidate":candidate,"text":"Bonjour ! Je m’appelle Léa. Au revoir !","emotion":"A friendly introduction.","costConfirmed":true,"reason":"isolated system candidate"});
+    let mut system = json!({"id":"f".repeat(32),"cloneJobId":null,"expectedCloneVersion":null,"candidate":candidate,"text":"Bonjour ! Je m’appelle Léa. Au revoir !","emotion":"A friendly introduction.","costConfirmed":true,"reason":"isolated system candidate"});
     let calls_before = qwen.calls.lock().unwrap().len();
     for (key, value) in [
         ("costConfirmed", json!(false)),
@@ -1046,6 +1046,57 @@ async fn voice_reference_delivery_is_bounded_revocable_private_and_audited() {
         403
     );
     assert_eq!(qwen.calls.lock().unwrap().len(), calls_before);
+    let local_actor = db
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT id FROM users WHERE email='reference-operator@example.test'",
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get::<i64>("", "id")
+        .unwrap();
+    let local_request: brioche_course_contract::AdminAuditionRequest =
+        serde_json::from_value(system.clone()).unwrap();
+    let local = brioche_server::voice_auditions::submit_local(
+        backend.clone(),
+        local_actor,
+        Some(brioche_server::qwen::Service::new(qwen.clone(), "https://example.test").unwrap()),
+        root.clone(),
+        local_request.clone(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(local.status, "ready");
+    assert!(
+        local.accepted.is_none(),
+        "local generation must never declare listening acceptance"
+    );
+    let retried = brioche_server::voice_auditions::submit_local(
+        backend.clone(),
+        local_actor,
+        None,
+        root.clone(),
+        local_request.clone(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(retried.id, local.id);
+    let mut changed = local_request;
+    changed.text = "Different French text.".into();
+    assert!(
+        brioche_server::voice_auditions::submit_local(
+            backend.clone(),
+            local_actor,
+            None,
+            root.clone(),
+            changed
+        )
+        .await
+        .is_err()
+    );
+    assert_eq!(qwen.calls.lock().unwrap().len(), calls_before + 1);
+    system["reason"] = json!("[local-cli] isolated system candidate");
     let (a, b) = tokio::join!(
         operator.send("POST", audition_api, Some(system.clone()), true),
         disabled.send("POST", audition_api, Some(system.clone()), true)

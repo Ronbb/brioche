@@ -94,3 +94,5 @@
 - 带录音课程的整课试听使用完整作者源哈希、固定 revision 与审核 CAS；人工 heard 与理由必须明确填写，播放不自动通过。内容审批/stage/activate 重查最新试听决定、实际录音与当前 operator。精确原请求仅承认紧邻回执，已发布新决定拒绝；迁移26保留不可变实际 actor 和理由，测试声明不能代替真实审听。
 
 - 后台课程contentApproved与audioRequired/audioAccepted分别显示，approved是组合发布条件。录音未通过不丢失内容退回操作；无录音保持原内容审批。有录音但缺接受记录时提供固定试听入口，服务端继续重查，不依赖按钮隐藏。
+
+- 本机voice-audition-generate复用持久化试听与当前operator校验，理由标注local-cli；固定尝试ID精确重试不重发收费。245秒等待不是退款/回滚证明，submitted/unknown须查固定记录；不创建会话或自动审听通过。

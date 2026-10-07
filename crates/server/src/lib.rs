@@ -30,7 +30,7 @@ mod speech_export;
 mod speech_media;
 mod speech_package;
 pub mod speech_plan;
-mod voice_auditions;
+pub mod voice_auditions;
 mod voice_jobs;
 mod voice_references;
 use axum::{

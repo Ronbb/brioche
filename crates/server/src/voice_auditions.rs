@@ -131,6 +131,27 @@ async fn read(
     require_operator(&auth)?;
     Ok(Json(item(&load(&b.db, &id).await?)?))
 }
+
+/// Trusted local operator entry: shares persistence, current-role checks and exact retry with HTTP.
+/// Keeps the runtime alive for the dispatched job; never records a listening approval.
+pub async fn submit_local(
+    b: Backend,
+    actor: i64,
+    service: Option<Service>,
+    root: PathBuf,
+    mut request: AdminAuditionRequest,
+) -> Result<AdminAudition, AppError> {
+    request.reason = format!("[local-cli] {}", request.reason);
+    let id = request.id.clone();
+    let Json(mut result) = create_for_actor(b.clone(), actor, service, root, request).await?;
+    let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(245);
+    while result.status == "submitted" && tokio::time::Instant::now() < deadline {
+        tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+        result = item(&load(&b.db, &id).await?)?;
+    }
+    Ok(result)
+}
+
 async fn create(
     auth: AuthSession,
     State(b): State<Backend>,
@@ -139,6 +160,15 @@ async fn create(
     Json(request): Json<AdminAuditionRequest>,
 ) -> Result<Json<AdminAudition>, AppError> {
     require_operator(&auth)?;
+    create_for_actor(b, owner(&auth)?, service.map(|s| s.0), root, request).await
+}
+async fn create_for_actor(
+    b: Backend,
+    actor: i64,
+    service: Option<Service>,
+    root: PathBuf,
+    request: AdminAuditionRequest,
+) -> Result<Json<AdminAudition>, AppError> {
     crate::admin::reason(&request.reason)?;
     if !request.cost_confirmed || !hex(&request.id, 32) {
         return Err(AppError::InvalidInput);
@@ -169,7 +199,6 @@ async fn create(
     }
     let candidate_json =
         serde_json::to_value(&request.candidate).map_err(|_| AppError::InvalidInput)?;
-    let actor = owner(&auth)?;
     let tx = b.db.begin().await.map_err(|_| AppError::Unavailable)?;
     lock_operator(&tx, actor).await?;
     // Serialize the id before any external call. Exact retries return the original attempt without resending.
@@ -184,7 +213,7 @@ async fn create(
         if field::<i64>(&row,"actor_id")?!=actor||field::<String>(&row,"reason")?!=request.reason||field::<Option<String>>(&row,"clone_job_id")?!=request.clone_job_id||field::<Option<i32>>(&row,"clone_version")?.map(|v|v as u32)!=request.expected_clone_version||p["candidate"]!=candidate_json||p["input"]["text"]!=request.text||p["sceneEmotion"]!=request.emotion{return Err(AppError::Conflict);}
         return Ok(Json(item(&load(&tx,&request.id).await?)?));
     }
-    let service = service.ok_or(AppError::Unavailable)?.0;
+    let service = service.ok_or(AppError::Unavailable)?;
     let permit = service
         .permits
         .clone()

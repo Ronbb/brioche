@@ -168,3 +168,7 @@ GET固定角色版本不要求已有声音档案，页面可查看最近20个历
 本批验证与生产：固定API的实际PG验证内容approved保持true、整课未听approved=false，通过后组合approved=true；4项管理员与录音链路测试通过，Rust工作区常规/Clippy/fmt、TS7/build、28Web/29SSR/格式通过。最终Chromium四种内容/录音组合及实际内容退回66.35秒通过，分页/搜索同批通过；320/390/678/1024px无横向溢出。协议fixture未声称真实审听。
 
 pre-approval-status-20261007数据库及5媒体备份已verify；HTTPS+TTS三Compose实际build/up--wait完成，四长期healthy、迁移exit0、两个HTTPS巡检healthy。生产只读26迁移/0正式录音/0整课审批/2声音档案/6发布课/generation1保持；overview匿名401且private/no-store，Traefik无宿主端口、30075零监听，开发API ready200。实际API镜像148fdd7f6f7f6ccb5348ae5d5dc52a37faef7b87c4969a0e02760d470e910de0，Web93517465e3c91906d8efcd746da3993101a76e56c40c10f77e7f089527124433。隔离PG及卷已删除，所有本批测试/构建/启动句柄终态；未请求新付费TTS或修改实际用户/角色/课程，完整目标仍活动。独立gateway和原开发服务保留，其他会话部署/ADR文档不提交。
+
+本机入口验证与实际候选（2026-10-07）：隔离PG管理员4项通过，包含本机生成ready/accepted=null、无提供方配置的同请求重试不重发、改变原文冲突，与网页同ID重试复用；Rust工作区常规/Clippy/fmt及28Web/29SSR通过。重建API并带HTTPS/TTS覆盖实际up--wait，迁移26 exit0、四长期服务healthy、两HTTPS巡检healthy，旧HTTP端口仍未开放。CLI保持等待已有任务，不创建登录会话或角色接受记录。
+
+按用户既有Qwen生成授权，实际生成1次Léa系统候选（Flash/longanhuan_v3.1，固定character-lea v1/baseVoice0），任务进入生产私有试听页。原始与修复WAV保持AI标识，实际解码为24kHz单声道/7280ms；本机试听副本与正式私有媒体sha256一致。尚无人工接受，声音档案仍2份、Léa声音仍0；6发布课与generation1未改变，正式录音仍0，不将候选试听冒充正式六课语音。已向用户呈现本机试听并询问音色/语速；反馈之前不自动批准。预生成备份5媒体、生成后备份7媒体及数据库均verify；不是异地恢复验收。匿名固定试听/文件401且private/no-store，独立PG已删除，开发服务与gateway保留。

@@ -219,6 +219,43 @@ async fn main() -> Result<()> {
         )
     };
     match command.as_str() {
+        "voice-audition-generate" => {
+            let args: Vec<String> = std::env::args().skip(2).collect();
+            if args.len() != 2 {
+                bail!("usage: voice-audition-generate <request.json> <operator-email>");
+            }
+            let document = brioche_server::author_json::Document::load(&args[0])?;
+            let request: brioche_course_contract::AdminAuditionRequest =
+                brioche_server::author_json::from_value(document.value, "")?;
+            let database = db.as_ref().unwrap();
+            let row = database
+                .query_one_raw(sea_orm::Statement::from_sql_and_values(
+                    sea_orm::DbBackend::Postgres,
+                    "SELECT id FROM users WHERE email=$1 AND role='operator'",
+                    vec![args[1].clone().into()],
+                ))
+                .await?
+                .ok_or_else(|| anyhow::anyhow!("operator not found"))?;
+            let backend = brioche_server::identity::Backend::new(database.clone()).await?;
+            let service = brioche_server::qwen::Service::from_env()
+                .map_err(|_| anyhow::anyhow!("invalid TTS configuration"))?;
+            let result = brioche_server::voice_auditions::submit_local(
+                backend,
+                row.try_get("", "id")?,
+                service,
+                brioche_server::media::media_root(),
+                request,
+            )
+            .await
+            .map_err(|_| {
+                anyhow::anyhow!("audition not confirmed; inspect the fixed attempt before retrying")
+            })?;
+            println!(
+                "{}",
+                serde_json::json!({"id":result.id,"status":result.status,"durationMs":result.duration_ms,"reviewRequired":true})
+            );
+            return Ok(());
+        }
         "character-voice-import" => {
             let args: Vec<String> = std::env::args().skip(2).collect();
             if args.len() != 3 {
