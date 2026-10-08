@@ -12,6 +12,8 @@ export default {
   themeColor: "#fffaef",
   brandIcon: "/icons/brand.svg",
   avatar: "/assets/avatars/learner.svg",
+  learnerLabel: "法语学习者",
+  courseLevelLabel: "A1–A2",
   theme: {
     "--paper": "#faf7ef",
     "--surface": "#fffdf7",
