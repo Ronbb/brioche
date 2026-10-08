@@ -1,0 +1,4 @@
+# Independent product deployment; combined compose.yaml remains a legacy restore reference.
+name: chef-brioche
+include:
+  - framework/infra/compose.product.yaml
