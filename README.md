@@ -17,14 +17,14 @@
 
 开发启动与验收见 [工程说明](docs/08-development.md)。安装 `pnpm install --frozen-lockfile` 后，在两个终端分别运行 `pnpm dev:api`、`pnpm dev:web`，打开 `http://localhost:5173/`。开发模式提供未审校示例课程，生产仅读取数据库已发布版本。
 
-生产使用 Docker Compose，Traefik 作为内部入口，数据库不映射宿主端口。基础配置可单独提供 HTTP30075；当前已接独立 HTTPS 网关，生产叠加 [compose.https.yaml](compose.https.yaml) 取消宿主HTTP映射，维护方式见 [HTTPS接入说明](infra/https-gateway.md)。实际域名、数据库密码与浏览器地址 PUBLIC_APP_URL 仅放部署私有配置。
+生产使用 [compose.product.yaml](compose.product.yaml) 引用 Chef 的独立身份、学习 API、Web 和内部 Traefik，共用 PostgreSQL 与媒体卷，外部网关处理 HTTPS；不映射宿主 HTTP 或数据库端口。使用 `docker compose --env-file .local/chef-runtime.env -f compose.product.yaml up -d --wait` 启动应用，私有配置含固定镜像、数据库角色、域名与服务密钥。旧 combined `compose.yaml` 仅保留数据库基础设施和历史恢复参考，不再用于启动已分离 schema 的应用；不要对旧项目执行 `--remove-orphans` 或 `down`。迁移与上线证据见 [Hargow 部署记录](https://github.com/Ronbb/hargow/blob/main/docs/production-20261008.md)。
 
 保留已确认的静态 [Preview](docs/preview/README.md) 作为视觉基准；通过 `python -m http.server 4173 --directory docs/preview` 查看。法语内容与正式媒体仍需审校。
 
 协作约定见 [AGENTS.md](AGENTS.md)；本机信息见不进入版本控制的 `AGENTS.local.md`。早期设计提案保留规划范围；实际启动、作者工具和验收命令以 [工程说明](docs/08-development.md) 为准，不能把提案或草稿当作已验收结果。
 
-共享学习/账号/后台/配音后端与数据库迁移已迁入固定 Chef 子模块；本产品 Rust 入口只负责启动装配。首次检出执行 `git submodule update --init --recursive`。通用 Web、独立身份服务及产品数据隔离仍在拆分，见 [多产品架构](docs/14-multi-product-architecture.md)。
+共享学习/账号/后台/配音后端与数据库迁移已迁入固定 Chef 子模块；本产品 Rust 入口只负责启动装配。首次检出执行 `git submodule update --init --recursive`。2026-10-08 已完成生产身份 schema 分离与双产品部署，原两账号、48课及发布状态保持，Hargow 学习数据按产品隔离。原拆分设计见 [多产品架构](docs/14-multi-product-architecture.md)。
 
-通用 React Router 页面、播放器和管理员界面已迁入 `framework/packages/web`，本产品 Web 保留品牌配置、构建和静态品牌资源，测试通过 Chef 执行。正式课源运行装配和独立身份/双产品数据隔离继续迁移。
+通用 React Router 页面、播放器和管理员界面已迁入 `framework/packages/web`，本产品 Web 保留品牌配置、构建和静态品牌资源，测试通过 Chef 执行。正式运行使用独立身份与按产品授权的学习服务。
 
 法语课源真源为固定的 `curriculum` 子模块（独立 brioche-courses 仓库）。课程、作者示例、历史目录不再在产品保存副本；作者命令使用 `curriculum/docs/...`，生产仍读取既有数据库中的不可变版本。
