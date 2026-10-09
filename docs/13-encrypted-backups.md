@@ -1,17 +1,17 @@
 # 加密备份副本
 
-数据库和媒体一致快照仍由 `scripts/backup.mjs` 创建与恢复；`scripts/backup-seal.mjs` 为完整快照提供离线加密、校验和解密，不连接数据库，不修改生产卷，不调用 TTS，不上传外部存储。异盘目的地、每日执行、保留策略和异地恢复仍须单独落实，不能用同盘加密代替它们。
+数据库和媒体一致快照仍由 `scripts/backup.ts` 创建与恢复；`scripts/backup-seal.ts` 为完整快照提供离线加密、校验和解密，不连接数据库，不修改生产卷，不调用 TTS，不上传外部存储。异盘目的地、每日执行、保留策略和异地恢复仍须单独落实，不能用同盘加密代替它们。
 
 ## 操作
 
 在私有、受访问权限保护的目录准备密钥。密钥文件是随机 32 字节二进制文件，不是密码或 API Key；只通过文件路径传递，不输出密钥内容，不把密钥与加密副本一起上传。
 
 ```powershell
-node scripts/backup-seal.mjs keygen --key-file .local/private/backup-recovery.key
-node scripts/backup-seal.mjs seal --input .local/private/backups/example --output .local/private/sealed-example --key-file .local/private/backup-recovery.key
-node scripts/backup-seal.mjs verify --input .local/private/sealed-example --key-file .local/private/backup-recovery.key
-node scripts/backup-seal.mjs open --input .local/private/sealed-example --output .local/private/restored-example --key-file .local/private/backup-recovery.key
-node scripts/backup.mjs verify --input .local/private/restored-example
+pnpm exec tsx scripts/backup-seal.ts keygen --key-file .local/private/backup-recovery.key
+pnpm exec tsx scripts/backup-seal.ts seal --input .local/private/backups/example --output .local/private/sealed-example --key-file .local/private/backup-recovery.key
+pnpm exec tsx scripts/backup-seal.ts verify --input .local/private/sealed-example --key-file .local/private/backup-recovery.key
+pnpm exec tsx scripts/backup-seal.ts open --input .local/private/sealed-example --output .local/private/restored-example --key-file .local/private/backup-recovery.key
+pnpm exec tsx scripts/backup.ts verify --input .local/private/restored-example
 ```
 
 全部输出目录和新密钥文件必须不存在，脚本拒绝覆盖；加密目录不能包含源目录或密钥，也不能放在源目录中。`verify` 流式验证全部密文及原始 SHA-256，不写明文副本。`open` 仅写新的私有目录，全部对象认证和原摘要校验通过后才写完整 `manifest.json`，解密结果可接原有隔离 `restore` 流程。不要把结果恢复到生产数据库或现有媒体卷。

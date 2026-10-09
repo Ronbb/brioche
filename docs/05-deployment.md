@@ -134,7 +134,7 @@ Compose 内仅提供 HTTP，入口固定为宿主机 `30075`。用户管理的�
 
 ```sh
 pnpm health:check --project brioche
-node scripts/health-check.mjs --project brioche --origin http://127.0.0.1:30075 --disk-path /your/data/filesystem --minimum-free-gib 5
+pnpm exec tsx scripts/health-check.ts --project brioche --origin http://127.0.0.1:30075 --disk-path /your/data/filesystem --minimum-free-gib 5
 ```
 
 `--disk-path` 应指向要检查的宿主机存储盘；Windows 可传实际磁盘路径。此项测量该路径所在文件系统的可用空间，不能自动证明 Docker Desktop 虚拟磁盘内部、远端备份或每个 volume 的剩余空间。未指定路径时，输出 `disk: null`，不假装磁盘检查通过。

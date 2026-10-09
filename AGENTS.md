@@ -68,7 +68,7 @@
 
 - 网页课源/目录预检使用operator documents/{lesson|release}/check，共用本地作者验证及原源位置索引，返回字段路径、行/列及固定安全中文，不输出私有值/原异常/服务器路径。目录预检与staging共用checked_entries的导入版本、撤回、发布条件、公共投影/目录归属、判分与真实媒体检查；RepeatableRead只读检查不能FOR SHARE，正式staging仍持有content_state→revision锁并原子提交。预检成功只是当次快照，不能替代最终事务或保证随后发布成功；准入permit需由整个实际任务持有直到完成，不能因HTTP取消而提前释放。
 
-- `scripts/backup-seal.mjs`只封装已验证的离线快照，不连接生产DB或上传。密钥是私有32字节文件，不放入副本或Git；错误/日志不输出秘密。输出必须新建，完整标记最后发布；失败明文仍私有，不自动清理。加密往返和同盘副本不证明异盘恢复、每日RPO或NTFS ACL，见docs/13-encrypted-backups.md。
+- `scripts/backup-seal.ts`只封装已验证的离线快照，不连接生产DB或上传。密钥是私有32字节文件，不放入副本或Git；错误/日志不输出秘密。输出必须新建，完整标记最后发布；失败明文仍私有，不自动清理。加密往返和同盘副本不证明异盘恢复、每日RPO或NTFS ACL，见docs/13-encrypted-backups.md。
 
 - 改关键设计同步更新 docs 与决策记录，标明事实、建议、待验证项。
 - `release-activate` / `content-withdraw` 的本地作者诊断与运行时共用事务及发布/撤回检查；可指出 generation 冲突、撤回课程及媒体字段，但不得输出 SQL/连接秘密，也不得为诊断跳过媒体校验或原子性。
@@ -94,7 +94,7 @@
 - 生产页面壳另用 `pnpm test:browser:ssr`；先运行 `pnpm build`，测试直接加载当前 server/client 构建、真实 Layout/客户端路由与 CSS。后端为受控公共课程 API，两台 HTTP 服务及 Chromium 均使用独立随机 loopback 端口/会话并自动关闭；不能将它当作实际 Rust/数据库/生产或 iPhone 验收。
 - 共用浏览器会话的独立测试须隔离 sessionStorage 草稿；同一用例内的离页、返回和重试保留真实草稿。不能把上一用例恢复的步骤当作当前应用推进或焦点缺陷，定向通过后还需核对完整套件的顺序影响。
 - 不自行修改用户 DNS/路由器或执行生产上线；按相应任务的授权范围工作。
-- 运维备份使用 `scripts/backup.mjs`，同时保留数据库与全部登记媒体；真实备份/会话/私有判分不得入 Git。restore 只创建新数据库和新媒体卷，不自动切换应用或清理失败目标。`pnpm test:ops` 运行运维检查，显式 `BRIOCHE_BACKUP_DOCKER_TEST=1` 才创建隔离 Docker 演练资源；恢复样本通过不等于生产 RPO/RTO 或公网验收通过。
+- 运维备份使用 `scripts/backup.ts`，同时保留数据库与全部登记媒体；真实备份/会话/私有判分不得入 Git。restore 只创建新数据库和新媒体卷，不自动切换应用或清理失败目标。`pnpm test:ops` 运行运维检查，显式 `BRIOCHE_BACKUP_DOCKER_TEST=1` 才创建隔离 Docker 演练资源；恢复样本通过不等于生产 RPO/RTO 或公网验收通过。
 - 运行巡检使用 `pnpm health:check --project <明确的 Compose 项目名>`；只读服务状态与入口 HTTP，可选检查指定宿主盘，不读取/输出环境秘密。退出码 0/1/2 分别表示健康/检测故障/参数或脚本失败。脚本不安装定时任务、发送通知或自动修复；实际生产告警与外部探测仍须按用户环境配置和验收。
 
 - 课程配音可先用离线 speech-plan 编译器核对固定角色声音、正文/词汇/语法例句与情绪目标；输出为私有生成清单和文本边界，不是正式录音或真实时间轴。不得将测试角色档案当作实际声音批准，缺少旁白档案必须补齐，见 docs/characters/README.md。

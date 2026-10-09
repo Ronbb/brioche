@@ -40,13 +40,13 @@ Qwen 固定 speaker 可跨语言生成，但官方建议使用音色母语取得
 
 用户已选择：不能直接使用 OpenAI 时使用 Qwen API。当前没有直接生成 OpenAI 音频的工具或已配置的 API Key，因此先接入 Qwen。
 
-试听脚本 `scripts/qwen-tts.mjs` 使用 Qwen Audio 3.1 TTS Flash 的北京业务空间接口，固定两种官方列为支持法语的音色 `longanlingxin_v3.1` / `xunanchuan_v3.1`，8 句面包店对话逐句带情绪指令。3.0 Plus 内置音色仅标注中文/英文，不能因“Plus”就用于法语；本轮未核实云端参数量，不声称模型规模。依据：[API](https://help.aliyun.com/zh/model-studio/qwen-audio-tts-http-api)、[音色列表](https://help.aliyun.com/zh/model-studio/qwen-audio-tts-voice-list)。3.1 名称是提供方别名，未查到不可变快照；收据明确记录这一限制，不冒充可复现的固定版本。
+试听脚本 `scripts/qwen-tts.ts` 使用 Qwen Audio 3.1 TTS Flash 的北京业务空间接口，固定两种官方列为支持法语的音色 `longanlingxin_v3.1` / `xunanchuan_v3.1`，8 句面包店对话逐句带情绪指令。3.0 Plus 内置音色仅标注中文/英文，不能因“Plus”就用于法语；本轮未核实云端参数量，不声称模型规模。依据：[API](https://help.aliyun.com/zh/model-studio/qwen-audio-tts-http-api)、[音色列表](https://help.aliyun.com/zh/model-studio/qwen-audio-tts-voice-list)。3.1 名称是提供方别名，未查到不可变快照；收据明确记录这一限制，不冒充可复现的固定版本。
 
 将 `infra/tts.env.example` 复制到被忽略的 `.local/tts.env`，填写北京地域 `DASHSCOPE_API_KEY` 与 `DASHSCOPE_BASE_URL`。地址支持业务空间 HTTPS 根路径、`/api/v1` 或 `/compatible-mode/v1`，统一转为同主机的原生语音接口；不把 OpenAI 兼容路径当成音频合成接口，也不向其他域名发送密钥。仍兼容 `QWEN_WORKSPACE_ID`，配置 BASE_URL 时优先使用它。不要通过聊天、Git 或前端输入密钥。
 
 ```powershell
-node scripts/qwen-tts.mjs --plan
-node --env-file=.local/tts.env scripts/qwen-tts.mjs --generate
+pnpm exec tsx scripts/qwen-tts.ts --plan
+node --env-file=.local/tts.env scripts/qwen-tts.ts --generate
 ```
 
 计划不访问网络；生成最多 8 次付费 POST，不自动重试。输出仅在 `.local/private/tts-qwen/bakery-<timestamp>`，逐句 WAV 和参数/哈希收据标为 unreviewed，开启 AI 来源标识。密钥与临时签名地址不写收据。只下载文档中的北京结果 bucket，升级 HTTPS、不跟随重定向、不转发 API 鉴权；响应大小和时限有界。重新执行会重新计费，失败前成功的文件保留，先检查提供方用量再重做。

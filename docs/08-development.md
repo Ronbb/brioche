@@ -4,7 +4,7 @@
 
 现行生产使用 `compose.yaml`、`compose.https.yaml`、`compose.tts.yaml` 三个文件，外层独立 HTTPS 网关接入内部 Traefik。所有维护命令应保持这组三覆盖，不恢复宿主 HTTP 30075。课程和录音按所有者直接发布授权处理，保留真实媒体、时间轴、来源、版本和审计校验；不再等待所有者逐项审批，也不伪造人工试听。
 
-当前完整备份可使用 `scripts/backup-seal.mjs` 生成认证加密副本，独立验证密文并解密回原恢复格式；操作与失败输出处理见 [加密备份副本](13-encrypted-backups.md)。生产1496对象快照已实际完成加密/校验/解密摘要验证，异盘目的地、每日执行、保留与异地恢复仍未完成。
+当前完整备份可使用 `scripts/backup-seal.ts` 生成认证加密副本，独立验证密文并解密回原恢复格式；操作与失败输出处理见 [加密备份副本](13-encrypted-backups.md)。生产1496对象快照已实际完成加密/校验/解密摘要验证，异盘目的地、每日执行、保留与异地恢复仍未完成。
 
 录音课包组装已接入时间轴后台，保留历史人工核对流程及其真实记录；直接发布工具另记录所有者授权和实际模型分析证据。输出完整正文录音、词级区间、知识录音、新草稿和登记清单。下载不写登记/课源数据库；网页可把正式录音登记、新版本草稿与不可变回执放在同一事务中导入，并按固定版本预览及每20条浏览回执，详见 [角色与声音档案](characters/README.md)。组装、导入与目录激活是独立步骤；全部48课正式语音现已实际发布。
 
@@ -300,12 +300,12 @@ pnpm 11 使用 `pnpm-workspace.yaml` 的 `allowBuilds`，旧 `onlyBuiltDependenc
 
 ## Docker 备份与恢复
 
-需要 Node 24 与 Docker。`scripts/backup.mjs` 使用现有 PostgreSQL 容器内的工具，不要求宿主安装 psql/pg_dump，不通过 PowerShell 文本管道传输二进制，也不把数据库密码放到命令行。用 `docker compose ps -q postgres` 获取实际数据库容器 ID，用 `docker volume ls --filter label=com.docker.compose.project=brioche --filter label=com.docker.compose.volume=media_data --format '{{.Name}}'` 核对媒体卷；自定义 Compose 项目名时修改 project filter。下面的容器/卷名称是默认项目示例，应替换为实际核对值。
+需要 Node 24 与 Docker。`scripts/backup.ts` 使用现有 PostgreSQL 容器内的工具，不要求宿主安装 psql/pg_dump，不通过 PowerShell 文本管道传输二进制，也不把数据库密码放到命令行。用 `docker compose ps -q postgres` 获取实际数据库容器 ID，用 `docker volume ls --filter label=com.docker.compose.project=brioche --filter label=com.docker.compose.volume=media_data --format '{{.Name}}'` 核对媒体卷；自定义 Compose 项目名时修改 project filter。下面的容器/卷名称是默认项目示例，应替换为实际核对值。
 
 ```sh
-node scripts/backup.mjs backup --database-container brioche-postgres-1 --media-volume brioche_media_data --output backups/2026-10-06
-node scripts/backup.mjs verify --input backups/2026-10-06
-node scripts/backup.mjs restore --database-container brioche-postgres-1 --database brioche_restore_20261006 --media-volume brioche_restore_media_20261006 --input backups/2026-10-06
+pnpm exec tsx scripts/backup.ts backup --database-container brioche-postgres-1 --media-volume brioche_media_data --output backups/2026-10-06
+pnpm exec tsx scripts/backup.ts verify --input backups/2026-10-06
+pnpm exec tsx scripts/backup.ts restore --database-container brioche-postgres-1 --database brioche_restore_20261006 --media-volume brioche_restore_media_20261006 --input backups/2026-10-06
 ```
 
 backup 默认数据库和角色为 brioche，可用 `--database`/`--user` 指定。输出目录必须不存在，父目录需要先创建；不会覆盖旧备份。数据库使用 pg_dump 的一致性快照；随后读取不可变视觉/录音登记，复制全部登记对象并核对 SHA-256，不只复制当前已公开课程。登记和对象只增不改，因此随后加入的额外对象不影响之前快照的可恢复性；备份期间禁止迁移、手工改写/删除登记文件或 prune。临时读取容器复用当前数据库的实际 image ID、无网络、媒体只读；退出后删除自己的临时容器。备份不会包含未登记临时文件、环境秘密、Docker 镜像或全局 PostgreSQL 角色，秘密和应用镜像版本应另行保存。
@@ -486,9 +486,9 @@ Qwen后台音色创建：可选-f compose.tts.yaml仅给server加载.local/tts.e
 完整已发布目录的离线课程仓库验证（先 `cargo build --locked -p brioche-server`）：
 
 ```sh
-node framework/scripts/check-curriculum.mjs target/debug/brioche-server curriculum/docs/content/releases/audio-forty-eight.release.json curriculum/docs/content curriculum/docs/examples
+pnpm exec tsx framework/scripts/check-curriculum.ts target/debug/brioche-server curriculum/docs/content/releases/audio-forty-eight.release.json curriculum/docs/content curriculum/docs/examples
 ```
 
 Windows 二进制路径加 `.exe`。工具检查全部48个精确revision，源文件可分布在历史目录中；拒绝缺失版本或不同字节的同版本副本。它调用实际Rust作者校验，不读取生产数据库、不导入媒体、不自动发布。临时聚合源在退出时清理；私有答案不输出到日志。正式课程真源只在curriculum，不编辑产品的历史路径。
 
-通用运维/TTS/离线对齐工具真源现在属于Chef framework/scripts，产品scripts只保留兼容入口；现有node scripts/backup.mjs、backup-seal.mjs、health-check.mjs与qwen命令继续有效，import保持无副作用并保留原export。pnpm test:ops直接执行共享测试，产品转发验证运行node --test scripts/compat.test.mjs。共享离线对齐依赖安装文件在framework/scripts/alignment/requirements.windows-cpu.txt；Python测试从framework/scripts/alignment发现。调用根默认是当前产品工作区，跨目录调用需CHEF_WORKSPACE_ROOT显式指定；私有.local模型/媒体/预测不会写到框架源码目录。Docker编译只复制框架固定model/runtime/aliases，不再需要产品副本。抽取未配置定时备份/异盘保存、没有调用收费模型或改变媒体登记。
+通用运维/TTS/离线对齐工具真源现在属于Chef framework/scripts，产品scripts只保留兼容入口；现有node scripts/backup.ts、backup-seal.ts、health-check.ts与qwen命令继续有效，import保持无副作用并保留原export。pnpm test:ops直接执行共享测试，产品转发验证运行node --test scripts/compat.test.ts。共享离线对齐依赖安装文件在framework/scripts/alignment/requirements.windows-cpu.txt；Python测试从framework/scripts/alignment发现。调用根默认是当前产品工作区，跨目录调用需CHEF_WORKSPACE_ROOT显式指定；私有.local模型/媒体/预测不会写到框架源码目录。Docker编译只复制框架固定model/runtime/aliases，不再需要产品副本。抽取未配置定时备份/异盘保存、没有调用收费模型或改变媒体登记。

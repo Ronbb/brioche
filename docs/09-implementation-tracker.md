@@ -348,7 +348,7 @@ HTTPS+TTS三覆盖实际构建并启动API/Web，实际容器镜像API`sha256:46
 
 ## 认证加密备份副本（2026-10-07）
 
-新增离线 `scripts/backup-seal.mjs`：生成私有随机二进制密钥，将数据库和全部登记媒体连同manifest流式AES-256-GCM加密；每对象随机nonce，AAD绑定随机备份UUID及序号，原摘要和长度再次核对。只写新目录，拒绝覆盖或源/输出/密钥路径嵌套；完整envelope最后发布。密文verify不写明文，open先认证并验证manifest路径，再验证每对象tag及原SHA，完整manifest最后发布，可接既有隔离restore。失败保留不完整输出并说明可能包含敏感明文，CLI不打印原文件、密钥或原始异常；Windows权限依赖私有目录NTFS ACL。格式及操作见[加密备份副本](13-encrypted-backups.md)。
+新增离线 `scripts/backup-seal.ts`：生成私有随机二进制密钥，将数据库和全部登记媒体连同manifest流式AES-256-GCM加密；每对象随机nonce，AAD绑定随机备份UUID及序号，原摘要和长度再次核对。只写新目录，拒绝覆盖或源/输出/密钥路径嵌套；完整envelope最后发布。密文verify不写明文，open先认证并验证manifest路径，再验证每对象tag及原SHA，完整manifest最后发布，可接既有隔离restore。失败保留不完整输出并说明可能包含敏感明文，CLI不打印原文件、密钥或原始异常；Windows权限依赖私有目录NTFS ACL。格式及操作见[加密备份副本](13-encrypted-backups.md)。
 
 七项新回归覆盖字节往返/随机密文、错误密钥/身份修改、篡改、截断/缺失/跨备份替换、拒绝覆盖/嵌套及无效源/CLI参数。32项完整运维测试全部通过，无skip，包含真实Docker备份/恢复与不安全目标拒绝；原备份manifest验证提取为共享函数，恢复流程未改变。现有生产post48快照实际1496媒体对象+数据库299173851字节完成seal6387ms、无明文verify2877ms、open5099ms，解密后原验证器再次核对全部原SHA/长度；私有证据`backup-seal-validation-20261007/verified.json`，密钥、密文及明文均留在忽略目录，没有上传、生产DB/卷写入或收费调用。本轮未再次启动完整恢复应用，完整应用恢复证据见下一节，不能把封装往返冒充新增恢复演练。
 

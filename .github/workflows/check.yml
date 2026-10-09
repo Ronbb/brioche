@@ -59,7 +59,7 @@ jobs:
           exit "$test_status"
       - run: cargo run -p brioche-server --locked -- check curriculum/docs/examples/a1-bakery.lesson.json
       - run: cargo run -p brioche-server --locked -- check-release curriculum/docs/examples/catalog.release.json
-      - run: node framework/scripts/check-curriculum.mjs target/debug/brioche-server curriculum/docs/content/releases/audio-forty-eight.release.json curriculum/docs/content curriculum/docs/examples
+      - run: pnpm exec tsx framework/scripts/check-curriculum.ts target/debug/brioche-server curriculum/docs/content/releases/audio-forty-eight.release.json curriculum/docs/content curriculum/docs/examples
       - run: cargo test --manifest-path framework/Cargo.toml -p chef-engine --test postgres --locked -- --ignored
         env:
           TEST_DATABASE_URL: postgres://postgres@localhost:5432/brioche_test
@@ -87,7 +87,7 @@ jobs:
       - run: pnpm test:ops
         env:
           BRIOCHE_BACKUP_DOCKER_TEST: "1"
-      - run: node --test scripts/compat.test.mjs
+      - run: pnpm exec tsx --test scripts/compat.test.ts
       - run: pnpm build
       - run: pnpm test:ssr
       - run: pnpm exec agent-browser install --with-deps

@@ -1,0 +1,7 @@
+{
+  "extends": "../framework/scripts/tsconfig.json",
+  "include": [
+    "./**/*.ts",
+    "../framework/scripts/**/*.ts"
+  ]
+}

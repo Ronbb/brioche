@@ -4,19 +4,24 @@
   "packageManager": "pnpm@11.11.0",
   "scripts": {
     "dev:web": "pnpm --filter @brioche/web dev",
-    "dev:api": "node scripts/dev-api.mjs",
+    "dev:api": "tsx scripts/dev-api.ts",
     "build": "pnpm --filter @brioche/web build",
-    "typecheck": "pnpm --filter @brioche/web typecheck",
-    "test:web": "node framework/scripts/web-tests.mjs unit",
-    "test:ssr": "node framework/scripts/web-tests.mjs ssr",
-    "test:browser": "node framework/scripts/web-tests.mjs browser",
-    "test:browser:ssr": "node framework/scripts/web-tests.mjs browser-ssr",
-    "test:ops": "node --test framework/scripts/tests/*.test.mjs",
-    "health:check": "node scripts/health-check.mjs",
-    "contracts": "cargo run --manifest-path framework/Cargo.toml --locked -p brioche-course-contract --example export -- --output framework/packages/contracts/src/generated && cargo run -p brioche-server --locked --example export_author_schema"
+    "typecheck": "pnpm typecheck:scripts && pnpm --filter @brioche/web typecheck",
+    "test:web": "tsx framework/scripts/web-tests.ts unit",
+    "test:ssr": "tsx framework/scripts/web-tests.ts ssr",
+    "test:browser": "tsx framework/scripts/web-tests.ts browser",
+    "test:browser:ssr": "tsx framework/scripts/web-tests.ts browser-ssr",
+    "test:ops": "tsx --test framework/scripts/tests/*.test.ts",
+    "health:check": "tsx scripts/health-check.ts",
+    "contracts": "cargo run --manifest-path framework/Cargo.toml --locked -p brioche-course-contract --example export -- --output framework/packages/contracts/src/generated && cargo run -p brioche-server --locked --example export_author_schema",
+    "typecheck:scripts": "tsc -p scripts/tsconfig.json"
   },
   "devDependencies": {
     "agent-browser": "0.27.0",
-    "prettier": "3.9.9"
-  }
+    "prettier": "3.9.9",
+    "tsx": "4.23.15",
+    "@types/node": "24.10.13",
+    "typescript": "7.0.2"
+  },
+  "type": "module"
 }

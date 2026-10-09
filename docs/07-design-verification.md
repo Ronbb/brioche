@@ -688,7 +688,7 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 
 ## 2026-10-06：Docker 数据库与媒体实际备份恢复
 
-- 新增 Node 运维工具 `scripts/backup.mjs` 的 backup/verify/restore。custom-format dump 以有界二进制流写入；不可变媒体登记在 dump 后读取，复制所有登记的图片/音频并核对 SHA-256，最后写入完整 manifest。只读/无网络 helper 使用实际数据库容器 image ID；不会复制环境秘密或创建自动调度。输出目录不覆盖，文件/目录有界并检查常规类型、大小、哈希及对象名，不接受路径穿越/重复媒体项。恢复要求相同 PostgreSQL major、新数据库/新媒体卷、操作标签，使用单事务与 no-owner/no-acl，写入 UID 10001 并重新校验哈希，不切换应用或线上目录。流传输也检查源文件被改写，失败保留现场。
+- 新增 Node 运维工具 `scripts/backup.ts` 的 backup/verify/restore。custom-format dump 以有界二进制流写入；不可变媒体登记在 dump 后读取，复制所有登记的图片/音频并核对 SHA-256，最后写入完整 manifest。只读/无网络 helper 使用实际数据库容器 image ID；不会复制环境秘密或创建自动调度。输出目录不覆盖，文件/目录有界并检查常规类型、大小、哈希及对象名，不接受路径穿越/重复媒体项。恢复要求相同 PostgreSQL major、新数据库/新媒体卷、操作标签，使用单事务与 no-owner/no-acl，写入 UID 10001 并重新校验哈希，不切换应用或线上目录。流传输也检查源文件被改写，失败保留现场。
 - 真实应用演练使用仅 loopback 暴露的 brioche-backup-qa / brioche_browser_qa：运行全部 10 个实际迁移，创建合成账号及记录，保存三个学习步骤、一个练习尝试、收藏、复习加入和自评、登录会话；登记四个测试 SVG 与一个合成 WAV。实际备份 database.dump 70395 字节与五个对象，恢复到新数据库 brioche_restore_qa 和新媒体卷；核对迁移数、active release/generation、练习/复习记录。
 - 以恢复副本在隔离 API 3004 运行：备份前 cookie 仍可访问所属账号，重新登录成功；完整 progress、收藏列表、复习历史与之前逐项一致，复习 stage=1/version=2/dueAt 保留，概览续学与周活动一致；恢复音频整文件 200 的实际哈希和 bytes=0-99 的 206/100 字节均通过。只使用协议账号与未审校合成内容，不作教学或生产上线证明。
 - 负例实际拒绝已存在数据库、已存在媒体卷、被改动的 dump 和同一备份输出目录，核对拒绝前后目标不存在/原 manifest 不变。另加入 100000 行合成 payload，使 dump 达 2260481 字节，恢复后行数与按 id 聚合的内容哈希一致；发现并修复 pg_restore --list 提前关闭 stdin 的 Windows EOF/pipe buffer 路径，只在工具成功退出后接受目录读取的提前关闭，正式恢复仍校验完整传输。
@@ -786,7 +786,7 @@ Node 播放器协议测试通过：媒体时间驱动进度/词高亮/片段结�
 
 ### Compose 运行巡检（2026-10-06）
 
-- 新增 scripts/health-check.mjs / pnpm health:check：按明确 project label 发现容器，只读取 Compose 服务/项目/oneoff 和状态、health、exit、OOM、restart 字段；Docker 命令无 shell、限制输出及超时，stderr 不打印。五个必需服务检查区分一次性 migrate 和长驻健康容器，遗漏/重复/非就绪/OOM 均失败，排除 oneoff=True。
+- 新增 scripts/health-check.ts / pnpm health:check：按明确 project label 发现容器，只读取 Compose 服务/项目/oneoff 和状态、health、exit、OOM、restart 字段；Docker 命令无 shell、限制输出及超时，stderr 不打印。五个必需服务检查区分一次性 migrate 和长驻健康容器，遗漏/重复/非就绪/OOM 均失败，排除 oneoff=True。
 - 入口并行 GET /api/health、/api/ready、/health、首页，核对 200 与有限 JSON status/HTML；不跟随重定向，请求及正文读取有超时，正文最多 512 KiB。不输出地址凭据、HTTP 正文、容器环境变量或健康日志。可选 statfs 检查指定宿主文件系统可用字节；未指定时 disk=null，不能据此声称 Docker 虚拟盘或备份目的地正常。
 - pnpm test:ops 共 9 项：8 项通过，原 Docker 备份测试因未显式开启而跳过。新增测试包含参数/凭据拒绝与 CLI exit=2、缺失/重复/不健康/OOM/迁移失败/跨项目、磁盘不足与秘密隔离；真实 Node HTTP 覆盖重定向、错误 JSON/status、超大响应、无响应头与头后停滞正文超时。未把跳过的备份演练计为本轮通过。
 - 独立 brioche-health-qa Compose 使用已有测试 API/Web 镜像、新临时 PostgreSQL/媒体卷和 QA HTTP 30076；未更改正式 Compose HTTP 30075。首次巡检 5 服务+4 HTTP+宿主文件系统均 healthy，CLI exit=0；确认项目/服务标签后仅停止该项目 Web，巡检 Web not-ready、/health 和首页 502，exit=1，API health/ready 仍正常；恢复健康后再次 exit=0。该证据仅覆盖运行探测，不是生产数据/业务全链路/正式域名验收。

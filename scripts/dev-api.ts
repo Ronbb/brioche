@@ -7,6 +7,6 @@ const child = spawn("cargo", ["run", "-p", "brioche-server"], {
     CONTENT_MODE: process.env.CONTENT_MODE ?? "fixture",
   },
 });
-for (const signal of ["SIGINT", "SIGTERM"])
+for (const signal of ["SIGINT", "SIGTERM"] as const)
   process.on(signal, () => child.kill(signal));
 child.on("exit", (code) => process.exit(code ?? 1));

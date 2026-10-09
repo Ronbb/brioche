@@ -46,8 +46,8 @@ TAR 上限128 MiB，含 `lesson.json` 新草稿、`audio-bundle.json` 登记清�
 后台可以导出本页已配置档案，或导出单个固定版本。导出仅存于管理员主动下载的文件，不写浏览器持久存储。面包店试听生成器默认读取仓库初始档案，也可明确传入后台导出文件：
 
 ```powershell
-node scripts/qwen-tts.mjs --plan --profiles <character-voices.json>
-node --env-file=.local/tts.env scripts/qwen-tts.mjs --generate --profiles <character-voices.json>
+pnpm exec tsx scripts/qwen-tts.ts --plan --profiles <character-voices.json>
+node --env-file=.local/tts.env scripts/qwen-tts.ts --generate --profiles <character-voices.json>
 ```
 
 面包店脚本按固定角色 Camille v1、Luc v1 解析档案。每个角色必须恰好有一个声音版本，缺失/重复或不支持的模型在计费调用之前失败。复刻档案须有参考原文与授权，生成前查询提供方状态和绑定模型。角色特点和默认情绪与每句话的场景情绪共同形成指令；音色、模型、语速均读取档案。生成回执记录三重版本、完整参数与档案哈希，原始录音保留。这里只是面包店试听生产工具，尚未覆盖全部课程、Léa、词级时间轴或正式音频发布。
@@ -92,11 +92,11 @@ node --env-file=.local/tts.env scripts/qwen-tts.mjs --generate --profiles <chara
 
 ### 已实现的提供方可用性核对
 
-`scripts/qwen-voices.mjs` 调用北京业务空间的 `voice-enrollment` 查询接口，不创建、修改或删除音色。依据[声音复刻 HTTP API](https://help.aliyun.com/en/model-studio/voice-clone-design-http-api)，列表使用 `list_voice` 与从0开始的页码，详情使用 `query_voice`。列表没有模型绑定信息，不能用列表中的 OK 代替详情校验；满页仅说明可能还有下一页，不冒充总数。
+`scripts/qwen-voices.ts` 调用北京业务空间的 `voice-enrollment` 查询接口，不创建、修改或删除音色。依据[声音复刻 HTTP API](https://help.aliyun.com/en/model-studio/voice-clone-design-http-api)，列表使用 `list_voice` 与从0开始的页码，详情使用 `query_voice`。列表没有模型绑定信息，不能用列表中的 OK 代替详情校验；满页仅说明可能还有下一页，不冒充总数。
 
 ```powershell
-node --env-file=.local/tts.env scripts/qwen-voices.mjs --list 0
-node --env-file=.local/tts.env scripts/qwen-voices.mjs --query <voice-id>
+node --env-file=.local/tts.env scripts/qwen-voices.ts --list 0
+node --env-file=.local/tts.env scripts/qwen-voices.ts --query <voice-id>
 ```
 
 面包店生成器对 `cloned` 档案先验证固定参考版本、非空原文与复刻授权字段，再查询详情。仅状态 `OK` 且 `target_model` 与档案完全一致时合成；`DEPLOYING`、`UNDEPLOYED`、未知状态、模型不一致或读取失败均在合成前拒绝。整批开始前核对所有所需角色，每句生成前再次核对，记录脱敏的 requestId、model、status、checkedAt。记录授权文本不等于独立法律审查，也不替代正式登记的来源及文件校验。
